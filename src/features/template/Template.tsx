@@ -90,7 +90,7 @@ function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
 export function Template() {
   const setupSteps = useAppSelector(selectSetupSteps);
   return (
-    <List>
+    <List component="ol">
       {setupSteps.map((step) => (
         <>
           <TemplateItem key={step.name} step={step} />

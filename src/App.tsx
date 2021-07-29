@@ -3,7 +3,7 @@ import { Template } from "./features/template/Template";
 
 function App() {
   return (
-    <Container maxWidth="xs">
+    <Container maxWidth="xs" component="main">
       <Template />
     </Container>
   );
