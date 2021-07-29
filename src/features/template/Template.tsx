@@ -6,7 +6,6 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  ListSubheader,
 } from "@material-ui/core";
 import { ChangeCircle } from "@material-ui/icons";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -92,7 +91,6 @@ export function Template() {
   const setupSteps = useAppSelector(selectSetupSteps);
   return (
     <List>
-      <ListSubheader>Template</ListSubheader>
       {setupSteps.map((step) => (
         <>
           <TemplateItem key={step.name} step={step} />
