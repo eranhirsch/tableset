@@ -13,10 +13,16 @@ export enum Strategy {
   FIXED,
 }
 
-export interface SetupStep<T> {
-  name: T;
-  strategy: Strategy;
-}
+export type SetupStep<T> =
+  | {
+      name: T;
+      strategy:
+        | Strategy.DEFAULT
+        | Strategy.OFF
+        | Strategy.MANUAL
+        | Strategy.RANDOM;
+    }
+  | { name: T; strategy: Strategy.FIXED; value: string | null };
 
 interface TemplateState {
   steps: SetupStep<SetupStepName>[];
@@ -33,9 +39,7 @@ export const templateSlice = createSlice({
     nextStrategy: (state, action: PayloadAction<SetupStepName>) => {
       const setupStepName = action.payload;
       const strategies = availableStrategies(setupStepName);
-      const setupStep = state.steps.find(
-        (step) => (step.name = action.payload)
-      );
+      const setupStep = state.steps.find((step) => (step.name = setupStepName));
       if (setupStep == null) {
         throw new Error(`Couldn't find setup step ${setupStepName}`);
       }
@@ -48,10 +52,27 @@ export const templateSlice = createSlice({
       setupStep.strategy =
         strategies[(currentStrategyIdx + 1) % strategies.length];
     },
+
+    defineFixedStrategy: (
+      state,
+      action: PayloadAction<{ name: SetupStepName; value: string | null }>
+    ) => {
+      const setupStepName = action.payload.name;
+      const setupStep = state.steps.find((step) => (step.name = setupStepName));
+      if (setupStep == null) {
+        throw new Error(`Couldn't find setup step ${setupStepName}`);
+      }
+      if (setupStep.strategy !== Strategy.FIXED) {
+        throw new Error(
+          `Trying to set fixed value when strategy isn't fixed for setup step ${setupStep}`
+        );
+      }
+      setupStep.value = action.payload.value;
+    },
   },
 });
 
-export const { nextStrategy } = templateSlice.actions;
+export const { nextStrategy, defineFixedStrategy } = templateSlice.actions;
 
 export const selectSetupSteps = (state: RootState) => state.template.steps;
 

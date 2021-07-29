@@ -14,3 +14,11 @@ export function availableStrategies(setupStepName: SetupStepName): Strategy[] {
       ];
   }
 }
+
+export function availableItems(step: SetupStepName): string[] {
+  switch (step) {
+    case "map":
+      return ["Italia", "Imperium"];
+  }
+}
+
