@@ -1,12 +1,11 @@
-import { Box, Container } from '@material-ui/core';
+import { Container } from "@material-ui/core";
+import { Template } from "./features/template/Template";
 
 function App() {
   return (
-    <Box bgcolor="gray">
     <Container maxWidth="xs">
-      Hello, World!
+      <Template />
     </Container>
-    </Box>
   );
 }
 
