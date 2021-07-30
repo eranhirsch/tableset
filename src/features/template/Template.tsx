@@ -52,7 +52,7 @@ function TemplateItemSecondary({
   return (
     <>
       {`${strategyLabel(Strategy.FIXED)}: `}
-      {availableItems(step.name).map((item) => (
+      {availableItems(step.name)!.map((item) => (
         <Chip
           size="small"
           variant="outlined"

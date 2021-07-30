@@ -29,7 +29,10 @@ interface TemplateState {
 }
 
 const initialState: TemplateState = {
-  steps: [{ name: "map", strategy: Strategy.OFF }],
+  steps: [
+    { name: "map", strategy: Strategy.OFF },
+    { name: "cityTiles", strategy: Strategy.OFF },
+  ],
 };
 
 export const templateSlice = createSlice({
@@ -38,19 +41,22 @@ export const templateSlice = createSlice({
   reducers: {
     nextStrategy: (state, action: PayloadAction<SetupStepName>) => {
       const setupStepName = action.payload;
-      const strategies = availableStrategies(setupStepName);
-      const setupStep = state.steps.find((step) => (step.name = setupStepName));
+      const setupStep = state.steps.find((step) => step.name === setupStepName);
       if (setupStep == null) {
         throw new Error(`Couldn't find setup step ${setupStepName}`);
       }
+
+      const strategies = availableStrategies(setupStepName);
       const currentStrategyIdx = strategies.indexOf(setupStep.strategy);
       if (currentStrategyIdx === -1) {
         throw new Error(
           `Couldn't find strategy ${setupStep.strategy} in available strategies ${strategies} for setup step ${setupStepName}`
         );
       }
-      setupStep.strategy =
+
+      const nextStrategy =
         strategies[(currentStrategyIdx + 1) % strategies.length];
+      setupStep.strategy = nextStrategy;
     },
 
     defineFixedStrategy: (
