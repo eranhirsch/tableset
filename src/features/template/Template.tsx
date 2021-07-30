@@ -8,10 +8,12 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import { ChangeCircle } from "@material-ui/icons";
+import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
 import {
   availableItems,
+  availableStrategies,
   SetupStepName,
 } from "../../core/games/concordia/SetupStep";
 import { stepLabel } from "../../core/games/content";
@@ -68,21 +70,30 @@ function TemplateItemSecondary({
 
 function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
+
+  const setupSteps = useAppSelector(selectSetupSteps);
+  const strategies = useMemo(
+    () => availableStrategies(step.name, setupSteps),
+    [step, setupSteps]
+  );
+
   return (
     <ListItem>
       <ListItemText
         primary={stepLabel(step.name)}
         secondary={<TemplateItemSecondary step={step} />}
       />
-      <ListItemSecondaryAction>
-        <IconButton
-          edge="end"
-          aria-label="change"
-          onClick={() => dispatch(nextStrategy(step.name))}
-        >
-          <ChangeCircle />
-        </IconButton>
-      </ListItemSecondaryAction>
+      {strategies.length > 1 && (
+        <ListItemSecondaryAction>
+          <IconButton
+            edge="end"
+            aria-label="change"
+            onClick={() => dispatch(nextStrategy(step.name))}
+          >
+            <ChangeCircle />
+          </IconButton>
+        </ListItemSecondaryAction>
+      )}
     </ListItem>
   );
 }

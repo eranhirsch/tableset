@@ -39,23 +39,24 @@ export const templateSlice = createSlice({
   name: "template",
   initialState,
   reducers: {
-    nextStrategy: (state, action: PayloadAction<SetupStepName>) => {
-      const setupStepName = action.payload;
-      const setupStep = state.steps.find((step) => step.name === setupStepName);
+    nextStrategy: (state, { payload: name }: PayloadAction<SetupStepName>) => {
+      // Find the setup step in the template
+      const setupStep = state.steps.find((step) => step.name === name);
       if (setupStep == null) {
-        throw new Error(`Couldn't find setup step ${setupStepName}`);
+        throw new Error(`Couldn't find setup step ${name}`);
       }
 
-      const strategies = availableStrategies(setupStepName);
+      // Compute the next available strategy for the step
+      const strategies = availableStrategies(name, state.steps);
       const currentStrategyIdx = strategies.indexOf(setupStep.strategy);
       if (currentStrategyIdx === -1) {
         throw new Error(
-          `Couldn't find strategy ${setupStep.strategy} in available strategies ${strategies} for setup step ${setupStepName}`
+          `Couldn't find strategy ${setupStep.strategy} in available strategies ${strategies} for setup step ${name}`
         );
       }
+      const nextStrategyIdx = (currentStrategyIdx + 1) % strategies.length;
+      const nextStrategy = strategies[nextStrategyIdx];
 
-      const nextStrategy =
-        strategies[(currentStrategyIdx + 1) % strategies.length];
       setupStep.strategy = nextStrategy;
     },
 

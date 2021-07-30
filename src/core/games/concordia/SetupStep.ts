@@ -1,8 +1,11 @@
-import { Strategy } from "../../../features/template/templateSlice";
+import { SetupStep, Strategy } from "../../../features/template/templateSlice";
 
 export type SetupStepName = "map" | "cityTiles";
 
-export function availableStrategies(setupStepName: SetupStepName): Strategy[] {
+export function availableStrategies(
+  setupStepName: SetupStepName,
+  template: SetupStep<SetupStepName>[]
+): Strategy[] {
   switch (setupStepName) {
     case "map":
       return [
@@ -12,7 +15,13 @@ export function availableStrategies(setupStepName: SetupStepName): Strategy[] {
         Strategy.MANUAL,
         Strategy.FIXED,
       ];
+      
     case "cityTiles":
+      const mapTemplate = template.find((step) => step.name === "map");
+      if (mapTemplate != null && mapTemplate.strategy === Strategy.OFF) {
+        return [Strategy.OFF];
+      }
+
       return [Strategy.OFF, Strategy.RANDOM];
   }
 }
@@ -25,4 +34,3 @@ export function availableItems(step: SetupStepName): string[] | null {
       return null;
   }
 }
-
