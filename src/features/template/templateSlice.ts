@@ -14,15 +14,12 @@ export enum Strategy {
 }
 
 export type SetupStep<T> =
+  | { name: T; strategy: Strategy.FIXED; value: string | null }
+  | { name: T; strategy: Strategy.OFF; previous?: SetupStep<T> }
   | {
       name: T;
-      strategy:
-        | Strategy.DEFAULT
-        | Strategy.OFF
-        | Strategy.MANUAL
-        | Strategy.RANDOM;
-    }
-  | { name: T; strategy: Strategy.FIXED; value: string | null };
+      strategy: Strategy.DEFAULT | Strategy.MANUAL | Strategy.RANDOM;
+    };
 
 interface TemplateState {
   steps: SetupStep<SetupStepName>[];
@@ -58,6 +55,28 @@ export const templateSlice = createSlice({
       const nextStrategy = strategies[nextStrategyIdx];
 
       setupStep.strategy = nextStrategy;
+
+      state.steps = state.steps.map((step) => {
+        const strategies = availableStrategies(step.name, state.steps);
+
+        if (!strategies.includes(step.strategy)) {
+          return {
+            ...step,
+            strategy: Strategy.OFF,
+            previous: step,
+          };
+        }
+
+        if (
+          step.strategy === Strategy.OFF &&
+          step.previous != null &&
+          strategies.includes(step.previous.strategy)
+        ) {
+          return step.previous;
+        }
+
+        return step;
+      });
     },
 
     defineFixedStrategy: (
