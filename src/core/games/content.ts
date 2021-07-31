@@ -5,6 +5,8 @@ export function stepLabel(stepName: SetupStepName): string {
     case "map":
       return "Map";
     case "cityTiles":
-      return "City Tiles";
+      return "Cities";
+    case "bonusTiles":
+      return "Province Bonus";
   }
 }

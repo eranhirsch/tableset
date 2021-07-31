@@ -11,15 +11,15 @@ export enum Strategy {
   RANDOM,
   MANUAL,
   FIXED,
+  COMPUTED,
 }
 
-export type SetupStep<T> =
-  | { name: T; strategy: Strategy.FIXED; value: string | null }
-  | { name: T; strategy: Strategy.OFF; previous?: SetupStep<T> }
-  | {
-      name: T;
-      strategy: Strategy.DEFAULT | Strategy.MANUAL | Strategy.RANDOM;
-    };
+export type SetupStep<T> = {
+  name: T;
+  strategy: Strategy;
+  value?: string;
+  previous?: SetupStep<T>;
+};
 
 interface TemplateState {
   steps: SetupStep<SetupStepName>[];
@@ -29,6 +29,7 @@ const initialState: TemplateState = {
   steps: [
     { name: "map", strategy: Strategy.OFF },
     { name: "cityTiles", strategy: Strategy.OFF },
+    { name: "bonusTiles", strategy: Strategy.OFF },
   ],
 };
 
@@ -56,32 +57,36 @@ export const templateSlice = createSlice({
 
       setupStep.strategy = nextStrategy;
 
-      state.steps = state.steps.map((step) => {
-        const strategies = availableStrategies(step.name, state.steps);
+      state.steps = state.steps.reduce(
+        (template: SetupStep<SetupStepName>[], step) => {
+          const strategies = availableStrategies(step.name, template);
 
-        if (!strategies.includes(step.strategy)) {
-          return {
-            ...step,
-            strategy: Strategy.OFF,
-            previous: step,
-          };
-        }
+          if (
+            step.previous != null &&
+            strategies.includes(step.previous.strategy)
+          ) {
+            return template.concat([step.previous!]);
+          }
 
-        if (
-          step.strategy === Strategy.OFF &&
-          step.previous != null &&
-          strategies.includes(step.previous.strategy)
-        ) {
-          return step.previous;
-        }
+          if (!strategies.includes(step.strategy)) {
+            return template.concat([
+              {
+                ...step,
+                strategy: strategies[0]!,
+                previous: step,
+              },
+            ]);
+          }
 
-        return step;
-      });
+          return template.concat(step);
+        },
+        []
+      );
     },
 
     defineFixedStrategy: (
       state,
-      action: PayloadAction<{ name: SetupStepName; value: string | null }>
+      action: PayloadAction<{ name: SetupStepName; value?: string }>
     ) => {
       const setupStepName = action.payload.name;
       const setupStep = state.steps.find((step) => (step.name = setupStepName));

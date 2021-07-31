@@ -43,9 +43,7 @@ function TemplateItemSecondary({
         <Chip
           size="small"
           label={step.value}
-          onDelete={() =>
-            dispatch(defineFixedStrategy({ name: step.name, value: null }))
-          }
+          onDelete={() => dispatch(defineFixedStrategy({ name: step.name }))}
         />
       </>
     );

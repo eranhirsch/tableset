@@ -12,5 +12,7 @@ export function strategyLabel(strategy: Strategy): string {
       return "Fixed";
     case Strategy.MANUAL:
       return "Manual";
+    case Strategy.COMPUTED:
+      return "Computed";
   }
 }
