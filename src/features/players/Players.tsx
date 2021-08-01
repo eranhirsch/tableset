@@ -1,7 +1,7 @@
 import { Chip, IconButton, TextField } from "@material-ui/core";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { addPlayer, removePlayer, selectPlayers } from "./playersSlice";
-import PersonAddOutlinedIcon from "@material-ui/icons/PersonAddOutlined";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import PersonIcon from "@material-ui/icons/Person";
 import { useState } from "react";
 
@@ -42,7 +42,7 @@ export default function Players() {
         </form>
       ) : (
         <IconButton onClick={() => setNewPlayerName("")}>
-          <PersonAddOutlinedIcon />
+          <PersonAddIcon />
         </IconButton>
       )}
     </section>
