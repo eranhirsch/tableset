@@ -9,9 +9,9 @@ export function stepLabel(stepName: SetupStepName): string {
     case "bonusTiles":
       return "Province Bonus";
     case "initialMarket":
-      return "Starting Personality Cards Market";
+      return "Cards Market";
     case "marketDeck":
-      return "Personality Cards Market Deck";
+      return "Market Deck";
     case "startingPlayer":
       return "First Player";
     case "playOrder":
