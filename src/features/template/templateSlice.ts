@@ -35,32 +35,32 @@ export const templateSlice = createSlice({
   reducers: {
     nextStrategy: (state, { payload: name }: PayloadAction<SetupStepName>) => {
       // Find the setup step in the template
-      const setupStepIdx = state.findIndex((step) => step.name === name);
-      if (setupStepIdx === -1) {
+      const stepIdx = state.findIndex((step) => step.name === name);
+      if (stepIdx === -1) {
         throw new Error(`Couldn't find setup step ${name}`);
       }
-      const setupStep = state[setupStepIdx];
+      const step = state[stepIdx];
 
-      if (setupStep.strategy === Strategy.FIXED && setupStep.value != null) {
+      if (step.strategy === Strategy.FIXED && step.value != null) {
         // The UI prevents this from happening, but we should also make sure the
         // backend is protected
         throw new Error(
-          `Cannot change strategy for ${name} while fixed to ${setupStep.value}`
+          `Cannot change strategy for ${name} while fixed to ${step.value}`
         );
       }
 
       // Compute the next available strategy for the step
       const strategies = availableStrategies(name, state);
-      const currentStrategyIdx = strategies.indexOf(setupStep.strategy);
+      const currentStrategyIdx = strategies.indexOf(step.strategy);
       if (currentStrategyIdx === -1) {
         throw new Error(
-          `Couldn't find strategy ${setupStep.strategy} in available strategies ${strategies} for setup step ${name}`
+          `Couldn't find strategy ${step.strategy} in available strategies ${strategies} for setup step ${name}`
         );
       }
       const nextStrategyIdx = (currentStrategyIdx + 1) % strategies.length;
       const nextStrategy = strategies[nextStrategyIdx];
 
-      setupStep.strategy = nextStrategy;
+      step.strategy = nextStrategy;
 
       // When strategies change they might make strategies for downstream steps
       // invalid so we go over all of them and fix any inconsistency.
@@ -72,11 +72,11 @@ export const templateSlice = createSlice({
 
       // Remove the previous config when the user intentionally changes
       // strategies, this will prevent us from overriding it.
-      setupStep.previous = undefined;
+      step.previous = undefined;
 
       // We want to go over all steps downstream from the current one, but we
       // can slice out the upstream ones.
-      state.slice(setupStepIdx + 1).forEach((step) => {
+      state.slice(stepIdx + 1).forEach((step) => {
         const strategies = availableStrategies(step.name, state);
 
         if (
@@ -97,12 +97,12 @@ export const templateSlice = createSlice({
     defineFixedStrategy: (
       state,
       {
-        payload: { name: setupStepName, value },
+        payload: { name, value },
       }: PayloadAction<{ name: SetupStepName; value?: string }>
     ) => {
-      const setupStep = state.find((step) => (step.name = setupStepName));
+      const setupStep = state.find((step) => (step.name = name));
       if (setupStep == null) {
-        throw new Error(`Couldn't find setup step ${setupStepName}`);
+        throw new Error(`Couldn't find setup step ${name}`);
       }
 
       if (setupStep.strategy !== Strategy.FIXED) {
