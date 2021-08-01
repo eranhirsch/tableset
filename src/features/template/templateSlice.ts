@@ -79,19 +79,22 @@ export const templateSlice = createSlice({
 
     defineFixedStrategy: (
       state,
-      action: PayloadAction<{ name: SetupStepName; value?: string }>
+      {
+        payload: { name: setupStepName, value },
+      }: PayloadAction<{ name: SetupStepName; value?: string }>
     ) => {
-      const setupStepName = action.payload.name;
       const setupStep = state.find((step) => (step.name = setupStepName));
       if (setupStep == null) {
         throw new Error(`Couldn't find setup step ${setupStepName}`);
       }
+
       if (setupStep.strategy !== Strategy.FIXED) {
         throw new Error(
           `Trying to set fixed value when strategy isn't fixed for setup step ${setupStep}`
         );
       }
-      setupStep.value = action.payload.value;
+
+      setupStep.value = value;
     },
   },
 });
