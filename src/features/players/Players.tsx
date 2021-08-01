@@ -17,34 +17,37 @@ export default function Players() {
           key={name}
           avatar={<PersonIcon />}
           label={name}
-          onDelete={() => dispatch(removePlayer(name))}
+          onDelete={
+            players.length > 2 ? () => dispatch(removePlayer(name)) : undefined
+          }
         />
       ))}
-      {newPlayerName != null ? (
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            dispatch(addPlayer(newPlayerName));
-            setNewPlayerName(undefined);
-          }}
-        >
-          <TextField
-            id="playerName"
-            label="Name"
-            size="small"
-            margin="dense"
-            fullWidth
-            autoFocus
-            value={newPlayerName}
-            onBlur={() => setNewPlayerName(undefined)}
-            onChange={(event) => setNewPlayerName(event.target.value)}
-          />
-        </form>
-      ) : (
-        <IconButton onClick={() => setNewPlayerName("")}>
-          <PersonAddIcon />
-        </IconButton>
-      )}
+      {players.length < 5 &&
+        (newPlayerName != null ? (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              dispatch(addPlayer(newPlayerName));
+              setNewPlayerName(undefined);
+            }}
+          >
+            <TextField
+              id="playerName"
+              label="Name"
+              size="small"
+              margin="dense"
+              fullWidth
+              autoFocus
+              value={newPlayerName}
+              onBlur={() => setNewPlayerName(undefined)}
+              onChange={(event) => setNewPlayerName(event.target.value)}
+            />
+          </form>
+        ) : (
+          <IconButton onClick={() => setNewPlayerName("")}>
+            <PersonAddIcon />
+          </IconButton>
+        ))}
     </section>
   );
 }
