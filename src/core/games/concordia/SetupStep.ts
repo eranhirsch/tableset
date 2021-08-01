@@ -1,15 +1,20 @@
 import {
   SetupStep,
-  Strategy,
   TemplateState,
 } from "../../../features/template/templateSlice";
+import { Strategy } from "../../Strategy";
 
-export type SetupStepName = "map" | "cityTiles" | "bonusTiles";
+export type SetupStepName =
+  | "map"
+  | "cityTiles"
+  | "bonusTiles"
+  | "initialMarket";
 
 export const initialTemplate: TemplateState = [
   { name: "map", strategy: Strategy.OFF },
   { name: "cityTiles", strategy: Strategy.OFF },
   { name: "bonusTiles", strategy: Strategy.OFF },
+  { name: "initialMarket", strategy: Strategy.OFF },
 ];
 
 export function availableStrategies(
@@ -46,6 +51,9 @@ export function availableStrategies(
       }
 
       return [Strategy.OFF];
+
+    case "initialMarket":
+      return [Strategy.OFF, Strategy.RANDOM];
   }
 }
 

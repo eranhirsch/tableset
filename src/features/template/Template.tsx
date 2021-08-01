@@ -17,14 +17,14 @@ import {
   availableStrategies,
   SetupStepName,
 } from "../../core/games/concordia/SetupStep";
-import { stepLabel } from "../../core/games/content";
+import { stepLabel } from "../../core/games/concordia/content";
 import {
   defineFixedStrategy,
   nextStrategy,
   selectTemplate,
   SetupStep,
-  Strategy,
 } from "./templateSlice";
+import { Strategy } from "../../core/Strategy";
 
 function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();

@@ -5,15 +5,7 @@ import {
   initialTemplate,
   SetupStepName,
 } from "../../core/games/concordia/SetupStep";
-
-export enum Strategy {
-  OFF,
-  DEFAULT,
-  RANDOM,
-  MANUAL,
-  FIXED,
-  COMPUTED,
-}
+import { Strategy } from "../../core/Strategy";
 
 export type SetupStep<T> = {
   name: T;
