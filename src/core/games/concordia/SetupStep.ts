@@ -1,6 +1,16 @@
-import { SetupStep, Strategy } from "../../../features/template/templateSlice";
+import {
+  SetupStep,
+  Strategy,
+  TemplateState,
+} from "../../../features/template/templateSlice";
 
 export type SetupStepName = "map" | "cityTiles" | "bonusTiles";
+
+export const initialTemplate: TemplateState = [
+  { name: "map", strategy: Strategy.OFF },
+  { name: "cityTiles", strategy: Strategy.OFF },
+  { name: "bonusTiles", strategy: Strategy.OFF },
+];
 
 export function availableStrategies(
   setupStepName: SetupStepName,

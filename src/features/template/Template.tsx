@@ -21,7 +21,7 @@ import { stepLabel } from "../../core/games/content";
 import {
   defineFixedStrategy,
   nextStrategy,
-  selectSetupSteps,
+  selectTemplate,
   SetupStep,
   Strategy,
 } from "./templateSlice";
@@ -58,7 +58,7 @@ function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
 function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
 
-  const setupSteps = useAppSelector(selectSetupSteps);
+  const setupSteps = useAppSelector(selectTemplate);
   const strategies = useMemo(
     () => availableStrategies(step.name, setupSteps),
     [step, setupSteps]
@@ -87,7 +87,7 @@ function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
 }
 
 export function Template() {
-  const setupSteps = useAppSelector(selectSetupSteps);
+  const setupSteps = useAppSelector(selectTemplate);
   return (
     <List component="ol">
       {setupSteps.map((step) => (
