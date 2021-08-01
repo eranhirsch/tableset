@@ -26,17 +26,12 @@ import {
   Strategy,
 } from "./templateSlice";
 
-function TemplateItemSecondary({ step }: { step: SetupStep<SetupStepName> }) {
+function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
-
-  if (step.strategy !== Strategy.FIXED) {
-    return null;
-  }
 
   if (step.value != null) {
     return (
       <Chip
-        size="small"
         label={step.value}
         onDelete={() => dispatch(defineFixedStrategy({ name: step.name }))}
       />
@@ -74,18 +69,19 @@ function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
       <ListItemText secondary={strategyLabel(step.strategy)}>
         {stepLabel(step.name)}
       </ListItemText>
-      <TemplateItemSecondary step={step} />
-      {strategies.length > 1 && (
-        <ListItemSecondaryAction>
-          <IconButton
-            edge="end"
-            aria-label="change"
-            onClick={() => dispatch(nextStrategy(step.name))}
-          >
-            <ChangeCircle />
-          </IconButton>
-        </ListItemSecondaryAction>
-      )}
+      {step.strategy === Strategy.FIXED && <FixedSettingsConfig step={step} />}
+      {strategies.length > 1 &&
+        (step.strategy !== Strategy.FIXED || step.value == null) && (
+          <ListItemSecondaryAction>
+            <IconButton
+              edge="end"
+              aria-label="change"
+              onClick={() => dispatch(nextStrategy(step.name))}
+            >
+              <ChangeCircle />
+            </IconButton>
+          </ListItemSecondaryAction>
+        )}
     </ListItem>
   );
 }
