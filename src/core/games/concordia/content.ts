@@ -10,5 +10,13 @@ export function stepLabel(stepName: SetupStepName): string {
       return "Province Bonus";
     case "initialMarket":
       return "Starting Personality Cards Market";
+    case "marketDeck":
+      return "Personality Cards Market Deck";
+    case "startingPlayer":
+      return "First Player";
+    case "playOrder":
+      return "Seating";
+    case "playerColor":
+      return "Player Color";
   }
 }
