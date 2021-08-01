@@ -21,17 +21,13 @@ export type SetupStep<T> = {
   previous?: SetupStep<T>;
 };
 
-interface TemplateState {
-  steps: SetupStep<SetupStepName>[];
-}
+type TemplateState = SetupStep<SetupStepName>[];
 
-const initialState: TemplateState = {
-  steps: [
-    { name: "map", strategy: Strategy.OFF },
-    { name: "cityTiles", strategy: Strategy.OFF },
-    { name: "bonusTiles", strategy: Strategy.OFF },
-  ],
-};
+const initialState: TemplateState = [
+  { name: "map", strategy: Strategy.OFF },
+  { name: "cityTiles", strategy: Strategy.OFF },
+  { name: "bonusTiles", strategy: Strategy.OFF },
+];
 
 export const templateSlice = createSlice({
   name: "template",
@@ -39,13 +35,13 @@ export const templateSlice = createSlice({
   reducers: {
     nextStrategy: (state, { payload: name }: PayloadAction<SetupStepName>) => {
       // Find the setup step in the template
-      const setupStep = state.steps.find((step) => step.name === name);
+      const setupStep = state.find((step) => step.name === name);
       if (setupStep == null) {
         throw new Error(`Couldn't find setup step ${name}`);
       }
 
       // Compute the next available strategy for the step
-      const strategies = availableStrategies(name, state.steps);
+      const strategies = availableStrategies(name, state);
       const currentStrategyIdx = strategies.indexOf(setupStep.strategy);
       if (currentStrategyIdx === -1) {
         throw new Error(
@@ -57,31 +53,28 @@ export const templateSlice = createSlice({
 
       setupStep.strategy = nextStrategy;
 
-      state.steps = state.steps.reduce(
-        (template: SetupStep<SetupStepName>[], step) => {
-          const strategies = availableStrategies(step.name, template);
+      state = state.reduce((template: SetupStep<SetupStepName>[], step) => {
+        const strategies = availableStrategies(step.name, template);
 
-          if (
-            step.previous != null &&
-            strategies.includes(step.previous.strategy)
-          ) {
-            return template.concat([step.previous!]);
-          }
+        if (
+          step.previous != null &&
+          strategies.includes(step.previous.strategy)
+        ) {
+          return template.concat([step.previous!]);
+        }
 
-          if (!strategies.includes(step.strategy)) {
-            return template.concat([
-              {
-                ...step,
-                strategy: strategies[0]!,
-                previous: step,
-              },
-            ]);
-          }
+        if (!strategies.includes(step.strategy)) {
+          return template.concat([
+            {
+              ...step,
+              strategy: strategies[0]!,
+              previous: step,
+            },
+          ]);
+        }
 
-          return template.concat(step);
-        },
-        []
-      );
+        return template.concat(step);
+      }, []);
     },
 
     defineFixedStrategy: (
@@ -89,7 +82,7 @@ export const templateSlice = createSlice({
       action: PayloadAction<{ name: SetupStepName; value?: string }>
     ) => {
       const setupStepName = action.payload.name;
-      const setupStep = state.steps.find((step) => (step.name = setupStepName));
+      const setupStep = state.find((step) => (step.name = setupStepName));
       if (setupStep == null) {
         throw new Error(`Couldn't find setup step ${setupStepName}`);
       }
@@ -105,6 +98,6 @@ export const templateSlice = createSlice({
 
 export const { nextStrategy, defineFixedStrategy } = templateSlice.actions;
 
-export const selectSetupSteps = (state: RootState) => state.template.steps;
+export const selectSetupSteps = (state: RootState) => state.template;
 
 export default templateSlice.reducer;
