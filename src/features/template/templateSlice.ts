@@ -41,6 +41,14 @@ export const templateSlice = createSlice({
       }
       const setupStep = state[setupStepIdx];
 
+      if (setupStep.strategy === Strategy.FIXED && setupStep.value != null) {
+        // The UI prevents this from happening, but we should also make sure the
+        // backend is protected
+        throw new Error(
+          `Cannot change strategy for ${name} while fixed to ${setupStep.value}`
+        );
+      }
+
       // Compute the next available strategy for the step
       const strategies = availableStrategies(name, state);
       const currentStrategyIdx = strategies.indexOf(setupStep.strategy);
