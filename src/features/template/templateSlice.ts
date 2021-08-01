@@ -69,7 +69,6 @@ export const templateSlice = createSlice({
       // We want to go over all steps downstream from the current one, but we
       // can slice out the upstream ones.
       state.slice(setupStepIdx + 1).forEach((step) => {
-        debugger;
         const strategies = availableStrategies(step.name, state);
 
         if (
