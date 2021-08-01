@@ -14,6 +14,16 @@ export const playersSlice = createSlice({
   initialState,
   reducers: {
     addPlayer: (state, { payload: name }: PayloadAction<string>) => {
+      const normalized = name.trim();
+      if (normalized.length === 0) {
+        return;
+      }
+
+      if (state.some(({ name }) => normalized === name)) {
+        // Duplicate name
+        return;
+      }
+
       state.push({ name });
     },
 

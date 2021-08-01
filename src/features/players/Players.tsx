@@ -4,11 +4,12 @@ import { addPlayer, removePlayer, selectPlayers } from "./playersSlice";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import PersonIcon from "@material-ui/icons/Person";
 import { useState } from "react";
+import ClearIcon from "@material-ui/icons/Clear";
 
 export default function Players() {
   const players = useAppSelector(selectPlayers);
   const dispatch = useAppDispatch();
-  const [newPlayerName, setNewPlayerName] = useState<string | undefined>();
+  const [newPlayerName, setNewPlayerName] = useState("");
 
   return (
     <section>
@@ -22,32 +23,34 @@ export default function Players() {
           }
         />
       ))}
-      {players.length < 5 &&
-        (newPlayerName != null ? (
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              dispatch(addPlayer(newPlayerName));
-              setNewPlayerName(undefined);
+      {players.length < 5 && (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            dispatch(addPlayer(newPlayerName));
+            setNewPlayerName("");
+          }}
+        >
+          <TextField
+            InputProps={{
+              startAdornment: <PersonAddIcon sx={{ mr: 1 }} />,
+              endAdornment:
+                newPlayerName !== "" ? (
+                  <IconButton onClick={() => setNewPlayerName("")}>
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                ) : undefined,
             }}
-          >
-            <TextField
-              id="playerName"
-              label="Name"
-              size="small"
-              margin="dense"
-              fullWidth
-              autoFocus
-              value={newPlayerName}
-              onBlur={() => setNewPlayerName(undefined)}
-              onChange={(event) => setNewPlayerName(event.target.value)}
-            />
-          </form>
-        ) : (
-          <IconButton onClick={() => setNewPlayerName("")}>
-            <PersonAddIcon />
-          </IconButton>
-        ))}
+            placeholder="Add Player"
+            id="playerName"
+            size="small"
+            margin="dense"
+            fullWidth
+            value={newPlayerName}
+            onChange={(event) => setNewPlayerName(event.target.value)}
+          />
+        </form>
+      )}
     </section>
   );
 }
