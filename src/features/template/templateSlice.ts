@@ -52,6 +52,7 @@ export const templateSlice = createSlice({
       const nextStrategy = strategies[nextStrategyIdx];
 
       setupStep.strategy = nextStrategy;
+      setupStep.previous = undefined;
 
       state = state.reduce((template: SetupStep<SetupStepName>[], step) => {
         const strategies = availableStrategies(step.name, template);

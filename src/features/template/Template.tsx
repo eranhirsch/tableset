@@ -8,6 +8,7 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import { ChangeCircle } from "@material-ui/icons";
+import React from "react";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
@@ -101,10 +102,10 @@ export function Template() {
   return (
     <List component="ol">
       {setupSteps.map((step) => (
-        <>
-          <TemplateItem key={step.name} step={step} />
+        <React.Fragment key={step.name}>
+          <TemplateItem step={step} />
           <Divider />
-        </>
+        </React.Fragment>
       ))}
     </List>
   );
