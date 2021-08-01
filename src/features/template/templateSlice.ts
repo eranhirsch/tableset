@@ -35,10 +35,11 @@ export const templateSlice = createSlice({
   reducers: {
     nextStrategy: (state, { payload: name }: PayloadAction<SetupStepName>) => {
       // Find the setup step in the template
-      const setupStep = state.find((step) => step.name === name);
-      if (setupStep == null) {
+      const setupStepIdx = state.findIndex((step) => step.name === name);
+      if (setupStepIdx === -1) {
         throw new Error(`Couldn't find setup step ${name}`);
       }
+      const setupStep = state[setupStepIdx];
 
       // Compute the next available strategy for the step
       const strategies = availableStrategies(name, state);
@@ -52,30 +53,37 @@ export const templateSlice = createSlice({
       const nextStrategy = strategies[nextStrategyIdx];
 
       setupStep.strategy = nextStrategy;
+
+      // When strategies change they might make strategies for downstream steps
+      // invalid so we go over all of them and fix any inconsistency.
+      // BUT... because we only provide the user with a 'next strategy' action,
+      // they might not be aware of this and thus a click would cause them to
+      // lose these configurations unintentionally. To solve that we save the
+      // previous config, and, when a change upstream makes the previous config
+      // valid again, we swap it back in.
+
+      // Remove the previous config when the user intentionally changes
+      // strategies, this will prevent us from overriding it.
       setupStep.previous = undefined;
 
-      state = state.reduce((template: SetupStep<SetupStepName>[], step) => {
-        const strategies = availableStrategies(step.name, template);
+      // We want to go over all steps downstream from the current one, but we
+      // can slice out the upstream ones.
+      state.slice(setupStepIdx).forEach((step) => {
+        const strategies = availableStrategies(step.name, state);
 
         if (
           step.previous != null &&
           strategies.includes(step.previous.strategy)
         ) {
-          return template.concat([step.previous!]);
+          step.strategy = step.previous.strategy;
+          step.value = step.previous.value;
+          step.previous = undefined;
+        } else if (!strategies.includes(step.strategy)) {
+          step.previous = { ...step };
+          step.strategy = strategies[0]!;
+          step.value = undefined;
         }
-
-        if (!strategies.includes(step.strategy)) {
-          return template.concat([
-            {
-              ...step,
-              strategy: strategies[0]!,
-              previous: step,
-            },
-          ]);
-        }
-
-        return template.concat(step);
-      }, []);
+      });
     },
 
     defineFixedStrategy: (
