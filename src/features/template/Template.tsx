@@ -26,35 +26,28 @@ import {
   Strategy,
 } from "./templateSlice";
 
-function TemplateItemSecondary({
-  step,
-}: {
-  step: SetupStep<SetupStepName>;
-}): JSX.Element {
+function TemplateItemSecondary({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
 
   if (step.strategy !== Strategy.FIXED) {
-    return <>{strategyLabel(step.strategy)}</>;
+    return null;
   }
 
   if (step.value != null) {
     return (
-      <>
-        {`${strategyLabel(Strategy.FIXED)}: `}
-        <Chip
-          size="small"
-          label={step.value}
-          onDelete={() => dispatch(defineFixedStrategy({ name: step.name }))}
-        />
-      </>
+      <Chip
+        size="small"
+        label={step.value}
+        onDelete={() => dispatch(defineFixedStrategy({ name: step.name }))}
+      />
     );
   }
 
   return (
     <>
-      {`${strategyLabel(Strategy.FIXED)}: `}
       {availableItems(step.name)!.map((item) => (
         <Chip
+          key={`${step.name}_${item}`}
           size="small"
           variant="outlined"
           label={item}
@@ -78,10 +71,10 @@ function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
 
   return (
     <ListItem>
-      <ListItemText
-        primary={stepLabel(step.name)}
-        secondary={<TemplateItemSecondary step={step} />}
-      />
+      <ListItemText secondary={strategyLabel(step.strategy)}>
+        {stepLabel(step.name)}
+      </ListItemText>
+      <TemplateItemSecondary step={step} />
       {strategies.length > 1 && (
         <ListItemSecondaryAction>
           <IconButton
