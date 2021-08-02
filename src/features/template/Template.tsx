@@ -27,17 +27,17 @@ import {
   SetupStep,
 } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
-import { selectPlayers } from "../players/playersSlice";
 import PushPinIcon from "@material-ui/icons/PushPin";
 import PanToolIcon from "@material-ui/icons/PanTool";
 import FunctionsIcon from "@material-ui/icons/Functions";
 import CasinoIcon from "@material-ui/icons/Casino";
 import QuizIcon from "@material-ui/icons/Quiz";
 import FlashOnIcon from "@material-ui/icons/FlashOn";
+import Players from "./Players";
 
 function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
-  const players = useAppSelector(selectPlayers);
+  const { players } = useAppSelector(selectTemplate);
 
   if (step.value != null) {
     return (
@@ -90,10 +90,10 @@ function StepIcon({ step }: { step: SetupStep<SetupStepName> }): JSX.Element {
 function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
 
-  const setupSteps = useAppSelector(selectTemplate);
+  const { steps } = useAppSelector(selectTemplate);
   const strategies = useMemo(
-    () => availableStrategies(step.name, setupSteps),
-    [step, setupSteps]
+    () => availableStrategies(step.name, steps),
+    [step, steps]
   );
 
   return (
@@ -124,15 +124,18 @@ function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
 }
 
 export function Template() {
-  const setupSteps = useAppSelector(selectTemplate);
+  const { steps } = useAppSelector(selectTemplate);
   return (
-    <List component="ol">
-      {setupSteps.map((step) => (
-        <React.Fragment key={step.name}>
-          <TemplateItem step={step} />
-          <Divider />
-        </React.Fragment>
-      ))}
-    </List>
+    <>
+      <Players playerCount={{ min: 2, max: 5 }} />
+      <List component="ol">
+        {steps.map((step) => (
+          <React.Fragment key={step.name}>
+            <TemplateItem step={step} />
+            <Divider />
+          </React.Fragment>
+        ))}
+      </List>
+    </>
   );
 }

@@ -14,18 +14,25 @@ export type SetupStep<T> = {
   previous?: SetupStep<T>;
 };
 
-export type TemplateState = SetupStep<SetupStepName>[];
+interface Player {
+  name: string;
+}
+
+export type TemplateState = {
+  steps: SetupStep<SetupStepName>[];
+  players: Player[];
+};
 
 function nextStrategyImpl(
-  state: TemplateState,
+  { steps }: TemplateState,
   { payload: name }: PayloadAction<SetupStepName>
 ) {
   // Find the setup step in the template
-  const stepIdx = state.findIndex((step) => step.name === name);
+  const stepIdx = steps.findIndex((step) => step.name === name);
   if (stepIdx === -1) {
     throw new Error(`Couldn't find setup step ${name}`);
   }
-  const step = state[stepIdx];
+  const step = steps[stepIdx];
 
   if (step.strategy === Strategy.FIXED && step.value != null) {
     // The UI prevents this from happening, but we should also make sure the
@@ -36,7 +43,7 @@ function nextStrategyImpl(
   }
 
   // Compute the next available strategy for the step
-  const strategies = availableStrategies(name, state);
+  const strategies = availableStrategies(name, steps);
   const currentStrategyIdx = strategies.indexOf(step.strategy);
   if (currentStrategyIdx === -1) {
     throw new Error(
@@ -62,8 +69,8 @@ function nextStrategyImpl(
 
   // We want to go over all steps downstream from the current one, but we
   // can slice out the upstream ones.
-  state.slice(stepIdx + 1).forEach((step) => {
-    const strategies = availableStrategies(step.name, state);
+  steps.slice(stepIdx + 1).forEach((step) => {
+    const strategies = availableStrategies(step.name, steps);
 
     if (step.previous != null && strategies.includes(step.previous.strategy)) {
       step.strategy = step.previous.strategy;
@@ -78,12 +85,12 @@ function nextStrategyImpl(
 }
 
 function definedFixedStrategyImpl(
-  state: TemplateState,
+  { steps }: TemplateState,
   {
     payload: { name, value },
   }: PayloadAction<{ name: SetupStepName; value?: string }>
 ) {
-  const setupStep = state.find((step) => step.name === name);
+  const setupStep = steps.find((step) => step.name === name);
   if (setupStep == null) {
     throw new Error(`Couldn't find setup step ${name}`);
   }
@@ -97,16 +104,51 @@ function definedFixedStrategyImpl(
   setupStep.value = value;
 }
 
+function addPlayerImpl(
+  { players }: TemplateState,
+  { payload: name }: PayloadAction<string>
+) {
+  const normalized = name.trim();
+  if (normalized.length === 0) {
+    return;
+  }
+
+  if (players.some(({ name }) => normalized === name)) {
+    // Duplicate name
+    return;
+  }
+
+  players.push({ name });
+}
+
+function removePlayerImpl(
+  { players }: TemplateState,
+  { payload: removedName }: PayloadAction<string>
+) {
+  const playerIdx = players.findIndex(({ name }) => name === removedName);
+  players.splice(playerIdx, 1);
+}
+
 export const templateSlice = createSlice({
   name: "template",
-  initialState: initialTemplate,
+  initialState: {
+    steps: initialTemplate,
+    players: [
+      { name: "Eran Hirsch" },
+      { name: "Amit Cwajgahaft" },
+      { name: "Adam Maoz" },
+    ],
+  },
   reducers: {
     nextStrategy: nextStrategyImpl,
     defineFixedStrategy: definedFixedStrategyImpl,
+    addPlayer: addPlayerImpl,
+    removePlayer: removePlayerImpl,
   },
 });
 
-export const { nextStrategy, defineFixedStrategy } = templateSlice.actions;
+export const { nextStrategy, defineFixedStrategy, addPlayer, removePlayer } =
+  templateSlice.actions;
 
 export const selectTemplate = (state: RootState) => state.template;
 

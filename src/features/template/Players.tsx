@@ -1,11 +1,15 @@
 import { Chip, IconButton, TextField } from "@material-ui/core";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { addPlayer, removePlayer, selectPlayers } from "./playersSlice";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import PersonIcon from "@material-ui/icons/Person";
 import { useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import { defineFixedStrategy, selectTemplate } from "../template/templateSlice";
+import {
+  addPlayer,
+  defineFixedStrategy,
+  removePlayer,
+  selectTemplate,
+} from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
 
 export default function Players({
@@ -13,13 +17,12 @@ export default function Players({
 }: {
   playerCount: { min: number; max: number };
 }) {
-  const players = useAppSelector(selectPlayers);
-  const template = useAppSelector(selectTemplate);
+  const { steps, players } = useAppSelector(selectTemplate);
   const dispatch = useAppDispatch();
   const [newPlayerName, setNewPlayerName] = useState("");
 
   const removeRemovedPlayerFromTemplate = (name: string) => {
-    const startingPlayerStep = template.find(
+    const startingPlayerStep = steps.find(
       (step) => step.name === "startingPlayer"
     );
     if (

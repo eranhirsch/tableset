@@ -1,7 +1,4 @@
-import {
-  SetupStep,
-  TemplateState,
-} from "../../../features/template/templateSlice";
+import { SetupStep } from "../../../features/template/templateSlice";
 import { Strategy } from "../../Strategy";
 
 export type SetupStepName =
@@ -14,7 +11,7 @@ export type SetupStepName =
   | "playOrder"
   | "playerColor";
 
-export const initialTemplate: TemplateState = [
+export const initialTemplate: SetupStep<SetupStepName>[] = [
   { name: "map", strategy: Strategy.OFF },
   { name: "cityTiles", strategy: Strategy.OFF },
   { name: "bonusTiles", strategy: Strategy.OFF },
