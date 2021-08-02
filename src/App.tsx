@@ -5,7 +5,7 @@ import { Template } from "./features/template/Template";
 function App() {
   return (
     <Container maxWidth="xs" component="main">
-      <Players />
+      <Players playerCount={{ min: 2, max: 5 }} />
       <Template />
     </Container>
   );
