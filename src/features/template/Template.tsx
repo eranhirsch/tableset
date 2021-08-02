@@ -4,6 +4,8 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemButton,
+  ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
 } from "@material-ui/core";
@@ -26,6 +28,12 @@ import {
 } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
 import { selectPlayers } from "../players/playersSlice";
+import PushPinIcon from "@material-ui/icons/PushPin";
+import PanToolIcon from "@material-ui/icons/PanTool";
+import FunctionsIcon from "@material-ui/icons/Functions";
+import CasinoIcon from "@material-ui/icons/Casino";
+import QuizIcon from "@material-ui/icons/Quiz";
+import FlashOnIcon from "@material-ui/icons/FlashOn";
 
 function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
@@ -62,6 +70,23 @@ function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
   );
 }
 
+function StepIcon({ step }: { step: SetupStep<SetupStepName> }): JSX.Element {
+  switch (step.strategy) {
+    case Strategy.FIXED:
+      return <PushPinIcon />;
+    case Strategy.MANUAL:
+      return <QuizIcon />;
+    case Strategy.COMPUTED:
+      return <FunctionsIcon />;
+    case Strategy.RANDOM:
+      return <CasinoIcon />;
+    case Strategy.OFF:
+      return <PanToolIcon />;
+    case Strategy.DEFAULT:
+      return <FlashOnIcon />;
+  }
+}
+
 function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
 
@@ -72,10 +97,15 @@ function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
   );
 
   return (
-    <ListItem>
-      <ListItemText secondary={strategyLabel(step.strategy)}>
-        {stepLabel(step.name)}
-      </ListItemText>
+    <ListItem disablePadding>
+      <ListItemButton>
+        <ListItemIcon>
+          <StepIcon step={step} />
+        </ListItemIcon>
+        <ListItemText secondary={strategyLabel(step.strategy)}>
+          {stepLabel(step.name)}
+        </ListItemText>
+      </ListItemButton>
       {step.strategy === Strategy.FIXED && <FixedSettingsConfig step={step} />}
       {strategies.length > 1 &&
         (step.strategy !== Strategy.FIXED || step.value == null) && (
