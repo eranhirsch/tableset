@@ -25,9 +25,11 @@ import {
   SetupStep,
 } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
+import { selectPlayers } from "../players/playersSlice";
 
 function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
+  const players = useAppSelector(selectPlayers);
 
   if (step.value != null) {
     return (
@@ -38,9 +40,14 @@ function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
     );
   }
 
+  const items =
+    step.name === "startingPlayer"
+      ? players.map(({ name }) => name)
+      : availableItems(step.name) ?? [];
+
   return (
     <>
-      {availableItems(step.name)!.map((item) => (
+      {items.map((item) => (
         <Chip
           key={`${step.name}_${item}`}
           size="small"

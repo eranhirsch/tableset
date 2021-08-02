@@ -83,7 +83,7 @@ function definedFixedStrategyImpl(
     payload: { name, value },
   }: PayloadAction<{ name: SetupStepName; value?: string }>
 ) {
-  const setupStep = state.find((step) => (step.name = name));
+  const setupStep = state.find((step) => step.name === name);
   if (setupStep == null) {
     throw new Error(`Couldn't find setup step ${name}`);
   }
