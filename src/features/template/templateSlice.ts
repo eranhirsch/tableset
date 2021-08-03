@@ -150,6 +150,7 @@ export const templateSlice = createSlice({
 export const { nextStrategy, defineFixedStrategy, addPlayer, removePlayer } =
   templateSlice.actions;
 
-export const selectTemplate = (state: RootState) => state.template;
+export const selectPlayers = (state: RootState) => state.template.players;
+export const selectSteps = (state: RootState) => state.template.steps;
 
 export default templateSlice.reducer;

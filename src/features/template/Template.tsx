@@ -23,7 +23,8 @@ import { stepLabel } from "../../core/games/concordia/content";
 import {
   defineFixedStrategy,
   nextStrategy,
-  selectTemplate,
+  selectPlayers,
+  selectSteps,
   SetupStep,
 } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
@@ -37,7 +38,7 @@ import Players from "./Players";
 
 function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
-  const { players } = useAppSelector(selectTemplate);
+  const players = useAppSelector(selectPlayers);
 
   if (step.value != null) {
     return (
@@ -90,7 +91,7 @@ function StepIcon({ step }: { step: SetupStep<SetupStepName> }): JSX.Element {
 function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
   const dispatch = useAppDispatch();
 
-  const { steps } = useAppSelector(selectTemplate);
+  const steps = useAppSelector(selectSteps);
   const strategies = useMemo(
     () => availableStrategies(step.name, steps),
     [step, steps]
@@ -124,7 +125,7 @@ function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
 }
 
 export function Template() {
-  const { steps } = useAppSelector(selectTemplate);
+  const steps = useAppSelector(selectSteps);
   return (
     <>
       <Players playerCount={{ min: 2, max: 5 }} />
