@@ -4,34 +4,16 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import PersonIcon from "@material-ui/icons/Person";
 import { useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import {
-  addPlayer,
-  defineFixedStrategy,
-  removePlayer,
-  selectTemplate,
-} from "./templateSlice";
-import { Strategy } from "../../core/Strategy";
+import { addPlayer, removePlayer, selectPlayers } from "./templateSlice";
 
 export default function Players({
   playerCount: { min: minPlayerCount, max: maxPlayerCount },
 }: {
   playerCount: { min: number; max: number };
 }) {
-  const { steps, players } = useAppSelector(selectTemplate);
+  const players = useAppSelector(selectPlayers);
   const dispatch = useAppDispatch();
   const [newPlayerName, setNewPlayerName] = useState("");
-
-  const removeRemovedPlayerFromTemplate = (name: string) => {
-    const startingPlayerStep = steps.find(
-      (step) => step.name === "startingPlayer"
-    );
-    if (
-      startingPlayerStep?.strategy === Strategy.FIXED &&
-      startingPlayerStep.value === name
-    ) {
-      dispatch(defineFixedStrategy({ name: "startingPlayer" }));
-    }
-  };
 
   return (
     <section>
@@ -44,10 +26,7 @@ export default function Players({
             // Turn off onDelete to prevent player count from dropping below
             // allowed minimum
             players.length > minPlayerCount
-              ? () => {
-                  dispatch(removePlayer(name));
-                  removeRemovedPlayerFromTemplate(name);
-                }
+              ? () => dispatch(removePlayer(name))
               : undefined
           }
         />

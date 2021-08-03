@@ -122,11 +122,25 @@ function addPlayerImpl(
 }
 
 function removePlayerImpl(
-  { players }: TemplateState,
+  { steps, players }: TemplateState,
   { payload: removedName }: PayloadAction<string>
 ) {
   const playerIdx = players.findIndex(({ name }) => name === removedName);
   players.splice(playerIdx, 1);
+
+  // If we have a fixed starting player, it doesn't make sense once that player
+  // is not part of the template anymore so we need to remove it.
+  // TODO: We need to generalize it to work dynamically on all player-related
+  // steps
+  const startingPlayerStep = steps.find(
+    (step) => step.name === "startingPlayer"
+  );
+  if (
+    startingPlayerStep?.strategy === Strategy.FIXED &&
+    startingPlayerStep.value === removedName
+  ) {
+    startingPlayerStep.value = undefined;
+  }
 }
 
 export const templateSlice = createSlice({
