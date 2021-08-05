@@ -11,6 +11,7 @@ import {
   SetupStepName,
 } from "../../core/games/concordia/SetupStep";
 import { Strategy } from "../../core/Strategy";
+import { removed as playerRemoved } from "../players/playersSlice";
 
 export type SetupStep<T> = {
   name: T;
@@ -136,20 +137,23 @@ export const templateSlice = createSlice({
 
     templateInitialized: templateAdapter.setAll,
   },
-  extraReducers: {
-    // If we have a fixed starting player, it doesn't make sense once that player
-    // is not part of the template anymore so we need to remove it.
-    // TODO: We need to generalize it to work dynamically on all player-related
-    // steps
-    // const startingPlayerStep = steps.find(
-    //   (step) => step.name === "startingPlayer"
-    // );
-    // if (
-    //   startingPlayerStep?.strategy === Strategy.FIXED &&
-    //   startingPlayerStep.value === removedName
-    // ) {
-    //   startingPlayerStep.value = undefined;
-    // }
+  extraReducers: (builder) => {
+    builder.addCase(
+      playerRemoved,
+      (state, { payload: playerId }: PayloadAction<EntityId>) => {
+        // If we have a fixed starting player, it doesn't make sense once that player
+        // is not part of the template anymore so we need to remove it.
+        // TODO: We need to generalize it to work dynamically on all player-related
+        // steps
+        const startingPlayerStep = state.entities.startingPlayer;
+        if (
+          startingPlayerStep?.strategy === Strategy.FIXED &&
+          startingPlayerStep.value === playerId
+        ) {
+          startingPlayerStep.value = undefined;
+        }
+      }
+    );
   },
 });
 

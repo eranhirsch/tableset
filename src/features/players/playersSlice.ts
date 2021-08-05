@@ -1,4 +1,9 @@
-import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import {
+  createAction,
+  createEntityAdapter,
+  createSlice,
+  EntityId,
+} from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
 interface Player {
@@ -9,23 +14,23 @@ const playersAdapter = createEntityAdapter<Player>({
   selectId: (player) => player.name,
 });
 
+export const removed = createAction<EntityId>("removed");
+
 const playersSlice = createSlice({
   name: "players",
   initialState: playersAdapter.getInitialState(),
   reducers: {
-    playerAdded: playersAdapter.addOne,
-    playerRemoved: playersAdapter.removeOne,
-    playersInitialized: playersAdapter.setAll,
+    added: playersAdapter.addOne,
+    initialized: playersAdapter.setAll,
+  },
+  extraReducers: (builder) => {
+    builder.addCase(removed, playersAdapter.removeOne);
   },
 });
 
-export const { playerAdded, playerRemoved, playersInitialized } =
-  playersSlice.actions;
+export const { added, initialized } = playersSlice.actions;
 
-export const {
-  selectIds: selectPlayerIds,
-  selectById: selectPlayerById,
-  selectAll: selectAllPlayers,
-} = playersAdapter.getSelectors<RootState>((state) => state.players);
+export const { selectIds, selectById, selectAll } =
+  playersAdapter.getSelectors<RootState>((state) => state.players);
 
 export default playersSlice.reducer;

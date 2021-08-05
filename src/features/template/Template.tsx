@@ -36,7 +36,7 @@ import FunctionsIcon from "@material-ui/icons/Functions";
 import CasinoIcon from "@material-ui/icons/Casino";
 import QuizIcon from "@material-ui/icons/Quiz";
 import FlashOnIcon from "@material-ui/icons/FlashOn";
-import { selectAllPlayers } from "../players/playersSlice";
+import { selectAll as selectAllPlayers } from "../players/playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import useAppIdSelectorEnforce from "../../common/hooks/useAppIdSelectorEnforce";
 
@@ -153,6 +153,7 @@ export function Template() {
           { name: "initialMarket", strategy: Strategy.OFF },
           { name: "marketDeck", strategy: Strategy.OFF },
           { name: "playerColor", strategy: Strategy.OFF },
+          { name: "startingPlayer", strategy: Strategy.OFF },
           { name: "playOrder", strategy: Strategy.OFF },
         ])
       );

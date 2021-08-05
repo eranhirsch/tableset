@@ -5,11 +5,11 @@ import PersonIcon from "@material-ui/icons/Person";
 import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import {
-  playerAdded,
-  playerRemoved,
-  playersInitialized,
-  selectPlayerById,
-  selectPlayerIds,
+  added as playerAdded,
+  removed as playerRemoved,
+  initialized as playersInitialized,
+  selectById as selectPlayerById,
+  selectIds as selectPlayerIds,
 } from "./playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import useAppIdSelectorEnforce from "../../common/hooks/useAppIdSelectorEnforce";
