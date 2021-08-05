@@ -9,7 +9,7 @@ import playersSlice, {
   selectors as playersSelectors,
 } from "./playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
-import useAppIdSelectorEnforce from "../../common/hooks/useAppIdSelectorEnforce";
+import useAppEntityIdSelectorEnforce from "../../common/hooks/useAppEntityIdSelectorEnforce";
 
 function Player({
   playerId,
@@ -20,7 +20,7 @@ function Player({
 }) {
   const dispatch = useAppDispatch();
 
-  const player = useAppIdSelectorEnforce(playersSelectors.selectById, playerId);
+  const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
 
   return (
     <Chip

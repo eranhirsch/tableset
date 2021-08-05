@@ -32,15 +32,12 @@ import QuizIcon from "@material-ui/icons/Quiz";
 import FlashOnIcon from "@material-ui/icons/FlashOn";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
-import useAppIdSelectorEnforce from "../../common/hooks/useAppIdSelectorEnforce";
+import useAppEntityIdSelectorEnforce from "../../common/hooks/useAppEntityIdSelectorEnforce";
 
 function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
 
-  const step = useAppIdSelectorEnforce(
-    templateStepSelectors.selectById,
-    stepId
-  );
+  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
 
   const players = useAppSelector(playersSelectors.selectAll);
 
@@ -83,10 +80,7 @@ function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
 }
 
 function StepIcon({ stepId }: { stepId: EntityId }): JSX.Element {
-  const step = useAppIdSelectorEnforce(
-    templateStepSelectors.selectById,
-    stepId
-  );
+  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
 
   switch (step.strategy) {
     case Strategy.FIXED:
@@ -107,10 +101,7 @@ function StepIcon({ stepId }: { stepId: EntityId }): JSX.Element {
 function TemplateItem({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
 
-  const step = useAppIdSelectorEnforce(
-    templateStepSelectors.selectById,
-    stepId
-  );
+  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
 
   const steps = useAppSelector(templateStepSelectors.selectEntities);
   const canSwapStrategies = useMemo(
