@@ -4,12 +4,9 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import PersonIcon from "@material-ui/icons/Person";
 import { useEffect, useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import {
-  added as playerAdded,
+import playersSlice, {
   removed as playerRemoved,
-  initialized as playersInitialized,
-  selectById as selectPlayerById,
-  selectIds as selectPlayerIds,
+  selectors as playersSelectors,
 } from "./playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import useAppIdSelectorEnforce from "../../common/hooks/useAppIdSelectorEnforce";
@@ -23,7 +20,7 @@ function Player({
 }) {
   const dispatch = useAppDispatch();
 
-  const player = useAppIdSelectorEnforce(selectPlayerById, playerId);
+  const player = useAppIdSelectorEnforce(playersSelectors.selectById, playerId);
 
   return (
     <Chip
@@ -48,7 +45,7 @@ function NewPlayerInput() {
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        dispatch(playerAdded({ name: newPlayerName }));
+        dispatch(playersSlice.actions.added({ name: newPlayerName }));
         setNewPlayerName("");
       }}
     >
@@ -81,12 +78,12 @@ export default function Players({
 }) {
   const dispatch = useAppDispatch();
 
-  const playerIds = useAppSelector(selectPlayerIds);
+  const playerIds = useAppSelector(playersSelectors.selectIds);
 
   useEffect(() => {
     if (playerIds.length === 0) {
       dispatch(
-        playersInitialized([
+        playersSlice.actions.initialized([
           { name: "Eran Hirsch" },
           { name: "Amit Cwajghaft" },
           { name: "Adam Maoz" },

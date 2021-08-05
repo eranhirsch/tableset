@@ -20,14 +20,8 @@ import {
   SetupStepName,
 } from "../../core/games/concordia/SetupStep";
 import { stepLabel } from "../../core/games/concordia/content";
-import {
-  fixedValueCleared,
-  fixedValueSet,
-  selectById as selectTemplateStepById,
-  selectIds as selectTemplateStepIds,
-  selectEntities as selectTemplateSteps,
-  strategySwapped,
-  templateInitialized,
+import templateSlice, {
+  selectors as templateStepSelectors,
 } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
 import PushPinIcon from "@material-ui/icons/PushPin";
@@ -36,22 +30,27 @@ import FunctionsIcon from "@material-ui/icons/Functions";
 import CasinoIcon from "@material-ui/icons/Casino";
 import QuizIcon from "@material-ui/icons/Quiz";
 import FlashOnIcon from "@material-ui/icons/FlashOn";
-import { selectAll as selectAllPlayers } from "../players/playersSlice";
+import { selectors as playersSelectors } from "../players/playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import useAppIdSelectorEnforce from "../../common/hooks/useAppIdSelectorEnforce";
 
 function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
 
-  const step = useAppIdSelectorEnforce(selectTemplateStepById, stepId);
+  const step = useAppIdSelectorEnforce(
+    templateStepSelectors.selectById,
+    stepId
+  );
 
-  const players = useAppSelector(selectAllPlayers);
+  const players = useAppSelector(playersSelectors.selectAll);
 
   if (step.value != null) {
     return (
       <Chip
         label={step.value}
-        onDelete={() => dispatch(fixedValueCleared(step.name))}
+        onDelete={() =>
+          dispatch(templateSlice.actions.fixedValueCleared(step.name))
+        }
       />
     );
   }
@@ -70,7 +69,12 @@ function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
           variant="outlined"
           label={item}
           onClick={() =>
-            dispatch(fixedValueSet({ stepId: step.name, value: item }))
+            dispatch(
+              templateSlice.actions.fixedValueSet({
+                stepId: step.name,
+                value: item,
+              })
+            )
           }
         />
       ))}
@@ -79,7 +83,10 @@ function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
 }
 
 function StepIcon({ stepId }: { stepId: EntityId }): JSX.Element {
-  const step = useAppIdSelectorEnforce(selectTemplateStepById, stepId);
+  const step = useAppIdSelectorEnforce(
+    templateStepSelectors.selectById,
+    stepId
+  );
 
   switch (step.strategy) {
     case Strategy.FIXED:
@@ -100,9 +107,12 @@ function StepIcon({ stepId }: { stepId: EntityId }): JSX.Element {
 function TemplateItem({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
 
-  const step = useAppIdSelectorEnforce(selectTemplateStepById, stepId);
+  const step = useAppIdSelectorEnforce(
+    templateStepSelectors.selectById,
+    stepId
+  );
 
-  const steps = useAppSelector(selectTemplateSteps);
+  const steps = useAppSelector(templateStepSelectors.selectEntities);
   const canSwapStrategies = useMemo(
     () => availableStrategies(stepId as SetupStepName, steps).length > 1,
     [stepId, steps]
@@ -127,7 +137,9 @@ function TemplateItem({ stepId }: { stepId: EntityId }) {
             <IconButton
               edge="end"
               aria-label="change"
-              onClick={() => dispatch(strategySwapped(stepId))}
+              onClick={() =>
+                dispatch(templateSlice.actions.strategySwapped(stepId))
+              }
             >
               <ChangeCircle />
             </IconButton>
@@ -140,12 +152,12 @@ function TemplateItem({ stepId }: { stepId: EntityId }) {
 export function Template() {
   const dispatch = useAppDispatch();
 
-  const stepIds = useAppSelector(selectTemplateStepIds);
+  const stepIds = useAppSelector(templateStepSelectors.selectIds);
 
   useEffect(() => {
     if (stepIds.length === 0) {
       dispatch(
-        templateInitialized([
+        templateSlice.actions.templateInitialized([
           // TODO: We shouldn't need to initialize the template here...
           { name: "map", strategy: Strategy.OFF },
           { name: "cityTiles", strategy: Strategy.OFF },

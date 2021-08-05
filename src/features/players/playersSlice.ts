@@ -28,9 +28,8 @@ const playersSlice = createSlice({
   },
 });
 
-export const { added, initialized } = playersSlice.actions;
+export const selectors = playersAdapter.getSelectors<RootState>(
+  (state) => state.players
+);
 
-export const { selectIds, selectById, selectAll } =
-  playersAdapter.getSelectors<RootState>((state) => state.players);
-
-export default playersSlice.reducer;
+export default playersSlice;

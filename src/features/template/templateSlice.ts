@@ -157,14 +157,8 @@ export const templateSlice = createSlice({
   },
 });
 
-export const {
-  strategySwapped,
-  fixedValueSet,
-  fixedValueCleared,
-  templateInitialized,
-} = templateSlice.actions;
+export const selectors = templateAdapter.getSelectors<RootState>(
+  (state) => state.template
+);
 
-export const { selectById, selectIds, selectEntities } =
-  templateAdapter.getSelectors<RootState>((state) => state.template);
-
-export default templateSlice.reducer;
+export default templateSlice;
