@@ -164,10 +164,7 @@ export const {
   templateInitialized,
 } = templateSlice.actions;
 
-export const {
-  selectById: selectTemplateStepById,
-  selectIds: selectTemplateStepIds,
-  selectEntities: selectTemplateSteps,
-} = templateAdapter.getSelectors<RootState>((state) => state.template);
+export const { selectById, selectIds, selectEntities } =
+  templateAdapter.getSelectors<RootState>((state) => state.template);
 
 export default templateSlice.reducer;

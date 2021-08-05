@@ -23,9 +23,9 @@ import { stepLabel } from "../../core/games/concordia/content";
 import {
   fixedValueCleared,
   fixedValueSet,
-  selectTemplateStepById,
-  selectTemplateStepIds,
-  selectTemplateSteps,
+  selectById as selectTemplateStepById,
+  selectIds as selectTemplateStepIds,
+  selectEntities as selectTemplateSteps,
   strategySwapped,
   templateInitialized,
 } from "./templateSlice";
