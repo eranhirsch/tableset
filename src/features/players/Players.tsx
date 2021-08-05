@@ -11,7 +11,7 @@ import {
   selectPlayerIds,
 } from "./playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
-import nullthrows from "../../common/err/nullthrows";
+import useAppIdSelectorEnforce from "../../common/hooks/useAppIdSelectorEnforce";
 
 function Player({
   playerId,
@@ -22,9 +22,7 @@ function Player({
 }) {
   const dispatch = useAppDispatch();
 
-  const player = nullthrows(
-    useAppSelector((state) => selectPlayerById(state, playerId))
-  );
+  const player = useAppIdSelectorEnforce(selectPlayerById, playerId);
 
   return (
     <Chip
