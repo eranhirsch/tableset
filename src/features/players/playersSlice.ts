@@ -15,10 +15,12 @@ const playersSlice = createSlice({
   reducers: {
     playerAdded: playersAdapter.addOne,
     playerRemoved: playersAdapter.removeOne,
+    playersInitialized: playersAdapter.setAll,
   },
 });
 
-export const { playerAdded, playerRemoved } = playersSlice.actions;
+export const { playerAdded, playerRemoved, playersInitialized } =
+  playersSlice.actions;
 
 export const {
   selectIds: selectPlayerIds,

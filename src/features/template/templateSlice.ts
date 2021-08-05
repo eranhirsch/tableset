@@ -133,6 +133,8 @@ export const templateSlice = createSlice({
 
       step.value = undefined;
     },
+
+    templateInitialized: templateAdapter.setAll,
   },
   extraReducers: {
     // If we have a fixed starting player, it doesn't make sense once that player
@@ -151,8 +153,12 @@ export const templateSlice = createSlice({
   },
 });
 
-export const { strategySwapped, fixedValueSet, fixedValueCleared } =
-  templateSlice.actions;
+export const {
+  strategySwapped,
+  fixedValueSet,
+  fixedValueCleared,
+  templateInitialized,
+} = templateSlice.actions;
 
 export const {
   selectById: selectTemplateStepById,

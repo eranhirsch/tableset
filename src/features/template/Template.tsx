@@ -10,7 +10,7 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import { ChangeCircle } from "@material-ui/icons";
-import React from "react";
+import React, { useEffect } from "react";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
@@ -27,6 +27,7 @@ import {
   selectTemplateStepIds,
   selectTemplateSteps,
   strategySwapped,
+  templateInitialized,
 } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
 import PushPinIcon from "@material-ui/icons/PushPin";
@@ -137,7 +138,27 @@ function TemplateItem({ stepId }: { stepId: EntityId }) {
 }
 
 export function Template() {
+  const dispatch = useAppDispatch();
+
   const stepIds = useAppSelector(selectTemplateStepIds);
+
+  useEffect(() => {
+    if (stepIds.length === 0) {
+      dispatch(
+        templateInitialized([
+          // TODO: We shouldn't need to initialize the template here...
+          { name: "map", strategy: Strategy.OFF },
+          { name: "cityTiles", strategy: Strategy.OFF },
+          { name: "bonusTiles", strategy: Strategy.OFF },
+          { name: "initialMarket", strategy: Strategy.OFF },
+          { name: "marketDeck", strategy: Strategy.OFF },
+          { name: "playerColor", strategy: Strategy.OFF },
+          { name: "playOrder", strategy: Strategy.OFF },
+        ])
+      );
+    }
+  }, [stepIds, dispatch]);
+
   return (
     <>
       <List component="ol">
