@@ -1,5 +1,5 @@
 import { Container } from "@material-ui/core";
-import { Template } from "./features/template/Template";
+import Template from "./features/template/Template";
 import { Switch, Route } from "react-router-dom";
 import Players from "./features/players/Players";
 
