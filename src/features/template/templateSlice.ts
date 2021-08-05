@@ -38,11 +38,6 @@ export const templateSlice = createSlice({
     ) {
       // Find the setup step in the template
       const step = nullthrows(state.entities[id]);
-      invariant(
-        step.strategy !== Strategy.FIXED || step.value == null,
-        `Cannot change strategy for ${id} while fixed to ${step.value}`
-      );
-
       step.strategy = strategy;
 
       // When strategies change they might make strategies for downstream steps

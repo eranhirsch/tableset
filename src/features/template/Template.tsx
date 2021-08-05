@@ -1,5 +1,4 @@
 import {
-  Button,
   Chip,
   Collapse,
   List,
@@ -40,17 +39,6 @@ function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
 
   const players = useAppSelector(playersSelectors.selectAll);
 
-  if (step.value != null) {
-    return (
-      <Chip
-        label={step.value}
-        onDelete={() =>
-          dispatch(templateSlice.actions.fixedValueCleared(step.name))
-        }
-      />
-    );
-  }
-
   const items =
     step.name === "startingPlayer"
       ? players.map(({ name }) => name)
@@ -61,15 +49,16 @@ function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
       {items.map((item) => (
         <Chip
           key={`${step.name}_${item}`}
-          size="small"
-          variant="outlined"
+          variant={step.value === item ? "filled" : "outlined"}
           label={item}
           onClick={() =>
             dispatch(
-              templateSlice.actions.fixedValueSet({
-                stepId: step.name,
-                value: item,
-              })
+              step.value === item
+                ? templateSlice.actions.fixedValueCleared(step.name)
+                : templateSlice.actions.fixedValueSet({
+                    stepId: step.name,
+                    value: item,
+                  })
             )
           }
         />
@@ -78,10 +67,8 @@ function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
   );
 }
 
-function StepIcon({ stepId }: { stepId: EntityId }): JSX.Element {
-  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
-
-  switch (step.strategy) {
+function StrategyIcon({ strategy }: { strategy: Strategy }): JSX.Element {
+  switch (strategy) {
     case Strategy.FIXED:
       return <PushPinIcon />;
     case Strategy.MANUAL:
@@ -97,39 +84,53 @@ function StepIcon({ stepId }: { stepId: EntityId }): JSX.Element {
   }
 }
 
-function StepDetailsPane({ stepId }: { stepId: EntityId }) {
+function StrategiesSelector({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
 
   const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
-  const steps = useAppSelector(templateStepSelectors.selectEntities);
 
+  const steps = useAppSelector(templateStepSelectors.selectEntities);
   const strategies = useMemo(
     () => availableStrategies(step.name, steps),
     [step, steps]
   );
 
   return (
-    <Stack
-      direction="row"
-      justifyContent="center"
-      alignItems="flex-end"
-      spacing={1}
-    >
-      {step.strategy === Strategy.FIXED && (
-        <FixedSettingsConfig stepId={stepId} />
-      )}
-      {(step.strategy !== Strategy.FIXED || step.value == null) &&
-        strategies.map((strategy) => (
-          <Button
-            onClick={() =>
-              dispatch(
-                templateSlice.actions.strategySwapped({ id: stepId, strategy })
-              )
-            }
-          >
-            {strategyLabel(strategy)}
-          </Button>
-        ))}
+    <Stack direction="row" spacing={0.5}>
+      {strategies.map((strategy) => (
+        <Chip
+          size="small"
+          color="primary"
+          variant={step.strategy === strategy ? "filled" : "outlined"}
+          label={strategyLabel(strategy)}
+          onClick={() =>
+            dispatch(
+              templateSlice.actions.strategySwapped({
+                id: stepId,
+                strategy,
+              })
+            )
+          }
+        />
+      ))}
+    </Stack>
+  );
+}
+
+function StepDetailsPane({ stepId }: { stepId: EntityId }) {
+  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
+
+  const strategyControls = useMemo(() => {
+    if (step.strategy === Strategy.FIXED) {
+      return <FixedSettingsConfig stepId={stepId} />;
+    }
+    return null;
+  }, [stepId, step]);
+
+  return (
+    <Stack sx={{ padding: 1 }} alignItems="center" spacing={1}>
+      <Collapse in={strategyControls != null}>{strategyControls}</Collapse>
+      <StrategiesSelector stepId={stepId} />
     </Stack>
   );
 }
@@ -164,7 +165,7 @@ function TemplateItem({ stepId }: { stepId: EntityId }) {
         }
       >
         <ListItemIcon>
-          <StepIcon stepId={stepId} />
+          <StrategyIcon strategy={step.strategy} />
         </ListItemIcon>
         <ListItemText secondary={strategyLabel(step.strategy)}>
           {stepLabel(stepId as SetupStepName)}
