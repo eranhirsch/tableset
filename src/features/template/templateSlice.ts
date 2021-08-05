@@ -5,6 +5,8 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
+import invariant from "../../common/err/invariant";
+import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/filter_nulls";
 import {
   availableStrategies,
@@ -28,36 +30,20 @@ export const templateSlice = createSlice({
   name: "template",
   initialState: templateAdapter.getInitialState(),
   reducers: {
-    strategySwapped(state, { payload: stepId }: PayloadAction<EntityId>) {
+    strategySwapped(
+      state,
+      {
+        payload: { id, strategy },
+      }: PayloadAction<{ id: EntityId; strategy: Strategy }>
+    ) {
       // Find the setup step in the template
-      const step = state.entities[stepId];
-      if (step == null) {
-        throw new Error(`Couldn't find setup step ${stepId}`);
-      }
-
-      if (step.strategy === Strategy.FIXED && step.value != null) {
-        // The UI prevents this from happening, but we should also make sure the
-        // backend is protected
-        throw new Error(
-          `Cannot change strategy for ${stepId} while fixed to ${step.value}`
-        );
-      }
-
-      // Compute the next available strategy for the step
-      const strategies = availableStrategies(
-        stepId as SetupStepName,
-        state.entities
+      const step = nullthrows(state.entities[id]);
+      invariant(
+        step.strategy !== Strategy.FIXED || step.value == null,
+        `Cannot change strategy for ${id} while fixed to ${step.value}`
       );
-      const currentStrategyIdx = strategies.indexOf(step.strategy);
-      if (currentStrategyIdx === -1) {
-        throw new Error(
-          `Couldn't find strategy ${step.strategy} in available strategies ${strategies} for setup step ${stepId}`
-        );
-      }
-      const nextStrategyIdx = (currentStrategyIdx + 1) % strategies.length;
-      const nextStrategy = strategies[nextStrategyIdx];
 
-      step.strategy = nextStrategy;
+      step.strategy = strategy;
 
       // When strategies change they might make strategies for downstream steps
       // invalid so we go over all of them and fix any inconsistency.
@@ -73,10 +59,8 @@ export const templateSlice = createSlice({
 
       // We want to go over all steps downstream from the current one, but we
       // can slice out the upstream ones.
-      const stepIdx = state.ids.findIndex((id) => id === stepId);
-      if (stepIdx === -1) {
-        throw new Error(`Couldn't find the index for step ${stepId}`);
-      }
+      const stepIdx = state.ids.findIndex((id) => id === step.name);
+      invariant(stepIdx !== -1, `Couldn't find the index for step ${id}`);
 
       filter_nulls(
         Object.values(state.ids)
@@ -135,7 +119,7 @@ export const templateSlice = createSlice({
       step.value = undefined;
     },
 
-    templateInitialized: templateAdapter.setAll,
+    initialized: templateAdapter.setAll,
   },
   extraReducers: (builder) => {
     builder.addCase(

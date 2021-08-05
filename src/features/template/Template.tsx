@@ -7,6 +7,7 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  Stack,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useMemo } from "react";
@@ -100,23 +101,36 @@ function StepDetailsPane({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
 
   const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
+  const steps = useAppSelector(templateStepSelectors.selectEntities);
+
+  const strategies = useMemo(
+    () => availableStrategies(step.name, steps),
+    [step, steps]
+  );
 
   return (
-    <>
+    <Stack
+      direction="row"
+      justifyContent="center"
+      alignItems="flex-end"
+      spacing={1}
+    >
       {step.strategy === Strategy.FIXED && (
         <FixedSettingsConfig stepId={stepId} />
       )}
-      {(step.strategy !== Strategy.FIXED || step.value == null) && (
-        <Button
-          aria-label="change"
-          onClick={() =>
-            dispatch(templateSlice.actions.strategySwapped(stepId))
-          }
-        >
-          Next
-        </Button>
-      )}
-    </>
+      {(step.strategy !== Strategy.FIXED || step.value == null) &&
+        strategies.map((strategy) => (
+          <Button
+            onClick={() =>
+              dispatch(
+                templateSlice.actions.strategySwapped({ id: stepId, strategy })
+              )
+            }
+          >
+            {strategyLabel(strategy)}
+          </Button>
+        ))}
+    </Stack>
   );
 }
 
@@ -171,7 +185,7 @@ export function Template() {
   useEffect(() => {
     if (stepIds.length === 0) {
       dispatch(
-        templateSlice.actions.templateInitialized([
+        templateSlice.actions.initialized([
           // TODO: We shouldn't need to initialize the template here...
           { name: "map", strategy: Strategy.OFF },
           { name: "cityTiles", strategy: Strategy.OFF },

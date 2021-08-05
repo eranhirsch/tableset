@@ -8,13 +8,20 @@ import invariant_violation from "./invariant_violation";
  * @param msg an optional message to throw instead of the default one
  * @returns x as type T
  */
-export default function invariant<T>(
+
+export function type_invariant<T>(
   fn: (x: any) => x is T,
   x: any,
   msg?: string
-): T {
+): any {
   if (!fn(x)) {
     invariant_violation(msg ?? `${x} does not fulfil the predicate`);
   }
   return x;
+}
+
+export default function invariant(cond: boolean, msg?: string): void {
+  if (!cond) {
+    invariant_violation(msg ?? `The condition was false`);
+  }
 }
