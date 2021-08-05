@@ -4,38 +4,63 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import PersonIcon from "@material-ui/icons/Person";
 import { useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import { addPlayer, removePlayer, selectPlayers } from "./templateSlice";
+import {
+  playerAdded,
+  playerRemoved,
+  selectPlayerById,
+  selectPlayerIds,
+} from "./playersSlice";
+import { EntityId } from "@reduxjs/toolkit";
+import nullthrows from "../../common/err/nullthrows";
+
+function Player({
+  playerId,
+  isDeletable,
+}: {
+  playerId: EntityId;
+  isDeletable: boolean;
+}) {
+  const dispatch = useAppDispatch();
+
+  const player = nullthrows(
+    useAppSelector((state) => selectPlayerById(state, playerId))
+  );
+
+  return (
+    <Chip
+      key={player.name}
+      avatar={<PersonIcon />}
+      label={player.name}
+      onDelete={
+        // Turn off onDelete to prevent player count from dropping below
+        // allowed minimum
+        isDeletable ? () => dispatch(playerRemoved(player.name)) : undefined
+      }
+    />
+  );
+}
 
 export default function Players({
   playerCount: { min: minPlayerCount, max: maxPlayerCount },
 }: {
   playerCount: { min: number; max: number };
 }) {
-  const players = useAppSelector(selectPlayers);
-  const dispatch = useAppDispatch();
   const [newPlayerName, setNewPlayerName] = useState("");
+
+  const dispatch = useAppDispatch();
+
+  const playerIds = useAppSelector(selectPlayerIds);
 
   return (
     <section>
-      {players.map(({ name }) => (
-        <Chip
-          key={name}
-          avatar={<PersonIcon />}
-          label={name}
-          onDelete={
-            // Turn off onDelete to prevent player count from dropping below
-            // allowed minimum
-            players.length > minPlayerCount
-              ? () => dispatch(removePlayer(name))
-              : undefined
-          }
-        />
+      {playerIds.map((playerId) => (
+        <Player playerId={playerId} isDeletable={playerIds.length > 2} />
       ))}
-      {players.length < maxPlayerCount && (
+      {playerIds.length < maxPlayerCount && (
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            dispatch(addPlayer(newPlayerName));
+            dispatch(playerAdded({ name: newPlayerName }));
             setNewPlayerName("");
           }}
         >

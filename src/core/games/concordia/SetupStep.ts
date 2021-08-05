@@ -1,3 +1,4 @@
+import { Dictionary } from "@reduxjs/toolkit";
 import { SetupStep } from "../../../features/template/templateSlice";
 import { Strategy } from "../../Strategy";
 
@@ -23,10 +24,10 @@ export const initialTemplate: SetupStep<SetupStepName>[] = [
 ];
 
 export function availableStrategies(
-  setupStepName: SetupStepName,
-  template: SetupStep<SetupStepName>[]
+  stepId: SetupStepName,
+  template: Dictionary<SetupStep<SetupStepName>>
 ): Strategy[] {
-  switch (setupStepName) {
+  switch (stepId) {
     case "map":
       return [
         Strategy.OFF,
@@ -37,21 +38,16 @@ export function availableStrategies(
       ];
 
     case "cityTiles":
-      const mapTemplate = template.find((step) => step.name === "map");
-      if (mapTemplate != null && mapTemplate.strategy === Strategy.OFF) {
+      const { map: mapStep } = template;
+      if (mapStep != null && mapStep.strategy === Strategy.OFF) {
         return [Strategy.OFF];
       }
 
       return [Strategy.OFF, Strategy.RANDOM];
 
     case "bonusTiles":
-      const cityTilesTemplate = template.find(
-        (step) => step.name === "cityTiles"
-      );
-      if (
-        cityTilesTemplate != null &&
-        cityTilesTemplate.strategy !== Strategy.OFF
-      ) {
+      const { cityTiles: cityTilesStep } = template;
+      if (cityTilesStep != null && cityTilesStep.strategy !== Strategy.OFF) {
         return [Strategy.COMPUTED];
       }
 

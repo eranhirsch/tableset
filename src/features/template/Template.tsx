@@ -21,11 +21,12 @@ import {
 } from "../../core/games/concordia/SetupStep";
 import { stepLabel } from "../../core/games/concordia/content";
 import {
-  defineFixedStrategy,
-  nextStrategy,
-  selectPlayers,
-  selectSteps,
-  SetupStep,
+  fixedValueCleared,
+  fixedValueSet,
+  selectTemplateStepById,
+  selectTemplateStepIds,
+  selectTemplateSteps,
+  strategySwapped,
 } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
 import PushPinIcon from "@material-ui/icons/PushPin";
@@ -34,17 +35,24 @@ import FunctionsIcon from "@material-ui/icons/Functions";
 import CasinoIcon from "@material-ui/icons/Casino";
 import QuizIcon from "@material-ui/icons/Quiz";
 import FlashOnIcon from "@material-ui/icons/FlashOn";
-import Players from "./Players";
+import { selectAllPlayers } from "../players/playersSlice";
+import { EntityId } from "@reduxjs/toolkit";
+import nullthrows from "../../common/err/nullthrows";
 
-function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
+function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
-  const players = useAppSelector(selectPlayers);
+
+  const step = nullthrows(
+    useAppSelector((state) => selectTemplateStepById(state, stepId))
+  );
+
+  const players = useAppSelector(selectAllPlayers);
 
   if (step.value != null) {
     return (
       <Chip
         label={step.value}
-        onDelete={() => dispatch(defineFixedStrategy({ name: step.name }))}
+        onDelete={() => dispatch(fixedValueCleared(step.name))}
       />
     );
   }
@@ -63,7 +71,7 @@ function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
           variant="outlined"
           label={item}
           onClick={() =>
-            dispatch(defineFixedStrategy({ name: step.name, value: item }))
+            dispatch(fixedValueSet({ stepId: step.name, value: item }))
           }
         />
       ))}
@@ -71,7 +79,11 @@ function FixedSettingsConfig({ step }: { step: SetupStep<SetupStepName> }) {
   );
 }
 
-function StepIcon({ step }: { step: SetupStep<SetupStepName> }): JSX.Element {
+function StepIcon({ stepId }: { stepId: EntityId }): JSX.Element {
+  const step = nullthrows(
+    useAppSelector((state) => selectTemplateStepById(state, stepId))
+  );
+
   switch (step.strategy) {
     case Strategy.FIXED:
       return <PushPinIcon />;
@@ -88,33 +100,39 @@ function StepIcon({ step }: { step: SetupStep<SetupStepName> }): JSX.Element {
   }
 }
 
-function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
+function TemplateItem({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
 
-  const steps = useAppSelector(selectSteps);
-  const strategies = useMemo(
-    () => availableStrategies(step.name, steps),
-    [step, steps]
+  const step = nullthrows(
+    useAppSelector((state) => selectTemplateStepById(state, stepId))
+  );
+
+  const steps = useAppSelector(selectTemplateSteps);
+  const canSwapStrategies = useMemo(
+    () => availableStrategies(stepId as SetupStepName, steps).length > 1,
+    [stepId, steps]
   );
 
   return (
     <ListItem disablePadding>
       <ListItemButton>
         <ListItemIcon>
-          <StepIcon step={step} />
+          <StepIcon stepId={stepId} />
         </ListItemIcon>
         <ListItemText secondary={strategyLabel(step.strategy)}>
-          {stepLabel(step.name)}
+          {stepLabel(stepId as SetupStepName)}
         </ListItemText>
       </ListItemButton>
-      {step.strategy === Strategy.FIXED && <FixedSettingsConfig step={step} />}
-      {strategies.length > 1 &&
+      {step.strategy === Strategy.FIXED && (
+        <FixedSettingsConfig stepId={stepId} />
+      )}
+      {canSwapStrategies &&
         (step.strategy !== Strategy.FIXED || step.value == null) && (
           <ListItemSecondaryAction>
             <IconButton
               edge="end"
               aria-label="change"
-              onClick={() => dispatch(nextStrategy(step.name))}
+              onClick={() => dispatch(strategySwapped(stepId))}
             >
               <ChangeCircle />
             </IconButton>
@@ -125,14 +143,13 @@ function TemplateItem({ step }: { step: SetupStep<SetupStepName> }) {
 }
 
 export function Template() {
-  const steps = useAppSelector(selectSteps);
+  const stepIds = useAppSelector(selectTemplateStepIds);
   return (
     <>
-      <Players playerCount={{ min: 2, max: 5 }} />
       <List component="ol">
-        {steps.map((step) => (
-          <React.Fragment key={step.name}>
-            <TemplateItem step={step} />
+        {stepIds.map((stepId) => (
+          <React.Fragment key={stepId}>
+            <TemplateItem stepId={stepId} />
             <Divider />
           </React.Fragment>
         ))}
