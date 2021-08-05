@@ -5,7 +5,7 @@ import {
   ListItemText,
   Paper,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useMemo } from "react";
 import { useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
@@ -20,9 +20,15 @@ import useAppEntityIdSelectorEnforce from "../../common/hooks/useAppEntityIdSele
 import StrategyIcon from "./StrategyIcon";
 import StepDetailsPane from "./StepDetailsPane";
 
-export default function TemplateItem({ stepId }: { stepId: EntityId }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+export default function TemplateItem({
+  stepId,
+  expanded,
+  onClick,
+}: {
+  stepId: EntityId;
+  expanded: boolean;
+  onClick: (isExpanded: boolean) => void;
+}) {
   const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
 
   const steps = useAppSelector(templateStepSelectors.selectEntities);
@@ -31,23 +37,15 @@ export default function TemplateItem({ stepId }: { stepId: EntityId }) {
     [stepId, steps]
   );
 
-  useEffect(() => {
-    if (!canSwapStrategies) {
-      setIsExpanded(false);
-    }
-  }, [canSwapStrategies, setIsExpanded]);
-
   return (
     <Paper
       sx={{ marginBottom: 1 }}
-      elevation={isExpanded ? 2 : canSwapStrategies ? 1 : 0}
+      elevation={expanded ? 2 : canSwapStrategies ? 1 : 0}
       component="li"
     >
       <ListItemButton
         disabled={!canSwapStrategies}
-        onClick={
-          canSwapStrategies ? () => setIsExpanded((prev) => !prev) : undefined
-        }
+        onClick={() => onClick(expanded)}
       >
         <ListItemIcon>
           <StrategyIcon strategy={step.strategy} />
@@ -56,7 +54,7 @@ export default function TemplateItem({ stepId }: { stepId: EntityId }) {
           {stepLabel(stepId as SetupStepName)}
         </ListItemText>
       </ListItemButton>
-      <Collapse in={isExpanded} unmountOnExit>
+      <Collapse in={expanded} unmountOnExit>
         <StepDetailsPane stepId={stepId} />
       </Collapse>
     </Paper>

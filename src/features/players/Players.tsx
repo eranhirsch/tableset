@@ -28,7 +28,11 @@ export default function Players({
   return (
     <section>
       {playerIds.map((playerId) => (
-        <Player playerId={playerId} isDeletable={playerIds.length > 2} />
+        <Player
+          key={playerId}
+          playerId={playerId}
+          isDeletable={playerIds.length > 2}
+        />
       ))}
       {playerIds.length < maxPlayerCount && <NewPlayerInput />}
     </section>

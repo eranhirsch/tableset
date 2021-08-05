@@ -1,14 +1,17 @@
 import { List } from "@material-ui/core";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import templateSlice, {
   selectors as templateStepSelectors,
 } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
 import TemplateItem from "./TemplateItem";
+import { EntityId } from "@reduxjs/toolkit";
 
 export default function Template() {
   const dispatch = useAppDispatch();
+
+  const [expandedStepId, setExpandedStepId] = useState<EntityId>();
 
   const stepIds = useAppSelector(templateStepSelectors.selectIds);
 
@@ -33,7 +36,14 @@ export default function Template() {
   return (
     <List component="ol">
       {stepIds.map((stepId) => (
-        <TemplateItem stepId={stepId} />
+        <TemplateItem
+          key={stepId}
+          stepId={stepId}
+          expanded={stepId === expandedStepId}
+          onClick={(isExpanded) =>
+            setExpandedStepId(isExpanded ? undefined : stepId)
+          }
+        />
       ))}
     </List>
   );
