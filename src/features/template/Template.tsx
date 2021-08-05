@@ -1,16 +1,14 @@
 import {
+  Button,
   Chip,
-  Divider,
-  IconButton,
+  Collapse,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemSecondaryAction,
   ListItemText,
+  Paper,
 } from "@material-ui/core";
-import { ChangeCircle } from "@material-ui/icons";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
@@ -98,8 +96,32 @@ function StepIcon({ stepId }: { stepId: EntityId }): JSX.Element {
   }
 }
 
-function TemplateItem({ stepId }: { stepId: EntityId }) {
+function StepDetailsPane({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
+
+  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
+
+  return (
+    <>
+      {step.strategy === Strategy.FIXED && (
+        <FixedSettingsConfig stepId={stepId} />
+      )}
+      {(step.strategy !== Strategy.FIXED || step.value == null) && (
+        <Button
+          aria-label="change"
+          onClick={() =>
+            dispatch(templateSlice.actions.strategySwapped(stepId))
+          }
+        >
+          Next
+        </Button>
+      )}
+    </>
+  );
+}
+
+function TemplateItem({ stepId }: { stepId: EntityId }) {
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
 
@@ -109,9 +131,24 @@ function TemplateItem({ stepId }: { stepId: EntityId }) {
     [stepId, steps]
   );
 
+  useEffect(() => {
+    if (!canSwapStrategies) {
+      setIsExpanded(false);
+    }
+  }, [canSwapStrategies, setIsExpanded]);
+
   return (
-    <ListItem disablePadding>
-      <ListItemButton>
+    <Paper
+      sx={{ marginBottom: 1 }}
+      elevation={isExpanded ? 2 : canSwapStrategies ? 1 : 0}
+      component="li"
+    >
+      <ListItemButton
+        disabled={!canSwapStrategies}
+        onClick={
+          canSwapStrategies ? () => setIsExpanded((prev) => !prev) : undefined
+        }
+      >
         <ListItemIcon>
           <StepIcon stepId={stepId} />
         </ListItemIcon>
@@ -119,24 +156,10 @@ function TemplateItem({ stepId }: { stepId: EntityId }) {
           {stepLabel(stepId as SetupStepName)}
         </ListItemText>
       </ListItemButton>
-      {step.strategy === Strategy.FIXED && (
-        <FixedSettingsConfig stepId={stepId} />
-      )}
-      {canSwapStrategies &&
-        (step.strategy !== Strategy.FIXED || step.value == null) && (
-          <ListItemSecondaryAction>
-            <IconButton
-              edge="end"
-              aria-label="change"
-              onClick={() =>
-                dispatch(templateSlice.actions.strategySwapped(stepId))
-              }
-            >
-              <ChangeCircle />
-            </IconButton>
-          </ListItemSecondaryAction>
-        )}
-    </ListItem>
+      <Collapse in={isExpanded} unmountOnExit>
+        <StepDetailsPane stepId={stepId} />
+      </Collapse>
+    </Paper>
   );
 }
 
@@ -157,22 +180,17 @@ export function Template() {
           { name: "marketDeck", strategy: Strategy.OFF },
           { name: "playerColor", strategy: Strategy.OFF },
           { name: "startingPlayer", strategy: Strategy.OFF },
-          { name: "playOrder", strategy: Strategy.OFF },
+          // { name: "playOrder", strategy: Strategy.OFF },
         ])
       );
     }
   }, [stepIds, dispatch]);
 
   return (
-    <>
-      <List component="ol">
-        {stepIds.map((stepId) => (
-          <React.Fragment key={stepId}>
-            <TemplateItem stepId={stepId} />
-            <Divider />
-          </React.Fragment>
-        ))}
-      </List>
-    </>
+    <List component="ol">
+      {stepIds.map((stepId) => (
+        <TemplateItem stepId={stepId} />
+      ))}
+    </List>
   );
 }
