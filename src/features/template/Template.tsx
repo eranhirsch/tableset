@@ -26,8 +26,7 @@ export default function Template() {
           { name: "initialMarket", strategy: Strategy.OFF },
           { name: "marketDeck", strategy: Strategy.OFF },
           { name: "playerColor", strategy: Strategy.OFF },
-          { name: "startingPlayer", strategy: Strategy.OFF },
-          // { name: "playOrder", strategy: Strategy.OFF },
+          { name: "playOrder", strategy: Strategy.OFF },
         ])
       );
     }

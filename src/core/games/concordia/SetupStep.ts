@@ -8,20 +8,8 @@ export type SetupStepName =
   | "bonusTiles"
   | "initialMarket"
   | "marketDeck"
-  | "startingPlayer"
   | "playOrder"
   | "playerColor";
-
-export const initialTemplate: SetupStep<SetupStepName>[] = [
-  { name: "map", strategy: Strategy.OFF },
-  { name: "cityTiles", strategy: Strategy.OFF },
-  { name: "bonusTiles", strategy: Strategy.OFF },
-  { name: "initialMarket", strategy: Strategy.OFF },
-  { name: "marketDeck", strategy: Strategy.OFF },
-  { name: "startingPlayer", strategy: Strategy.OFF },
-  { name: "playOrder", strategy: Strategy.OFF },
-  { name: "playerColor", strategy: Strategy.OFF },
-];
 
 export function availableStrategies(
   stepId: SetupStepName,
@@ -59,9 +47,6 @@ export function availableStrategies(
     case "marketDeck":
       return [Strategy.OFF];
 
-    case "startingPlayer":
-      return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
-
     case "playOrder":
       return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
 
@@ -74,6 +59,7 @@ export function availableItems(step: SetupStepName): string[] | null {
   switch (step) {
     case "map":
       return ["Italia", "Imperium"];
+
     default:
       return null;
   }

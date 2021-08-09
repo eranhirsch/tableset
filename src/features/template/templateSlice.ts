@@ -5,7 +5,7 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import invariant from "../../common/err/invariant";
+import invariant, { type_invariant } from "../../common/err/invariant";
 import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/filter_nulls";
 import {
@@ -13,14 +13,25 @@ import {
   SetupStepName,
 } from "../../core/games/concordia/SetupStep";
 import { Strategy } from "../../core/Strategy";
-import { removed as playerRemoved } from "../players/playersSlice";
+import {
+  removed as playerRemoved,
+  added as playerAdded,
+  Player,
+} from "../players/playersSlice";
 
-export type SetupStep<T> = {
-  name: T;
-  strategy: Strategy;
-  value?: string;
-  previous?: SetupStep<T>;
-};
+export type SetupStep<T> =
+  | {
+      name: "playOrder";
+      strategy: Strategy.FIXED;
+      value?: EntityId[];
+      previous?: SetupStep<T>;
+    }
+  | {
+      name: T;
+      strategy: Strategy;
+      value?: string;
+      previous?: SetupStep<T>;
+    };
 
 const templateAdapter = createEntityAdapter<SetupStep<SetupStepName>>({
   selectId: (step) => step.name,
@@ -83,7 +94,10 @@ export const templateSlice = createSlice({
       state,
       {
         payload: { stepId, value },
-      }: PayloadAction<{ stepId: EntityId; value: string }>
+      }: PayloadAction<
+        | { stepId: EntityId; value: string }
+        | { stepId: "playOrder"; value: EntityId[] }
+      >
     ) {
       const step = state.entities[stepId];
       if (step == null) {
@@ -117,22 +131,51 @@ export const templateSlice = createSlice({
     initialized: templateAdapter.setAll,
   },
   extraReducers: (builder) => {
-    builder.addCase(
-      playerRemoved,
-      (state, { payload: playerId }: PayloadAction<EntityId>) => {
-        // If we have a fixed starting player, it doesn't make sense once that player
-        // is not part of the template anymore so we need to remove it.
-        // TODO: We need to generalize it to work dynamically on all player-related
-        // steps
-        const startingPlayerStep = state.entities.startingPlayer;
-        if (
-          startingPlayerStep?.strategy === Strategy.FIXED &&
-          startingPlayerStep.value === playerId
-        ) {
-          startingPlayerStep.value = undefined;
+    builder
+      .addCase(
+        playerRemoved,
+        (state, { payload: playerId }: PayloadAction<EntityId>) => {
+          // When the player order is fixed we need to remove the removed player
+          // from it too, so that the play order represents the current players.
+          // TODO: We need to generalize it to work dynamically on all player-
+          // related steps
+          const { playOrder } = state.entities;
+          if (
+            playOrder != null &&
+            playOrder.strategy === Strategy.FIXED &&
+            playOrder.value != null
+          ) {
+            const value = type_invariant<EntityId[]>(
+              playOrder.value,
+              Array.isArray
+            );
+            const playerIndex = value.indexOf(playerId);
+            invariant(playerIndex !== -1);
+            value.splice(playerIndex, 1);
+          }
         }
-      }
-    );
+      )
+      .addCase(
+        playerAdded,
+        (state, { payload: player }: PayloadAction<Player>) => {
+          // When the player order is fixed we need to add the added player to
+          // it too, so that the play order represents the current players.
+          // TODO: We need to generalize it to work dynamically on all player-
+          // related steps
+          const { playOrder } = state.entities;
+          if (
+            playOrder != null &&
+            playOrder.strategy === Strategy.FIXED &&
+            playOrder.value != null
+          ) {
+            const value = type_invariant<EntityId[]>(
+              playOrder.value,
+              Array.isArray
+            );
+            value.push(player.name);
+          }
+        }
+      );
   },
 });
 

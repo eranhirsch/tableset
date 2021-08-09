@@ -9,13 +9,9 @@ import invariant_violation from "./invariant_violation";
  * @returns x as type T
  */
 
-export function type_invariant<T>(
-  fn: (x: any) => x is T,
-  x: any,
-  msg?: string
-): any {
+export function type_invariant<T>(x: any, fn: (x: any) => x is T, msg?: string): T {
   if (!fn(x)) {
-    invariant_violation(msg ?? `${x} does not fulfil the predicate`);
+    invariant_violation(msg ?? `${x} failed the type predicate`);
   }
   return x;
 }
