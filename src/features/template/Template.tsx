@@ -25,8 +25,8 @@ export default function Template() {
           { name: "bonusTiles", strategy: Strategy.OFF },
           { name: "initialMarket", strategy: Strategy.OFF },
           { name: "marketDeck", strategy: Strategy.OFF },
-          { name: "playerColor", strategy: Strategy.OFF },
           { name: "playOrder", strategy: Strategy.OFF },
+          { name: "playerColor", strategy: Strategy.OFF },
         ])
       );
     }
