@@ -1,8 +1,8 @@
 import { Avatar, Stack, useTheme } from "@material-ui/core";
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import templateSlice from "./templateSlice";
-import { selectors as playersSelectors } from "../players/playersSlice";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import templateSlice from "../templateSlice";
+import { selectors as playersSelectors } from "../../players/playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import {
   DragDropContext,
@@ -18,10 +18,10 @@ function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
   return clone;
 }
 
-export default function PlayerOrderConfig({
+export default function PlayerOrderPanel({
   order = [],
 }: {
-  order?: EntityId[];
+  order: EntityId[] | undefined;
 }) {
   const dispatch = useAppDispatch();
   const theme = useTheme();

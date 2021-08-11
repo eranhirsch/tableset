@@ -19,11 +19,21 @@ import {
   Player,
 } from "../players/playersSlice";
 
+export interface PlayerColors {
+  [playerId: string]: string;
+}
+
 export type SetupStep<T> =
   | {
       name: "playOrder";
       strategy: Strategy.FIXED;
       value?: EntityId[];
+      previous?: SetupStep<T>;
+    }
+  | {
+      name: "playerColor";
+      strategy: Strategy.FIXED;
+      value?: PlayerColors;
       previous?: SetupStep<T>;
     }
   | {
@@ -97,6 +107,7 @@ export const templateSlice = createSlice({
       }: PayloadAction<
         | { stepId: EntityId; value: string }
         | { stepId: "playOrder"; value: EntityId[] }
+        | { stepId: "playerColor"; value: PlayerColors }
       >
     ) {
       const step = state.entities[stepId];

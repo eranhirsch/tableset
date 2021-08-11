@@ -51,7 +51,7 @@ export function availableStrategies(
       return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
 
     case "playerColor":
-      return [Strategy.OFF, Strategy.RANDOM];
+      return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
   }
 }
 
@@ -59,6 +59,9 @@ export function availableItems(step: SetupStepName): string[] | null {
   switch (step) {
     case "map":
       return ["Italia", "Imperium"];
+
+    case "playerColor":
+      return ["red", "black", "yellow", "green", "blue"];
 
     default:
       return null;
