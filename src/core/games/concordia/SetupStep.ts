@@ -1,6 +1,7 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import { SetupStep } from "../../../features/template/templateSlice";
 import { Strategy } from "../../Strategy";
+import { GamePiecesColor } from "../../themeWithGameColors";
 
 export type SetupStepName =
   | "map"
@@ -55,13 +56,16 @@ export function availableStrategies(
   }
 }
 
-export function availableItems(step: SetupStepName): string[] | null {
+export function availableItems(step: "playerColor"): Array<GamePiecesColor>;
+export function availableItems(step: "map"): Array<string>;
+export function availableItems(step: SetupStepName): null;
+export function availableItems(step: SetupStepName): any {
   switch (step) {
     case "map":
       return ["Italia", "Imperium"];
 
     case "playerColor":
-      return ["red", "black", "yellow", "green", "blue"];
+      return ["black", "blue", "green", "red", "yellow"];
 
     default:
       return null;

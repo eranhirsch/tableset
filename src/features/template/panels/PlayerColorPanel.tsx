@@ -1,17 +1,8 @@
-import {
-  Avatar,
-  Badge,
-  Collapse,
-  createTheme,
-  Stack,
-  ThemeProvider,
-  useTheme,
-} from "@material-ui/core";
+import { Avatar, Badge, Collapse, Stack, useTheme } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
 import { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import nullthrows from "../../../common/err/nullthrows";
-import { colorCssValue } from "../../../core/games/concordia/content";
 import { availableItems } from "../../../core/games/concordia/SetupStep";
 import { selectors as playersSelectors } from "../../players/playersSlice";
 import templateSlice, { PlayerColors } from "../templateSlice";
@@ -23,7 +14,7 @@ export default function PlayerColorPanel({
   playerColors: PlayerColors | undefined;
 }) {
   const dispatch = useAppDispatch();
-  const actualTheme = useTheme();
+  const theme = useTheme();
 
   const [activePlayer, setActivePlayer] = useState<EntityId>();
 
@@ -49,61 +40,53 @@ export default function PlayerColorPanel({
           const [first, last] = player!.name.split(" ");
 
           return (
-            <ThemeProvider
-              theme={createTheme({
-                palette: {
-                  primary: {
-                    main:
-                      activePlayer != null
-                        ? actualTheme.palette.grey[200]
-                        : playerColor != null
-                        ? colorCssValue(playerColor)
-                        : actualTheme.palette.primary.main,
-                  },
-                },
-              })}
+            <Badge
+              sx={{
+                opacity:
+                  activePlayer == null || activePlayer === playerId
+                    ? 1.0
+                    : 0.25,
+              }}
+              invisible={playerColor == null || activePlayer === playerId}
+              component="li"
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              badgeContent={
+                activePlayer != null ? <CheckIcon fontSize="inherit" /> : " "
+              }
+              overlap="circular"
+              color={playerColor}
             >
-              <Badge
-                invisible={playerColor == null}
-                component="li"
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                badgeContent={" "}
-                overlap="circular"
-                color="primary"
+              <Avatar
+                onClick={() =>
+                  setActivePlayer((activePlayer) =>
+                    activePlayer === playerId ? undefined : playerId
+                  )
+                }
               >
-                <Avatar
-                  sx={{
-                    opacity:
-                      activePlayer == null || activePlayer === playerId
-                        ? 1.0
-                        : 0.25,
-                  }}
-                  onClick={() =>
-                    setActivePlayer((activePlayer) =>
-                      activePlayer === playerId ? undefined : playerId
-                    )
-                  }
-                >
-                  {`${first[0]}${last[0]}`}
-                </Avatar>
-              </Badge>
-            </ThemeProvider>
+                {`${first[0]}${last[0]}`}
+              </Avatar>
+            </Badge>
           );
         })}
       </Stack>
       <Collapse in={activePlayer != null}>
         <Stack padding={0} component="ul" direction="row" spacing={1}>
-          {allColors.map((color) => {
-            const colorPlayer = colorPlayers[color];
+          {allColors.map((colorLabel) => {
+            const colorPlayer = colorPlayers[colorLabel];
             const nameParts = players[colorPlayer]?.name.split(" ");
+
+            const color = theme.palette[colorLabel].main;
 
             return (
               <Avatar
                 component="li"
-                sx={{ bgcolor: colorCssValue(color) }}
+                sx={{
+                  color: theme.palette.getContrastText(color),
+                  bgcolor: color,
+                }}
                 onClick={
                   (colorPlayer != null && colorPlayer !== activePlayer) ||
                   activePlayer == null
@@ -115,7 +98,7 @@ export default function PlayerColorPanel({
                         if (color === activePlayerColor) {
                           delete newColors[activePlayer];
                         } else {
-                          newColors[activePlayer] = color;
+                          newColors[activePlayer] = colorLabel;
                         }
                         dispatch(
                           templateSlice.actions.fixedValueSet({
@@ -126,7 +109,7 @@ export default function PlayerColorPanel({
                       }
                 }
               >
-                {activePlayerColor === color ? (
+                {activePlayerColor === colorLabel ? (
                   <CheckIcon />
                 ) : nameParts != null ? (
                   `${nameParts[0][0]}${nameParts[1][0]}`

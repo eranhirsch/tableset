@@ -1,4 +1,3 @@
-import invariant_violation from "../../../common/err/invariant_violation";
 import { SetupStepName } from "./SetupStep";
 
 export function stepLabel(stepName: SetupStepName): string {
@@ -18,20 +17,4 @@ export function stepLabel(stepName: SetupStepName): string {
     case "playerColor":
       return "Player Color";
   }
-}
-
-export function colorCssValue(label: string): string {
-  switch (label) {
-    case "red":
-      return "#FF0000";
-    case "green":
-      return "#00FF00";
-    case "blue":
-      return "#0000FF";
-    case "black":
-      return "#000000";
-    case "yellow":
-      return "#FFFF00";
-  }
-  invariant_violation(`Unknown color label ${label}`);
 }

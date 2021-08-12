@@ -13,6 +13,7 @@ import {
   SetupStepName,
 } from "../../core/games/concordia/SetupStep";
 import { Strategy } from "../../core/Strategy";
+import { GamePiecesColor } from "../../core/themeWithGameColors";
 import {
   removed as playerRemoved,
   added as playerAdded,
@@ -20,7 +21,7 @@ import {
 } from "../players/playersSlice";
 
 export interface PlayerColors {
-  [playerId: string]: string;
+  [playerId: string]: GamePiecesColor;
 }
 
 export type SetupStep<T> =
