@@ -1,5 +1,5 @@
 import { Avatar, Badge, Stack, useTheme } from "@material-ui/core";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { availableItems } from "../../../core/games/concordia/SetupStep";
 import {
@@ -12,6 +12,7 @@ import {
   DragDropContext,
   Draggable,
   DraggableProvided,
+  DragUpdate,
   Droppable,
   DropResult,
 } from "react-beautiful-dnd";
@@ -104,6 +105,9 @@ export default function PlayerColorPanel({
 }) {
   const dispatch = useAppDispatch();
 
+  const [colorOverride, setColorOverride] =
+    useState<{ playerId: string; color: GamePiecesColor }>();
+
   const players = useAppSelector(playersSelectors.selectEntities);
 
   const availableColors = useMemo(() => availableItems("playerColor"), []);
@@ -171,13 +175,37 @@ export default function PlayerColorPanel({
           value: newPlayerColors,
         })
       );
+
+      setColorOverride(undefined);
     },
     [colorPlayers, dispatch, playerColors]
   );
 
+  const onDragUpdate = useCallback(
+    ({ destination, source }: DragUpdate) => {
+      if (destination == null) {
+        return;
+      }
+
+      const destinationColor = destination.droppableId as GamePiecesColor;
+      const previousPlayerId = colorPlayers[destinationColor];
+      if (previousPlayerId == null) {
+        setColorOverride(undefined);
+        return;
+      }
+
+      // We need to reassign a color for that player, for now we'll just
+      // assign the color assigned to the player being dragged.
+      const sourceColor = source.droppableId as GamePiecesColor;
+      setColorOverride({ playerId: previousPlayerId, color: sourceColor });
+    },
+    [colorPlayers]
+  );
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd} onDragUpdate={onDragUpdate}>
       <Stack
+        pl={0}
         component="ul"
         direction="row"
         alignItems="center"
@@ -188,7 +216,11 @@ export default function PlayerColorPanel({
           <ColorChoice
             key={color}
             color={color}
-            player={players[colorPlayers[color]]}
+            player={
+              colorOverride != null && colorOverride.color === color
+                ? players[colorOverride.playerId]
+                : players[colorPlayers[color]]
+            }
           />
         ))}
       </Stack>
