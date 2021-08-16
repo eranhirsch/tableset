@@ -30,13 +30,79 @@ function draggablePlayerRendererFactory(player: Player | undefined) {
   );
 }
 
+function ColorAvatar({
+  color,
+  player,
+  isDraggingOver,
+  isUsingPlaceholder,
+}: {
+  color: GamePiecesColor;
+  player: Player | undefined;
+  isDraggingOver: boolean;
+  isUsingPlaceholder: boolean;
+}) {
+  const theme = useTheme();
+
+  return (
+    <Avatar
+      sx={{
+        bgcolor: theme.palette[color].main,
+        width: isDraggingOver ? 48 : undefined,
+        height: isDraggingOver ? 48 : undefined,
+        transitionProperty: "width, height",
+        transitionDuration: `${isDraggingOver ? 200 : 65}ms`,
+        transitionTimingFunction: "ease-out",
+      }}
+    >
+      {player != null && !isUsingPlaceholder && (
+        <Draggable draggableId={player.name} index={0}>
+          {draggablePlayerRendererFactory(player)}
+        </Draggable>
+      )}
+    </Avatar>
+  );
+}
+
+function ColorChoice({
+  color,
+  player,
+}: {
+  color: GamePiecesColor;
+  player: Player | undefined;
+}) {
+  return (
+    <Droppable
+      droppableId={color}
+      renderClone={draggablePlayerRendererFactory(player)}
+    >
+      {(provided, snapshot) => (
+        <Badge
+          component="li"
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          invisible={player == null || snapshot.isUsingPlaceholder}
+          overlap="circular"
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+          color={color}
+        >
+          <ColorAvatar
+            color={color}
+            player={player}
+            isDraggingOver={snapshot.isDraggingOver}
+            isUsingPlaceholder={snapshot.isUsingPlaceholder}
+          />
+        </Badge>
+      )}
+    </Droppable>
+  );
+}
+
 export default function PlayerColorPanel({
   playerColors = {},
 }: {
   playerColors: PlayerColors | undefined;
 }) {
   const dispatch = useAppDispatch();
-  const theme = useTheme();
 
   const players = useAppSelector(playersSelectors.selectEntities);
 
@@ -118,50 +184,13 @@ export default function PlayerColorPanel({
         spacing={1}
         height={48}
       >
-        {availableColors.map((color, index) => {
-          const playerId = colorPlayers[color];
-          const player = players[playerId];
-
-          return (
-            <Droppable
-              key={color}
-              droppableId={color}
-              renderClone={draggablePlayerRendererFactory(player)}
-            >
-              {(provided, snapshot) => (
-                <Badge
-                  component="li"
-                  sx={{ position: "relative" }}
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  invisible={playerId == null || snapshot.isUsingPlaceholder}
-                  overlap="circular"
-                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                  color={color}
-                >
-                  <Avatar
-                    sx={{
-                      bgcolor: theme.palette[color].main,
-                      width: snapshot.isDraggingOver ? 48 : undefined,
-                      height: snapshot.isDraggingOver ? 48 : undefined,
-                      transitionProperty: "width, height",
-                      transitionDuration: `${
-                        snapshot.isDraggingOver ? 350 : 80
-                      }ms`,
-                      transitionTimingFunction: "ease-out",
-                    }}
-                  >
-                    {player != null && !snapshot.isUsingPlaceholder && (
-                      <Draggable draggableId={playerId} index={0}>
-                        {draggablePlayerRendererFactory(player)}
-                      </Draggable>
-                    )}
-                  </Avatar>
-                </Badge>
-              )}
-            </Droppable>
-          );
-        })}
+        {availableColors.map((color, index) => (
+          <ColorChoice
+            key={color}
+            color={color}
+            player={players[colorPlayers[color]]}
+          />
+        ))}
       </Stack>
     </DragDropContext>
   );
