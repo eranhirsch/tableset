@@ -16,20 +16,19 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
+import nullthrows from "../../../common/err/nullthrows";
 
-const getRenderPlayer =
-  (player: Player | undefined) => (provided: DraggableProvided) => {
-    return (
-      <Avatar
-        ref={provided.innerRef}
-        {...provided.dragHandleProps}
-        {...provided.draggableProps}
-        sx={{ position: "absolute" }}
-      >
-        {short_name(player!.name)}
-      </Avatar>
-    );
-  };
+function draggablePlayerRendererFactory(player: Player | undefined) {
+  return (provided: DraggableProvided) => (
+    <Avatar
+      ref={provided.innerRef}
+      {...provided.dragHandleProps}
+      {...provided.draggableProps}
+    >
+      {short_name(nullthrows(player).name)}
+    </Avatar>
+  );
+}
 
 export default function PlayerColorPanel({
   playerColors = {},
@@ -112,17 +111,27 @@ export default function PlayerColorPanel({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Stack direction="row" alignItems="center" spacing={1} height={48}>
+      <Stack
+        component="ul"
+        direction="row"
+        alignItems="center"
+        spacing={1}
+        height={48}
+      >
         {availableColors.map((color, index) => {
           const playerId = colorPlayers[color];
-          const renderPlayer = getRenderPlayer(
-            playerId != null ? players[playerId] : undefined
-          );
+          const player = players[playerId];
 
           return (
-            <Droppable droppableId={color} renderClone={renderPlayer}>
+            <Droppable
+              key={color}
+              droppableId={color}
+              renderClone={draggablePlayerRendererFactory(player)}
+            >
               {(provided, snapshot) => (
                 <Badge
+                  component="li"
+                  sx={{ position: "relative" }}
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                   invisible={playerId == null || snapshot.isUsingPlaceholder}
@@ -137,18 +146,17 @@ export default function PlayerColorPanel({
                       height: snapshot.isDraggingOver ? 48 : undefined,
                       transitionProperty: "width, height",
                       transitionDuration: `${
-                        snapshot.isDraggingOver ? 500 : 100
+                        snapshot.isDraggingOver ? 350 : 80
                       }ms`,
                       transitionTimingFunction: "ease-out",
                     }}
                   >
-                    {""}
+                    {player != null && !snapshot.isUsingPlaceholder && (
+                      <Draggable draggableId={playerId} index={0}>
+                        {draggablePlayerRendererFactory(player)}
+                      </Draggable>
+                    )}
                   </Avatar>
-                  {playerId != null && !snapshot.isUsingPlaceholder && (
-                    <Draggable draggableId={playerId} index={0}>
-                      {renderPlayer}
-                    </Draggable>
-                  )}
                 </Badge>
               )}
             </Droppable>
