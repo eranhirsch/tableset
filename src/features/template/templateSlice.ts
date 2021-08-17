@@ -124,21 +124,6 @@ export const templateSlice = createSlice({
       step.value = value;
     },
 
-    fixedValueCleared(state, { payload: stepId }: PayloadAction<EntityId>) {
-      const step = state.entities[stepId];
-      if (step == null) {
-        throw new Error(`Couldn't find setup step ${stepId}`);
-      }
-
-      if (step.strategy !== Strategy.FIXED) {
-        throw new Error(
-          `Trying to set fixed value when strategy isn't fixed for setup step ${stepId}`
-        );
-      }
-
-      step.value = undefined;
-    },
-
     initialized: templateAdapter.setAll,
   },
   extraReducers: (builder) => {
