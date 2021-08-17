@@ -1,4 +1,4 @@
-import { Avatar, Stack, useTheme } from "@material-ui/core";
+import { Avatar, Stack, useTheme, Badge } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import templateSlice from "../templateSlice";
@@ -24,7 +24,6 @@ export default function PlayerOrderPanel({
   order: EntityId[] | undefined;
 }) {
   const dispatch = useAppDispatch();
-  const theme = useTheme();
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -90,18 +89,8 @@ export default function PlayerOrderPanel({
                   isDragDisabled={!isExpanded}
                 >
                   {(provided) => (
-                    <Avatar
+                    <Badge
                       sx={{
-                        backgroundColor: isExpanded
-                          ? theme.palette.primary.main
-                          : undefined,
-
-                        // Mimic the AvatarGroup styling
-                        zIndex: order.length - idx,
-                        borderWidth: "2px",
-                        borderColor: "white",
-                        borderStyle: "solid",
-
                         // Playing around with some visual flare.
                         // TODO: The transition effect also triggers after
                         // finishing a drag when the individual avatars render
@@ -113,13 +102,28 @@ export default function PlayerOrderPanel({
                           "margin 280ms cubic-bezier(0, 0.71, 0.26, 1.9), background-color 20ms ease-out 280ms",
                       }}
                       component="li"
-                      ref={provided.innerRef}
-                      {...provided.dragHandleProps}
-                      {...provided.draggableProps}
-                      style={{
-                        ...provided.draggableProps.style,
-                      }}
-                    >{`${first[0]}${last[0]}`}</Avatar>
+                      color="primary"
+                      badgeContent={idx + 1}
+                      anchorOrigin={{ horizontal: "left", vertical: "top" }}
+                      overlap="circular"
+                      invisible={!isExpanded || snapshot.isDraggingOver}
+                    >
+                      <Avatar
+                        sx={{
+                          // Mimic the AvatarGroup styling
+                          zIndex: !isExpanded ? order.length - idx : undefined,
+                          borderWidth: "2px",
+                          borderColor: "white",
+                          borderStyle: "solid",
+                        }}
+                        ref={provided.innerRef}
+                        {...provided.dragHandleProps}
+                        {...provided.draggableProps}
+                        style={{
+                          ...provided.draggableProps.style,
+                        }}
+                      >{`${first[0]}${last[0]}`}</Avatar>
+                    </Badge>
                   )}
                 </Draggable>
               );
