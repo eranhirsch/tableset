@@ -25,6 +25,7 @@ export default function StrategiesSelector({ stepId }: { stepId: EntityId }) {
     <Stack direction="row" spacing={0.5}>
       {strategies.map((strategy) => (
         <Chip
+          key={strategy}
           size="small"
           color="primary"
           variant={step.strategy === strategy ? "filled" : "outlined"}
