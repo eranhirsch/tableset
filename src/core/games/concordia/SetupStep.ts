@@ -56,16 +56,14 @@ export function availableStrategies(
   }
 }
 
-export function availableItems(step: "playerColor"): Array<GamePiecesColor>;
-export function availableItems(step: "map"): Array<string>;
-export function availableItems(step: SetupStepName): null;
-export function availableItems(step: SetupStepName): any {
+export function gamePieceColors(): GamePiecesColor[] {
+  return ["black", "blue", "green", "red", "yellow"];
+}
+
+export function stepItems(step: SetupStepName): string[] | null {
   switch (step) {
     case "map":
       return ["Italia", "Imperium"];
-
-    case "playerColor":
-      return ["black", "blue", "green", "red", "yellow"];
 
     default:
       return null;

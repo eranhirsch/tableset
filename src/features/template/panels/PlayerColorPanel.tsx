@@ -1,7 +1,6 @@
 import { Avatar, Badge, Box, Stack, useTheme } from "@material-ui/core";
 import { useCallback, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { availableItems } from "../../../core/games/concordia/SetupStep";
 import {
   Player,
   selectors as playersSelectors,
@@ -19,6 +18,7 @@ import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import array_zip from "../../../common/lib_utils/array_zip";
 import object_flip from "../../../common/lib_utils/object_flip";
 import invariant_violation from "../../../common/err/invariant_violation";
+import { gamePieceColors } from "../../../core/games/concordia/SetupStep";
 
 function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (
@@ -122,7 +122,7 @@ export default function PlayerColorPanel({
   const players = useAppSelector(playersSelectors.selectEntities);
 
   // Available colors never change so we can memoize the value
-  const availableColors = useMemo(() => availableItems("playerColor"), []);
+  const availableColors = useMemo(() => gamePieceColors(), []);
 
   // We need the data indexed by color too
   const colorPlayers = useMemo(

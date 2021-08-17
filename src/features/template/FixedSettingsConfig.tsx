@@ -1,4 +1,3 @@
-import { availableItems } from "../../core/games/concordia/SetupStep";
 import {
   PlayerColors,
   selectors as templateStepSelectors,
@@ -34,7 +33,6 @@ export default function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
       );
 
     default:
-      const items = availableItems(step.name) ?? [];
-      return <ItemsListPanel stepId={stepId} items={items} />;
+      return <ItemsListPanel stepId={stepId} />;
   }
 }
