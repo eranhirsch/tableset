@@ -9,7 +9,7 @@ export function stepLabel(stepName: SetupStepName): string {
     case "bonusTiles":
       return "Province Bonus";
     case "initialMarket":
-      return "Cards Market";
+      return "Initial Market";
     case "marketDeck":
       return "Market Deck";
     case "playOrder":
@@ -24,5 +24,9 @@ export function stepLabel(stepName: SetupStepName): string {
       return "Præfectus Magnus";
     case "concordiaCard":
       return "Concordia Card";
+    case "gatherMarketCards":
+      return "Market Cards";
+    case "startingColonists":
+      return "Starting Colonists";
   }
 }
