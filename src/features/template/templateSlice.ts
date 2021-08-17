@@ -25,26 +25,26 @@ export interface PlayerColors {
 
 export type SetupStep<T> =
   | {
-      name: "playOrder";
+      id: "playOrder";
       strategy: Strategy.FIXED;
       value?: EntityId[];
       previous?: SetupStep<T>;
     }
   | {
-      name: "playerColor";
+      id: "playerColor";
       strategy: Strategy.FIXED;
       value?: PlayerColors;
       previous?: SetupStep<T>;
     }
   | {
-      name: T;
+      id: T;
       strategy: Strategy;
       value?: string;
       previous?: SetupStep<T>;
     };
 
 const templateAdapter = createEntityAdapter<SetupStep<SetupStepName>>({
-  selectId: (step) => step.name,
+  selectId: (step) => step.id,
 });
 
 export const templateSlice = createSlice({
@@ -75,7 +75,7 @@ export const templateSlice = createSlice({
 
       // We want to go over all steps downstream from the current one, but we
       // can slice out the upstream ones.
-      const stepIdx = state.ids.findIndex((id) => id === step.name);
+      const stepIdx = state.ids.findIndex((id) => id === step.id);
       invariant(stepIdx !== -1, `Couldn't find the index for step ${id}`);
 
       filter_nulls(
@@ -83,10 +83,7 @@ export const templateSlice = createSlice({
           .slice(stepIdx + 1)
           .map((id) => state.entities[id])
       ).forEach((step) => {
-        const strategies = ConcordiaGame.strategiesFor(
-          step.name,
-          state.entities
-        );
+        const strategies = ConcordiaGame.strategiesFor(step.id, state.entities);
 
         if (
           step.previous != null &&

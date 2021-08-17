@@ -12,7 +12,7 @@ import PlayerColorPanel from "./panels/PlayerColorPanel";
 export default function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
   const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
 
-  switch (step.name) {
+  switch (step.id) {
     case "playOrder":
       return (
         <PlayerOrderPanel

@@ -19,10 +19,7 @@ export default function ItemsListPanel({ stepId }: { stepId: EntityId }) {
     invariant_violation(`strategy isn't FIXED for step ${stepId}`);
   }
 
-  const items = useMemo(
-    () => ConcordiaGame.itemsForStep(step.name),
-    [step.name]
-  );
+  const items = useMemo(() => ConcordiaGame.itemsForStep(step.id), [step.id]);
 
   if (items == null || items.length === 0) {
     invariant_violation(
@@ -42,7 +39,7 @@ export default function ItemsListPanel({ stepId }: { stepId: EntityId }) {
     <>
       {items.map((item) => (
         <Chip
-          key={`${step.name}_${item}`}
+          key={`${step.id}_${item}`}
           variant={step.value === item ? "filled" : "outlined"}
           label={item}
           onClick={
@@ -50,7 +47,7 @@ export default function ItemsListPanel({ stepId }: { stepId: EntityId }) {
               ? () =>
                   dispatch(
                     templateSlice.actions.fixedValueSet({
-                      stepId: step.name,
+                      stepId: step.id,
                       value: item,
                     })
                   )

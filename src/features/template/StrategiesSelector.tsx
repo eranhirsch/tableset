@@ -17,7 +17,7 @@ export default function StrategiesSelector({ stepId }: { stepId: EntityId }) {
 
   const steps = useAppSelector(templateStepSelectors.selectEntities);
   const strategies = useMemo(
-    () => ConcordiaGame.strategiesFor(step.name, steps),
+    () => ConcordiaGame.strategiesFor(step.id, steps),
     [step, steps]
   );
 
