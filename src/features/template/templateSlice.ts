@@ -7,7 +7,7 @@ import {
 import { RootState } from "../../app/store";
 import invariant, { type_invariant } from "../../common/err/invariant";
 import nullthrows from "../../common/err/nullthrows";
-import filter_nulls from "../../common/filter_nulls";
+import filter_nulls from "../../common/lib_utils/filter_nulls";
 import ConcordiaGame, {
   SetupStepName,
 } from "../../core/games/concordia/ConcordiaGame";
