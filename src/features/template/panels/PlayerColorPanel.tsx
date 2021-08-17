@@ -16,16 +16,17 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
-import nullthrows from "../../../common/err/nullthrows";
+import array_zip from "../../../common/lib_utils/array_zip";
+import object_flip from "../../../common/lib_utils/object_flip";
 
-function draggablePlayerRendererFactory(player: Player | undefined) {
+function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (
     <Avatar
       ref={provided.innerRef}
       {...provided.dragHandleProps}
       {...provided.draggableProps}
     >
-      {short_name(nullthrows(player).name)}
+      {short_name(player.name)}
     </Avatar>
   );
 }
@@ -50,43 +51,62 @@ function ColorSlot({
   return (
     <Droppable
       droppableId={color}
-      renderClone={draggablePlayerRendererFactory(player)}
+      // We need to clone the dragged item as we move it between lists
+      renderClone={
+        player != null ? draggablePlayerRendererFactory(player) : undefined
+      }
     >
-      {(provided, snapshot) => {
-        console.log(color, player, snapshot);
-        return (
-          <Badge
-            component="li"
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            invisible={player == null || snapshot.isUsingPlaceholder}
-            overlap="circular"
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-            color={color}
+      {(provided, snapshot) => (
+        <Badge
+          // We are part of a UL of colors
+          component="li"
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          color={color}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+          overlap="circular"
+          invisible={
+            // We don't need a badge when there's no avatar hiding the
+            // background color
+            player == null ||
+            snapshot.isDraggingOver ||
+            snapshot.draggingFromThisWith === player.name
+          }
+        >
+          <Avatar
+            // We use an avatar component for the colored background because we
+            // would "cover" it with another avatar for assigned players
+            sx={{
+              bgcolor: theme.palette[color].main,
+
+              // Create a transition effect to make the color apparent while
+              // being dragged over.
+              width: snapshot.isDraggingOver ? 48 : undefined,
+              height: snapshot.isDraggingOver ? 48 : undefined,
+              transitionProperty: "width, height",
+              transitionDuration: `${snapshot.isDraggingOver ? 200 : 65}ms`,
+              transitionTimingFunction: "ease-out",
+            }}
           >
-            <Avatar
-              sx={{
-                bgcolor: theme.palette[color].main,
-                width: snapshot.isDraggingOver ? 48 : undefined,
-                height: snapshot.isDraggingOver ? 48 : undefined,
-                transitionProperty: "width, height",
-                transitionDuration: `${snapshot.isDraggingOver ? 200 : 65}ms`,
-                transitionTimingFunction: "ease-out",
-              }}
-            >
-              {player != null &&
-                // We need to remove players occupying slots we are dragging so
-                // they don't render and move around, but we don't want to do
-                // this to the source slot where our item originated from
-                (!snapshot.isDraggingOver ||
-                  snapshot.draggingFromThisWith === player.name) && (
-                  <DraggablePlayer player={player} />
-                )}
-              <Box display="none">{provided.placeholder}</Box>
-            </Avatar>
-          </Badge>
-        );
-      }}
+            {player != null &&
+              // We need to remove players occupying slots we are dragging so
+              // they don't render and move around, but we don't want to do
+              // this to the source slot where our item originated from
+              (!snapshot.isDraggingOver ||
+                snapshot.draggingFromThisWith === player.name) && (
+                <DraggablePlayer player={player} />
+              )}
+            <Box display="none">
+              {
+                // We hide the placeholder as we don't need it, we have a single
+                // item list, and we don't want any animations.
+                // react-beautiful-dnd doesn't permit us to remove it entirely!
+                provided.placeholder
+              }
+            </Box>
+          </Avatar>
+        </Badge>
+      )}
     </Droppable>
   );
 }
@@ -100,45 +120,47 @@ export default function PlayerColorPanel({
 
   const players = useAppSelector(playersSelectors.selectEntities);
 
+  // Available colors never change so we can memoize the value
   const availableColors = useMemo(() => availableItems("playerColor"), []);
 
+  // We need the data indexed by color too
   const colorPlayers = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(playerColors).map(([playerId, color]) => [
-          color,
-          playerId,
-        ])
-      ),
+    () => Object.freeze(object_flip(playerColors)),
     [playerColors]
   );
 
   useEffect(() => {
+    // Make sure the template state is valid by making sure all players have
+    // colors assigned to them.
+    // TODO: This should probably be enforced by the template backend and not
+    // the react frontend :(
+
     const playerIds = Object.keys(players);
-    if (Object.keys(playerColors).length < playerIds.length) {
-      const unassignedPlayerIds = playerIds.filter(
-        (playerId) => playerColors[playerId] == null
-      );
-      const unassignedColors = availableColors.filter(
-        (color) => colorPlayers[color] == null
-      );
-      const zipped = Object.fromEntries(
-        unassignedPlayerIds.map((playerId, index) => [
-          playerId,
-          unassignedColors[index],
-        ])
-      );
-      dispatch(
-        templateSlice.actions.fixedValueSet({
-          stepId: "playerColor",
-          value: { ...playerColors, ...zipped },
-        })
-      );
+    if (Object.keys(playerColors).length === playerIds.length) {
+      // All players have a color assigned to them
+      return;
     }
+
+    const unassignedPlayerIds = playerIds.filter(
+      (playerId) => playerColors[playerId] == null
+    );
+    const unassignedColors = availableColors.filter(
+      (color) => colorPlayers[color] == null
+    );
+
+    dispatch(
+      templateSlice.actions.fixedValueSet({
+        stepId: "playerColor",
+        value: {
+          ...playerColors,
+          ...array_zip(unassignedPlayerIds, unassignedColors),
+        },
+      })
+    );
   }, [availableColors, colorPlayers, dispatch, playerColors, players]);
 
   const onDragEnd = useCallback(
-    ({ destination, draggableId, reason }: DropResult) => {
+    ({ draggableId, source, destination, reason }: DropResult) => {
       if (reason === "CANCEL") {
         return;
       }
@@ -149,20 +171,29 @@ export default function PlayerColorPanel({
       }
 
       const destinationColor = destination.droppableId as GamePiecesColor;
+      const newColors = {
+        ...playerColors,
+        [draggableId]: destinationColor,
+      };
 
-      const newPlayerColors = { ...playerColors };
-
-      const previousPlayerForColor = colorPlayers[destinationColor];
-      if (previousPlayerForColor != null) {
-        delete newPlayerColors[previousPlayerForColor];
+      const destinationPlayer = colorPlayers[destinationColor];
+      if (destinationPlayer != null) {
+        // In case the drag caused us to assign a color that is already used by
+        // a different player we need to update that player to use a different
+        // color.
+        // TODO: For now we use the source color of the drag as it is obviously
+        // free now, but we can also do other swaps, like picking a "close"
+        // color instead.
+        // TODO: Ideally we should trigger an automated drag for the overridden
+        // player color which would happen on dragOver, so that the UX is more
+        // responsive.
+        newColors[destinationPlayer] = source.droppableId as GamePiecesColor;
       }
-
-      newPlayerColors[draggableId] = destinationColor;
 
       dispatch(
         templateSlice.actions.fixedValueSet({
           stepId: "playerColor",
-          value: newPlayerColors,
+          value: newColors,
         })
       );
     },
