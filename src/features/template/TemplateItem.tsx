@@ -9,10 +9,9 @@ import React from "react";
 import { useMemo } from "react";
 import { useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
-import {
-  availableStrategies,
+import ConcordiaGame, {
   SetupStepName,
-} from "../../core/games/concordia/SetupStep";
+} from "../../core/games/concordia/ConcordiaGame";
 import { stepLabel } from "../../core/games/concordia/content";
 import { selectors as templateStepSelectors } from "./templateSlice";
 import { EntityId } from "@reduxjs/toolkit";
@@ -33,7 +32,8 @@ export default function TemplateItem({
 
   const steps = useAppSelector(templateStepSelectors.selectEntities);
   const canSwapStrategies = useMemo(
-    () => availableStrategies(stepId as SetupStepName, steps).length > 1,
+    () =>
+      ConcordiaGame.strategiesFor(stepId as SetupStepName, steps).length > 1,
     [stepId, steps]
   );
 

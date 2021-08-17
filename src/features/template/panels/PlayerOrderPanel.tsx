@@ -1,4 +1,4 @@
-import { Avatar, Stack, useTheme, Badge } from "@material-ui/core";
+import { Avatar, Stack, Badge } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import templateSlice from "../templateSlice";

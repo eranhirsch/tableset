@@ -3,12 +3,12 @@ import React from "react";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
-import { availableStrategies } from "../../core/games/concordia/SetupStep";
 import templateSlice, {
   selectors as templateStepSelectors,
 } from "./templateSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import useAppEntityIdSelectorEnforce from "../../common/hooks/useAppEntityIdSelectorEnforce";
+import ConcordiaGame from "../../core/games/concordia/ConcordiaGame";
 
 export default function StrategiesSelector({ stepId }: { stepId: EntityId }) {
   const dispatch = useAppDispatch();
@@ -17,7 +17,7 @@ export default function StrategiesSelector({ stepId }: { stepId: EntityId }) {
 
   const steps = useAppSelector(templateStepSelectors.selectEntities);
   const strategies = useMemo(
-    () => availableStrategies(step.name, steps),
+    () => ConcordiaGame.strategiesFor(step.name, steps),
     [step, steps]
   );
 

@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react";
 import { useAppDispatch } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import useAppEntityIdSelectorEnforce from "../../../common/hooks/useAppEntityIdSelectorEnforce";
-import { stepItems } from "../../../core/games/concordia/SetupStep";
+import ConcordiaGame from "../../../core/games/concordia/ConcordiaGame";
 import { Strategy } from "../../../core/Strategy";
 import templateSlice, {
   selectors as templateStepSelectors,
@@ -19,7 +19,10 @@ export default function ItemsListPanel({ stepId }: { stepId: EntityId }) {
     invariant_violation(`strategy isn't FIXED for step ${stepId}`);
   }
 
-  const items = useMemo(() => stepItems(step.name), [step.name]);
+  const items = useMemo(
+    () => ConcordiaGame.itemsForStep(step.name),
+    [step.name]
+  );
 
   if (items == null || items.length === 0) {
     invariant_violation(

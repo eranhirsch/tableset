@@ -1,4 +1,4 @@
-import { SetupStepName } from "./SetupStep";
+import { SetupStepName } from "./ConcordiaGame";
 
 export function stepLabel(stepName: SetupStepName): string {
   switch (stepName) {
@@ -16,5 +16,13 @@ export function stepLabel(stepName: SetupStepName): string {
       return "Play Order";
     case "playerColor":
       return "Player Color";
+    case "playerPieces":
+      return "Player Pieces";
+    case "startingMoney":
+      return "Starting Money";
+    case "praefectusMagnus":
+      return "Præfectus Magnus";
+    case "concordiaCard":
+      return "Concordia Card";
   }
 }

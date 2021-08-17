@@ -25,8 +25,12 @@ export default function Template() {
           { name: "bonusTiles", strategy: Strategy.OFF },
           { name: "initialMarket", strategy: Strategy.OFF },
           { name: "marketDeck", strategy: Strategy.OFF },
+          { name: "concordiaCard", strategy: Strategy.OFF },
           { name: "playOrder", strategy: Strategy.OFF },
           { name: "playerColor", strategy: Strategy.OFF },
+          { name: "playerPieces", strategy: Strategy.OFF },
+          { name: "startingMoney", strategy: Strategy.OFF },
+          { name: "praefectusMagnus", strategy: Strategy.OFF },
         ])
       );
     }

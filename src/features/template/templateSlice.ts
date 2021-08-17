@@ -8,10 +8,9 @@ import { RootState } from "../../app/store";
 import invariant, { type_invariant } from "../../common/err/invariant";
 import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/filter_nulls";
-import {
-  availableStrategies,
+import ConcordiaGame, {
   SetupStepName,
-} from "../../core/games/concordia/SetupStep";
+} from "../../core/games/concordia/ConcordiaGame";
 import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import {
@@ -84,7 +83,10 @@ export const templateSlice = createSlice({
           .slice(stepIdx + 1)
           .map((id) => state.entities[id])
       ).forEach((step) => {
-        const strategies = availableStrategies(step.name, state.entities);
+        const strategies = ConcordiaGame.strategiesFor(
+          step.name,
+          state.entities
+        );
 
         if (
           step.previous != null &&

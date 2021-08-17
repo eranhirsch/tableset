@@ -18,7 +18,7 @@ import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import array_zip from "../../../common/lib_utils/array_zip";
 import object_flip from "../../../common/lib_utils/object_flip";
 import invariant_violation from "../../../common/err/invariant_violation";
-import { gamePieceColors } from "../../../core/games/concordia/SetupStep";
+import ConcordiaGame from "../../../core/games/concordia/ConcordiaGame";
 
 function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (
@@ -121,9 +121,6 @@ export default function PlayerColorPanel({
 
   const players = useAppSelector(playersSelectors.selectEntities);
 
-  // Available colors never change so we can memoize the value
-  const availableColors = useMemo(() => gamePieceColors(), []);
-
   // We need the data indexed by color too
   const colorPlayers = useMemo(
     () => Object.freeze(object_flip(playerColors)),
@@ -145,7 +142,7 @@ export default function PlayerColorPanel({
     const unassignedPlayerIds = playerIds.filter(
       (playerId) => playerColors[playerId] == null
     );
-    const unassignedColors = availableColors.filter(
+    const unassignedColors = ConcordiaGame.playerColors.filter(
       (color) => colorPlayers[color] == null
     );
 
@@ -158,7 +155,7 @@ export default function PlayerColorPanel({
         },
       })
     );
-  }, [availableColors, colorPlayers, dispatch, playerColors, players]);
+  }, [colorPlayers, dispatch, playerColors, players]);
 
   const closestAvailableColor = useCallback(
     (
@@ -166,7 +163,7 @@ export default function PlayerColorPanel({
       treatAsAvailable: GamePiecesColor
     ): GamePiecesColor => {
       const isSlotAvailble = (slot: number): boolean => {
-        const colorAtSlot = availableColors[slot];
+        const colorAtSlot = ConcordiaGame.playerColors[slot];
         return (
           colorAtSlot != null &&
           (colorAtSlot === treatAsAvailable ||
@@ -174,21 +171,27 @@ export default function PlayerColorPanel({
         );
       };
 
-      const currentPos = availableColors.findIndex((color) => color === start);
+      const currentPos = ConcordiaGame.playerColors.findIndex(
+        (color) => color === start
+      );
 
-      for (let distance = 1; distance < availableColors.length; distance += 1) {
+      for (
+        let distance = 1;
+        distance < ConcordiaGame.playerColors.length;
+        distance += 1
+      ) {
         if (isSlotAvailble(currentPos - distance)) {
-          return availableColors[currentPos - distance];
+          return ConcordiaGame.playerColors[currentPos - distance];
         }
 
         if (isSlotAvailble(currentPos + distance)) {
-          return availableColors[currentPos + distance];
+          return ConcordiaGame.playerColors[currentPos + distance];
         }
       }
 
       invariant_violation("Couldn't find an available color!");
     },
-    [availableColors, colorPlayers]
+    [colorPlayers]
   );
 
   const onDragEnd = useCallback(
@@ -239,7 +242,7 @@ export default function PlayerColorPanel({
         spacing={1}
         height={48}
       >
-        {availableColors.map((color, index) => (
+        {ConcordiaGame.playerColors.map((color, index) => (
           <ColorSlot
             key={color}
             color={color}
