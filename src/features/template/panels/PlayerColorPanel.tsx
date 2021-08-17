@@ -18,6 +18,7 @@ import {
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import array_zip from "../../../common/lib_utils/array_zip";
 import object_flip from "../../../common/lib_utils/object_flip";
+import invariant_violation from "../../../common/err/invariant_violation";
 
 function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (
@@ -159,6 +160,37 @@ export default function PlayerColorPanel({
     );
   }, [availableColors, colorPlayers, dispatch, playerColors, players]);
 
+  const closestAvailableColor = useCallback(
+    (
+      start: GamePiecesColor,
+      treatAsAvailable: GamePiecesColor
+    ): GamePiecesColor => {
+      const isSlotAvailble = (slot: number): boolean => {
+        const colorAtSlot = availableColors[slot];
+        return (
+          colorAtSlot != null &&
+          (colorAtSlot === treatAsAvailable ||
+            colorPlayers[colorAtSlot] == null)
+        );
+      };
+
+      const currentPos = availableColors.findIndex((color) => color === start);
+
+      for (let distance = 1; distance < availableColors.length; distance += 1) {
+        if (isSlotAvailble(currentPos - distance)) {
+          return availableColors[currentPos - distance];
+        }
+
+        if (isSlotAvailble(currentPos + distance)) {
+          return availableColors[currentPos + distance];
+        }
+      }
+
+      invariant_violation("Couldn't find an available color!");
+    },
+    [availableColors, colorPlayers]
+  );
+
   const onDragEnd = useCallback(
     ({ draggableId, source, destination, reason }: DropResult) => {
       if (reason === "CANCEL") {
@@ -181,13 +213,10 @@ export default function PlayerColorPanel({
         // In case the drag caused us to assign a color that is already used by
         // a different player we need to update that player to use a different
         // color.
-        // TODO: For now we use the source color of the drag as it is obviously
-        // free now, but we can also do other swaps, like picking a "close"
-        // color instead.
-        // TODO: Ideally we should trigger an automated drag for the overridden
-        // player color which would happen on dragOver, so that the UX is more
-        // responsive.
-        newColors[destinationPlayer] = source.droppableId as GamePiecesColor;
+        newColors[destinationPlayer] = closestAvailableColor(
+          destinationColor,
+          source.droppableId as GamePiecesColor
+        );
       }
 
       dispatch(
@@ -197,7 +226,7 @@ export default function PlayerColorPanel({
         })
       );
     },
-    [colorPlayers, dispatch, playerColors]
+    [closestAvailableColor, colorPlayers, dispatch, playerColors]
   );
 
   return (
