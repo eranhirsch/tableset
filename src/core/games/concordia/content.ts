@@ -28,5 +28,9 @@ export function stepLabel(stepName: SetupStepName): string {
       return "Market Cards";
     case "startingColonists":
       return "Starting Colonists";
+    case "resourcePiles":
+      return "Resource Piles";
+    case "bank":
+      return "Bank";
   }
 }

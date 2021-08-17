@@ -17,7 +17,9 @@ export type SetupStepName =
   | "praefectusMagnus"
   | "concordiaCard"
   | "gatherMarketCards"
-  | "startingColonists";
+  | "startingColonists"
+  | "resourcePiles"
+  | "bank";
 
 export default class ConcordiaGame {
   public static get order(): SetupStepName[] {
@@ -29,6 +31,8 @@ export default class ConcordiaGame {
       "initialMarket",
       "marketDeck",
       "concordiaCard",
+      "resourcePiles",
+      "bank",
       "playOrder",
       "playerColor",
       "playerPieces",
@@ -71,17 +75,11 @@ export default class ConcordiaGame {
       case "initialMarket":
         return [Strategy.OFF, Strategy.RANDOM];
 
-      case "marketDeck":
-        return [Strategy.OFF];
-
       case "playOrder":
         return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
 
       case "playerColor":
         return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
-
-      case "playerPieces":
-        return [Strategy.OFF];
 
       case "startingMoney": {
         const { playOrder } = template;
@@ -99,12 +97,6 @@ export default class ConcordiaGame {
         return [Strategy.OFF];
       }
 
-      case "concordiaCard":
-        return [Strategy.OFF];
-
-      case "gatherMarketCards":
-        return [Strategy.OFF];
-
       case "startingColonists": {
         const { map } = template;
         if (map != null && map.strategy !== Strategy.OFF) {
@@ -112,6 +104,9 @@ export default class ConcordiaGame {
         }
         return [Strategy.OFF];
       }
+
+      default:
+        return [Strategy.OFF];
     }
   }
 
