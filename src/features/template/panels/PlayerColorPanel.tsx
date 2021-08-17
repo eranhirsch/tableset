@@ -209,7 +209,7 @@ export default function PlayerColorPanel({
       };
 
       const destinationPlayer = colorPlayers[destinationColor];
-      if (destinationPlayer != null) {
+      if (destinationPlayer != null && destinationPlayer !== draggableId) {
         // In case the drag caused us to assign a color that is already used by
         // a different player we need to update that player to use a different
         // color.
