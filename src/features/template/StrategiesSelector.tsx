@@ -1,25 +1,32 @@
 import { Chip, Stack } from "@material-ui/core";
-import React from "react";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
 import templateSlice, {
   selectors as templateStepSelectors,
 } from "./templateSlice";
-import { EntityId } from "@reduxjs/toolkit";
-import useAppEntityIdSelectorEnforce from "../../common/hooks/useAppEntityIdSelectorEnforce";
-import ConcordiaGame from "../../core/games/concordia/ConcordiaGame";
+import ConcordiaGame, {
+  SetupStepName,
+} from "../../core/games/concordia/ConcordiaGame";
+import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
+import { Strategy } from "../../core/Strategy";
 
-export default function StrategiesSelector({ stepId }: { stepId: EntityId }) {
+export default function StrategiesSelector({
+  stepId,
+}: {
+  stepId: SetupStepName;
+}) {
   const dispatch = useAppDispatch();
 
-  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
+  const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
 
   const steps = useAppSelector(templateStepSelectors.selectEntities);
   const strategies = useMemo(
-    () => ConcordiaGame.strategiesFor(step.id, steps),
-    [step, steps]
+    () => ConcordiaGame.strategiesFor(stepId, steps),
+    [stepId, steps]
   );
+
+  const stepStrategy = step?.strategy ?? Strategy.OFF;
 
   return (
     <Stack direction="row" spacing={0.5}>
@@ -28,7 +35,7 @@ export default function StrategiesSelector({ stepId }: { stepId: EntityId }) {
           key={strategy}
           size="small"
           color="primary"
-          variant={step.strategy === strategy ? "filled" : "outlined"}
+          variant={stepStrategy === strategy ? "filled" : "outlined"}
           label={strategyLabel(strategy)}
           onClick={() =>
             dispatch(

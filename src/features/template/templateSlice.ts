@@ -57,9 +57,23 @@ export const templateSlice = createSlice({
         payload: { id, strategy },
       }: PayloadAction<{ id: EntityId; strategy: Strategy }>
     ) {
-      // Find the setup step in the template
+      if (!(id in state.entities)) {
+        state = templateAdapter.addOne(state, {
+          id: id as SetupStepName,
+          strategy: Strategy.OFF,
+        });
+      }
       const step = nullthrows(state.entities[id]);
-      step.strategy = strategy;
+
+      invariant(
+        step.strategy !== strategy,
+        `For step '${id}' trying to swap strategies with the same strategy ${strategy}`
+      );
+      if (strategy !== Strategy.OFF) {
+        step.strategy = strategy;
+      } else {
+        state = templateAdapter.removeOne(state, id);
+      }
 
       // When strategies change they might make strategies for downstream steps
       // invalid so we go over all of them and fix any inconsistency.
@@ -73,31 +87,36 @@ export const templateSlice = createSlice({
       // strategies, this will prevent us from overriding it.
       step.previous = undefined;
 
-      // We want to go over all steps downstream from the current one, but we
-      // can slice out the upstream ones.
-      const stepIdx = state.ids.findIndex((id) => id === step.id);
-      invariant(stepIdx !== -1, `Couldn't find the index for step ${id}`);
+      let checkChanges = true;
+      while (checkChanges) {
+        checkChanges = filter_nulls(Object.values(state.entities))
+          .filter((step) => step.id !== id)
+          .some((step) => {
+            const strategies = ConcordiaGame.strategiesFor(
+              step.id,
+              state.entities
+            );
 
-      filter_nulls(
-        Object.values(state.ids)
-          .slice(stepIdx + 1)
-          .map((id) => state.entities[id])
-      ).forEach((step) => {
-        const strategies = ConcordiaGame.strategiesFor(step.id, state.entities);
+            if (
+              step.previous != null &&
+              strategies.includes(step.previous.strategy)
+            ) {
+              step.strategy = step.previous.strategy;
+              step.value = step.previous.value;
+              step.previous = undefined;
+              return true;
+            }
 
-        if (
-          step.previous != null &&
-          strategies.includes(step.previous.strategy)
-        ) {
-          step.strategy = step.previous.strategy;
-          step.value = step.previous.value;
-          step.previous = undefined;
-        } else if (!strategies.includes(step.strategy)) {
-          step.previous = { ...step };
-          step.strategy = strategies[0]!;
-          step.value = undefined;
-        }
-      });
+            if (!strategies.includes(step.strategy)) {
+              step.previous = { ...step };
+              step.strategy = nullthrows(strategies[0]);
+              step.value = undefined;
+              return true;
+            }
+
+            return false;
+          });
+      }
     },
 
     fixedValueSet(

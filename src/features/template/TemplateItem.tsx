@@ -5,7 +5,6 @@ import {
   ListItemText,
   Paper,
 } from "@material-ui/core";
-import React from "react";
 import { useMemo } from "react";
 import { useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
@@ -14,28 +13,29 @@ import ConcordiaGame, {
 } from "../../core/games/concordia/ConcordiaGame";
 import { stepLabel } from "../../core/games/concordia/content";
 import { selectors as templateStepSelectors } from "./templateSlice";
-import { EntityId } from "@reduxjs/toolkit";
-import useAppEntityIdSelectorEnforce from "../../common/hooks/useAppEntityIdSelectorEnforce";
 import StrategyIcon from "./StrategyIcon";
 import StepDetailsPane from "./StepDetailsPane";
+import { Strategy } from "../../core/Strategy";
+import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 
 export default function TemplateItem({
   stepId,
   expanded,
   onClick,
 }: {
-  stepId: EntityId;
+  stepId: SetupStepName;
   expanded: boolean;
   onClick: (isExpanded: boolean) => void;
 }) {
-  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
+  const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
 
   const steps = useAppSelector(templateStepSelectors.selectEntities);
   const canSwapStrategies = useMemo(
-    () =>
-      ConcordiaGame.strategiesFor(stepId as SetupStepName, steps).length > 1,
+    () => ConcordiaGame.strategiesFor(stepId, steps).length > 1,
     [stepId, steps]
   );
+
+  const strategy = step?.strategy ?? Strategy.OFF;
 
   return (
     <Paper
@@ -48,9 +48,9 @@ export default function TemplateItem({
         onClick={() => onClick(expanded)}
       >
         <ListItemIcon>
-          <StrategyIcon strategy={step.strategy} />
+          <StrategyIcon strategy={strategy} />
         </ListItemIcon>
-        <ListItemText secondary={strategyLabel(step.strategy)}>
+        <ListItemText secondary={strategyLabel(strategy)}>
           {stepLabel(stepId as SetupStepName)}
         </ListItemText>
       </ListItemButton>

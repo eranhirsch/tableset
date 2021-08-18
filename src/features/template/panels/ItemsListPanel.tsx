@@ -3,7 +3,7 @@ import { EntityId } from "@reduxjs/toolkit";
 import { useEffect, useMemo } from "react";
 import { useAppDispatch } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
-import useAppEntityIdSelectorEnforce from "../../../common/hooks/useAppEntityIdSelectorEnforce";
+import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import ConcordiaGame from "../../../core/games/concordia/ConcordiaGame";
 import { Strategy } from "../../../core/Strategy";
 import templateSlice, {

@@ -58,7 +58,7 @@ export default class ConcordiaGame {
 
       case "cityTiles": {
         const { map } = template;
-        if (map != null && map.strategy === Strategy.OFF) {
+        if (map == null || map.strategy === Strategy.OFF) {
           return [Strategy.OFF];
         }
         return [Strategy.OFF, Strategy.RANDOM];

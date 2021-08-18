@@ -3,16 +3,16 @@ import React from "react";
 import { useMemo } from "react";
 import { selectors as templateStepSelectors } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
-import { EntityId } from "@reduxjs/toolkit";
-import useAppEntityIdSelectorEnforce from "../../common/hooks/useAppEntityIdSelectorEnforce";
 import StrategiesSelector from "./StrategiesSelector";
 import FixedSettingsConfig from "./FixedSettingsConfig";
+import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
+import { SetupStepName } from "../../core/games/concordia/ConcordiaGame";
 
-export default function StepDetailsPane({ stepId }: { stepId: EntityId }) {
-  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
+export default function StepDetailsPane({ stepId }: { stepId: SetupStepName }) {
+  const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
 
   const strategyControls = useMemo(() => {
-    if (step.strategy === Strategy.FIXED) {
+    if (step?.strategy === Strategy.FIXED) {
       return <FixedSettingsConfig stepId={stepId} />;
     }
     return null;

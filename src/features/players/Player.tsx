@@ -6,7 +6,7 @@ import {
   selectors as playersSelectors,
 } from "./playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
-import useAppEntityIdSelectorEnforce from "../../common/hooks/useAppEntityIdSelectorEnforce";
+import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
 
 export default function Player({
   playerId,
