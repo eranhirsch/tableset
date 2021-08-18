@@ -1,5 +1,5 @@
 import { List } from "@material-ui/core";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
 import ConcordiaGame from "../../core/games/concordia/ConcordiaGame";
@@ -11,22 +11,26 @@ export default function Template() {
 
   const template = useAppSelector(selectors.selectEntities);
 
+  const templatableItems = useMemo(
+    () =>
+      ConcordiaGame.order.filter(
+        (stepId) => ConcordiaGame.strategiesFor(stepId, template).length > 1
+      ),
+    [template]
+  );
+
   return (
     <List component="ol">
-      {ConcordiaGame.order
-        .filter(
-          (stepId) => ConcordiaGame.strategiesFor(stepId, template).length > 1
-        )
-        .map((stepId) => (
-          <TemplateItem
-            key={stepId}
-            stepId={stepId}
-            expanded={stepId === expandedStepId}
-            onClick={(isExpanded) =>
-              setExpandedStepId(isExpanded ? undefined : stepId)
-            }
-          />
-        ))}
+      {templatableItems.map((stepId) => (
+        <TemplateItem
+          key={stepId}
+          stepId={stepId}
+          expanded={stepId === expandedStepId}
+          onClick={(isExpanded) =>
+            setExpandedStepId(isExpanded ? undefined : stepId)
+          }
+        />
+      ))}
     </List>
   );
 }
