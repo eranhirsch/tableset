@@ -5,12 +5,8 @@ import {
   ListItemText,
   Paper,
 } from "@material-ui/core";
-import { useMemo } from "react";
-import { useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
-import ConcordiaGame, {
-  SetupStepName,
-} from "../../core/games/concordia/ConcordiaGame";
+import { SetupStepName } from "../../core/games/concordia/ConcordiaGame";
 import { stepLabel } from "../../core/games/concordia/content";
 import { selectors as templateStepSelectors } from "./templateSlice";
 import StrategyIcon from "./StrategyIcon";
@@ -29,24 +25,11 @@ export default function TemplateItem({
 }) {
   const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
 
-  const steps = useAppSelector(templateStepSelectors.selectEntities);
-  const canSwapStrategies = useMemo(
-    () => ConcordiaGame.strategiesFor(stepId, steps).length > 1,
-    [stepId, steps]
-  );
-
   const strategy = step?.strategy ?? Strategy.OFF;
 
   return (
-    <Paper
-      sx={{ marginBottom: 1 }}
-      elevation={expanded ? 2 : canSwapStrategies ? 1 : 0}
-      component="li"
-    >
-      <ListItemButton
-        disabled={!canSwapStrategies}
-        onClick={() => onClick(expanded)}
-      >
+    <Paper sx={{ marginBottom: 1 }} elevation={expanded ? 1 : 0} component="li">
+      <ListItemButton onClick={() => onClick(expanded)}>
         <ListItemIcon>
           <StrategyIcon strategy={strategy} />
         </ListItemIcon>
