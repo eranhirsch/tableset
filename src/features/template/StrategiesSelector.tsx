@@ -37,13 +37,16 @@ export default function StrategiesSelector({
           color="primary"
           variant={stepStrategy === strategy ? "filled" : "outlined"}
           label={strategyLabel(strategy)}
-          onClick={() =>
-            dispatch(
-              templateSlice.actions.strategySwapped({
-                id: stepId,
-                strategy,
-              })
-            )
+          onClick={
+            strategy !== stepStrategy
+              ? () =>
+                  dispatch(
+                    templateSlice.actions.strategySwapped({
+                      id: stepId,
+                      strategy,
+                    })
+                  )
+              : undefined
           }
         />
       ))}
