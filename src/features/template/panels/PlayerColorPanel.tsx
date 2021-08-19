@@ -1,11 +1,13 @@
 import { Avatar, Badge, Box, Stack, useTheme } from "@material-ui/core";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import {
   Player,
   selectors as playersSelectors,
 } from "../../players/playersSlice";
-import templateSlice, { PlayerColors } from "../templateSlice";
+import templateSlice, {
+  selectors as templateSelectors,
+} from "../templateSlice";
 import short_name from "../../../common/short_name";
 import {
   DragDropContext,
@@ -15,10 +17,11 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
-import array_zip from "../../../common/lib_utils/array_zip";
 import object_flip from "../../../common/lib_utils/object_flip";
 import invariant_violation from "../../../common/err/invariant_violation";
 import ConcordiaGame from "../../../games/concordia/ConcordiaGame";
+import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
+import { Strategy } from "../../../core/Strategy";
 
 function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (
@@ -112,12 +115,14 @@ function ColorSlot({
   );
 }
 
-export default function PlayerColorPanel({
-  playerColors = {},
-}: {
-  playerColors: PlayerColors | undefined;
-}) {
+export default function PlayerColorPanel() {
   const dispatch = useAppDispatch();
+
+  const step = useAppEntityIdSelectorEnforce(templateSelectors, "playerColors");
+  if (step.id !== "playerColors" || step.strategy !== Strategy.FIXED) {
+    invariant_violation(`Step ${step} is misconfigured for this panel`);
+  }
+  const playerColors = step.value;
 
   const players = useAppSelector(playersSelectors.selectEntities);
 
@@ -126,36 +131,6 @@ export default function PlayerColorPanel({
     () => Object.freeze(object_flip(playerColors)),
     [playerColors]
   );
-
-  useEffect(() => {
-    // Make sure the template state is valid by making sure all players have
-    // colors assigned to them.
-    // TODO: This should probably be enforced by the template backend and not
-    // the react frontend :(
-
-    const playerIds = Object.keys(players);
-    if (Object.keys(playerColors).length === playerIds.length) {
-      // All players have a color assigned to them
-      return;
-    }
-
-    const unassignedPlayerIds = playerIds.filter(
-      (playerId) => playerColors[playerId] == null
-    );
-    const unassignedColors = ConcordiaGame.playerColors.filter(
-      (color) => colorPlayers[color] == null
-    );
-
-    dispatch(
-      templateSlice.actions.fixedValueSet({
-        stepId: "playerColors",
-        value: {
-          ...playerColors,
-          ...array_zip(unassignedPlayerIds, unassignedColors),
-        },
-      })
-    );
-  }, [colorPlayers, dispatch, playerColors, players]);
 
   const closestAvailableColor = useCallback(
     (
@@ -223,8 +198,8 @@ export default function PlayerColorPanel({
       }
 
       dispatch(
-        templateSlice.actions.fixedValueSet({
-          stepId: "playerColors",
+        templateSlice.actions.updateFixedValue({
+          id: "playerColors",
           value: newColors,
         })
       );

@@ -1,7 +1,9 @@
 import { Avatar, Stack, Badge, Typography } from "@material-ui/core";
-import { useCallback, useEffect, useMemo } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import templateSlice from "../templateSlice";
+import { useCallback } from "react";
+import { useAppDispatch } from "../../../app/hooks";
+import templateSlice, {
+  selectors as templateSelectors,
+} from "../templateSlice";
 import { selectors as playersSelectors } from "../../players/playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import {
@@ -13,6 +15,8 @@ import {
 import short_name from "../../../common/short_name";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import LockIcon from "@material-ui/icons/Lock";
+import invariant_violation from "../../../common/err/invariant_violation";
+import { Strategy } from "../../../core/Strategy";
 
 function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
   const clone = items.slice();
@@ -60,31 +64,14 @@ function FirstAvatar({ playerId }: { playerId: EntityId }) {
   );
 }
 
-export default function PlayerOrderPanelV2({
-  order = [],
-}: {
-  order: EntityId[] | undefined;
-}) {
+export default function PlayerOrderPanelV2() {
   const dispatch = useAppDispatch();
 
-  const playerIds = useAppSelector(playersSelectors.selectIds);
-  const sortedPlayerIds = useMemo(() => [...playerIds].sort(), [playerIds]);
-
-  useEffect(() => {
-    if (
-      order.length < sortedPlayerIds.length ||
-      order.some((playerId) => !sortedPlayerIds.includes(playerId))
-    ) {
-      // We need an initial value for order, we can set it once the component
-      // mounts as it would show some order
-      dispatch(
-        templateSlice.actions.fixedValueSet({
-          stepId: "playOrder",
-          value: sortedPlayerIds,
-        })
-      );
-    }
-  }, [dispatch, order, sortedPlayerIds]);
+  const step = useAppEntityIdSelectorEnforce(templateSelectors, "playOrder");
+  if (step.id !== "playOrder" || step.strategy !== Strategy.FIXED) {
+    invariant_violation(`Step ${step} is misconfigured for this panel`);
+  }
+  const order = step.value;
 
   const onDragEnd = useCallback(
     ({ reason, source, destination }: DropResult) => {
@@ -98,8 +85,8 @@ export default function PlayerOrderPanelV2({
       }
 
       dispatch(
-        templateSlice.actions.fixedValueSet({
-          stepId: "playOrder",
+        templateSlice.actions.updateFixedValue({
+          id: "playOrder",
           value: moveItem(order, source.index + 1, destination.index + 1),
         })
       );

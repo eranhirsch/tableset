@@ -1,11 +1,14 @@
 import { Avatar, Badge, Stack } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
-import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import templateSlice from "../templateSlice";
+import templateSlice, {
+  selectors as templateSelectors,
+} from "../templateSlice";
 import { selectors as playersSelectors } from "../../players/playersSlice";
 import short_name from "../../../common/short_name";
+import { Strategy } from "../../../core/Strategy";
+import invariant_violation from "../../../common/err/invariant_violation";
 
 function Player({
   playerId,
@@ -31,8 +34,8 @@ function Player({
           !isSelected
             ? () =>
                 dispatch(
-                  templateSlice.actions.fixedValueSet({
-                    stepId: "firstPlayer",
+                  templateSlice.actions.updateFixedValue({
+                    id: "firstPlayer",
                     value: playerId,
                   })
                 )
@@ -45,25 +48,14 @@ function Player({
   );
 }
 
-export default function StartingPlayerPanel({
-  selectedPlayerId,
-}: {
-  selectedPlayerId: EntityId | undefined;
-}) {
-  const dispatch = useAppDispatch();
-
+export default function StartingPlayerPanel() {
   const playerIds = useAppSelector(playersSelectors.selectIds);
 
-  useEffect(() => {
-    if (selectedPlayerId == null) {
-      dispatch(
-        templateSlice.actions.fixedValueSet({
-          stepId: "firstPlayer",
-          value: playerIds[0],
-        })
-      );
-    }
-  }, [dispatch, selectedPlayerId, playerIds]);
+  const step = useAppEntityIdSelectorEnforce(templateSelectors, "firstPlayer");
+  if (step.id !== "firstPlayer" || step.strategy !== Strategy.FIXED) {
+    invariant_violation(`Step ${step} is misconfigured for this panel`);
+  }
+  const selectedPlayerId = step.value;
 
   return (
     <Stack component="ul" direction="row" pl={0} sx={{ listStyle: "none" }}>

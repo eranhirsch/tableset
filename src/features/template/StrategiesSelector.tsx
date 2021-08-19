@@ -10,6 +10,7 @@ import ConcordiaGame, {
 } from "../../games/concordia/ConcordiaGame";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { Strategy } from "../../core/Strategy";
+import { selectors } from "../players/playersSlice";
 
 export default function StrategiesSelector({
   stepId,
@@ -19,8 +20,9 @@ export default function StrategiesSelector({
   const dispatch = useAppDispatch();
 
   const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
-
   const steps = useAppSelector(templateStepSelectors.selectEntities);
+  const playerIds = useAppSelector(selectors.selectIds);
+
   const strategies = useMemo(
     () => ConcordiaGame.strategiesFor(stepId, steps),
     [stepId, steps]
@@ -41,10 +43,17 @@ export default function StrategiesSelector({
             strategy !== stepStrategy
               ? () =>
                   dispatch(
-                    templateSlice.actions.strategySwapped({
-                      id: stepId,
-                      strategy,
-                    })
+                    strategy === Strategy.FIXED
+                      ? templateSlice.actions.setFixedStrategy(
+                          stepId,
+                          playerIds
+                        )
+                      : strategy === Strategy.OFF
+                      ? templateSlice.actions.clearStrategy(stepId)
+                      : templateSlice.actions.setStrategy({
+                          id: stepId,
+                          strategy,
+                        })
                   )
               : undefined
           }

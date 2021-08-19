@@ -5,7 +5,7 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import invariant, { type_invariant } from "../../common/err/invariant";
+import invariant from "../../common/err/invariant";
 import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
 import ConcordiaGame, {
@@ -23,63 +23,119 @@ export interface PlayerColors {
   [playerId: string]: GamePiecesColor;
 }
 
-export type SetupStep<T> =
+type FixedSetupStep<T> =
   | {
       id: "playOrder";
       strategy: Strategy.FIXED;
-      value?: EntityId[];
-      previous?: SetupStep<T>;
+      value: EntityId[];
     }
   | {
       id: "playerColors";
       strategy: Strategy.FIXED;
-      value?: PlayerColors;
-      previous?: SetupStep<T>;
+      value: PlayerColors;
     }
   | {
       id: "firstPlayer";
       strategy: Strategy.FIXED;
-      value?: EntityId;
-      previous?: SetupStep<T>;
+      value: EntityId;
     }
   | {
+      id: Exclude<T, "playOrder" | "playerColors" | "firstPlayer">;
+      strategy: Strategy.FIXED;
+      value: string;
+    };
+
+export type SetupStep<T> =
+  | FixedSetupStep<T>
+  | {
       id: T;
-      strategy: Strategy;
-      value?: string;
-      previous?: SetupStep<T>;
+      strategy: Exclude<Strategy, Strategy.FIXED>;
     };
 
 const templateAdapter = createEntityAdapter<SetupStep<SetupStepName>>({
   selectId: (step) => step.id,
 });
 
+function fixedSetupStep(
+  id: "firstPlayer",
+  playerIds: EntityId[]
+): FixedSetupStep<"firstPlayer">;
+function fixedSetupStep(
+  id: "playOrder",
+  playerIds: EntityId[]
+): FixedSetupStep<"playOrder">;
+function fixedSetupStep(
+  id: "playerColors",
+  playerIds: EntityId[]
+): FixedSetupStep<"playerColors">;
+function fixedSetupStep(
+  id: SetupStepName,
+  playerIds: EntityId[]
+): FixedSetupStep<SetupStepName>;
+function fixedSetupStep(
+  id: any,
+  playerIds: EntityId[]
+): FixedSetupStep<SetupStepName> {
+  switch (id) {
+    case "playOrder": {
+      return { id: "playOrder", strategy: Strategy.FIXED, value: playerIds };
+    }
+
+    case "firstPlayer": {
+      return {
+        id: "firstPlayer",
+        strategy: Strategy.FIXED,
+        value: playerIds[0],
+      };
+    }
+
+    case "playerColors": {
+      const colors = ConcordiaGame.playerColors;
+      return {
+        id: "playerColors",
+        strategy: Strategy.FIXED,
+        value: Object.fromEntries(
+          playerIds.map((playerId, index) => [playerId, colors[index]])
+        ),
+      };
+    }
+
+    default:
+      return {
+        id: id,
+        strategy: Strategy.FIXED,
+        value: ConcordiaGame.itemsForStep(id)[0],
+      };
+  }
+}
+
 export const templateSlice = createSlice({
   name: "template",
   initialState: templateAdapter.getInitialState(),
   reducers: {
-    strategySwapped(
+    setStrategy(
       state,
       {
         payload: { id, strategy },
-      }: PayloadAction<{ id: EntityId; strategy: Strategy }>
+      }: PayloadAction<{
+        id: SetupStepName;
+        strategy:
+          | Strategy.RANDOM
+          | Strategy.DEFAULT
+          | Strategy.MANUAL
+          | Strategy.COMPUTED;
+      }>
     ) {
-      if (!(id in state.entities)) {
-        state = templateAdapter.addOne(state, {
-          id: id as SetupStepName,
-          strategy: Strategy.OFF,
-        });
-      }
-      const step = nullthrows(state.entities[id]);
-
-      invariant(
-        step.strategy !== strategy,
-        `For step '${id}' trying to swap strategies with the same strategy ${strategy}`
-      );
-      if (strategy !== Strategy.OFF) {
-        step.strategy = strategy;
+      const step = state.entities[id];
+      if (step == null) {
+        templateAdapter.addOne(state, { id, strategy });
       } else {
-        state = templateAdapter.removeOne(state, id);
+        step.strategy = strategy;
       }
+    },
+
+    clearStrategy(state, { payload: id }: PayloadAction<SetupStepName>) {
+      state = templateAdapter.removeOne(state, id);
 
       // When strategies change they might make strategies for downstream steps
       // invalid so we go over all of them and fix any inconsistency.
@@ -89,151 +145,116 @@ export const templateSlice = createSlice({
       // previous config, and, when a change upstream makes the previous config
       // valid again, we swap it back in.
 
-      // Remove the previous config when the user intentionally changes
-      // strategies, this will prevent us from overriding it.
-      step.previous = undefined;
+      while (true) {
+        const currentEntities = { ...state.entities };
+        const invalidSteps = filter_nulls(Object.values(state.entities)).filter(
+          (step) =>
+            !ConcordiaGame.strategiesFor(step.id, currentEntities).includes(
+              step.strategy
+            )
+        );
 
-      let checkChanges = true;
-      while (checkChanges) {
-        checkChanges = filter_nulls(Object.values(state.entities))
-          .filter((step) => step.id !== id)
-          .some((step) => {
-            const strategies = ConcordiaGame.strategiesFor(
-              step.id,
-              state.entities
-            );
+        if (invalidSteps.length === 0) {
+          break;
+        }
 
-            if (
-              step.previous != null &&
-              strategies.includes(step.previous.strategy)
-            ) {
-              step.strategy = step.previous.strategy;
-              step.value = step.previous.value;
-              step.previous = undefined;
-              return true;
-            }
-
-            if (!strategies.includes(step.strategy)) {
-              step.previous = { ...step };
-              step.strategy = nullthrows(strategies[0]);
-              step.value = undefined;
-              return true;
-            }
-
-            return false;
-          });
+        state = templateAdapter.removeMany(
+          state,
+          invalidSteps.map((step) => step.id)
+        );
       }
     },
 
-    fixedValueSet(
+    setFixedStrategy: {
+      prepare(id: SetupStepName, playerIds: EntityId[]) {
+        return {
+          payload: id,
+          meta: playerIds,
+        };
+      },
+      reducer(
+        state,
+        {
+          payload: id,
+          meta: playerIds,
+        }: PayloadAction<SetupStepName, string, EntityId[]>
+      ) {
+        templateAdapter.upsertOne(state, fixedSetupStep(id, playerIds));
+      },
+    },
+
+    updateFixedValue(
       state,
       {
-        payload: { stepId, value },
-      }: PayloadAction<
-        | { stepId: EntityId; value: string }
-        | { stepId: "playOrder"; value: EntityId[] }
-        | { stepId: "playerColors"; value: PlayerColors }
-        | { stepId: "firstPlayer"; value: EntityId }
-      >
+        payload: { id, value },
+      }: PayloadAction<Omit<FixedSetupStep<SetupStepName>, "strategy">>
     ) {
-      const step = state.entities[stepId];
+      const step = state.entities[id];
       if (step == null) {
-        throw new Error(`Couldn't find setup step ${stepId}`);
+        throw new Error(`Couldn't find setup step ${id}`);
       }
 
       if (step.strategy !== Strategy.FIXED) {
         throw new Error(
-          `Trying to set fixed value when strategy isn't fixed for setup step ${stepId}`
+          `Trying to set fixed value when strategy isn't fixed for setup step ${id}`
         );
       }
 
       step.value = value;
     },
-
-    initialized: templateAdapter.setAll,
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(
         playerRemoved,
-        (state, { payload: playerId }: PayloadAction<EntityId>) => {
-          const { playOrder } = state.entities;
-          if (
-            playOrder != null &&
-            playOrder.strategy === Strategy.FIXED &&
-            playOrder.value != null
-          ) {
-            // When the player order is fixed we need to remove the removed player
-            // from it too, so that the play order represents the current players.
-            // TODO: We need to generalize it to work dynamically on all player-
-            // related steps
+        (state, { payload: playerId }: PayloadAction<EntityId>) =>
+          filter_nulls(Object.values(state.entities)).forEach((step) => {
+            if (step.strategy !== Strategy.FIXED) {
+              return;
+            }
 
-            const value = type_invariant<EntityId[]>(
-              playOrder.value,
-              Array.isArray
-            );
-            const playerIndex = value.indexOf(playerId);
-            invariant(playerIndex !== -1);
-            value.splice(playerIndex, 1);
-          }
+            switch (step.id) {
+              case "playOrder":
+                const playerIndex = step.value.indexOf(playerId);
+                invariant(playerIndex !== -1);
+                step.value.splice(playerIndex, 1);
+                break;
 
-          const { playerColors } = state.entities;
-          if (
-            playerColors != null &&
-            playerColors.strategy === Strategy.FIXED &&
-            playerColors.value != null
-          ) {
-            const value = playerColors.value as PlayerColors;
-            delete value[playerId];
-          }
+              case "playerColors":
+                delete step.value[playerId];
+                break;
 
-          const { firstPlayer } = state.entities;
-          if (
-            firstPlayer != null &&
-            firstPlayer.strategy === Strategy.FIXED &&
-            firstPlayer.value === playerId
-          ) {
-            firstPlayer.strategy = Strategy.OFF;
-            firstPlayer.value = undefined;
-          }
-        }
+              case "firstPlayer":
+                state = templateAdapter.removeOne(state, "firstPlayer");
+                break;
+            }
+          })
       )
+
       .addCase(
         playerAdded,
-        (state, { payload: player }: PayloadAction<Player>) => {
-          const { playOrder } = state.entities;
-          if (
-            playOrder != null &&
-            playOrder.strategy === Strategy.FIXED &&
-            playOrder.value != null
-          ) {
-            // When the player order is fixed we need to add the added player to
-            // it too, so that the play order represents the current players.
-            // TODO: We need to generalize it to work dynamically on all player-
-            // related steps
+        (state, { payload: player }: PayloadAction<Player>) =>
+          filter_nulls(Object.values(state.entities)).forEach((step) => {
+            if (step.strategy !== Strategy.FIXED) {
+              return;
+            }
 
-            const value = type_invariant<EntityId[]>(
-              playOrder.value,
-              Array.isArray
-            );
-            value.push(player.name);
-          }
+            switch (step.id) {
+              case "playOrder":
+                step.value.push(player.name);
+                break;
 
-          const { playerColors } = state.entities;
-          if (
-            playerColors != null &&
-            playerColors.strategy === Strategy.FIXED &&
-            playerColors.value != null
-          ) {
-            const value = playerColors.value as PlayerColors;
-            const usedColors = Object.values(value);
-            value[player.name] = nullthrows(
-              ConcordiaGame.playerColors.find(
-                (color) => !usedColors.includes(color)
-              )
-            );
-          }
-        }
+              case "playerColors":
+                const usedColors = Object.values(step.value);
+                step.value[player.name] = nullthrows(
+                  ConcordiaGame.playerColors.find(
+                    (color) => !usedColors.includes(color)
+                  )
+                );
+                break;
+            }
+          })
       );
   },
 });
