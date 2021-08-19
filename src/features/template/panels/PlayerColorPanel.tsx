@@ -18,7 +18,7 @@ import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import array_zip from "../../../common/lib_utils/array_zip";
 import object_flip from "../../../common/lib_utils/object_flip";
 import invariant_violation from "../../../common/err/invariant_violation";
-import ConcordiaGame from "../../../core/games/concordia/ConcordiaGame";
+import ConcordiaGame from "../../../games/concordia/ConcordiaGame";
 
 function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (

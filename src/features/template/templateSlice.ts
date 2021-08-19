@@ -10,7 +10,7 @@ import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
 import ConcordiaGame, {
   SetupStepName,
-} from "../../core/games/concordia/ConcordiaGame";
+} from "../../games/concordia/ConcordiaGame";
 import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import {

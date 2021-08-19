@@ -7,7 +7,7 @@ import templateSlice, {
 } from "./templateSlice";
 import ConcordiaGame, {
   SetupStepName,
-} from "../../core/games/concordia/ConcordiaGame";
+} from "../../games/concordia/ConcordiaGame";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { Strategy } from "../../core/Strategy";
 

@@ -1,8 +1,8 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import invariant_violation from "../../../common/err/invariant_violation";
-import { SetupStep } from "../../../features/template/templateSlice";
-import { Strategy } from "../../Strategy";
-import { GamePiecesColor } from "../../themeWithGameColors";
+import invariant_violation from "../../common/err/invariant_violation";
+import { SetupStep } from "../../features/template/templateSlice";
+import { Strategy } from "../../core/Strategy";
+import { GamePiecesColor } from "../../core/themeWithGameColors";
 
 export type SetupStepName =
   | "map"

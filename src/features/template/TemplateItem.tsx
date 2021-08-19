@@ -6,8 +6,8 @@ import {
   Paper,
 } from "@material-ui/core";
 import { strategyLabel } from "../../core/content";
-import { SetupStepName } from "../../core/games/concordia/ConcordiaGame";
-import { stepLabel } from "../../core/games/concordia/content";
+import { SetupStepName } from "../../games/concordia/ConcordiaGame";
+import { stepLabel } from "../../games/concordia/content";
 import { selectors as templateStepSelectors } from "./templateSlice";
 import StrategyIcon from "./StrategyIcon";
 import StepDetailsPane from "./StepDetailsPane";

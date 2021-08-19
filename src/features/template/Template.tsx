@@ -2,7 +2,7 @@ import { List } from "@material-ui/core";
 import { useMemo, useState } from "react";
 import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
-import ConcordiaGame from "../../core/games/concordia/ConcordiaGame";
+import ConcordiaGame from "../../games/concordia/ConcordiaGame";
 import { useAppSelector } from "../../app/hooks";
 import { selectors } from "./templateSlice";
 

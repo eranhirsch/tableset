@@ -6,7 +6,7 @@ import { Strategy } from "../../core/Strategy";
 import StrategiesSelector from "./StrategiesSelector";
 import FixedSettingsConfig from "./FixedSettingsConfig";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
-import { SetupStepName } from "../../core/games/concordia/ConcordiaGame";
+import { SetupStepName } from "../../games/concordia/ConcordiaGame";
 
 export default function StepDetailsPane({ stepId }: { stepId: SetupStepName }) {
   const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
