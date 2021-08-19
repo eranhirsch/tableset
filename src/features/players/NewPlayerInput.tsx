@@ -3,7 +3,7 @@ import { useAppDispatch } from "../../app/hooks";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import { useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
-import { added as playerAdded } from "./playersSlice";
+import playersSlice from "./playersSlice";
 
 export default function NewPlayerInput() {
   const dispatch = useAppDispatch();
@@ -14,7 +14,7 @@ export default function NewPlayerInput() {
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        dispatch(playerAdded({ name: newPlayerName }));
+        dispatch(playersSlice.actions.added({ name: newPlayerName }));
         setNewPlayerName("");
       }}
     >
