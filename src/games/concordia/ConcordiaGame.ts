@@ -5,21 +5,22 @@ import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 
 export type SetupStepName =
-  | "map"
-  | "cityTiles"
+  | "bank"
   | "bonusTiles"
-  | "initialMarket"
-  | "marketDeck"
-  | "playOrder"
-  | "playerColor"
-  | "playerPieces"
-  | "startingMoney"
-  | "praefectusMagnus"
+  | "cityTiles"
   | "concordiaCard"
-  | "gatherMarketCards"
-  | "startingColonists"
+  | "firstPlayer"
+  | "map"
+  | "marketCards"
+  | "marketDeck"
+  | "marketDisplay"
+  | "playerColors"
+  | "playerPieces"
+  | "playOrder"
+  | "praefectusMagnus"
   | "resourcePiles"
-  | "bank";
+  | "startingColonists"
+  | "startingMoney";
 
 export default class ConcordiaGame {
   public static get order(): SetupStepName[] {
@@ -27,16 +28,17 @@ export default class ConcordiaGame {
       "map",
       "cityTiles",
       "bonusTiles",
-      "gatherMarketCards",
-      "initialMarket",
+      "marketCards",
+      "marketDisplay",
       "marketDeck",
       "concordiaCard",
       "resourcePiles",
       "bank",
       "playOrder",
-      "playerColor",
+      "playerColors",
       "playerPieces",
       "startingColonists",
+      "firstPlayer",
       "startingMoney",
       "praefectusMagnus",
     ];
@@ -72,13 +74,13 @@ export default class ConcordiaGame {
         return [Strategy.OFF];
       }
 
-      case "initialMarket":
+      case "marketDisplay":
         return [Strategy.OFF, Strategy.RANDOM];
 
       case "playOrder":
         return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
 
-      case "playerColor":
+      case "playerColors":
         return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
 
       case "startingMoney": {
@@ -104,6 +106,9 @@ export default class ConcordiaGame {
         }
         return [Strategy.OFF];
       }
+
+      case "firstPlayer":
+        return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
 
       default:
         return [Strategy.OFF];

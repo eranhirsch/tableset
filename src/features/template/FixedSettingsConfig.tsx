@@ -23,7 +23,7 @@ export default function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
           }
         />
       );
-    case "playerColor":
+    case "playerColors":
       return (
         <PlayerColorPanel
           playerColors={

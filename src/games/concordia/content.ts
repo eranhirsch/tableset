@@ -8,13 +8,13 @@ export function stepLabel(stepName: SetupStepName): string {
       return "City Resource";
     case "bonusTiles":
       return "Province Bonus";
-    case "initialMarket":
+    case "marketDisplay":
       return "Initial Market";
     case "marketDeck":
       return "Market Deck";
     case "playOrder":
       return "Play Order";
-    case "playerColor":
+    case "playerColors":
       return "Player Color";
     case "playerPieces":
       return "Player Pieces";
@@ -24,7 +24,7 @@ export function stepLabel(stepName: SetupStepName): string {
       return "Præfectus Magnus";
     case "concordiaCard":
       return "Concordia Card";
-    case "gatherMarketCards":
+    case "marketCards":
       return "Market Cards";
     case "startingColonists":
       return "Starting Colonists";
@@ -32,5 +32,7 @@ export function stepLabel(stepName: SetupStepName): string {
       return "Resource Piles";
     case "bank":
       return "Bank";
+    case "firstPlayer":
+      return "Starting Player";
   }
 }
