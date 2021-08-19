@@ -13,11 +13,7 @@ import ConcordiaGame, {
 } from "../../games/concordia/ConcordiaGame";
 import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
-import {
-  removed as playerRemoved,
-  added as playerAdded,
-  Player,
-} from "../players/playersSlice";
+import playersSlice, { Player } from "../players/playersSlice";
 
 export interface PlayerColors {
   [playerId: string]: GamePiecesColor;
@@ -207,7 +203,7 @@ export const templateSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(
-        playerRemoved,
+        playersSlice.actions.removed,
         (state, { payload: playerId }: PayloadAction<EntityId>) =>
           filter_nulls(Object.values(state.entities)).forEach((step) => {
             if (step.strategy !== Strategy.FIXED) {
@@ -233,7 +229,7 @@ export const templateSlice = createSlice({
       )
 
       .addCase(
-        playerAdded,
+        playersSlice.actions.added,
         (state, { payload: player }: PayloadAction<Player>) =>
           filter_nulls(Object.values(state.entities)).forEach((step) => {
             if (step.strategy !== Strategy.FIXED) {
