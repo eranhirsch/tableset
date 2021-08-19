@@ -37,6 +37,12 @@ export type SetupStep<T> =
       previous?: SetupStep<T>;
     }
   | {
+      id: "firstPlayer";
+      strategy: Strategy.FIXED;
+      value?: EntityId;
+      previous?: SetupStep<T>;
+    }
+  | {
       id: T;
       strategy: Strategy;
       value?: string;
@@ -127,6 +133,7 @@ export const templateSlice = createSlice({
         | { stepId: EntityId; value: string }
         | { stepId: "playOrder"; value: EntityId[] }
         | { stepId: "playerColors"; value: PlayerColors }
+        | { stepId: "firstPlayer"; value: EntityId }
       >
     ) {
       const step = state.entities[stepId];
