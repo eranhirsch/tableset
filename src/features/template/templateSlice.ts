@@ -130,35 +130,51 @@ export const templateSlice = createSlice({
       }
     },
 
-    clearStrategy(state, { payload: id }: PayloadAction<SetupStepName>) {
-      state = templateAdapter.removeOne(state, id);
+    clearStrategy: {
+      prepare: (id: SetupStepName, playersTotal: number) => ({
+        payload: id,
+        meta: playersTotal,
+      }),
+      reducer(
+        state,
+        {
+          payload: id,
+          meta: playersTotal,
+        }: PayloadAction<SetupStepName, any, number>
+      ) {
+        state = templateAdapter.removeOne(state, id);
 
-      // When strategies change they might make strategies for downstream steps
-      // invalid so we go over all of them and fix any inconsistency.
-      // BUT... because we only provide the user with a 'next strategy' action,
-      // they might not be aware of this and thus a click would cause them to
-      // lose these configurations unintentionally. To solve that we save the
-      // previous config, and, when a change upstream makes the previous config
-      // valid again, we swap it back in.
+        // When strategies change they might make strategies for downstream steps
+        // invalid so we go over all of them and fix any inconsistency.
+        // BUT... because we only provide the user with a 'next strategy' action,
+        // they might not be aware of this and thus a click would cause them to
+        // lose these configurations unintentionally. To solve that we save the
+        // previous config, and, when a change upstream makes the previous config
+        // valid again, we swap it back in.
 
-      while (true) {
-        const currentEntities = { ...state.entities };
-        const invalidSteps = filter_nulls(Object.values(state.entities)).filter(
-          (step) =>
-            !ConcordiaGame.strategiesFor(step.id, currentEntities).includes(
-              step.strategy
-            )
-        );
+        while (true) {
+          const currentEntities = { ...state.entities };
+          const invalidSteps = filter_nulls(
+            Object.values(state.entities)
+          ).filter(
+            (step) =>
+              !ConcordiaGame.strategiesFor(
+                step.id,
+                currentEntities,
+                playersTotal
+              ).includes(step.strategy)
+          );
 
-        if (invalidSteps.length === 0) {
-          break;
+          if (invalidSteps.length === 0) {
+            break;
+          }
+
+          state = templateAdapter.removeMany(
+            state,
+            invalidSteps.map((step) => step.id)
+          );
         }
-
-        state = templateAdapter.removeMany(
-          state,
-          invalidSteps.map((step) => step.id)
-        );
-      }
+      },
     },
 
     setFixedStrategy: {
@@ -204,25 +220,36 @@ export const templateSlice = createSlice({
     builder
       .addCase(
         playersSlice.actions.removed,
-        (state, { payload: playerId }: PayloadAction<EntityId>) =>
+        (
+          state,
+          {
+            payload: playerId,
+            meta: playersTotal,
+          }: PayloadAction<EntityId, any, number>
+        ) =>
           filter_nulls(Object.values(state.entities)).forEach((step) => {
-            if (step.strategy !== Strategy.FIXED) {
-              return;
-            }
-
             switch (step.id) {
               case "playOrder":
-                const playerIndex = step.value.indexOf(playerId);
-                invariant(playerIndex !== -1);
-                step.value.splice(playerIndex, 1);
+                if (playersTotal >= 3) {
+                  // When we only have 2 players there is no sense in play order
+                  state = templateAdapter.removeOne(state, "playOrder");
+                } else if (step.strategy === Strategy.FIXED) {
+                  const playerIndex = step.value.indexOf(playerId);
+                  invariant(playerIndex !== -1);
+                  step.value.splice(playerIndex, 1);
+                }
                 break;
 
               case "playerColors":
-                delete step.value[playerId];
+                if (step.strategy === Strategy.FIXED) {
+                  delete step.value[playerId];
+                }
                 break;
 
               case "firstPlayer":
-                state = templateAdapter.removeOne(state, "firstPlayer");
+                if (step.strategy === Strategy.FIXED) {
+                  state = templateAdapter.removeOne(state, "firstPlayer");
+                }
                 break;
             }
           })

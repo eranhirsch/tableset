@@ -1,5 +1,5 @@
 import { Chip } from "@material-ui/core";
-import { useAppDispatch } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import PersonIcon from "@material-ui/icons/Person";
 import playersSlice, { selectors as playersSelectors } from "./playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
@@ -15,6 +15,7 @@ export default function Player({
   const dispatch = useAppDispatch();
 
   const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
+  const playersTotal = useAppSelector(playersSelectors.selectTotal);
 
   return (
     <Chip
@@ -25,7 +26,8 @@ export default function Player({
         // Turn off onDelete to prevent player count from dropping below
         // allowed minimum
         isDeletable
-          ? () => dispatch(playersSlice.actions.removed(player.name))
+          ? () =>
+              dispatch(playersSlice.actions.removed(player.name, playersTotal))
           : undefined
       }
     />

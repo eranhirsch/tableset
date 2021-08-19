@@ -46,7 +46,8 @@ export default class ConcordiaGame {
 
   public static strategiesFor(
     stepId: SetupStepName,
-    template: Dictionary<SetupStep<SetupStepName>>
+    template: Dictionary<SetupStep<SetupStepName>>,
+    playersTotal: number
   ): Strategy[] {
     switch (stepId) {
       case "map":
@@ -78,6 +79,9 @@ export default class ConcordiaGame {
         return [Strategy.OFF, Strategy.RANDOM];
 
       case "playOrder":
+        if (playersTotal < 3) {
+          return [Strategy.OFF];
+        }
         return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
 
       case "playerColors":

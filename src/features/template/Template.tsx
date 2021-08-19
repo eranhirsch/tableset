@@ -4,19 +4,22 @@ import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
 import ConcordiaGame from "../../games/concordia/ConcordiaGame";
 import { useAppSelector } from "../../app/hooks";
-import { selectors } from "./templateSlice";
+import { selectors as templateSelectors } from "./templateSlice";
+import { selectors as playersSelectors } from "../players/playersSlice";
 
 export default function Template() {
   const [expandedStepId, setExpandedStepId] = useState<EntityId>();
 
-  const template = useAppSelector(selectors.selectEntities);
+  const template = useAppSelector(templateSelectors.selectEntities);
+  const playersTotal = useAppSelector(playersSelectors.selectTotal);
 
   const templatableItems = useMemo(
     () =>
       ConcordiaGame.order.filter(
-        (stepId) => ConcordiaGame.strategiesFor(stepId, template).length > 1
+        (stepId) =>
+          ConcordiaGame.strategiesFor(stepId, template, playersTotal).length > 1
       ),
-    [template]
+    [playersTotal, template]
   );
 
   return (
