@@ -1,4 +1,4 @@
-import { Avatar, Stack, Badge } from "@material-ui/core";
+import { Avatar, Stack, Badge, Typography } from "@material-ui/core";
 import { useCallback, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import templateSlice from "../templateSlice";
@@ -53,7 +53,7 @@ function FirstAvatar({ playerId }: { playerId: EntityId }) {
     <Badge
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       overlap="circular"
-      badgeContent={<LockIcon fontSize="small" />}
+      badgeContent={<LockIcon color="primary" fontSize="small" />}
     >
       <Avatar>{short_name(player.name)}</Avatar>
     </Badge>
@@ -108,31 +108,34 @@ export default function PlayerOrderPanelV2({
   );
 
   return (
-    <Stack direction="row" spacing={2}>
-      {order.length >= 1 && <FirstAvatar playerId={order[0]} />}
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="order" direction="horizontal">
-          {(provided) => (
-            <Stack
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              component="ol"
-              direction="row"
-              sx={{ padding: 0 }}
-              spacing={2}
-            >
-              {order.slice(1).map((playerId, idx) => (
-                <DraggablePlayer
-                  key={playerId}
-                  playerId={playerId}
-                  index={idx}
-                />
-              ))}
-              {provided.placeholder}
-            </Stack>
-          )}
-        </Droppable>
-      </DragDropContext>
+    <Stack alignItems="center" direction="column" spacing={1}>
+      <Stack direction="row" spacing={1}>
+        {order.length >= 1 && <FirstAvatar playerId={order[0]} />}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="order" direction="horizontal">
+            {(provided) => (
+              <Stack
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                component="ol"
+                direction="row"
+                sx={{ padding: 0 }}
+                spacing={1}
+              >
+                {order.slice(1).map((playerId, idx) => (
+                  <DraggablePlayer
+                    key={playerId}
+                    playerId={playerId}
+                    index={idx}
+                  />
+                ))}
+                {provided.placeholder}
+              </Stack>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </Stack>
+      <Typography variant="caption">{"In clockwise order"}</Typography>
     </Stack>
   );
 }
