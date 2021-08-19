@@ -106,7 +106,9 @@ export default function PlayerOrderPanel({
                       badgeContent={idx + 1}
                       anchorOrigin={{ horizontal: "left", vertical: "top" }}
                       overlap="circular"
-                      invisible={!isExpanded || snapshot.isDraggingOver}
+                      invisible={
+                        !isExpanded || snapshot.draggingFromThisWith != null
+                      }
                     >
                       <Avatar
                         sx={{
