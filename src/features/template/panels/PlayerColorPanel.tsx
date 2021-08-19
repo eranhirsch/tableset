@@ -148,7 +148,7 @@ export default function PlayerColorPanel({
 
     dispatch(
       templateSlice.actions.fixedValueSet({
-        stepId: "playerColor",
+        stepId: "playerColors",
         value: {
           ...playerColors,
           ...array_zip(unassignedPlayerIds, unassignedColors),
@@ -224,7 +224,7 @@ export default function PlayerColorPanel({
 
       dispatch(
         templateSlice.actions.fixedValueSet({
-          stepId: "playerColor",
+          stepId: "playerColors",
           value: newColors,
         })
       );
