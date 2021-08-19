@@ -157,16 +157,17 @@ export const templateSlice = createSlice({
       .addCase(
         playerRemoved,
         (state, { payload: playerId }: PayloadAction<EntityId>) => {
-          // When the player order is fixed we need to remove the removed player
-          // from it too, so that the play order represents the current players.
-          // TODO: We need to generalize it to work dynamically on all player-
-          // related steps
           const { playOrder } = state.entities;
           if (
             playOrder != null &&
             playOrder.strategy === Strategy.FIXED &&
             playOrder.value != null
           ) {
+            // When the player order is fixed we need to remove the removed player
+            // from it too, so that the play order represents the current players.
+            // TODO: We need to generalize it to work dynamically on all player-
+            // related steps
+
             const value = type_invariant<EntityId[]>(
               playOrder.value,
               Array.isArray
@@ -175,26 +176,62 @@ export const templateSlice = createSlice({
             invariant(playerIndex !== -1);
             value.splice(playerIndex, 1);
           }
+
+          const { playerColors } = state.entities;
+          if (
+            playerColors != null &&
+            playerColors.strategy === Strategy.FIXED &&
+            playerColors.value != null
+          ) {
+            const value = playerColors.value as PlayerColors;
+            delete value[playerId];
+          }
+
+          const { firstPlayer } = state.entities;
+          if (
+            firstPlayer != null &&
+            firstPlayer.strategy === Strategy.FIXED &&
+            firstPlayer.value === playerId
+          ) {
+            firstPlayer.strategy = Strategy.OFF;
+            firstPlayer.value = undefined;
+          }
         }
       )
       .addCase(
         playerAdded,
         (state, { payload: player }: PayloadAction<Player>) => {
-          // When the player order is fixed we need to add the added player to
-          // it too, so that the play order represents the current players.
-          // TODO: We need to generalize it to work dynamically on all player-
-          // related steps
           const { playOrder } = state.entities;
           if (
             playOrder != null &&
             playOrder.strategy === Strategy.FIXED &&
             playOrder.value != null
           ) {
+            // When the player order is fixed we need to add the added player to
+            // it too, so that the play order represents the current players.
+            // TODO: We need to generalize it to work dynamically on all player-
+            // related steps
+
             const value = type_invariant<EntityId[]>(
               playOrder.value,
               Array.isArray
             );
             value.push(player.name);
+          }
+
+          const { playerColors } = state.entities;
+          if (
+            playerColors != null &&
+            playerColors.strategy === Strategy.FIXED &&
+            playerColors.value != null
+          ) {
+            const value = playerColors.value as PlayerColors;
+            const usedColors = Object.values(value);
+            value[player.name] = nullthrows(
+              ConcordiaGame.playerColors.find(
+                (color) => !usedColors.includes(color)
+              )
+            );
           }
         }
       );
