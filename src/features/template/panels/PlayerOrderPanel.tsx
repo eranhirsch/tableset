@@ -1,5 +1,5 @@
 import { Avatar, Stack, Badge } from "@material-ui/core";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import templateSlice from "../templateSlice";
 import { selectors as playersSelectors } from "../../players/playersSlice";
@@ -10,6 +10,9 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
+import short_name from "../../../common/short_name";
+import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
+import LockIcon from "@material-ui/icons/Lock";
 
 function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
   const clone = items.slice();
@@ -18,122 +21,118 @@ function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
   return clone;
 }
 
-export default function PlayerOrderPanel({
+function DraggablePlayer({
+  playerId,
+  index,
+}: {
+  playerId: EntityId;
+  index: number;
+  badgeContent?: string;
+}) {
+  const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
+
+  return (
+    <Draggable draggableId={`${playerId}`} index={index}>
+      {(provided) => (
+        <Avatar
+          component="li"
+          ref={provided.innerRef}
+          {...provided.dragHandleProps}
+          {...provided.draggableProps}
+        >
+          {short_name(player.name)}
+        </Avatar>
+      )}
+    </Draggable>
+  );
+}
+
+function FirstAvatar({ playerId }: { playerId: EntityId }) {
+  const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
+  return (
+    <Badge
+      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      overlap="circular"
+      badgeContent={<LockIcon fontSize="small" />}
+    >
+      <Avatar>{short_name(player.name)}</Avatar>
+    </Badge>
+  );
+}
+
+export default function PlayerOrderPanelV2({
   order = [],
 }: {
   order: EntityId[] | undefined;
 }) {
   const dispatch = useAppDispatch();
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const playerIds = useAppSelector(playersSelectors.selectIds);
+  const sortedPlayerIds = useMemo(() => [...playerIds].sort(), [playerIds]);
 
   useEffect(() => {
-    setTimeout(() => setIsExpanded(true), 650);
-  }, [setIsExpanded]);
-
-  const players = useAppSelector(playersSelectors.selectEntities);
-
-  useEffect(() => {
-    if (order.length === 0) {
+    if (
+      order.length < sortedPlayerIds.length ||
+      order.some((playerId) => !sortedPlayerIds.includes(playerId))
+    ) {
       // We need an initial value for order, we can set it once the component
       // mounts as it would show some order
       dispatch(
         templateSlice.actions.fixedValueSet({
           stepId: "playOrder",
-          value: Object.keys(players),
+          value: sortedPlayerIds,
         })
       );
     }
-  }, [order, dispatch, players]);
+  }, [dispatch, order, sortedPlayerIds]);
+
+  const onDragEnd = useCallback(
+    ({ reason, source, destination }: DropResult) => {
+      if (reason === "CANCEL") {
+        return;
+      }
+
+      if (destination == null) {
+        // Dropped out of the droppable
+        return;
+      }
+
+      dispatch(
+        templateSlice.actions.fixedValueSet({
+          stepId: "playOrder",
+          value: moveItem(order, source.index + 1, destination.index + 1),
+        })
+      );
+    },
+    [dispatch, order]
+  );
 
   return (
-    <DragDropContext
-      onDragEnd={(result: DropResult) => {
-        if (result.destination == null) {
-          return;
-        }
-
-        dispatch(
-          templateSlice.actions.fixedValueSet({
-            stepId: "playOrder",
-            value: moveItem(
-              order,
-              result.source.index,
-              result.destination.index
-            ),
-          })
-        );
-      }}
-    >
-      <Droppable
-        droppableId="playerOrder"
-        direction="horizontal"
-        isDropDisabled={!isExpanded}
-      >
-        {(provided, snapshot) => (
-          <Stack
-            component="ol"
-            ref={provided.innerRef}
-            direction="row"
-            sx={{ padding: 0 }}
-            spacing={isExpanded ? 1 : -1.5}
-          >
-            {order.map((playerId, idx) => {
-              const playerName = players[playerId]!.name;
-              const [first, last] = playerName.split(" ");
-              return (
-                <Draggable
+    <Stack direction="row" spacing={2}>
+      {order.length >= 1 && <FirstAvatar playerId={order[0]} />}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="order" direction="horizontal">
+          {(provided) => (
+            <Stack
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              component="ol"
+              direction="row"
+              sx={{ padding: 0 }}
+              spacing={2}
+            >
+              {order.slice(1).map((playerId, idx) => (
+                <DraggablePlayer
                   key={playerId}
-                  draggableId={`${playerId}`}
+                  playerId={playerId}
                   index={idx}
-                  isDragDisabled={!isExpanded}
-                >
-                  {(provided) => (
-                    <Badge
-                      sx={{
-                        // Playing around with some visual flare.
-                        // TODO: The transition effect also triggers after
-                        // finishing a drag when the individual avatars render
-                        // again because of the new order and the margin for the
-                        // stack is updated. We can probably do better here by
-                        // detecting that specific use-case and removing the
-                        // transition
-                        transition:
-                          "margin 280ms cubic-bezier(0, 0.71, 0.26, 1.9), background-color 20ms ease-out 280ms",
-                      }}
-                      component="li"
-                      color="primary"
-                      badgeContent={idx + 1}
-                      anchorOrigin={{ horizontal: "left", vertical: "top" }}
-                      overlap="circular"
-                      invisible={
-                        !isExpanded || snapshot.draggingFromThisWith != null
-                      }
-                    >
-                      <Avatar
-                        sx={{
-                          // Mimic the AvatarGroup styling
-                          zIndex: !isExpanded ? order.length - idx : undefined,
-                          borderWidth: "2px",
-                          borderColor: "white",
-                          borderStyle: "solid",
-                        }}
-                        ref={provided.innerRef}
-                        {...provided.dragHandleProps}
-                        {...provided.draggableProps}
-                        style={{
-                          ...provided.draggableProps.style,
-                        }}
-                      >{`${first[0]}${last[0]}`}</Avatar>
-                    </Badge>
-                  )}
-                </Draggable>
-              );
-            })}
-            {provided.placeholder}
-          </Stack>
-        )}
-      </Droppable>
-    </DragDropContext>
+                />
+              ))}
+              {provided.placeholder}
+            </Stack>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </Stack>
   );
 }

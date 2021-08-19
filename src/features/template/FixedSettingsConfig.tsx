@@ -4,10 +4,10 @@ import {
 } from "./templateSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import { type_invariant } from "../../common/err/invariant";
-import PlayerOrderPanel from "./panels/PlayerOrderPanel";
 import ItemsListPanel from "./panels/ItemsListPanel";
 import PlayerColorPanel from "./panels/PlayerColorPanel";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
+import PlayerOrderPanel from "./panels/PlayerOrderPanel";
 
 export default function FixedSettingsConfig({ stepId }: { stepId: EntityId }) {
   const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
