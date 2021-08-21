@@ -1,4 +1,12 @@
-import { List } from "@material-ui/core";
+import {
+  AppBar,
+  Box,
+  Fab,
+  IconButton,
+  List,
+  Toolbar,
+  Typography,
+} from "@material-ui/core";
 import { useMemo, useState } from "react";
 import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
@@ -6,6 +14,9 @@ import ConcordiaGame from "../../games/concordia/ConcordiaGame";
 import { useAppSelector } from "../../app/hooks";
 import { selectors as templateSelectors } from "./templateSlice";
 import { selectors as playersSelectors } from "../players/playersSlice";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import Players from "../players/Players";
+import PeopleIcon from "@material-ui/icons/People";
 
 export default function Template() {
   const [expandedStepId, setExpandedStepId] = useState<EntityId>();
@@ -23,17 +34,39 @@ export default function Template() {
   );
 
   return (
-    <List component="ol">
-      {templatableItems.map((stepId) => (
-        <TemplateItem
-          key={stepId}
-          stepId={stepId}
-          expanded={stepId === expandedStepId}
-          onClick={(isExpanded) =>
-            setExpandedStepId(isExpanded ? undefined : stepId)
-          }
-        />
-      ))}
-    </List>
+    <>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Template
+          </Typography>
+          <IconButton>
+            <PeopleIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Players playerCount={{ min: 2, max: 5 }} />
+      <section>
+        <List component="ol">
+          {templatableItems.map((stepId) => (
+            <TemplateItem
+              key={stepId}
+              stepId={stepId}
+              expanded={stepId === expandedStepId}
+              onClick={(isExpanded) =>
+                setExpandedStepId(isExpanded ? undefined : stepId)
+              }
+            />
+          ))}
+        </List>
+      </section>
+      <Fab
+        sx={{ position: "absolute", bottom: 16, right: 16 }}
+        color="primary"
+        aria-label="go"
+      >
+        <PlayArrowIcon />
+      </Fab>
+    </>
   );
 }
