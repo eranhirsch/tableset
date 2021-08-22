@@ -1,4 +1,5 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import { instanceSlice } from "../features/instance/instanceSlice";
 import playersSlice from "../features/players/playersSlice";
 import templateSlice from "../features/template/templateSlice";
 
@@ -6,6 +7,7 @@ export const store = configureStore({
   reducer: {
     [templateSlice.name]: templateSlice.reducer,
     [playersSlice.name]: playersSlice.reducer,
+    [instanceSlice.name]: instanceSlice.reducer,
   },
 });
 

@@ -12,14 +12,10 @@ import ConcordiaGame, {
   SetupStepName,
 } from "../../games/concordia/ConcordiaGame";
 import { Strategy } from "../../core/Strategy";
-import { GamePiecesColor } from "../../core/themeWithGameColors";
 import playersSlice, { Player } from "../players/playersSlice";
+import PlayerColors from "../../common/PlayerColors";
 
-export interface PlayerColors {
-  [playerId: string]: GamePiecesColor;
-}
-
-type FixedSetupStep<T> =
+type ConstantTemplateElement<T> =
   | {
       id: "playOrder";
       strategy: Strategy.FIXED;
@@ -41,37 +37,37 @@ type FixedSetupStep<T> =
       value: string;
     };
 
-export type SetupStep<T> =
-  | FixedSetupStep<T>
+export type TemplateElement<T> =
+  | ConstantTemplateElement<T>
   | {
       id: T;
       strategy: Exclude<Strategy, Strategy.FIXED>;
     };
 
-const templateAdapter = createEntityAdapter<SetupStep<SetupStepName>>({
+const templateAdapter = createEntityAdapter<TemplateElement<SetupStepName>>({
   selectId: (step) => step.id,
 });
 
 function fixedSetupStep(
   id: "firstPlayer",
   playerIds: EntityId[]
-): FixedSetupStep<"firstPlayer">;
+): ConstantTemplateElement<"firstPlayer">;
 function fixedSetupStep(
   id: "playOrder",
   playerIds: EntityId[]
-): FixedSetupStep<"playOrder">;
+): ConstantTemplateElement<"playOrder">;
 function fixedSetupStep(
   id: "playerColors",
   playerIds: EntityId[]
-): FixedSetupStep<"playerColors">;
+): ConstantTemplateElement<"playerColors">;
 function fixedSetupStep(
   id: SetupStepName,
   playerIds: EntityId[]
-): FixedSetupStep<SetupStepName>;
+): ConstantTemplateElement<SetupStepName>;
 function fixedSetupStep(
   id: any,
   playerIds: EntityId[]
-): FixedSetupStep<SetupStepName> {
+): ConstantTemplateElement<SetupStepName> {
   switch (id) {
     case "playOrder": {
       return { id: "playOrder", strategy: Strategy.FIXED, value: playerIds };
@@ -199,7 +195,7 @@ export const templateSlice = createSlice({
       state,
       {
         payload: { id, value },
-      }: PayloadAction<Omit<FixedSetupStep<SetupStepName>, "strategy">>
+      }: PayloadAction<Omit<ConstantTemplateElement<SetupStepName>, "strategy">>
     ) {
       const step = state.entities[id];
       if (step == null) {

@@ -1,8 +1,9 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import invariant_violation from "../../common/err/invariant_violation";
-import { SetupStep } from "../../features/template/templateSlice";
+import { TemplateElement } from "../../features/template/templateSlice";
 import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
+import invariant from "../../common/err/invariant";
 
 export type SetupStepName =
   | "bank"
@@ -44,9 +45,35 @@ export default class ConcordiaGame {
     ];
   }
 
+  public static resolve(
+    stepId: SetupStepName,
+    strategy: Strategy,
+    playersTotal: number
+  ): string {
+    invariant(
+      strategy !== Strategy.FIXED,
+      `Failed to copy the constant value directly to the instance for step '${stepId}'`
+    );
+
+    switch (stepId) {
+      case "map":
+        switch (strategy) {
+          case Strategy.RANDOM:
+            const items = this.itemsForStep(stepId);
+            return items[Math.floor(Math.random() * items.length)];
+          case Strategy.DEFAULT:
+            return playersTotal < 4 ? "Italia" : "Imperium";
+        }
+    }
+
+    invariant_violation(
+      `Step ${stepId} could not be resolved with strategy ${strategy}`
+    );
+  }
+
   public static strategiesFor(
     stepId: SetupStepName,
-    template: Dictionary<SetupStep<SetupStepName>>,
+    template: Dictionary<TemplateElement<SetupStepName>>,
     playersTotal: number
   ): Strategy[] {
     switch (stepId) {

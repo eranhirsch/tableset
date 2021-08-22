@@ -3,24 +3,27 @@ import { useMemo, useState } from "react";
 import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
 import ConcordiaGame from "../../games/concordia/ConcordiaGame";
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectors as templateSelectors } from "./templateSlice";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import instanceSlice from "../instance/instanceSlice";
 
 export default function Template() {
+  const dispatch = useAppDispatch();
   const [expandedStepId, setExpandedStepId] = useState<EntityId>();
 
   const template = useAppSelector(templateSelectors.selectEntities);
   const playersTotal = useAppSelector(playersSelectors.selectTotal);
 
+  const allItems = ConcordiaGame.order;
   const templatableItems = useMemo(
     () =>
-      ConcordiaGame.order.filter(
+      allItems.filter(
         (stepId) =>
           ConcordiaGame.strategiesFor(stepId, template, playersTotal).length > 1
       ),
-    [playersTotal, template]
+    [allItems, playersTotal, template]
   );
 
   return (
@@ -41,6 +44,9 @@ export default function Template() {
         sx={{ position: "absolute", bottom: 16, right: 16 }}
         color="primary"
         aria-label="go"
+        onClick={() => {
+          dispatch(instanceSlice.actions.created(template, playersTotal));
+        }}
       >
         <PlayArrowIcon />
       </Fab>
