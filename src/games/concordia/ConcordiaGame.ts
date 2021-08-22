@@ -5,7 +5,7 @@ import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import invariant from "../../common/err/invariant";
 import array_expand from "../../common/lib_utils/array_expand";
-import Base64 from "../../common/Base64";
+import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 
 export type SetupStepName =
   | "bank"
@@ -153,16 +153,14 @@ export default class ConcordiaGame {
       case "cityTiles":
         switch (strategy) {
           case Strategy.RANDOM:
-            console.log(
-              Base64.encode(0),
-              Base64.encode(1260 - 1),
-              Base64.encode(3360 - 1),
-              Base64.encode(75600 - 1),
-              Base64.encode(120 - 1),
-              Base64.encode(5040 - 1),
-              Base64.encode(40320 - 1),
-              Base64.encode(3628800 - 1)
-            );
+            const p = new PermutationsLazyArray({ a: 1, b: 1, c: 1 });
+            console.log(p.toString());
+            for (let i = 0; i < p.length; i += 1) {
+              const perm = p.at(i);
+              const indexOf = p.indexOf(perm);
+              console.log(i, perm, indexOf);
+              invariant(i === indexOf);
+            }
             return "";
         }
     }
