@@ -1,12 +1,4 @@
-import {
-  AppBar,
-  Box,
-  Fab,
-  IconButton,
-  List,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
+import { Fab, List } from "@material-ui/core";
 import { useMemo, useState } from "react";
 import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
@@ -15,8 +7,6 @@ import { useAppSelector } from "../../app/hooks";
 import { selectors as templateSelectors } from "./templateSlice";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import Players from "../players/Players";
-import PeopleIcon from "@material-ui/icons/People";
 
 export default function Template() {
   const [expandedStepId, setExpandedStepId] = useState<EntityId>();
@@ -35,17 +25,6 @@ export default function Template() {
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Template
-          </Typography>
-          <IconButton>
-            <PeopleIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Players playerCount={{ min: 2, max: 5 }} />
       <section>
         <List component="ol">
           {templatableItems.map((stepId) => (
