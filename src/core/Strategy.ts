@@ -2,7 +2,7 @@ export enum Strategy {
   OFF,
   DEFAULT,
   RANDOM,
-  MANUAL,
+  ASK,
   FIXED,
   COMPUTED,
 }

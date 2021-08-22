@@ -114,7 +114,7 @@ export const templateSlice = createSlice({
         strategy:
           | Strategy.RANDOM
           | Strategy.DEFAULT
-          | Strategy.MANUAL
+          | Strategy.ASK
           | Strategy.COMPUTED;
       }>
     ) {

@@ -82,7 +82,7 @@ export default class ConcordiaGame {
           Strategy.OFF,
           Strategy.DEFAULT,
           Strategy.RANDOM,
-          Strategy.MANUAL,
+          Strategy.ASK,
           Strategy.FIXED,
         ];
 
@@ -109,10 +109,10 @@ export default class ConcordiaGame {
         if (playersTotal < 3) {
           return [Strategy.OFF];
         }
-        return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
+        return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
 
       case "playerColors":
-        return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
+        return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
 
       case "startingMoney": {
         const { playOrder } = template;
@@ -139,7 +139,7 @@ export default class ConcordiaGame {
       }
 
       case "firstPlayer":
-        return [Strategy.OFF, Strategy.RANDOM, Strategy.MANUAL, Strategy.FIXED];
+        return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
 
       default:
         return [Strategy.OFF];

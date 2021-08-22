@@ -15,7 +15,7 @@ export default function StrategyIcon({
   switch (strategy) {
     case Strategy.FIXED:
       return <PushPinIcon />;
-    case Strategy.MANUAL:
+    case Strategy.ASK:
       return <QuizIcon />;
     case Strategy.COMPUTED:
       return <FunctionsIcon />;

@@ -3,15 +3,15 @@ import { Strategy } from "./Strategy";
 export function strategyLabel(strategy: Strategy): string {
   switch (strategy) {
     case Strategy.OFF:
-      return "Off";
+      return "Disabled";
     case Strategy.DEFAULT:
       return "Default";
     case Strategy.RANDOM:
       return "Random";
     case Strategy.FIXED:
       return "Fixed";
-    case Strategy.MANUAL:
-      return "Manual";
+    case Strategy.ASK:
+      return "Ask";
     case Strategy.COMPUTED:
       return "Computed";
   }
