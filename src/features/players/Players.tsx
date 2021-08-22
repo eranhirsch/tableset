@@ -26,7 +26,7 @@ export default function Players({
   }, [playerIds, dispatch]);
 
   return (
-    <section>
+    <>
       {playerIds.map((playerId) => (
         <Player
           key={playerId}
@@ -35,6 +35,6 @@ export default function Players({
         />
       ))}
       {playerIds.length < maxPlayerCount && <NewPlayerInput />}
-    </section>
+    </>
   );
 }

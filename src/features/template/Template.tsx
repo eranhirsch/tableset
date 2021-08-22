@@ -25,20 +25,18 @@ export default function Template() {
 
   return (
     <>
-      <section>
-        <List component="ol">
-          {templatableItems.map((stepId) => (
-            <TemplateItem
-              key={stepId}
-              stepId={stepId}
-              expanded={stepId === expandedStepId}
-              onClick={(isExpanded) =>
-                setExpandedStepId(isExpanded ? undefined : stepId)
-              }
-            />
-          ))}
-        </List>
-      </section>
+      <List component="ol">
+        {templatableItems.map((stepId) => (
+          <TemplateItem
+            key={stepId}
+            stepId={stepId}
+            expanded={stepId === expandedStepId}
+            onClick={(isExpanded) =>
+              setExpandedStepId(isExpanded ? undefined : stepId)
+            }
+          />
+        ))}
+      </List>
       <Fab
         sx={{ position: "absolute", bottom: 16, right: 16 }}
         color="primary"

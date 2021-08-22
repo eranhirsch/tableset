@@ -44,17 +44,19 @@ function App() {
             </Switch>
           </Toolbar>
         </AppBar>
-        <Switch>
-          <Route path="/template">
-            <Template />
-          </Route>
-          <Route path="/players">
-            <Players playerCount={{ min: 2, max: 5 }} />
-          </Route>
-          <Route path="/">
-            <Redirect to="/template" />
-          </Route>
-        </Switch>
+        <section>
+          <Switch>
+            <Route path="/template">
+              <Template />
+            </Route>
+            <Route path="/players">
+              <Players playerCount={{ min: 2, max: 5 }} />
+            </Route>
+            <Route path="/">
+              <Redirect to="/template" />
+            </Route>
+          </Switch>
+        </section>
       </Container>
     </ThemeProvider>
   );
