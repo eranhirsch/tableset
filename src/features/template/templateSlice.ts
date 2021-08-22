@@ -109,7 +109,7 @@ export const templateSlice = createSlice({
   name: "template",
   initialState: templateAdapter.getInitialState(),
   reducers: {
-    setStrategy(
+    enabled(
       state,
       {
         payload: { id, strategy },
@@ -130,7 +130,7 @@ export const templateSlice = createSlice({
       }
     },
 
-    clearStrategy: {
+    disabled: {
       prepare: (id: SetupStepName, playersTotal: number) => ({
         payload: id,
         meta: playersTotal,
@@ -177,7 +177,7 @@ export const templateSlice = createSlice({
       },
     },
 
-    setFixedStrategy: {
+    enabledConstantValue: {
       prepare(id: SetupStepName, playerIds: EntityId[]) {
         return {
           payload: id,
@@ -195,7 +195,7 @@ export const templateSlice = createSlice({
       },
     },
 
-    updateFixedValue(
+    constantValueChanged(
       state,
       {
         payload: { id, value },

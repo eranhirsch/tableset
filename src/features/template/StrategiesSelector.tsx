@@ -45,16 +45,13 @@ export default function StrategiesSelector({
               ? () =>
                   dispatch(
                     strategy === Strategy.FIXED
-                      ? templateSlice.actions.setFixedStrategy(
+                      ? templateSlice.actions.enabledConstantValue(
                           stepId,
                           playerIds
                         )
                       : strategy === Strategy.OFF
-                      ? templateSlice.actions.clearStrategy(
-                          stepId,
-                          playersTotal
-                        )
-                      : templateSlice.actions.setStrategy({
+                      ? templateSlice.actions.disabled(stepId, playersTotal)
+                      : templateSlice.actions.enabled({
                           id: stepId,
                           strategy,
                         })

@@ -85,7 +85,7 @@ export default function PlayerOrderPanelV2() {
       }
 
       dispatch(
-        templateSlice.actions.updateFixedValue({
+        templateSlice.actions.constantValueChanged({
           id: "playOrder",
           value: moveItem(order, source.index + 1, destination.index + 1),
         })

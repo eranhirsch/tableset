@@ -198,7 +198,7 @@ export default function PlayerColorPanel() {
       }
 
       dispatch(
-        templateSlice.actions.updateFixedValue({
+        templateSlice.actions.constantValueChanged({
           id: "playerColors",
           value: newColors,
         })

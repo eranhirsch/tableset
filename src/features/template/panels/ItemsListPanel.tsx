@@ -1,5 +1,5 @@
 import { Chip } from "@material-ui/core";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useAppDispatch } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
@@ -15,7 +15,6 @@ export default function ItemsListPanel({ stepId }: { stepId: SetupStepName }) {
   const dispatch = useAppDispatch();
 
   const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
-
   if (step.strategy !== Strategy.FIXED) {
     invariant_violation(`strategy isn't FIXED for step ${stepId}`);
   }
@@ -28,14 +27,6 @@ export default function ItemsListPanel({ stepId }: { stepId: SetupStepName }) {
     );
   }
 
-  useEffect(() => {
-    if (step.value == null) {
-      dispatch(
-        templateSlice.actions.updateFixedValue({ id: stepId, value: items[0] })
-      );
-    }
-  }, [dispatch, items, step.value, stepId]);
-
   return (
     <>
       {items.map((item) => (
@@ -47,7 +38,7 @@ export default function ItemsListPanel({ stepId }: { stepId: SetupStepName }) {
             step.value !== item
               ? () =>
                   dispatch(
-                    templateSlice.actions.updateFixedValue({
+                    templateSlice.actions.constantValueChanged({
                       id: step.id,
                       value: item,
                     })

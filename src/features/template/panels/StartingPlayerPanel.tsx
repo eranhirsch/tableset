@@ -34,7 +34,7 @@ function Player({
           !isSelected
             ? () =>
                 dispatch(
-                  templateSlice.actions.updateFixedValue({
+                  templateSlice.actions.constantValueChanged({
                     id: "firstPlayer",
                     value: playerId,
                   })
