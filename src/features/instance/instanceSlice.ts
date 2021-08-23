@@ -13,7 +13,7 @@ import ConcordiaGame, {
 } from "../../games/concordia/ConcordiaGame";
 import { TemplateElement } from "../template/templateSlice";
 
-type SetupStep<T> =
+export type SetupStep<T> =
   | {
       id: "playOrder";
       value: EntityId[];
@@ -40,22 +40,30 @@ export const instanceSlice = createSlice({
   initialState: instanceAdapter.getInitialState(),
   reducers: {
     created: {
-      prepare: (
+      prepare(
         template: Dictionary<TemplateElement<SetupStepName>>,
         playersTotal: number
-      ) => ({
-        payload: filter_nulls(Object.values(template)).map((element) => ({
-          id: element.id,
-          value:
-            element.strategy === Strategy.FIXED
-              ? (element.value as any)
-              : ConcordiaGame.resolve(
-                  element.id,
-                  element.strategy,
-                  playersTotal
-                ),
-        })),
-      }),
+      ) {
+        const payload: SetupStep<SetupStepName>[] = [];
+        for (const element of filter_nulls(Object.values(template))) {
+          const step = {
+            id: element.id,
+            value:
+              element.strategy === Strategy.FIXED
+                ? (element.value as any)
+                : ConcordiaGame.resolve(
+                    element.id,
+                    element.strategy,
+                    payload,
+                    playersTotal
+                  ),
+          };
+          payload.push(step);
+        }
+
+        return { payload };
+      },
+
       reducer: instanceAdapter.setAll,
     },
   },

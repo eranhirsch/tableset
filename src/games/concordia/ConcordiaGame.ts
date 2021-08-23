@@ -4,7 +4,9 @@ import { TemplateElement } from "../../features/template/templateSlice";
 import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import invariant from "../../common/err/invariant";
-import array_expand from "../../common/lib_utils/array_expand";
+import { SetupStep } from "../../features/instance/instanceSlice";
+import PermutationsLazyArray from "../../common/PermutationsLazyArray";
+import Base64 from "../../common/Base64";
 
 export type SetupStepName =
   | "bank"
@@ -24,21 +26,24 @@ export type SetupStepName =
   | "startingColonists"
   | "startingMoney";
 
+type MapZone = "A" | "B" | "C" | "D";
+type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
+
 export default class ConcordiaGame {
-  private static readonly CITY_TILES = Object.freeze({
-    // Possible combos:
-    // A: 7!/2!2! === 1260
-    A: array_expand({ bricks: 2, food: 2, tools: 1, wine: 1, cloth: 1 }),
-    // B: 8!/2!3! === 3360
-    B: array_expand({ bricks: 2, food: 3, tools: 1, wine: 1, cloth: 1 }),
-    // C: 10!/3!2!2!2! === 75600
-    C: array_expand({ bricks: 3, food: 2, tools: 2, wine: 2, cloth: 1 }),
-    // D: 5! === 120
-    D: array_expand({ bricks: 1, food: 1, tools: 1, wine: 1, cloth: 1 }),
+  private static readonly CITY_TILES: Record<
+    MapZone,
+    Record<Resource, number>
+  > = Object.freeze({
+    A: { bricks: 2, food: 2, tools: 1, wine: 1, cloth: 1 },
+    B: { bricks: 2, food: 3, tools: 1, wine: 1, cloth: 1 },
+    C: { bricks: 3, food: 2, tools: 2, wine: 2, cloth: 1 },
+    D: { bricks: 1, food: 1, tools: 1, wine: 1, cloth: 1 },
   });
 
-  private static readonly CITIES = Object.freeze({
-    italia: {
+  private static readonly CITIES: {
+    [mapId: string]: Partial<Record<MapZone, string[]>>;
+  } = Object.freeze({
+    Italia: {
       A: [
         "BAVSANVM",
         "AQVILEIA",
@@ -71,7 +76,7 @@ export default class ConcordiaGame {
         "PANORMVS",
       ],
     },
-    imperium: {
+    Imperium: {
       A: [
         "ISCA D.",
         "LONDONIVM",
@@ -131,6 +136,7 @@ export default class ConcordiaGame {
   public static resolve(
     stepId: SetupStepName,
     strategy: Strategy,
+    instance: SetupStep<SetupStepName>[],
     playersTotal: number
   ): string {
     invariant(
@@ -152,8 +158,22 @@ export default class ConcordiaGame {
       case "cityTiles":
         switch (strategy) {
           case Strategy.RANDOM:
-            // TODO
-            return "";
+            const mapDef = instance.find((step) => step.id === "map");
+            if (mapDef == null || mapDef.id !== "map") {
+              // TODO: create a generic dependancy error
+              invariant_violation(`Couldn't find 'map' dependancy`);
+            }
+            const mapId = mapDef.value;
+            const cities = this.CITIES[mapId];
+            const hashes = Object.keys(cities).map((zone) => {
+              const tiles = this.CITY_TILES[zone as MapZone];
+              const permutations = new PermutationsLazyArray(tiles);
+              const selectedIdx = Math.floor(
+                Math.random() * permutations.length
+              );
+              return Base64.encode(selectedIdx);
+            });
+            return hashes.join(":");
         }
     }
 
