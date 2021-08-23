@@ -50,7 +50,7 @@ function App() {
               <Template />
             </Route>
             <Route path="/players">
-              <Players playerCount={{ min: 2, max: 5 }} />
+              <Players />
             </Route>
             <Route path="/">
               <Redirect to="/template" />

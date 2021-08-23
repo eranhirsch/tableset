@@ -4,11 +4,7 @@ import playersSlice, { selectors as playersSelectors } from "./playersSlice";
 import Player from "./Player";
 import NewPlayerInput from "./NewPlayerInput";
 
-export default function Players({
-  playerCount: { min: minPlayerCount, max: maxPlayerCount },
-}: {
-  playerCount: { min: number; max: number };
-}) {
+export default function Players() {
   const dispatch = useAppDispatch();
 
   const playerIds = useAppSelector(playersSelectors.selectIds);
@@ -28,13 +24,9 @@ export default function Players({
   return (
     <>
       {playerIds.map((playerId) => (
-        <Player
-          key={playerId}
-          playerId={playerId}
-          isDeletable={playerIds.length > 2}
-        />
+        <Player key={playerId} playerId={playerId} />
       ))}
-      {playerIds.length < maxPlayerCount && <NewPlayerInput />}
+      <NewPlayerInput />
     </>
   );
 }

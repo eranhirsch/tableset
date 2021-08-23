@@ -5,13 +5,7 @@ import playersSlice, { selectors as playersSelectors } from "./playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
 
-export default function Player({
-  playerId,
-  isDeletable,
-}: {
-  playerId: EntityId;
-  isDeletable: boolean;
-}) {
+export default function Player({ playerId }: { playerId: EntityId }) {
   const dispatch = useAppDispatch();
 
   const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
@@ -22,13 +16,8 @@ export default function Player({
       key={player.name}
       avatar={<PersonIcon />}
       label={player.name}
-      onDelete={
-        // Turn off onDelete to prevent player count from dropping below
-        // allowed minimum
-        isDeletable
-          ? () =>
-              dispatch(playersSlice.actions.removed(player.name, playersTotal))
-          : undefined
+      onDelete={() =>
+        dispatch(playersSlice.actions.removed(player.name, playersTotal))
       }
     />
   );
