@@ -80,9 +80,8 @@ export const instanceSlice = createSlice({
 
                 case "playOrder":
                   {
-                    const [, ...remainingPlayers] = playerIds;
                     const permutations =
-                      PermutationsLazyArray.forPermutation(remainingPlayers);
+                      PermutationsLazyArray.forPermutation(playerIds);
                     const selectedIdx = Math.floor(
                       Math.random() * permutations.length
                     );
