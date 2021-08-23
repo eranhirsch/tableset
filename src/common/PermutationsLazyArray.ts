@@ -1,4 +1,5 @@
 import invariant from "./err/invariant";
+import invariant_violation from "./err/invariant_violation";
 
 export default class PermutationsLazyArray<K extends keyof any> {
   private static readonly PRECOMP_FACT: ReadonlyArray<number> = [
@@ -6,6 +7,8 @@ export default class PermutationsLazyArray<K extends keyof any> {
     6227020800, 87178291200, 1307674368000, 20922789888000, 355687428096000,
     6402373705728000,
   ];
+  private static memoizedCombinations: Map<[number, number], number> =
+    new Map();
 
   private readonly itemDefinition: ReadonlyArray<readonly [K, number]>;
 
@@ -22,22 +25,74 @@ export default class PermutationsLazyArray<K extends keyof any> {
   }
 
   public at(index: number): K[] {
+    invariant(
+      Number.isInteger(index),
+      `Only integer numbers are supported: ${index}`
+    );
     invariant(index >= 0, `Negative index ${index} is undefined`);
     invariant(
       index <= this.length,
       `Index ${index} is out of range for defintion ${this}`
     );
 
-    let remainingItems = this.itemsDefinitionMutableCopy();
-    let premutation: K[] = [];
-    while (remainingItems.length > 0) {
-      const itemIdx = index % remainingItems.length;
-      index = Math.floor(index / remainingItems.length);
-      premutation.push(remainingItems[itemIdx][0]);
-      PermutationsLazyArray.decrementIndex(remainingItems, itemIdx);
+    return this.itemDefinition.reduceRight((permutation, [item, count]) => {
+      const availablePositions = permutation.length + 1;
+
+      const positionCombos = PermutationsLazyArray.combinations(
+        availablePositions,
+        count
+      );
+
+      let comboIdx = index % positionCombos;
+
+      const positions: number[] = [];
+      for (let i = 0; i < count; i += 1) {
+        const lastPos = positions[positions.length - 1] ?? 0;
+        const [msb, total] = PermutationsLazyArray.msb(
+          comboIdx,
+          availablePositions - lastPos,
+          count - i
+        );
+        positions.push(msb + lastPos);
+        comboIdx -= total;
+      }
+
+      positions.reverse().forEach((pos) => permutation.splice(pos, 0, item));
+
+      index = Math.floor(index / positionCombos);
+
+      return permutation;
+    }, [] as K[]);
+  }
+
+  private static msb(
+    x: number,
+    digits: number,
+    length: number
+  ): [number, number] {
+    if (length === 1) {
+      invariant(
+        x < digits,
+        `Number ${x} is too big to be presented with ${digits} digits`
+      );
+      return [x, 0];
     }
 
-    return premutation;
+    let smallerCombinations = 0;
+    for (let digit = 0; digit < digits; digit += 1) {
+      const combinationsForRemainingDigits = PermutationsLazyArray.combinations(
+        digits - digit,
+        length - 1
+      );
+      if (x < smallerCombinations + combinationsForRemainingDigits) {
+        return [digit, smallerCombinations];
+      }
+      smallerCombinations += combinationsForRemainingDigits;
+    }
+
+    invariant_violation(
+      `Number ${x} is too big to be represented with ${digits} digits and length ${length}`
+    );
   }
 
   public indexOf(permutation: K[]): number {
@@ -105,5 +160,30 @@ export default class PermutationsLazyArray<K extends keyof any> {
     } else {
       arr[idx][1] -= 1;
     }
+  }
+
+  private static combinations(n: number, k: number): number {
+    if (k === 1) {
+      return n;
+    }
+
+    if (n === 1) {
+      // Optimization
+      return 1;
+    }
+
+    const memoized = this.memoizedCombinations.get([n, k]);
+    if (memoized != null) {
+      return memoized;
+    }
+
+    let sum = 0;
+    for (let i = 1; i <= n; i++) {
+      sum += this.combinations(i, k - 1);
+    }
+
+    this.memoizedCombinations.set([n, k], sum);
+
+    return sum;
   }
 }
