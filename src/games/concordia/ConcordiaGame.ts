@@ -154,8 +154,8 @@ export default class ConcordiaGame {
         switch (strategy) {
           case Strategy.RANDOM:
             const p = new PermutationsLazyArray({
-              a: 4,
-              b: 2,
+              a: 1,
+              b: 1,
               c: 1,
             });
             console.log(p.toString());
@@ -163,7 +163,7 @@ export default class ConcordiaGame {
               const perm = p.at(i);
               const indexOf = p.indexOf(perm);
               console.log(i, perm, indexOf);
-              // invariant(i === indexOf);
+              invariant(i === indexOf);
             }
             return "";
         }

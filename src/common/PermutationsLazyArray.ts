@@ -65,6 +65,80 @@ export default class PermutationsLazyArray<K extends keyof any> {
     }, [] as K[]);
   }
 
+  public indexOf(permutation: ReadonlyArray<K>): number {
+    const remaining = [...permutation];
+
+    const breakdown = this.itemDefinition.reduce((parts, [item, count]) => {
+      const positions: number[] = [];
+      while (true) {
+        const pos = remaining.indexOf(item);
+        if (pos === -1) {
+          break;
+        }
+        positions.push(pos);
+        remaining.splice(pos, 1);
+      }
+      invariant(
+        positions.length === count,
+        `Didn't find enough of ${item} in permutation ${permutation}`
+      );
+
+      const availablePositions = remaining.length + 1;
+
+      let sum = 0;
+      for (let pos = 0; pos < count - 1; pos += 1) {
+        const lowestDigit = positions[pos - 1] ?? 0;
+        for (let digit = lowestDigit; digit < positions[pos]; digit += 1) {
+          sum += PermutationsLazyArray.combinations(
+            availablePositions - digit,
+            count - pos - 1
+          );
+        }
+      }
+      sum += positions[count - 1] - (positions[count - 2] ?? 0);
+
+      return parts.concat([
+        [sum, PermutationsLazyArray.combinations(availablePositions, count)],
+      ]);
+    }, [] as ReadonlyArray<[number, number]>);
+
+    invariant(
+      remaining.length === 0,
+      `Permutation ${permutation} contained extra items ${remaining}`
+    );
+
+    return breakdown.reduceRight(
+      (sum, [num, multiplier]) => sum * multiplier + num,
+      0
+    );
+  }
+
+  public toString(): string {
+    return `${this.constructor.name}[${this.itemDefinition
+      .map(([item, count]) => `${item}:${count}`)
+      .join(", ")}]`;
+  }
+
+  public get length(): number {
+    return (
+      PermutationsLazyArray.PRECOMP_FACT[this.permutationLength] /
+      this.itemDefinition.reduce(
+        (duplicationFactor, [_, count]) =>
+          duplicationFactor * PermutationsLazyArray.PRECOMP_FACT[count],
+        // notice that we multiply, so start with 1, and not 0
+        1
+      )
+    );
+  }
+
+  private get permutationLength(): number {
+    return this.itemDefinition.reduce((sum, [_, count]) => sum + count, 0);
+  }
+
+  private itemsDefinitionMutableCopy(): [K, number][] {
+    return this.itemDefinition.map((x) => [...x]);
+  }
+
   private static msb(
     x: number,
     digits: number,
@@ -93,60 +167,6 @@ export default class PermutationsLazyArray<K extends keyof any> {
     invariant_violation(
       `Number ${x} is too big to be represented with ${digits} digits and length ${length}`
     );
-  }
-
-  public indexOf(permutation: K[]): number {
-    invariant(
-      permutation.length === this.permutationLength,
-      `Permutation ${permutation} is not valid for definition ${this}`
-    );
-
-    const items: Record<K, number> = permutation.reduce((items, item) => {
-      items[item] = (items[item] ?? 0) + 1;
-      return items;
-    }, {} as Record<K, number>);
-    invariant(
-      this.itemDefinition.every(([item, count]) => items[item] === count),
-      `Permutation ${permutation} does not contain the expected items per definition ${this}`
-    );
-
-    let remainingItems = this.itemsDefinitionMutableCopy();
-    return permutation
-      .map((item) => {
-        const idx = remainingItems.findIndex(([x]) => item === x);
-        invariant(idx >= 0, `Couldn't find item in the remainig items`);
-        const prevRemaining = remainingItems.length;
-        PermutationsLazyArray.decrementIndex(remainingItems, idx);
-        return [idx, prevRemaining];
-      })
-      .reverse()
-      .reduce((accum, [digit, remaining]) => accum * remaining + digit, 0);
-  }
-
-  public toString(): string {
-    return `${this.constructor.name}[${this.itemDefinition
-      .map(([item, count]) => `${item}:${count}`)
-      .join(", ")}]`;
-  }
-
-  public get length(): number {
-    return (
-      PermutationsLazyArray.PRECOMP_FACT[this.permutationLength] /
-      this.itemDefinition.reduce(
-        (duplicationFactor, [_, count]) =>
-          duplicationFactor * PermutationsLazyArray.PRECOMP_FACT[count],
-        // notice that we multiply, so start with 1, and not 0
-        1
-      )
-    );
-  }
-
-  private get permutationLength(): number {
-    return this.itemDefinition.reduce((sum, [_, count]) => sum + count, 0);
-  }
-
-  private itemsDefinitionMutableCopy(): [K, number][] {
-    return this.itemDefinition.map((x) => [...x]);
   }
 
   /**
