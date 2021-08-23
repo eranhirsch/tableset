@@ -34,10 +34,26 @@ export default class PermutationsLazyArray<K extends keyof any> {
     );
   }
 
+  public get length(): number {
+    return (
+      PermutationsLazyArray.PRECOMP_FACT[this.permutationLength] /
+      this.definition.reduce(
+        (duplicationFactor, [_, count]) =>
+          duplicationFactor * PermutationsLazyArray.PRECOMP_FACT[count],
+        // notice that we multiply, so start with 1, and not 0
+        1
+      )
+    );
+  }
+
   /**
    * Get the `i`th permutation in our ordering. Notice that this method builds
    * a new copy of the result and doesn't use any memoization. Calling it twice
    * would run the building logic twice.
+   * For every legal permutation `x`: `at(indexOf(x)) === x`
+   * @param index an integer, use negative to go in reverse from the end of the
+   * array
+   * @returns a permutation, or undefined if the index is out of range.
    */
   public at(index: number): ReadonlyArray<K> | undefined {
     invariant(
@@ -95,7 +111,8 @@ export default class PermutationsLazyArray<K extends keyof any> {
   }
 
   /**
-   * Checks that the permutation could be built with the provided definition
+   * Checks that the permutation could be built using this definition. This is
+   * cheaper than calling `indexOf`.
    */
   public includes(permutation: ReadonlyArray<K>): boolean {
     return (
@@ -109,6 +126,14 @@ export default class PermutationsLazyArray<K extends keyof any> {
     );
   }
 
+  /**
+   * The index of this permutation in the list of all permutations supported by
+   * this definition. Can also be considered the encoding of the permutation.
+   * For every `x` in [0..length]: `indexOf(at(x)) === x`;
+   * @param permutation
+   * @returns integer in the range [0..length] or -1 if the permutation is not
+   * buildable by this definition.
+   */
   public indexOf(permutation: ReadonlyArray<K>): number {
     if (!this.includes(permutation)) {
       // By definition of Array.indexOf()
@@ -164,50 +189,51 @@ export default class PermutationsLazyArray<K extends keyof any> {
     );
   }
 
-  /**
-   * Remove all occurrences of the item from the array and return an array of
-   * positions of the array without the item where those items were previously
-   * at. Notice that the result might contain duplicates!
-   * @param item in the item to extract from the list
-   * @param remaining inout the list we are extracting the item from. Changes
-   * are done in-place!
-   * @returns a list of positions where the item was extracted from
-   */
-  private static extractItemFromArray<K>(item: K, remaining: K[]): number[] {
-    const positions: number[] = [];
-
-    while (remaining.length > 0) {
-      const pos = remaining.indexOf(item);
-      if (pos === -1) {
-        break;
-      }
-      positions.push(pos);
-      remaining.splice(pos, 1);
-    }
-
-    return positions;
-  }
-
   public toString(): string {
     return `${this.constructor.name}[${this.definition
       .map(([item, count]) => `${item}:${count}`)
       .join(", ")}]`;
   }
 
-  public get length(): number {
-    return (
-      PermutationsLazyArray.PRECOMP_FACT[this.permutationLength] /
-      this.definition.reduce(
-        (duplicationFactor, [_, count]) =>
-          duplicationFactor * PermutationsLazyArray.PRECOMP_FACT[count],
-        // notice that we multiply, so start with 1, and not 0
-        1
-      )
-    );
-  }
-
   private get permutationLength(): number {
     return this.definition.reduce((sum, [_, count]) => sum + count, 0);
+  }
+
+  /**
+   * The number of ways K (unmarked) balls can be put into N ordered cells.
+   * @param n number of cells/slots/labels
+   * @param k number of copies we have of the item we want to assign to cells
+   * @returns f(n, 1) = n, f(n, k) = sum(f(i, k - 1) for i in [1..n])
+   */
+  private static combinations(n: number, k: number): number {
+    if (k === 1) {
+      return n;
+    }
+
+    if (n === 1) {
+      // Optimization
+      return 1;
+    }
+
+    const memoized = this.memoizedCombinations.get([n, k]);
+    if (memoized != null) {
+      // We use memoization to save on redundant computations
+      return memoized;
+    }
+
+    let sum = 0;
+    for (let i = n; i >= 1; i++) {
+      // The first item in the sum is for the case where we put the item in the
+      // first slot (we can then put the other items in any of the other slots),
+      // then adding the case where we put the item in the next slot (we can
+      // only put the remaining items in that slot and further, but not the
+      // first slot because that would be a duplicate case we already counted).
+      sum += this.combinations(i, k - 1);
+    }
+
+    this.memoizedCombinations.set([n, k], sum);
+
+    return sum;
   }
 
   private static indexToPositions(
@@ -219,7 +245,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
 
     for (let i = 0; i < copies; i += 1) {
       const lastPos = positions[positions.length - 1] ?? 0;
-      const [msb, total] = PermutationsLazyArray.msb(
+      const [msb, total] = PermutationsLazyArray.mostSignificant(
         x,
         digits - lastPos,
         copies - i
@@ -249,29 +275,49 @@ export default class PermutationsLazyArray<K extends keyof any> {
     return sum + positions[copies - 1] - (positions[copies - 2] ?? 0);
   }
 
-  private static msb(
+  /**
+   * We want to find the most-significant digit first, as it impacts what digits
+   * could follow it. We do this by counting how many combinations are possible
+   * for each value of the digit until we find one where our number `x` falls
+   * in between.
+   * @param x the number we want to represent with our possible digits.
+   * @param digits the number of digits we have available (starting at 0)
+   * @param length the lenght of the number we are building
+   * @returns a tuple [digit, skip] where `digit` is the biggest digit we found
+   * that is still smaller than our `x`, and `skip` is the value of the smallest
+   * number that could be represented using our digit as the mostSignificant
+   * digit where all the rest of the digits are equivalent to `0` (like 400 if
+   * 4 was our digit and length was 3).
+   */
+  private static mostSignificant(
     x: number,
     digits: number,
     length: number
   ): [number, number] {
     if (length === 1) {
+      // When the length is 1 we don't need any special logic, our number is
+      // already represented.
+
       invariant(
         x < digits,
         `Number ${x} is too big to be presented with ${digits} digits`
       );
+
       return [x, 0];
     }
 
-    let smallerCombinations = 0;
+    let totalSkip = 0;
     for (let digit = 0; digit < digits; digit += 1) {
-      const combinationsForRemainingDigits = PermutationsLazyArray.combinations(
+      const skipForDigit = PermutationsLazyArray.combinations(
         digits - digit,
         length - 1
       );
-      if (x < smallerCombinations + combinationsForRemainingDigits) {
-        return [digit, smallerCombinations];
+      
+      if (x < totalSkip + skipForDigit) {
+        return [digit, totalSkip];
       }
-      smallerCombinations += combinationsForRemainingDigits;
+
+      totalSkip += skipForDigit;
     }
 
     invariant_violation(
@@ -280,34 +326,26 @@ export default class PermutationsLazyArray<K extends keyof any> {
   }
 
   /**
-   * The number of ways K (unmarked) balls can be put into N ordered cells.
-   * @param n number of cells/slots/labels
-   * @param k number of copies we have of the item we want to assign to cells
-   * @returns f(n, 1) = n, f(n, k) = sum(f(i, k - 1) for i in [1..n])
+   * Remove all occurrences of the item from the array and return an array of
+   * positions of the array without the item where those items were previously
+   * at. Notice that the result might contain duplicates!
+   * @param item in the item to extract from the list
+   * @param remaining inout the list we are extracting the item from. Changes
+   * are done in-place!
+   * @returns a list of positions where the item was extracted from
    */
-  private static combinations(n: number, k: number): number {
-    if (k === 1) {
-      return n;
+  private static extractItemFromArray<K>(item: K, remaining: K[]): number[] {
+    const positions: number[] = [];
+
+    while (remaining.length > 0) {
+      const pos = remaining.indexOf(item);
+      if (pos === -1) {
+        break;
+      }
+      positions.push(pos);
+      remaining.splice(pos, 1);
     }
 
-    if (n === 1) {
-      // Optimization
-      return 1;
-    }
-
-    const memoized = this.memoizedCombinations.get([n, k]);
-    if (memoized != null) {
-      // We use memoization to save on redundant computations
-      return memoized;
-    }
-
-    let sum = 0;
-    for (let i = 1; i <= n; i++) {
-      sum += this.combinations(i, k - 1);
-    }
-
-    this.memoizedCombinations.set([n, k], sum);
-
-    return sum;
+    return positions;
   }
 }
