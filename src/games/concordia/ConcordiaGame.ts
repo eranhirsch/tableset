@@ -5,7 +5,6 @@ import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import invariant from "../../common/err/invariant";
 import array_expand from "../../common/lib_utils/array_expand";
-import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 
 export type SetupStepName =
   | "bank"

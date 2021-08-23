@@ -16,16 +16,31 @@ export default class PermutationsLazyArray<K extends keyof any> {
 
   private readonly definition: ReadonlyArray<readonly [K, number]>;
 
-  public constructor(itemDefinition: Readonly<Record<K, number>>) {
+  /**
+   * A helper method to build a lazy permutations array based on an existing
+   * permutation
+   */
+  public static forPermutation<T extends keyof any>(
+    permutation: T[]
+  ): PermutationsLazyArray<T> {
+    return new PermutationsLazyArray(
+      permutation.reduce((definition, item) => {
+        definition[item] = (definition[item] ?? 0) + 1;
+        return definition;
+      }, {} as Record<T, number>)
+    );
+  }
+
+  public constructor(definition: Readonly<Record<K, number>>) {
     // We normalize the item definition for use in our algorithm
-    this.definition = Object.entries(itemDefinition)
+    this.definition = Object.entries(definition)
       .map(([a, b]) => [a, b] as [K, number])
       .sort(([a], [b]) => (a === b ? 0 : a < b ? -1 : 1))
       .filter(([_, count]) => count > 0);
 
     invariant(
       this.definition.every(([_, count]) => Number.isInteger(count)),
-      `definition ${itemDefinition} contains non-integer counts`
+      `definition ${definition} contains non-integer counts`
     );
 
     invariant(
@@ -312,7 +327,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
         digits - digit,
         length - 1
       );
-      
+
       if (x < totalSkip + skipForDigit) {
         return [digit, totalSkip];
       }
