@@ -153,18 +153,7 @@ export default class ConcordiaGame {
       case "cityTiles":
         switch (strategy) {
           case Strategy.RANDOM:
-            const p = new PermutationsLazyArray({
-              a: 1,
-              b: 1,
-              c: 1,
-            });
-            console.log(p.toString());
-            for (let i = 0; i < p.length; i += 1) {
-              const perm = p.at(i);
-              const indexOf = p.indexOf(perm);
-              console.log(i, perm, indexOf);
-              invariant(i === indexOf);
-            }
+            // TODO
             return "";
         }
     }
