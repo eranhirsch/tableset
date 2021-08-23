@@ -3,7 +3,6 @@ import invariant_violation from "../../common/err/invariant_violation";
 import { TemplateElement } from "../../features/template/templateSlice";
 import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
-import invariant from "../../common/err/invariant";
 import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base64 from "../../common/Base64";
@@ -143,64 +142,57 @@ export default class ConcordiaGame {
     ];
   }
 
-  public static resolve(
+  public static resolveRandom(
     stepId: SetupStepName,
-    strategy: Strategy,
     instance: ReadonlyArray<SetupStep<SetupStepName>>,
     playersTotal: number
   ): string {
-    invariant(
-      strategy !== Strategy.FIXED,
-      `Failed to copy the constant value directly to the instance for step '${stepId}'`
-    );
-
     switch (stepId) {
       case "map":
-        switch (strategy) {
-          case Strategy.RANDOM:
-            const items = this.itemsForStep(stepId);
-            return items[Math.floor(Math.random() * items.length)];
-          case Strategy.DEFAULT:
-            return playersTotal < 4 ? "Italia" : "Imperium";
-        }
-        break;
+        const items = this.itemsForStep(stepId);
+        return items[Math.floor(Math.random() * items.length)];
 
       case "cityTiles":
-        switch (strategy) {
-          case Strategy.RANDOM:
-            const mapDef = instance.find((step) => step.id === "map");
-            if (mapDef == null || mapDef.id !== "map") {
-              // TODO: create a generic dependancy error
-              invariant_violation(`Couldn't find 'map' dependancy`);
-            }
-            const mapId = mapDef.value;
-            const cities = this.CITIES[mapId];
-            const hashes = Object.keys(cities).map((zone) => {
-              const tiles = this.CITY_TILES[zone as MapZone];
-              const permutations = new PermutationsLazyArray(tiles);
-              const selectedIdx = Math.floor(
-                Math.random() * permutations.length
-              );
-              return Base64.encode(selectedIdx);
-            });
-            return hashes.join(":");
+        const mapDef = instance.find((step) => step.id === "map");
+        if (mapDef == null || mapDef.id !== "map") {
+          // TODO: create a generic dependancy error
+          invariant_violation(`Couldn't find 'map' dependancy`);
         }
-        break;
+        const mapId = mapDef.value;
+        const cities = this.CITIES[mapId];
+        const hashes = Object.keys(cities).map((zone) => {
+          const tiles = this.CITY_TILES[zone as MapZone];
+          const permutations = new PermutationsLazyArray(tiles);
+          const selectedIdx = Math.floor(Math.random() * permutations.length);
+          return Base64.encode(selectedIdx);
+        });
+        return hashes.join(":");
 
       case "marketDisplay":
-        switch (strategy) {
-          case Strategy.RANDOM:
-            const permutations = PermutationsLazyArray.forPermutation(
-              this.MARKET_DECK_PHASE_1
-            );
-            const selectedIdx = Math.floor(Math.random() * permutations.length);
-            return Base64.encode(selectedIdx);
-        }
-        break;
+        const permutations = PermutationsLazyArray.forPermutation(
+          this.MARKET_DECK_PHASE_1
+        );
+        const selectedIdx = Math.floor(Math.random() * permutations.length);
+        return Base64.encode(selectedIdx);
     }
 
     invariant_violation(
-      `Step ${stepId} could not be resolved with strategy ${strategy}`
+      `Step ${stepId} could not be resolved with RANDOM strategy`
+    );
+  }
+
+  public static resolveDefault(
+    stepId: SetupStepName,
+    instance: ReadonlyArray<SetupStep<SetupStepName>>,
+    playersTotal: number
+  ): string {
+    switch (stepId) {
+      case "map":
+        return playersTotal < 4 ? "Italia" : "Imperium";
+    }
+
+    invariant_violation(
+      `Step ${stepId} could not be resolved with DEFAULT strategy`
     );
   }
 
@@ -217,7 +209,7 @@ export default class ConcordiaGame {
           Strategy.ASK,
           Strategy.FIXED,
         ];
-        if (playersTotal > 2 && playersTotal < 5) {
+        if (playersTotal >= 2 && playersTotal <= 5) {
           strategies.push(Strategy.DEFAULT);
         }
         return strategies;
@@ -242,13 +234,13 @@ export default class ConcordiaGame {
         return [Strategy.OFF, Strategy.RANDOM];
 
       case "playOrder":
-        if (playersTotal < 3) {
+        if (playersTotal < 3 || playersTotal > 5) {
           return [Strategy.OFF];
         }
         return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
 
       case "playerColors":
-        if (playersTotal === 0) {
+        if (playersTotal === 0 || playersTotal > 5) {
           return [Strategy.OFF];
         }
         return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
@@ -278,7 +270,7 @@ export default class ConcordiaGame {
       }
 
       case "firstPlayer":
-        if (playersTotal < 2) {
+        if (playersTotal < 2 || playersTotal > 5) {
           return [Strategy.OFF];
         }
         return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];

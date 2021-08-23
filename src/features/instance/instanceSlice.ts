@@ -103,9 +103,28 @@ export const instanceSlice = createSlice({
                 default:
                   step = {
                     id: element.id,
-                    value: ConcordiaGame.resolve(
+                    value: ConcordiaGame.resolveRandom(
                       element.id,
-                      element.strategy,
+                      payload,
+                      playerIds.length
+                    ),
+                  };
+              }
+              break;
+
+            case Strategy.DEFAULT:
+              switch (element.id) {
+                case "playOrder":
+                case "playerColors":
+                case "firstPlayer":
+                  invariant_violation(`No default setting for ${element.id}`);
+                  break;
+
+                default:
+                  step = {
+                    id: element.id,
+                    value: ConcordiaGame.resolveDefault(
+                      element.id,
                       payload,
                       playerIds.length
                     ),
