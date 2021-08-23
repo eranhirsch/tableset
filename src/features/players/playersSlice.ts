@@ -18,7 +18,6 @@ const playersSlice = createSlice({
   name: "players",
   initialState: playersAdapter.getInitialState(),
   reducers: {
-    initialized: playersAdapter.setAll,
     added: playersAdapter.addOne,
     removed: {
       prepare: (id: EntityId, playersTotal: number) => ({

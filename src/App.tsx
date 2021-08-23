@@ -12,8 +12,20 @@ import themeWithGameColors from "./core/themeWithGameColors";
 import Players from "./features/players/Players";
 import PeopleIcon from "@material-ui/icons/People";
 import TuneIcon from "@material-ui/icons/Tune";
+import { useEffect } from "react";
+import { useAppDispatch } from "./app/hooks";
+import playersSlice from "./features/players/playersSlice";
 
 function App() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    // TODO: Remove this when we can load the previous players from somewhere
+    ["Eran Hirsch", "Adam Maoz", "Amit Cwajghaft"].forEach((name) =>
+      dispatch(playersSlice.actions.added({ name }))
+    );
+  }, [dispatch]);
+
   return (
     <ThemeProvider theme={themeWithGameColors}>
       <Container
