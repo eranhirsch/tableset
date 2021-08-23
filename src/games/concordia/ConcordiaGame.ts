@@ -30,19 +30,18 @@ type MapZone = "A" | "B" | "C" | "D";
 type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
 
 export default class ConcordiaGame {
-  private static readonly CITY_TILES: Record<
-    MapZone,
-    Record<Resource, number>
-  > = Object.freeze({
+  private static readonly CITY_TILES: Readonly<
+    Record<MapZone, Readonly<Record<Resource, number>>>
+  > = {
     A: { bricks: 2, food: 2, tools: 1, wine: 1, cloth: 1 },
     B: { bricks: 2, food: 3, tools: 1, wine: 1, cloth: 1 },
     C: { bricks: 3, food: 2, tools: 2, wine: 2, cloth: 1 },
     D: { bricks: 1, food: 1, tools: 1, wine: 1, cloth: 1 },
-  });
+  };
 
-  private static readonly CITIES: {
-    [mapId: string]: Partial<Record<MapZone, string[]>>;
-  } = Object.freeze({
+  private static readonly CITIES: Readonly<{
+    [mapId: string]: Readonly<Partial<Record<MapZone, string[]>>>;
+  }> = {
     Italia: {
       A: [
         "BAVSANVM",
@@ -110,7 +109,18 @@ export default class ConcordiaGame {
       ],
       D: ["NOVARIA", "AQVILEIA", "SYRACVSAE", "DIRRHACHIVM", "ATHENAE"],
     },
-  });
+  };
+
+  private static readonly MARKET_DECK_PHASE_1: ReadonlyArray<string> = [
+    "Architect",
+    "Prefect",
+    "Mercator",
+    "Colonist",
+    "Diplomat",
+    "Mason",
+    "Farmer",
+    "Smith",
+  ];
 
   public static get order(): SetupStepName[] {
     return [
@@ -174,6 +184,17 @@ export default class ConcordiaGame {
               return Base64.encode(selectedIdx);
             });
             return hashes.join(":");
+        }
+        break;
+
+      case "marketDisplay":
+        switch (strategy) {
+          case Strategy.RANDOM:
+            const permutations = PermutationsLazyArray.forPermutation(
+              this.MARKET_DECK_PHASE_1
+            );
+            const selectedIdx = Math.floor(Math.random() * permutations.length);
+            return Base64.encode(selectedIdx);
         }
     }
 

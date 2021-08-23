@@ -21,7 +21,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
    * permutation
    */
   public static forPermutation<T extends keyof any>(
-    permutation: T[]
+    permutation: ReadonlyArray<T>
   ): PermutationsLazyArray<T> {
     return new PermutationsLazyArray(
       permutation.reduce((definition, item) => {
