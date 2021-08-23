@@ -1,5 +1,6 @@
 import { GamePiecesColor } from "../core/themeWithGameColors";
 
-export default interface PlayerColors {
+type PlayerColors = Readonly<{
   [playerId: string]: GamePiecesColor;
-}
+}>;
+export default PlayerColors;

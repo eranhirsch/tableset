@@ -146,7 +146,7 @@ export default class ConcordiaGame {
   public static resolve(
     stepId: SetupStepName,
     strategy: Strategy,
-    instance: SetupStep<SetupStepName>[],
+    instance: ReadonlyArray<SetupStep<SetupStepName>>,
     playersTotal: number
   ): string {
     invariant(
@@ -196,6 +196,7 @@ export default class ConcordiaGame {
             const selectedIdx = Math.floor(Math.random() * permutations.length);
             return Base64.encode(selectedIdx);
         }
+        break;
     }
 
     invariant_violation(

@@ -14,16 +14,17 @@ export default function Template() {
   const [expandedStepId, setExpandedStepId] = useState<EntityId>();
 
   const template = useAppSelector(templateSelectors.selectEntities);
-  const playersTotal = useAppSelector(playersSelectors.selectTotal);
+  const playerIds = useAppSelector(playersSelectors.selectIds);
 
   const allItems = ConcordiaGame.order;
   const templatableItems = useMemo(
     () =>
       allItems.filter(
         (stepId) =>
-          ConcordiaGame.strategiesFor(stepId, template, playersTotal).length > 1
+          ConcordiaGame.strategiesFor(stepId, template, playerIds.length)
+            .length > 1
       ),
-    [allItems, playersTotal, template]
+    [allItems, playerIds.length, template]
   );
 
   return (
@@ -45,7 +46,7 @@ export default function Template() {
         color="primary"
         aria-label="go"
         onClick={() => {
-          dispatch(instanceSlice.actions.created(template, playersTotal));
+          dispatch(instanceSlice.actions.created(template, playerIds));
         }}
       >
         <PlayArrowIcon />
