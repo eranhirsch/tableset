@@ -211,13 +211,16 @@ export default class ConcordiaGame {
   ): Strategy[] {
     switch (stepId) {
       case "map":
-        return [
+        const strategies = [
           Strategy.OFF,
-          Strategy.DEFAULT,
           Strategy.RANDOM,
           Strategy.ASK,
           Strategy.FIXED,
         ];
+        if (playersTotal > 2 && playersTotal < 5) {
+          strategies.push(Strategy.DEFAULT);
+        }
+        return strategies;
 
       case "cityTiles": {
         const { map } = template;
@@ -245,6 +248,9 @@ export default class ConcordiaGame {
         return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
 
       case "playerColors":
+        if (playersTotal === 0) {
+          return [Strategy.OFF];
+        }
         return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
 
       case "startingMoney": {
@@ -272,6 +278,9 @@ export default class ConcordiaGame {
       }
 
       case "firstPlayer":
+        if (playersTotal < 2) {
+          return [Strategy.OFF];
+        }
         return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
 
       default:
