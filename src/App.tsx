@@ -24,7 +24,7 @@ function App() {
   useEffect(() => {
     // TODO: Remove this when we can load the previous players from somewhere
     ["Eran Hirsch", "Adam Maoz", "Amit Cwajghaft"].forEach((name) =>
-      dispatch(playersSlice.actions.added({ name }))
+      dispatch(playersSlice.actions.added(name))
     );
   }, [dispatch]);
 

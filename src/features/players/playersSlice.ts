@@ -2,23 +2,28 @@ import {
   createEntityAdapter,
   createSlice,
   EntityId,
+  nanoid,
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
 export interface Player {
+  id: string;
   name: string;
 }
 
 const playersAdapter = createEntityAdapter<Player>({
-  selectId: (player) => player.name,
+  sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
 const playersSlice = createSlice({
   name: "players",
   initialState: playersAdapter.getInitialState(),
   reducers: {
-    added: playersAdapter.addOne,
+    added: {
+      prepare: (name: string) => ({ payload: { id: nanoid(), name: name } }),
+      reducer: playersAdapter.addOne,
+    },
     removed: {
       prepare: (id: EntityId, playersTotal: number) => ({
         payload: id,

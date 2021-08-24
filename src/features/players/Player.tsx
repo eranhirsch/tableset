@@ -13,11 +13,11 @@ export default function Player({ playerId }: { playerId: EntityId }) {
 
   return (
     <Chip
-      key={player.name}
+      key={player.id}
       avatar={<PersonIcon />}
       label={player.name}
       onDelete={() =>
-        dispatch(playersSlice.actions.removed(player.name, playersTotal))
+        dispatch(playersSlice.actions.removed(player.id, playersTotal))
       }
     />
   );

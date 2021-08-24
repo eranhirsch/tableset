@@ -14,7 +14,7 @@ export default function NewPlayerInput() {
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        dispatch(playersSlice.actions.added({ name: newPlayerName }));
+        dispatch(playersSlice.actions.added(newPlayerName));
         setNewPlayerName("");
       }}
     >
