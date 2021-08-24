@@ -6,6 +6,10 @@ import { GamePiecesColor } from "../../core/themeWithGameColors";
 import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
+import nullthrows from "../../common/err/nullthrows";
+import array_zip from "../../common/lib_utils/array_zip";
+
+const HASH_SEPERATOR = "-";
 
 export type SetupStepName =
   | "bank"
@@ -166,7 +170,7 @@ export default class ConcordiaGame {
           const selectedIdx = Math.floor(Math.random() * permutations.length);
           return Base32.encode(selectedIdx);
         });
-        return hashes.join("-");
+        return hashes.join(HASH_SEPERATOR);
 
       case "marketDisplay":
         const permutations = PermutationsLazyArray.forPermutation(
@@ -294,5 +298,23 @@ export default class ConcordiaGame {
           `No items for step ${stepId}, the step shouldn't have FIXED strategy enabled for it`
         );
     }
+  }
+
+  public static cityResources(
+    map: string,
+    hash: string
+  ): { [cityName: string]: Resource } {
+    const hashParts = hash.split(HASH_SEPERATOR);
+    return Object.entries(this.CITIES[map]).reduce(
+      (result, [zone, cities], index) => {
+        const zoneDef = this.CITY_TILES[zone as MapZone];
+        const permutationIdx = Base32.decode(hashParts[index]);
+        const resources = nullthrows(
+          new PermutationsLazyArray(zoneDef).at(permutationIdx)
+        );
+        return { ...result, ...array_zip(cities, resources) };
+      },
+      {} as { [cityName: string]: Resource }
+    );
   }
 }

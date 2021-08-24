@@ -6,10 +6,17 @@ import {
   CardContent,
   CardHeader,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
   Typography,
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
+import React from "react";
 import { useAppSelector } from "../../app/hooks";
+import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
 import PlayerColors from "../../common/PlayerColors";
@@ -23,6 +30,60 @@ import {
   selectors as playersSelectors,
 } from "../players/playersSlice";
 import { selectors as instanceSelectors } from "./instanceSlice";
+
+function ConcordiaCityTiles({ hash }: { hash: string }) {
+  const mapStep = useAppEntityIdSelectorEnforce(instanceSelectors, "map");
+  if (mapStep.id !== "map") {
+    invariant_violation();
+  }
+  const mapId = mapStep.value;
+
+  const cities = Object.entries(ConcordiaGame.cityResources(mapId, hash));
+
+  return (
+    <Stack direction="column" alignItems="center">
+      <Stack direction="row">
+        <TableContainer>
+          <Table size="small">
+            <TableBody>
+              {cities
+                .slice(0, Math.floor(cities.length / 2) + 1)
+                .map(([city, resource]) => (
+                  <TableRow key={city}>
+                    <TableCell>
+                      <Typography fontSize="small" variant="body2">
+                        {city}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{resource}</TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TableContainer>
+          <Table size="small">
+            <TableBody>
+              {cities
+                .slice(Math.floor(cities.length / 2) + 1)
+                .map(([city, resource]) => (
+                  <TableRow key={city}>
+                    <TableCell>
+                      <Typography fontSize="small" variant="body2">
+                        {city}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{resource}</TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
+      <Typography variant="caption">Hash: {hash}</Typography>
+    </Stack>
+  );
+}
 
 function PlayOrderPanel({ playOrder }: { playOrder: ReadonlyArray<EntityId> }) {
   const firstPlayer = useAppSelector(firstPlayerSelector);
@@ -79,6 +140,9 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
     case "firstPlayer":
       return <FirstPlayerPanel playerId={step.value} />;
 
+    case "cityTiles":
+      return <ConcordiaCityTiles hash={step.value} />;
+
     default:
       return <Typography variant="h4">{step.value}</Typography>;
   }
@@ -93,7 +157,7 @@ function InstanceItem({ stepId }: { stepId: SetupStepName }) {
         sx={{
           justifyContent: "center",
           display: "flex",
-          paddingX: 2,
+          paddingX: 1,
         }}
       >
         <InstanceItemContent stepId={stepId} />

@@ -106,16 +106,16 @@ export default class PermutationsLazyArray<K extends keyof any> {
 
       // We "encode" the number as the positions where the item would be in the
       // permutation
-      PermutationsLazyArray.indexToPositions(
+      const positions = PermutationsLazyArray.indexToPositions(
         comboIdx,
         count,
         availablePositions
-      )
-        // We are changing the permutation in-place so we need to insert the
-        // items from least-significant backwards to that the offsets don't
-        // change (they were computed based on the permutation before inserts).
-        .reverse()
-        .forEach((pos) => permutation.splice(pos, 0, item));
+      );
+
+      // We are changing the permutation in-place so we need to insert the
+      // items from least-significant backwards to that the offsets don't
+      // change (they were computed based on the permutation before inserts).
+      positions.reverse().forEach((pos) => permutation.splice(pos, 0, item));
 
       // Remove the "radix" from the total number we are encoding, the rest of
       // the items would continue encoding the more-significant parts
@@ -237,7 +237,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
     }
 
     let sum = 0;
-    for (let i = n; i >= 1; i++) {
+    for (let i = n; i >= 1; i--) {
       // The first item in the sum is for the case where we put the item in the
       // first slot (we can then put the other items in any of the other slots),
       // then adding the case where we put the item in the next slot (we can

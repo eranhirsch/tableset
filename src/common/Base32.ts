@@ -10,6 +10,9 @@ export default class Base32 {
   }
 
   public static decode(x: string): number {
-    return Number.parseInt(x, 32);
+    return Number.parseInt(
+      x.replace("Z", "I").replace("Y", "O").replace("X", "1").replace("W", "0"),
+      32
+    );
   }
 }
