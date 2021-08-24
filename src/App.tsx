@@ -15,6 +15,8 @@ import TuneIcon from "@material-ui/icons/Tune";
 import { useEffect } from "react";
 import { useAppDispatch } from "./app/hooks";
 import playersSlice from "./features/players/playersSlice";
+import Instance from "./features/instance/Instance";
+import ClearIcon from "@material-ui/icons/Clear";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -39,6 +41,7 @@ function App() {
               <Switch>
                 <Route path="/template">Template</Route>
                 <Route path="/players">Players</Route>
+                <Route path="/instance">Instance</Route>
                 <Route path="/">MISSING TITLE</Route>
               </Switch>
             </Typography>
@@ -53,6 +56,11 @@ function App() {
                   <TuneIcon />
                 </IconButton>
               </Route>
+              <Route path="/instance">
+                <IconButton component={Link} color="inherit" to="/template">
+                  <ClearIcon />
+                </IconButton>
+              </Route>
             </Switch>
           </Toolbar>
         </AppBar>
@@ -63,6 +71,9 @@ function App() {
             </Route>
             <Route path="/players">
               <Players />
+            </Route>
+            <Route path="/instance">
+              <Instance />
             </Route>
             <Route path="/">
               <Redirect to="/template" />

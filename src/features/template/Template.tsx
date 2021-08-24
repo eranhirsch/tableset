@@ -8,6 +8,7 @@ import { selectors as templateSelectors } from "./templateSlice";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import instanceSlice from "../instance/instanceSlice";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function Template() {
   const dispatch = useAppDispatch();
@@ -42,6 +43,8 @@ export default function Template() {
         ))}
       </List>
       <Fab
+        component={RouterLink}
+        to="/instance"
         sx={{ position: "absolute", bottom: 16, right: 16 }}
         color="primary"
         aria-label="go"
