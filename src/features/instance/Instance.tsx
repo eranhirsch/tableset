@@ -14,7 +14,9 @@ import nullthrows from "../../common/err/nullthrows";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
 import PlayerColors from "../../common/PlayerColors";
 import short_name from "../../common/short_name";
-import { SetupStepName } from "../../games/concordia/ConcordiaGame";
+import ConcordiaGame, {
+  SetupStepName,
+} from "../../games/concordia/ConcordiaGame";
 import { stepLabel } from "../../games/concordia/content";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import { selectors as instanceSelectors } from "./instanceSlice";
@@ -105,9 +107,11 @@ export default function Instance() {
       direction="column"
       spacing={1}
     >
-      {stepIds.map((stepId) => (
-        <InstanceItem key={stepId} stepId={stepId as SetupStepName} />
-      ))}
+      {ConcordiaGame.order
+        .filter((stepId) => stepIds.includes(stepId))
+        .map((stepId) => (
+          <InstanceItem key={stepId} stepId={stepId as SetupStepName} />
+        ))}
     </Stack>
   );
 }
