@@ -6,6 +6,7 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
+import nullthrows from "../../common/err/nullthrows";
 
 export interface Player {
   id: string;
@@ -39,5 +40,8 @@ const playersSlice = createSlice({
 export const selectors = playersAdapter.getSelectors<RootState>(
   (state) => state.players
 );
+
+export const firstPlayerSelector = (state: RootState) =>
+  nullthrows(state.players.entities[state.players.ids[0]]);
 
 export default playersSlice;

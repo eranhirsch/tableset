@@ -18,14 +18,19 @@ import ConcordiaGame, {
   SetupStepName,
 } from "../../games/concordia/ConcordiaGame";
 import { stepLabel } from "../../games/concordia/content";
-import { selectors as playersSelectors } from "../players/playersSlice";
+import {
+  firstPlayerSelector,
+  selectors as playersSelectors,
+} from "../players/playersSlice";
 import { selectors as instanceSelectors } from "./instanceSlice";
 
 function PlayOrderPanel({ playOrder }: { playOrder: ReadonlyArray<EntityId> }) {
+  const firstPlayer = useAppSelector(firstPlayerSelector);
   const players = useAppSelector(playersSelectors.selectEntities);
 
   return (
     <AvatarGroup>
+      <Avatar key="firstPlayer">{short_name(firstPlayer.name)}</Avatar>
       {playOrder.map((playerId) => (
         <Avatar key={playerId}>
           {short_name(nullthrows(players[playerId]).name)}

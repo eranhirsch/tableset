@@ -70,7 +70,13 @@ function fixedSetupStep(
 ): ConstantTemplateElement<SetupStepName> {
   switch (id) {
     case "playOrder": {
-      return { id: "playOrder", strategy: Strategy.FIXED, value: playerIds };
+      // Remove the first player which would be used as a pivot
+      const [, ...restOfPlayers] = playerIds;
+      return {
+        id: "playOrder",
+        strategy: Strategy.FIXED,
+        value: restOfPlayers,
+      };
     }
 
     case "firstPlayer": {

@@ -1,6 +1,6 @@
 import { Avatar, Stack, Badge, Typography } from "@material-ui/core";
 import { useCallback } from "react";
-import { useAppDispatch } from "../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import templateSlice, {
   selectors as templateSelectors,
 } from "../templateSlice";
@@ -17,6 +17,7 @@ import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntit
 import LockIcon from "@material-ui/icons/Lock";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { Strategy } from "../../../core/Strategy";
+import nullthrows from "../../../common/err/nullthrows";
 
 function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
   const clone = items.slice();
@@ -51,8 +52,10 @@ function DraggablePlayer({
   );
 }
 
-function FirstAvatar({ playerId }: { playerId: EntityId }) {
-  const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
+function FirstAvatar() {
+  const player = useAppSelector((state) =>
+    nullthrows(state.players.entities[state.players.ids[0]])
+  );
   return (
     <Badge
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
@@ -97,7 +100,7 @@ export default function PlayerOrderPanelV2() {
   return (
     <Stack alignItems="center" direction="column" spacing={1}>
       <Stack direction="row" spacing={1}>
-        {order.length >= 1 && <FirstAvatar playerId={order[0]} />}
+        <FirstAvatar />
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="order" direction="horizontal">
             {(provided) => (
@@ -109,7 +112,7 @@ export default function PlayerOrderPanelV2() {
                 sx={{ padding: 0 }}
                 spacing={1}
               >
-                {order.slice(1).map((playerId, idx) => (
+                {order.map((playerId, idx) => (
                   <DraggablePlayer
                     key={playerId}
                     playerId={playerId}

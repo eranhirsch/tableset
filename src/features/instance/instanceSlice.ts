@@ -80,8 +80,10 @@ export const instanceSlice = createSlice({
 
                 case "playOrder":
                   {
+                    // Remove the first player as the pivot
+                    const [, ...restOfPlayers] = playerIds;
                     const permutations =
-                      PermutationsLazyArray.forPermutation(playerIds);
+                      PermutationsLazyArray.forPermutation(restOfPlayers);
                     const selectedIdx = Math.floor(
                       Math.random() * permutations.length
                     );
