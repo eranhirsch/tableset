@@ -317,4 +317,13 @@ export default class ConcordiaGame {
       {} as { [cityName: string]: Resource }
     );
   }
+
+  public static getMarketForHash(hash: string): ReadonlyArray<string> {
+    const permutationIdx = Base32.decode(hash);
+    return nullthrows(
+      PermutationsLazyArray.forPermutation(this.MARKET_DECK_PHASE_1).at(
+        permutationIdx
+      )
+    ).slice(0, 7);
+  }
 }

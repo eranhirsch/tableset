@@ -31,6 +31,28 @@ import {
 } from "../players/playersSlice";
 import { selectors as instanceSelectors } from "./instanceSlice";
 
+function ConcordiaMarket({ hash }: { hash: string }) {
+  const market = ConcordiaGame.getMarketForHash(hash);
+  return (
+    <Stack direction="column" alignItems="center">
+      <TableContainer>
+        <Table size="small">
+          <TableBody>
+            {market.map((cardName) => (
+              <TableRow key={cardName}>
+                <TableCell>
+                  <Typography variant="body2">{cardName}</Typography>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Typography variant="caption">Hash: {hash}</Typography>
+    </Stack>
+  );
+}
+
 function ConcordiaCityTiles({ hash }: { hash: string }) {
   const mapStep = useAppEntityIdSelectorEnforce(instanceSelectors, "map");
   if (mapStep.id !== "map") {
@@ -40,42 +62,40 @@ function ConcordiaCityTiles({ hash }: { hash: string }) {
 
   const cities = Object.entries(ConcordiaGame.cityResources(mapId, hash));
 
+  const middle = Math.floor(cities.length / 2 - 1) + 1;
+
   return (
     <Stack direction="column" alignItems="center">
       <Stack direction="row">
         <TableContainer>
           <Table size="small">
             <TableBody>
-              {cities
-                .slice(0, Math.floor(cities.length / 2) + 1)
-                .map(([city, resource]) => (
-                  <TableRow key={city}>
-                    <TableCell>
-                      <Typography fontSize="small" variant="body2">
-                        {city}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>{resource}</TableCell>
-                  </TableRow>
-                ))}
+              {cities.slice(0, middle).map(([city, resource]) => (
+                <TableRow key={city}>
+                  <TableCell>
+                    <Typography fontSize="small" variant="body2">
+                      {city}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{resource}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
         <TableContainer>
           <Table size="small">
             <TableBody>
-              {cities
-                .slice(Math.floor(cities.length / 2) + 1)
-                .map(([city, resource]) => (
-                  <TableRow key={city}>
-                    <TableCell>
-                      <Typography fontSize="small" variant="body2">
-                        {city}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>{resource}</TableCell>
-                  </TableRow>
-                ))}
+              {cities.slice(middle).map(([city, resource]) => (
+                <TableRow key={city}>
+                  <TableCell>
+                    <Typography fontSize="small" variant="body2">
+                      {city}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{resource}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -142,6 +162,9 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
 
     case "cityTiles":
       return <ConcordiaCityTiles hash={step.value} />;
+
+    case "marketDisplay":
+      return <ConcordiaMarket hash={step.value} />;
 
     default:
       return <Typography variant="h4">{step.value}</Typography>;
