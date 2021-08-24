@@ -40,14 +40,13 @@ function PlayerColorsPanel({ playerColor }: { playerColor: PlayerColors }) {
     <Stack direction="row" spacing={1}>
       {Object.entries(playerColor).map(([playerId, color]) => (
         <Badge
+          key={playerId}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           overlap="circular"
           invisible={false}
           color={color}
         >
-          <Avatar key={playerId}>
-            {short_name(nullthrows(players[playerId]).name)}
-          </Avatar>
+          <Avatar>{short_name(nullthrows(players[playerId]).name)}</Avatar>
         </Badge>
       ))}
     </Stack>
