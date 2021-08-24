@@ -5,7 +5,7 @@ import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
-import Base64 from "../../common/Base64";
+import Base32 from "../../common/Base32";
 
 export type SetupStepName =
   | "bank"
@@ -164,16 +164,16 @@ export default class ConcordiaGame {
           const tiles = this.CITY_TILES[zone as MapZone];
           const permutations = new PermutationsLazyArray(tiles);
           const selectedIdx = Math.floor(Math.random() * permutations.length);
-          return Base64.encode(selectedIdx);
+          return Base32.encode(selectedIdx);
         });
-        return hashes.join(":");
+        return hashes.join("-");
 
       case "marketDisplay":
         const permutations = PermutationsLazyArray.forPermutation(
           this.MARKET_DECK_PHASE_1
         );
         const selectedIdx = Math.floor(Math.random() * permutations.length);
-        return Base64.encode(selectedIdx);
+        return Base32.encode(selectedIdx);
     }
 
     invariant_violation(
