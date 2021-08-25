@@ -7,6 +7,7 @@ import {
   CardHeader,
   Stack,
   Step,
+  StepContent,
   StepLabel,
   Stepper,
   Table,
@@ -28,7 +29,10 @@ import {
 import { useAppSelector } from "../../app/hooks";
 import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
-import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
+import {
+  useAppEntityIdSelectorEnforce,
+  useAppEntityIdSelectorNullable,
+} from "../../common/hooks/useAppEntityIdSelector";
 import PlayerColors from "../../common/PlayerColors";
 import short_name from "../../common/short_name";
 import ConcordiaGame, {
@@ -39,7 +43,7 @@ import {
   firstPlayerSelector,
   selectors as playersSelectors,
 } from "../players/playersSlice";
-import { selectors as instanceSelectors } from "./instanceSlice";
+import { selectors as instanceSelectors, selectors } from "./instanceSlice";
 
 function ConcordiaMarket({ hash }: { hash: string }) {
   const market = ConcordiaGame.getMarketForHash(hash);
@@ -121,7 +125,7 @@ function PlayOrderPanel({ playOrder }: { playOrder: ReadonlyArray<EntityId> }) {
 
   return (
     <AvatarGroup>
-      <Avatar key="firstPlayer">{short_name(firstPlayer.name)}</Avatar>
+      <Avatar>{short_name(firstPlayer.name)}</Avatar>
       {playOrder.map((playerId) => (
         <Avatar key={playerId}>
           {short_name(nullthrows(players[playerId]).name)}
@@ -206,12 +210,54 @@ function InstanceItem({ stepId }: { stepId: SetupStepName }) {
   );
 }
 
+function InstanceOverviewStep({ stepId }: { stepId: SetupStepName }) {
+  const step = useAppEntityIdSelectorNullable(instanceSelectors, stepId);
+
+  if (step == null) {
+    return null;
+  }
+
+  switch (step?.id) {
+    case "playOrder":
+      return (
+        <StepContent>
+          <PlayOrderPanel playOrder={step.value} />
+        </StepContent>
+      );
+
+    case "playerColors":
+      return (
+        <StepContent>
+          <PlayerColorsPanel playerColor={step.value} />
+        </StepContent>
+      );
+
+    case "firstPlayer":
+      return (
+        <StepContent>
+          <FirstPlayerPanel playerId={step.value} />
+        </StepContent>
+      );
+
+    default:
+      return <StepContent>{step.value}</StepContent>;
+  }
+}
+
 function InstanceOverview() {
+  const history = useHistory();
+  const match = useRouteMatch();
+
   return (
-    <Stepper orientation="vertical">
+    <Stepper orientation="vertical" activeStep={-1}>
       {ConcordiaGame.order.map((stepId) => (
-        <Step key={stepId}>
+        <Step
+          key={stepId}
+          onClick={() => history.push(`${match.path}/${stepId}`)}
+          expanded
+        >
           <StepLabel>{stepLabel(stepId)}</StepLabel>
+          <InstanceOverviewStep key={stepId} stepId={stepId} />
         </Step>
       ))}
     </Stepper>
