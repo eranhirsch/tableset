@@ -1,13 +1,13 @@
 import { Container, ThemeProvider } from "@material-ui/core";
-import Template from "./features/template/Template";
+import Template from "../features/template/Template";
 import { Switch, Route, Redirect } from "react-router-dom";
-import themeWithGameColors from "./core/themeWithGameColors";
-import Players from "./features/players/Players";
+import themeWithGameColors from "../core/themeWithGameColors";
+import Players from "../features/players/Players";
 import { useEffect, useState } from "react";
-import { useAppDispatch } from "./app/hooks";
-import playersSlice from "./features/players/playersSlice";
-import Instance from "./features/instance/Instance";
-import { TableSetAppBar } from "./app/TableSetAppBar";
+import { useAppDispatch } from "./hooks";
+import playersSlice from "../features/players/playersSlice";
+import Instance from "../features/instance/Instance";
+import { TableSetAppBar } from "./TableSetAppBar";
 
 function App() {
   const dispatch = useAppDispatch();
