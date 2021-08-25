@@ -6,6 +6,9 @@ import {
   CardContent,
   CardHeader,
   Stack,
+  Step,
+  StepLabel,
+  Stepper,
   Table,
   TableBody,
   TableCell,
@@ -15,6 +18,13 @@ import {
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
 import React from "react";
+import {
+  Route,
+  Switch,
+  useHistory,
+  useParams,
+  useRouteMatch,
+} from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
@@ -172,9 +182,16 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
 }
 
 function InstanceItem({ stepId }: { stepId: SetupStepName }) {
+  const match = useRouteMatch();
+  const history = useHistory();
+
   const label = stepLabel(stepId);
+
   return (
-    <Card component="li">
+    <Card
+      component="li"
+      onClick={() => history.push(`${match.path}/${stepId}/`)}
+    >
       <CardHeader avatar={<Avatar>{short_name(label)}</Avatar>} title={label} />
       <CardContent
         sx={{
@@ -189,21 +206,34 @@ function InstanceItem({ stepId }: { stepId: SetupStepName }) {
   );
 }
 
+function InstanceOverview() {
+  return (
+    <Stepper orientation="vertical">
+      {ConcordiaGame.order.map((stepId) => (
+        <Step key={stepId}>
+          <StepLabel>{stepLabel(stepId)}</StepLabel>
+        </Step>
+      ))}
+    </Stepper>
+  );
+}
+
+function InstanceStep() {
+  let { stepId } = useParams<{ stepId: SetupStepName }>();
+  return <InstanceItemContent stepId={stepId} />;
+}
+
 export default function Instance() {
-  const stepIds = useAppSelector(instanceSelectors.selectIds);
+  const match = useRouteMatch();
 
   return (
-    <Stack
-      component="ol"
-      sx={{ listStyle: "none", paddingInlineStart: 0 }}
-      direction="column"
-      spacing={1}
-    >
-      {ConcordiaGame.order
-        .filter((stepId) => stepIds.includes(stepId))
-        .map((stepId) => (
-          <InstanceItem key={stepId} stepId={stepId as SetupStepName} />
-        ))}
-    </Stack>
+    <Switch>
+      <Route path={`${match.path}/:stepId`}>
+        <InstanceStep />
+      </Route>
+      <Route path={`${match.path}`}>
+        <InstanceOverview />
+      </Route>
+    </Switch>
   );
 }
