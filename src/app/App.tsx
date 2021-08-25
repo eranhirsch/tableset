@@ -29,7 +29,7 @@ function App() {
       <Container
         component="main"
         maxWidth="xs"
-        sx={{ height: "100vh", position: "relative" }}
+        sx={{ height: "100vh", position: "relative", paddingTop: 8 }}
       >
         <Switch>
           <Route path="/template">
