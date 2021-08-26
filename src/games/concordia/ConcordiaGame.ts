@@ -7,7 +7,6 @@ import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
 import nullthrows from "../../common/err/nullthrows";
-import array_zip from "../../common/lib_utils/array_zip";
 
 const HASH_SEPERATOR = "-";
 
@@ -33,6 +32,15 @@ export type SetupStepName =
 type MapZone = "A" | "B" | "C" | "D";
 type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
 
+type ConcordiaMap = Readonly<{
+  name: string;
+  provinces: Readonly<
+    Partial<
+      Record<MapZone, Readonly<{ [provinceName: string]: readonly string[] }>>
+    >
+  >;
+}>;
+
 export default class ConcordiaGame {
   private static readonly CITY_TILES: Readonly<
     Record<MapZone, Readonly<Record<Resource, number>>>
@@ -46,77 +54,51 @@ export default class ConcordiaGame {
   private static readonly MAPS = {
     italia: {
       name: "Italia",
-      cities: {
-        A: [
-          "Bavsanvm",
-          "Aqvileia",
-          "Verona",
-          "Comvm",
-          "Segvsio",
-          "Nicaea",
-          "Genva",
-        ],
-        B: [
-          "Mvtina",
-          "Ravenna",
-          "Florentia",
-          "Cosa",
-          "Aleria",
-          "Olbia",
-          "Casinvm",
-          "Neapolis",
-        ],
-        C: [
-          "Ancona",
-          "Spoletvm",
-          "Hadria",
-          "Lvcria",
-          "Brvndisivm",
-          "Potentia",
-          "Croton",
-          "Messana",
-          "Syracvsae",
-          "Panormvs",
-        ],
+      provinces: {
+        A: {
+          Venetia: ["Bavsanvm", "Aqvileia", "Verona"],
+          Transpadana: ["Comvm", "Segvsio"],
+          Liguria: ["Nicaea", "Genva"],
+        },
+        B: {
+          Aemilia: ["Mvtina", "Ravenna"],
+          Etruria: ["Florentia", "Cosa"],
+          Corsica: ["Aleria", "Olbia"],
+          Campania: ["Casinvm", "Neapolis"],
+        },
+        C: {
+          Umbria: ["Ancona", "Spoletvm", "Hadria"],
+          Apulia: ["Lvcria", "Brvndisivm"],
+          Lucania: ["Potentia", "Croton"],
+          Sicilia: ["Messana", "Syracvsae", "Panormvs"],
+        },
       },
-    },
+    } as ConcordiaMap,
     imperium: {
       name: "Imperium",
-      cities: {
-        A: [
-          "Isca D.",
-          "Londonivm",
-          "Colonia A.",
-          "Vindobona",
-          "Sirmivm",
-          "Napoca",
-          "Tomis",
-        ],
-        B: [
-          "Lvtetia",
-          "Bvrdigala",
-          "Massilia",
-          "Brigantivm",
-          "Olisipo",
-          "Valentia",
-          "Rvsadir",
-          "Carthago",
-        ],
-        C: [
-          "Leptis Magna",
-          "Cyrene",
-          "Bycantivm",
-          "Sinope",
-          "Attalia",
-          "Antiochia",
-          "Tyros",
-          "Alexandria",
-          "Memphis",
-          "Petra",
-        ],
-        D: ["Novaria", "Aqvileia", "Syracvsae", "Dirrhachivm", "Athenae"],
+      provinces: {
+        A: {
+          Britannia: ["Isca D.", "Londonivm"],
+          Germania: ["Colonia A.", "Vindobona"],
+          Dacia: ["Sirmivm", "Napoca", "Tomis"],
+        },
+        B: {
+          Galia: ["Lvtetia", "Bvrdigala", "Massilia"],
+          Hispania: ["Brigantivm", "Olisipo", "Valentia"],
+          Mauretania: ["Rvsadir", "Carthago"],
+        },
+        C: {
+          Lybia: ["Leptis Magna", "Cyrene"],
+          Asia: ["Bycantivm", "Sinope", "Attalia"],
+          Syria: ["Antiochia", "Tyros"],
+          Aegyptus: ["Alexandria", "Memphis", "Petra"],
+        },
+        D: {
+          Italia: ["Novaria", "Aqvileia", "Syracvsae"],
+          Hellas: ["Dirrhachivm", "Athenae"],
+        },
       },
-    },
+    } as ConcordiaMap,
   } as const;
 
   private static readonly MARKET_DECK_PHASE_1: ReadonlyArray<string> = [
@@ -169,8 +151,8 @@ export default class ConcordiaGame {
           invariant_violation(`Couldn't find 'map' dependancy`);
         }
         const mapId = mapDef.value as keyof typeof ConcordiaGame.MAPS;
-        const cities = this.MAPS[mapId].cities;
-        const hashes = Object.keys(cities).map((zone) => {
+        const { provinces } = this.MAPS[mapId];
+        const hashes = Object.keys(provinces).map((zone) => {
           const tiles = this.CITY_TILES[zone as MapZone];
           const permutations = new PermutationsLazyArray(tiles);
           const selectedIdx = Math.floor(Math.random() * permutations.length);
@@ -323,18 +305,35 @@ export default class ConcordiaGame {
   public static cityResources(
     map: string,
     hash: string
-  ): { [cityName: string]: Resource } {
+  ): Readonly<{
+    [provinceName: string]: Readonly<{ [cityName: string]: Resource }>;
+  }> {
     const hashParts = hash.split(HASH_SEPERATOR);
-    return Object.entries(
-      this.MAPS[map as keyof typeof ConcordiaGame.MAPS].cities
-    ).reduce((result, [zone, cities], index) => {
-      const zoneDef = this.CITY_TILES[zone as MapZone];
-      const permutationIdx = Base32.decode(hashParts[index]);
-      const resources = nullthrows(
-        new PermutationsLazyArray(zoneDef).at(permutationIdx)
-      );
-      return { ...result, ...array_zip(cities, resources) };
-    }, {} as { [cityName: string]: Resource });
+    const { provinces } = this.MAPS[map as keyof typeof ConcordiaGame.MAPS];
+    const x = Object.entries(provinces).reduce(
+      (result, [zone, provinces], index) => {
+        const zoneDef = this.CITY_TILES[zone as MapZone];
+        const permutationIdx = Base32.decode(hashParts[index]);
+        const resources = [
+          ...nullthrows(new PermutationsLazyArray(zoneDef).at(permutationIdx)),
+        ];
+
+        Object.entries(provinces).forEach(([provinceName, cities]) => {
+          const mappedResources: { [cityName: string]: Resource } = {};
+          cities.forEach((cityName) => {
+            mappedResources[cityName] = nullthrows(
+              resources.pop(),
+              `Not enough items in the resources permutation!`
+            );
+          });
+          result[provinceName] = mappedResources;
+        });
+
+        return result;
+      },
+      {} as { [provinceName: string]: { [cityName: string]: Resource } }
+    );
+    return x;
   }
 
   public static getMarketForHash(hash: string): ReadonlyArray<string> {

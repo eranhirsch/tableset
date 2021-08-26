@@ -70,21 +70,39 @@ function ConcordiaCityTiles({ hash }: { hash: string }) {
   }
   const mapId = mapStep.value;
 
-  const cities = useMemo(
+  const provinces = useMemo(
     () => ConcordiaGame.cityResources(mapId, hash),
     [hash, mapId]
   );
 
   return (
     <Grid container textAlign="center" spacing={1}>
-      {Object.entries(cities).map(([name, resource]) => (
-        <Grid key={name} item xs={4}>
-          <Typography variant="caption">{resource}</Typography>
-          <Typography variant="body2" sx={{ fontVariantCaps: "petite-caps" }}>
-            {name}
-          </Typography>
-        </Grid>
-      ))}
+      {Object.entries(provinces).map(([provinceName, cities]) => {
+        const mapping = Object.entries(cities);
+        return (
+          <>
+            <Grid key={provinceName} item xs={12}>
+              <Typography
+                variant="subtitle1"
+                sx={{ fontVariantCaps: "petite-caps" }}
+              >
+                {provinceName}
+              </Typography>
+            </Grid>
+            {mapping.map(([cityName, resource]) => (
+              <Grid key={cityName} item xs={mapping.length === 2 ? 6 : 4}>
+                <Typography variant="caption">{resource}</Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ fontVariantCaps: "petite-caps" }}
+                >
+                  {cityName}
+                </Typography>
+              </Grid>
+            ))}
+          </>
+        );
+      })}
     </Grid>
   );
 }
