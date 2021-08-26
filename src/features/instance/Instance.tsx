@@ -2,12 +2,17 @@ import {
   Avatar,
   AvatarGroup,
   Badge,
+  Button,
   Card,
   CardContent,
   CardHeader,
+  IconButton,
+  Link,
   Stack,
   Step,
+  StepButton,
   StepContent,
+  StepIcon,
   StepLabel,
   Stepper,
   Table,
@@ -18,7 +23,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Route,
   Switch,
@@ -44,6 +49,9 @@ import {
   selectors as playersSelectors,
 } from "../players/playersSlice";
 import { selectors as instanceSelectors } from "./instanceSlice";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import UnfoldLessIcon from "@material-ui/icons/UnfoldLess";
+import UnfoldMoreIcon from "@material-ui/icons/UnfoldMore";
 
 const IDEAL_STEP_COUNT = 6;
 
@@ -250,6 +258,8 @@ function InstanceOverview() {
   const history = useHistory();
   const match = useRouteMatch();
 
+  const [expandedGroupIdx, setExpandedGroupIdx] = useState<number>();
+
   const instanceStepIds = useAppSelector(instanceSelectors.selectIds);
 
   const groups = useMemo(() => {
@@ -309,32 +319,55 @@ function InstanceOverview() {
 
   return (
     <Stepper orientation="vertical" activeStep={-1}>
-      {groups.map((group, groupIndex) => {
-        const index = groups
-          .slice(0, groupIndex)
+      {groups.map((group, groupIdx) => {
+        const correctedIdx = groups
+          .slice(0, groupIdx)
           .reduce((sum, group) => sum + group.length, 0);
-        if (group.length > 1) {
+        if (groupIdx !== expandedGroupIdx && group.length > 1) {
           return (
-            <Step key={`multi_${groupIndex}`} index={index}>
-              <StepLabel>{`${group
-                .map((stepId) => stepLabel(stepId))
-                .join(", ")}`}</StepLabel>
+            <Step key={`multi_${groupIdx}`} index={correctedIdx} expanded>
+              <StepLabel icon={"\u00B7\u00B7\u00B7"}>
+                {`${group
+                  .slice(0, 2)
+                  .map((stepId) => stepLabel(stepId))
+                  .join(", ")}${
+                  group.length > 2 ? `, and ${group.length - 1} more...` : ""
+                }`}
+                <IconButton
+                  size="small"
+                  onClick={() => setExpandedGroupIdx(groupIdx)}
+                >
+                  <UnfoldMoreIcon fontSize="small" />
+                </IconButton>
+              </StepLabel>
             </Step>
           );
         }
 
-        const stepId = group[0];
-        return (
+        return group.map((stepId, idx) => (
           <Step
             key={stepId}
             onClick={() => history.push(`${match.path}/${stepId}`)}
-            index={index}
+            index={correctedIdx + idx}
             expanded
           >
-            <StepLabel>{stepLabel(stepId)}</StepLabel>
+            <StepLabel>
+              {stepLabel(stepId)}
+              {groupIdx === expandedGroupIdx && (
+                <IconButton
+                  size="small"
+                  onClick={(event) => {
+                    setExpandedGroupIdx(undefined);
+                    event.stopPropagation();
+                  }}
+                >
+                  <UnfoldLessIcon fontSize="small" />
+                </IconButton>
+              )}
+            </StepLabel>
             <InstanceOverviewStep key={stepId} stepId={stepId} />
           </Step>
-        );
+        ));
       })}
     </Stepper>
   );
