@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Grid,
-  IconButton,
   Stack,
   Step,
   StepButton,
@@ -19,7 +18,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import invariant_violation from "../../common/err/invariant_violation";
@@ -39,7 +38,6 @@ import {
   selectors as playersSelectors,
 } from "../players/playersSlice";
 import { selectors as instanceSelectors } from "./instanceSlice";
-import UnfoldLessIcon from "@material-ui/icons/UnfoldLess";
 
 const IDEAL_STEP_COUNT = 6;
 
@@ -80,7 +78,7 @@ function ConcordiaCityTiles({ hash }: { hash: string }) {
   return (
     <Grid container textAlign="center" spacing={1}>
       {Object.entries(cities).map(([name, resource]) => (
-        <Grid item xs={4}>
+        <Grid key={name} item xs={4}>
           <Typography variant="caption">{resource}</Typography>
           <Typography variant="body2" sx={{ fontVariantCaps: "petite-caps" }}>
             {name}
@@ -174,7 +172,6 @@ export default function Instance() {
   const location = useLocation();
   const history = useHistory();
 
-  const [expandedGroupIdx, setExpandedGroupIdx] = useState<number>();
   const [completedSteps, setCompletedSteps] = useState<
     readonly SetupStepName[]
   >([]);
@@ -239,14 +236,13 @@ export default function Instance() {
   const activeStepId = location.hash.substring(1) as SetupStepName;
   const activeStepIdx = ConcordiaGame.order.indexOf(activeStepId);
 
-  useEffect(() => {
-    const activeStepGroupIdx = groups.findIndex(
-      (group) => group.length > 1 && group.includes(activeStepId)
-    );
-    if (activeStepGroupIdx !== -1) {
-      setExpandedGroupIdx(activeStepGroupIdx);
-    }
-  }, [activeStepId, groups]);
+  const expandedGroupIdx = useMemo(
+    () => groups.findIndex((group) => group.includes(activeStepId)),
+    [activeStepId, groups]
+  );
+
+  const setActiveStepId = (stepId: SetupStepName | undefined) =>
+    history.push(stepId != null ? `#${stepId}` : "#");
 
   return (
     <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
@@ -265,7 +261,7 @@ export default function Instance() {
             >
               <StepButton
                 icon={"\u00B7\u00B7\u00B7"}
-                onClick={() => setExpandedGroupIdx(groupIdx)}
+                onClick={() => setActiveStepId(group[0])}
               >
                 <Typography variant="caption">
                   {`${group
@@ -280,58 +276,43 @@ export default function Instance() {
           );
         }
 
-        return group.map((stepId, idx) => {
-          const collapseButton = (
-            <IconButton
-              size="small"
-              onClick={(event) => {
-                setExpandedGroupIdx(undefined);
-                event.stopPropagation();
-              }}
+        return group.map((stepId, idx) => (
+          <Step
+            key={stepId}
+            id={stepId}
+            index={correctedIdx + idx}
+            completed={completedSteps.includes(stepId)}
+          >
+            <StepButton
+              onClick={
+                correctedIdx + idx !== activeStepIdx
+                  ? () => setActiveStepId(stepId)
+                  : undefined
+              }
             >
-              <UnfoldLessIcon fontSize="small" />
-            </IconButton>
-          );
-
-          return (
-            <Step
-              key={stepId}
-              id={stepId}
-              index={correctedIdx + idx}
-              completed={completedSteps.includes(stepId)}
-            >
-              <StepButton
-                onClick={
-                  correctedIdx + idx !== activeStepIdx
-                    ? () => history.push(`#${stepId}`)
-                    : undefined
-                }
+              {stepLabel(stepId)}
+            </StepButton>
+            <StepContent>
+              <InstanceItemContent stepId={stepId} />
+              <Button
+                sx={{ marginBlockStart: 10 }}
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setCompletedSteps((steps) =>
+                    steps.includes(stepId) ? steps : [...steps, stepId]
+                  );
+                  const nextStepId = ConcordiaGame.order.find(
+                    (x) => !completedSteps.includes(x) && x !== stepId
+                  );
+                  setActiveStepId(nextStepId);
+                }}
               >
-                {stepLabel(stepId)}
-                {groupIdx === expandedGroupIdx && collapseButton}
-              </StepButton>
-              <StepContent>
-                <InstanceItemContent stepId={stepId} />
-                <Button
-                  sx={{ marginBlockStart: 10 }}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setCompletedSteps((steps) =>
-                      steps.includes(stepId) ? steps : [...steps, stepId]
-                    );
-                    const nextStepId = ConcordiaGame.order.find(
-                      (x) => !completedSteps.includes(x) && x !== stepId
-                    );
-                    history.push(nextStepId != null ? `#${nextStepId}` : "#");
-                  }}
-                >
-                  Done
-                </Button>
-              </StepContent>
-            </Step>
-          );
-        });
+                Done
+              </Button>
+            </StepContent>
+          </Step>
+        ));
       })}
     </Stepper>
   );
