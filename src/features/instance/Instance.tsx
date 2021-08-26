@@ -45,7 +45,7 @@ import {
 } from "../players/playersSlice";
 import { selectors as instanceSelectors } from "./instanceSlice";
 
-const IDEAL_STEP_COUNT = 10;
+const IDEAL_STEP_COUNT = 6;
 
 function ConcordiaMarket({ hash }: { hash: string }) {
   const market = ConcordiaGame.getMarketForHash(hash);
@@ -309,16 +309,33 @@ function InstanceOverview() {
 
   return (
     <Stepper orientation="vertical" activeStep={-1}>
-      {ConcordiaGame.order.map((stepId) => (
-        <Step
-          key={stepId}
-          onClick={() => history.push(`${match.path}/${stepId}`)}
-          expanded
-        >
-          <StepLabel>{stepLabel(stepId)}</StepLabel>
-          <InstanceOverviewStep key={stepId} stepId={stepId} />
-        </Step>
-      ))}
+      {groups.map((group, groupIndex) => {
+        const index = groups
+          .slice(0, groupIndex)
+          .reduce((sum, group) => sum + group.length, 0);
+        if (group.length > 1) {
+          return (
+            <Step key={`multi_${groupIndex}`} index={index}>
+              <StepLabel>{`${group
+                .map((stepId) => stepLabel(stepId))
+                .join(", ")}`}</StepLabel>
+            </Step>
+          );
+        }
+
+        const stepId = group[0];
+        return (
+          <Step
+            key={stepId}
+            onClick={() => history.push(`${match.path}/${stepId}`)}
+            index={index}
+            expanded
+          >
+            <StepLabel>{stepLabel(stepId)}</StepLabel>
+            <InstanceOverviewStep key={stepId} stepId={stepId} />
+          </Step>
+        );
+      })}
     </Stepper>
   );
 }
