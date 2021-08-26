@@ -2,6 +2,7 @@ import {
   Avatar,
   AvatarGroup,
   Badge,
+  Box,
   Button,
   Grid,
   IconButton,
@@ -18,7 +19,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import invariant_violation from "../../common/err/invariant_violation";
@@ -95,14 +96,16 @@ function PlayOrderPanel({ playOrder }: { playOrder: ReadonlyArray<EntityId> }) {
   const players = useAppSelector(playersSelectors.selectEntities);
 
   return (
-    <AvatarGroup>
-      <Avatar>{short_name(firstPlayer.name)}</Avatar>
-      {playOrder.map((playerId) => (
-        <Avatar key={playerId}>
-          {short_name(nullthrows(players[playerId]).name)}
-        </Avatar>
-      ))}
-    </AvatarGroup>
+    <Box display="flex">
+      <AvatarGroup>
+        <Avatar>{short_name(firstPlayer.name)}</Avatar>
+        {playOrder.map((playerId) => (
+          <Avatar key={playerId}>
+            {short_name(nullthrows(players[playerId]).name)}
+          </Avatar>
+        ))}
+      </AvatarGroup>
+    </Box>
   );
 }
 
@@ -233,9 +236,17 @@ export default function Instance() {
     );
   }, [instanceStepIds]);
 
-  const activeStepIdx = ConcordiaGame.order.indexOf(
-    location.hash.substring(1) as SetupStepName
-  );
+  const activeStepId = location.hash.substring(1) as SetupStepName;
+  const activeStepIdx = ConcordiaGame.order.indexOf(activeStepId);
+
+  useEffect(() => {
+    const activeStepGroupIdx = groups.findIndex(
+      (group) => group.length > 1 && group.includes(activeStepId)
+    );
+    if (activeStepGroupIdx !== -1) {
+      setExpandedGroupIdx(activeStepGroupIdx);
+    }
+  }, [activeStepId, groups]);
 
   return (
     <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
@@ -245,17 +256,25 @@ export default function Instance() {
           .reduce((sum, group) => sum + group.length, 0);
         if (groupIdx !== expandedGroupIdx && group.length > 1) {
           return (
-            <Step key={`multi_${groupIdx}`} index={correctedIdx}>
+            <Step
+              key={`multi_${groupIdx}`}
+              index={correctedIdx}
+              completed={group.every((stepId) =>
+                completedSteps.includes(stepId)
+              )}
+            >
               <StepButton
                 icon={"\u00B7\u00B7\u00B7"}
                 onClick={() => setExpandedGroupIdx(groupIdx)}
               >
-                {`${group
-                  .slice(0, 2)
-                  .map((stepId) => stepLabel(stepId))
-                  .join(", ")}${
-                  group.length > 2 ? `, and ${group.length - 1} more...` : ""
-                }`}
+                <Typography variant="caption">
+                  {`${group
+                    .slice(0, 2)
+                    .map((stepId) => stepLabel(stepId))
+                    .join(", ")}${
+                    group.length > 2 ? `, and ${group.length - 1} more...` : ""
+                  }`}
+                </Typography>
               </StepButton>
             </Step>
           );
@@ -294,6 +313,7 @@ export default function Instance() {
               <StepContent>
                 <InstanceItemContent stepId={stepId} />
                 <Button
+                  sx={{ marginBlockStart: 10 }}
                   variant="contained"
                   color="primary"
                   onClick={() => {
@@ -303,7 +323,7 @@ export default function Instance() {
                     const nextStepId = ConcordiaGame.order.find(
                       (x) => !completedSteps.includes(x) && x !== stepId
                     );
-                    history.push(nextStepId != null ? `#${nextStepId}` : "");
+                    history.push(nextStepId != null ? `#${nextStepId}` : "#");
                   }}
                 >
                   Done
