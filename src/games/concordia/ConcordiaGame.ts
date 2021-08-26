@@ -43,77 +43,81 @@ export default class ConcordiaGame {
     D: { bricks: 1, food: 1, tools: 1, wine: 1, cloth: 1 },
   };
 
-  private static readonly CITIES: Readonly<{
-    [mapId: string]: Readonly<Partial<Record<MapZone, string[]>>>;
-  }> = {
-    Italia: {
-      A: [
-        "Bavsanvm",
-        "Aqvileia",
-        "Verona",
-        "Comvm",
-        "Segvsio",
-        "Nicaea",
-        "Genva",
-      ],
-      B: [
-        "Mvtina",
-        "Ravenna",
-        "Florentia",
-        "Cosa",
-        "Aleria",
-        "Olbia",
-        "Casinvm",
-        "Neapolis",
-      ],
-      C: [
-        "Ancona",
-        "Spoletvm",
-        "Hadria",
-        "Lvcria",
-        "Brvndisivm",
-        "Potentia",
-        "Croton",
-        "Messana",
-        "Syracvsae",
-        "Panormvs",
-      ],
+  private static readonly MAPS = {
+    italia: {
+      name: "Italia",
+      cities: {
+        A: [
+          "Bavsanvm",
+          "Aqvileia",
+          "Verona",
+          "Comvm",
+          "Segvsio",
+          "Nicaea",
+          "Genva",
+        ],
+        B: [
+          "Mvtina",
+          "Ravenna",
+          "Florentia",
+          "Cosa",
+          "Aleria",
+          "Olbia",
+          "Casinvm",
+          "Neapolis",
+        ],
+        C: [
+          "Ancona",
+          "Spoletvm",
+          "Hadria",
+          "Lvcria",
+          "Brvndisivm",
+          "Potentia",
+          "Croton",
+          "Messana",
+          "Syracvsae",
+          "Panormvs",
+        ],
+      },
     },
-    imperIum: {
-      A: [
-        "Isca D.",
-        "Londonivm",
-        "Colonia A.",
-        "Vindobona",
-        "Sirmivm",
-        "Napoca",
-        "Tomis",
-      ],
-      B: [
-        "Lvtetia",
-        "Bvrdigala",
-        "Massilia",
-        "Brigantivm",
-        "Olisipo",
-        "Valentia",
-        "Rvsadir",
-        "Carthago",
-      ],
-      C: [
-        "Leptis Magna",
-        "Cyrene",
-        "Bycantivm",
-        "Sinope",
-        "Attalia",
-        "Antiochia",
-        "Tyros",
-        "Alexandria",
-        "Memphis",
-        "Petra",
-      ],
-      D: ["Novaria", "Aqvileia", "Syracvsae", "Dirrhachivm", "Athenae"],
+    imperium: {
+      name: "Imperium",
+      cities: {
+        A: [
+          "Isca D.",
+          "Londonivm",
+          "Colonia A.",
+          "Vindobona",
+          "Sirmivm",
+          "Napoca",
+          "Tomis",
+        ],
+        B: [
+          "Lvtetia",
+          "Bvrdigala",
+          "Massilia",
+          "Brigantivm",
+          "Olisipo",
+          "Valentia",
+          "Rvsadir",
+          "Carthago",
+        ],
+        C: [
+          "Leptis Magna",
+          "Cyrene",
+          "Bycantivm",
+          "Sinope",
+          "Attalia",
+          "Antiochia",
+          "Tyros",
+          "Alexandria",
+          "Memphis",
+          "Petra",
+        ],
+        D: ["Novaria", "Aqvileia", "Syracvsae", "Dirrhachivm", "Athenae"],
+      },
     },
-  };
+  } as const;
 
   private static readonly MARKET_DECK_PHASE_1: ReadonlyArray<string> = [
     "Architect",
@@ -164,8 +168,8 @@ export default class ConcordiaGame {
           // TODO: create a generic dependancy error
           invariant_violation(`Couldn't find 'map' dependancy`);
         }
-        const mapId = mapDef.value;
-        const cities = this.CITIES[mapId];
+        const mapId = mapDef.value as keyof typeof ConcordiaGame.MAPS;
+        const cities = this.MAPS[mapId].cities;
         const hashes = Object.keys(cities).map((zone) => {
           const tiles = this.CITY_TILES[zone as MapZone];
           const permutations = new PermutationsLazyArray(tiles);
@@ -194,7 +198,9 @@ export default class ConcordiaGame {
   ): string {
     switch (stepId) {
       case "map":
-        return playersTotal < 4 ? "Italia" : "Imperium";
+        const recommendedMap: keyof typeof ConcordiaGame.MAPS =
+          playersTotal < 4 ? "italia" : "imperium";
+        return recommendedMap;
     }
 
     invariant_violation(
@@ -290,14 +296,26 @@ export default class ConcordiaGame {
     return ["black", "blue", "green", "red", "yellow"];
   }
 
-  public static itemsForStep(stepId: SetupStepName): string[] {
+  public static itemsForStep(stepId: SetupStepName): readonly string[] {
     switch (stepId) {
       case "map":
-        return ["Italia", "Imperium"];
+        return Object.keys(this.MAPS);
 
       default:
         invariant_violation(
           `No items for step ${stepId}, the step shouldn't have FIXED strategy enabled for it`
+        );
+    }
+  }
+
+  public static labelForItem(stepId: SetupStepName, value: string): string {
+    switch (stepId) {
+      case "map":
+        return this.MAPS[value as keyof typeof ConcordiaGame.MAPS].name;
+
+      default:
+        invariant_violation(
+          `No labels defined for step ${stepId} and value ${value}`
         );
     }
   }
@@ -307,17 +325,16 @@ export default class ConcordiaGame {
     hash: string
   ): { [cityName: string]: Resource } {
     const hashParts = hash.split(HASH_SEPERATOR);
-    return Object.entries(this.CITIES[map]).reduce(
-      (result, [zone, cities], index) => {
-        const zoneDef = this.CITY_TILES[zone as MapZone];
-        const permutationIdx = Base32.decode(hashParts[index]);
-        const resources = nullthrows(
-          new PermutationsLazyArray(zoneDef).at(permutationIdx)
-        );
-        return { ...result, ...array_zip(cities, resources) };
-      },
-      {} as { [cityName: string]: Resource }
-    );
+    return Object.entries(
+      this.MAPS[map as keyof typeof ConcordiaGame.MAPS].cities
+    ).reduce((result, [zone, cities], index) => {
+      const zoneDef = this.CITY_TILES[zone as MapZone];
+      const permutationIdx = Base32.decode(hashParts[index]);
+      const resources = nullthrows(
+        new PermutationsLazyArray(zoneDef).at(permutationIdx)
+      );
+      return { ...result, ...array_zip(cities, resources) };
+    }, {} as { [cityName: string]: Resource });
   }
 
   public static getMarketForHash(hash: string): ReadonlyArray<string> {

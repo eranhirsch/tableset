@@ -33,7 +33,7 @@ export default function ItemsListPanel({ stepId }: { stepId: SetupStepName }) {
         <Chip
           key={`${step.id}_${item}`}
           variant={step.value === item ? "filled" : "outlined"}
-          label={item}
+          label={ConcordiaGame.labelForItem(stepId, item)}
           onClick={
             step.value !== item
               ? () =>

@@ -2,15 +2,13 @@ import {
   Avatar,
   AvatarGroup,
   Badge,
-  Card,
-  CardContent,
-  CardHeader,
+  Button,
   Grid,
   IconButton,
   Stack,
   Step,
+  StepButton,
   StepContent,
-  StepLabel,
   Stepper,
   Table,
   TableBody,
@@ -21,7 +19,7 @@ import {
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
 import { useMemo, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
@@ -41,7 +39,6 @@ import {
 } from "../players/playersSlice";
 import { selectors as instanceSelectors } from "./instanceSlice";
 import UnfoldLessIcon from "@material-ui/icons/UnfoldLess";
-import UnfoldMoreIcon from "@material-ui/icons/UnfoldMore";
 
 const IDEAL_STEP_COUNT = 6;
 
@@ -152,6 +149,13 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
     case "firstPlayer":
       return <FirstPlayerPanel playerId={step.value} />;
 
+    case "map":
+      return (
+        <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
+          {ConcordiaGame.labelForItem("map", step.value)}
+        </Typography>
+      );
+
     case "cityTiles":
       return <ConcordiaCityTiles hash={step.value} />;
 
@@ -163,76 +167,14 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
   }
 }
 
-function InstanceItem({
-  stepId,
-  index,
-}: {
-  stepId: SetupStepName;
-  index: number;
-}) {
-  const step = useAppEntityIdSelectorNullable(instanceSelectors, stepId);
-  return (
-    <Card id={stepId} variant="outlined">
-      <CardHeader
-        title={stepLabel(stepId)}
-        subheader={
-          step != null && typeof step.value === "string"
-            ? `${step.value}`
-            : undefined
-        }
-      />
-      <CardContent
-        sx={{
-          justifyContent: "center",
-          display: "flex",
-          paddingX: 1,
-        }}
-      >
-        <InstanceItemContent stepId={stepId} />
-      </CardContent>
-    </Card>
-  );
-}
-
-function InstanceOverviewStep({ stepId }: { stepId: SetupStepName }) {
-  const step = useAppEntityIdSelectorNullable(instanceSelectors, stepId);
-
-  if (step == null) {
-    return null;
-  }
-
-  switch (step?.id) {
-    case "playOrder":
-      return (
-        <StepContent sx={{ display: "flex" }}>
-          <PlayOrderPanel playOrder={step.value} />
-        </StepContent>
-      );
-
-    case "playerColors":
-      return (
-        <StepContent>
-          <PlayerColorsPanel playerColor={step.value} />
-        </StepContent>
-      );
-
-    case "firstPlayer":
-      return (
-        <StepContent>
-          <FirstPlayerPanel playerId={step.value} />
-        </StepContent>
-      );
-
-    default:
-      return <StepContent>{step.value}</StepContent>;
-  }
-}
-
-function TableOfContents() {
+export default function Instance() {
+  const location = useLocation();
   const history = useHistory();
-  const match = useRouteMatch();
 
   const [expandedGroupIdx, setExpandedGroupIdx] = useState<number>();
+  const [completedSteps, setCompletedSteps] = useState<
+    readonly SetupStepName[]
+  >([]);
 
   const instanceStepIds = useAppSelector(instanceSelectors.selectIds);
 
@@ -291,77 +233,86 @@ function TableOfContents() {
     );
   }, [instanceStepIds]);
 
+  const activeStepIdx = ConcordiaGame.order.indexOf(
+    location.hash.substring(1) as SetupStepName
+  );
+
   return (
-    <Stepper orientation="vertical" activeStep={-1}>
+    <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
       {groups.map((group, groupIdx) => {
         const correctedIdx = groups
           .slice(0, groupIdx)
           .reduce((sum, group) => sum + group.length, 0);
         if (groupIdx !== expandedGroupIdx && group.length > 1) {
           return (
-            <Step key={`multi_${groupIdx}`} index={correctedIdx} expanded>
-              <StepLabel icon={"\u00B7\u00B7\u00B7"}>
+            <Step key={`multi_${groupIdx}`} index={correctedIdx}>
+              <StepButton
+                icon={"\u00B7\u00B7\u00B7"}
+                onClick={() => setExpandedGroupIdx(groupIdx)}
+              >
                 {`${group
                   .slice(0, 2)
                   .map((stepId) => stepLabel(stepId))
                   .join(", ")}${
                   group.length > 2 ? `, and ${group.length - 1} more...` : ""
                 }`}
-                <IconButton
-                  size="small"
-                  onClick={() => setExpandedGroupIdx(groupIdx)}
-                >
-                  <UnfoldMoreIcon fontSize="small" />
-                </IconButton>
-              </StepLabel>
+              </StepButton>
             </Step>
           );
         }
 
-        return group.map((stepId, idx) => (
-          <Step
-            key={stepId}
-            onClick={() => history.push(`${match.path}#${stepId}`)}
-            index={correctedIdx + idx}
-            expanded
-          >
-            <StepLabel>
-              {stepLabel(stepId)}
-              {groupIdx === expandedGroupIdx && (
-                <IconButton
-                  size="small"
-                  onClick={(event) => {
-                    setExpandedGroupIdx(undefined);
-                    event.stopPropagation();
+        return group.map((stepId, idx) => {
+          const collapseButton = (
+            <IconButton
+              size="small"
+              onClick={(event) => {
+                setExpandedGroupIdx(undefined);
+                event.stopPropagation();
+              }}
+            >
+              <UnfoldLessIcon fontSize="small" />
+            </IconButton>
+          );
+
+          return (
+            <Step
+              key={stepId}
+              id={stepId}
+              index={correctedIdx + idx}
+              completed={completedSteps.includes(stepId)}
+            >
+              <StepButton
+                onClick={
+                  correctedIdx + idx !== activeStepIdx
+                    ? () => history.push(`#${stepId}`)
+                    : undefined
+                }
+              >
+                {stepLabel(stepId)}
+                {groupIdx === expandedGroupIdx && collapseButton}
+              </StepButton>
+              <StepContent>
+                <InstanceItemContent stepId={stepId} />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setCompletedSteps((steps) =>
+                      steps.includes(stepId) ? steps : [...steps, stepId]
+                    );
+                    const nextStepId = ConcordiaGame.order.find(
+                      (x) => !completedSteps.includes(x) && x !== stepId
+                    );
+                    history.push(nextStepId != null ? `#${nextStepId}` : "");
                   }}
                 >
-                  <UnfoldLessIcon fontSize="small" />
-                </IconButton>
-              )}
-            </StepLabel>
-            <InstanceOverviewStep key={stepId} stepId={stepId} />
-          </Step>
-        ));
+                  Done
+                </Button>
+              </StepContent>
+            </Step>
+          );
+        });
       })}
     </Stepper>
-  );
-}
-
-function DetailedView() {
-  return (
-    <Stack direction="column" spacing={2}>
-      {ConcordiaGame.order.map((stepId, index) => (
-        <InstanceItem key={stepId} stepId={stepId} index={index} />
-      ))}
-    </Stack>
-  );
-}
-
-export default function Instance() {
-  return (
-    <>
-      <TableOfContents />
-      <DetailedView />
-    </>
   );
 }
