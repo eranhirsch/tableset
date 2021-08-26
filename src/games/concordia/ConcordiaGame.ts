@@ -145,9 +145,9 @@ export default class ConcordiaGame {
       "playerColors",
       "playerPieces",
       "startingColonists",
+      "startingResources",
       "firstPlayer",
       "startingMoney",
-      "startingResources",
       "praefectusMagnus",
     ];
   }
