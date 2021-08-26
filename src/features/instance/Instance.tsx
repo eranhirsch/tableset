@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Grid,
   IconButton,
   Stack,
   Step,
@@ -73,48 +74,22 @@ function ConcordiaCityTiles({ hash }: { hash: string }) {
   }
   const mapId = mapStep.value;
 
-  const cities = Object.entries(ConcordiaGame.cityResources(mapId, hash));
-
-  const middle = Math.floor(cities.length / 2 - 1) + 1;
+  const cities = useMemo(
+    () => ConcordiaGame.cityResources(mapId, hash),
+    [hash, mapId]
+  );
 
   return (
-    <Stack direction="column" alignItems="center">
-      <Stack direction="row">
-        <TableContainer>
-          <Table size="small">
-            <TableBody>
-              {cities.slice(0, middle).map(([city, resource]) => (
-                <TableRow key={city}>
-                  <TableCell>
-                    <Typography fontSize="small" variant="body2">
-                      {city}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{resource}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TableContainer>
-          <Table size="small">
-            <TableBody>
-              {cities.slice(middle).map(([city, resource]) => (
-                <TableRow key={city}>
-                  <TableCell>
-                    <Typography fontSize="small" variant="body2">
-                      {city}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{resource}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Stack>
-      <Typography variant="caption">Hash: {hash}</Typography>
-    </Stack>
+    <Grid container textAlign="center" spacing={1}>
+      {Object.entries(cities).map(([name, resource]) => (
+        <Grid item xs={4}>
+          <Typography variant="caption">{resource}</Typography>
+          <Typography variant="body2" sx={{ fontVariantCaps: "petite-caps" }}>
+            {name}
+          </Typography>
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 
