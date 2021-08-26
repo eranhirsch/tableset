@@ -8,7 +8,6 @@ import {
   IconButton,
   Stack,
   Step,
-  StepConnector,
   StepContent,
   StepLabel,
   Stepper,
@@ -21,13 +20,7 @@ import {
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
 import { useMemo, useState } from "react";
-import {
-  Route,
-  Switch,
-  useHistory,
-  useParams,
-  useRouteMatch,
-} from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
@@ -168,7 +161,11 @@ function FirstPlayerPanel({ playerId }: { playerId: EntityId }) {
 }
 
 function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
-  const step = useAppEntityIdSelectorEnforce(instanceSelectors, stepId);
+  const step = useAppEntityIdSelectorNullable(instanceSelectors, stepId);
+
+  if (step == null) {
+    return null;
+  }
 
   switch (step.id) {
     case "playOrder":
@@ -191,18 +188,24 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
   }
 }
 
-function InstanceItem({ stepId }: { stepId: SetupStepName }) {
-  const match = useRouteMatch();
-  const history = useHistory();
-
-  const label = stepLabel(stepId);
-
+function InstanceItem({
+  stepId,
+  index,
+}: {
+  stepId: SetupStepName;
+  index: number;
+}) {
+  const step = useAppEntityIdSelectorNullable(instanceSelectors, stepId);
   return (
-    <Card
-      component="li"
-      onClick={() => history.push(`${match.path}/${stepId}/`)}
-    >
-      <CardHeader avatar={<Avatar>{short_name(label)}</Avatar>} title={label} />
+    <Card id={stepId} variant="outlined">
+      <CardHeader
+        title={stepLabel(stepId)}
+        subheader={
+          step != null && typeof step.value === "string"
+            ? `${step.value}`
+            : undefined
+        }
+      />
       <CardContent
         sx={{
           justifyContent: "center",
@@ -250,7 +253,7 @@ function InstanceOverviewStep({ stepId }: { stepId: SetupStepName }) {
   }
 }
 
-function InstanceOverview() {
+function TableOfContents() {
   const history = useHistory();
   const match = useRouteMatch();
 
@@ -369,22 +372,21 @@ function InstanceOverview() {
   );
 }
 
-function InstanceStep() {
-  let { stepId } = useParams<{ stepId: SetupStepName }>();
-  return <InstanceItemContent stepId={stepId} />;
+function DetailedView() {
+  return (
+    <Stack direction="column" spacing={2}>
+      {ConcordiaGame.order.map((stepId, index) => (
+        <InstanceItem key={stepId} stepId={stepId} index={index} />
+      ))}
+    </Stack>
+  );
 }
 
 export default function Instance() {
-  const match = useRouteMatch();
-
   return (
-    <Switch>
-      <Route path={`${match.path}/:stepId`}>
-        <InstanceStep />
-      </Route>
-      <Route path={`${match.path}`}>
-        <InstanceOverview />
-      </Route>
-    </Switch>
+    <>
+      <TableOfContents />
+      <DetailedView />
+    </>
   );
 }
