@@ -27,7 +27,8 @@ export type SetupStepName =
   | "praefectusMagnus"
   | "resourcePiles"
   | "startingColonists"
-  | "startingMoney";
+  | "startingMoney"
+  | "startingResources";
 
 type MapZone = "A" | "B" | "C" | "D";
 type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
@@ -142,6 +143,7 @@ export default class ConcordiaGame {
       "startingColonists",
       "firstPlayer",
       "startingMoney",
+      "startingResources",
       "praefectusMagnus",
     ];
   }

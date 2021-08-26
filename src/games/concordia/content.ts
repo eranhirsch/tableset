@@ -34,5 +34,7 @@ export function stepLabel(stepName: SetupStepName): string {
       return "Bank";
     case "firstPlayer":
       return "Starting Player";
+    case "startingResources":
+      return "Starting Resources";
   }
 }
