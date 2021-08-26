@@ -336,6 +336,30 @@ export default class ConcordiaGame {
     return x;
   }
 
+  public static bonusResources(
+    resources: Readonly<{
+      [provinceName: string]: Readonly<{ [cityName: string]: Resource }>;
+    }>
+  ): Readonly<{ [provinceName: string]: Resource }> {
+    return Object.fromEntries(
+      Object.entries(resources).map(([provinceName, cities]) => [
+        provinceName,
+        Object.values(cities).reduce((highest, resource) => {
+          const options = [highest, resource];
+          return options.includes("cloth")
+            ? "cloth"
+            : options.includes("wine")
+            ? "wine"
+            : options.includes("tools")
+            ? "tools"
+            : options.includes("food")
+            ? "food"
+            : "bricks";
+        }),
+      ])
+    );
+  }
+
   public static getMarketForHash(hash: string): ReadonlyArray<string> {
     const permutationIdx = Base32.decode(hash);
     return nullthrows(
