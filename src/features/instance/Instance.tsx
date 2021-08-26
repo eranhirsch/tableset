@@ -2,17 +2,14 @@ import {
   Avatar,
   AvatarGroup,
   Badge,
-  Button,
   Card,
   CardContent,
   CardHeader,
   IconButton,
-  Link,
   Stack,
   Step,
-  StepButton,
+  StepConnector,
   StepContent,
-  StepIcon,
   StepLabel,
   Stepper,
   Table,
@@ -23,7 +20,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Route,
   Switch,
@@ -49,7 +46,6 @@ import {
   selectors as playersSelectors,
 } from "../players/playersSlice";
 import { selectors as instanceSelectors } from "./instanceSlice";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import UnfoldLessIcon from "@material-ui/icons/UnfoldLess";
 import UnfoldMoreIcon from "@material-ui/icons/UnfoldMore";
 
@@ -347,7 +343,7 @@ function InstanceOverview() {
         return group.map((stepId, idx) => (
           <Step
             key={stepId}
-            onClick={() => history.push(`${match.path}/${stepId}`)}
+            onClick={() => history.push(`${match.path}#${stepId}`)}
             index={correctedIdx + idx}
             expanded
           >
