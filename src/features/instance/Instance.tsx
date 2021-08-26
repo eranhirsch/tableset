@@ -18,7 +18,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Route,
   Switch,
@@ -43,7 +43,9 @@ import {
   firstPlayerSelector,
   selectors as playersSelectors,
 } from "../players/playersSlice";
-import { selectors as instanceSelectors, selectors } from "./instanceSlice";
+import { selectors as instanceSelectors } from "./instanceSlice";
+
+const IDEAL_STEP_COUNT = 10;
 
 function ConcordiaMarket({ hash }: { hash: string }) {
   const market = ConcordiaGame.getMarketForHash(hash);
@@ -220,7 +222,7 @@ function InstanceOverviewStep({ stepId }: { stepId: SetupStepName }) {
   switch (step?.id) {
     case "playOrder":
       return (
-        <StepContent>
+        <StepContent sx={{ display: "flex" }}>
           <PlayOrderPanel playOrder={step.value} />
         </StepContent>
       );
@@ -247,6 +249,63 @@ function InstanceOverviewStep({ stepId }: { stepId: SetupStepName }) {
 function InstanceOverview() {
   const history = useHistory();
   const match = useRouteMatch();
+
+  const instanceStepIds = useAppSelector(instanceSelectors.selectIds);
+
+  const groups = useMemo(() => {
+    const nonManualSteps = [...instanceStepIds];
+    return ConcordiaGame.order.reduce(
+      (groups: SetupStepName[][], stepId, index) => {
+        let lastGroup = groups[groups.length - 1];
+
+        const manualStepIdx = nonManualSteps.indexOf(stepId);
+        if (manualStepIdx !== -1) {
+          // We have something to show for this step, so we want to put it in
+          // it's own group.
+
+          // We want to keep a count of how many of these we are going to
+          // encounter so we can account for them when putting manual items in
+          // groups
+          nonManualSteps.splice(manualStepIdx, 1);
+
+          if (lastGroup.length > 0) {
+            // We need to create a new group for each non-manual step
+            lastGroup = [];
+            groups.push(lastGroup);
+          }
+
+          lastGroup.push(stepId);
+          // We push an additional group after the step so that the next
+          // next iterations dont add anything to this group.
+          groups.push([]);
+          return groups;
+        }
+
+        // We want to spread the steps that aren't special into the remaining
+        // slots they have as fairly as possible
+        const manualStepsLeft =
+          ConcordiaGame.order.length - index - nonManualSteps.length;
+        const manualStepGroupsLeft =
+          IDEAL_STEP_COUNT - (groups.length - 1) - nonManualSteps.length;
+
+        if (
+          // Dont create a new group if we don't have any left
+          manualStepGroupsLeft > 1 &&
+          // Obviously always add at least 1 item to each group
+          lastGroup.length > 0 &&
+          lastGroup.length >= Math.round(manualStepsLeft / manualStepGroupsLeft)
+        ) {
+          // Create a new group
+          lastGroup = [];
+          groups.push(lastGroup);
+        }
+        lastGroup.push(stepId);
+
+        return groups;
+      },
+      [[]]
+    );
+  }, [instanceStepIds]);
 
   return (
     <Stepper orientation="vertical" activeStep={-1}>

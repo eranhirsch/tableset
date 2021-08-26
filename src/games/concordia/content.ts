@@ -13,7 +13,7 @@ export function stepLabel(stepName: SetupStepName): string {
     case "marketDeck":
       return "Market Deck";
     case "playOrder":
-      return "Play Order";
+      return "Seating";
     case "playerColors":
       return "Player Color";
     case "playerPieces":
