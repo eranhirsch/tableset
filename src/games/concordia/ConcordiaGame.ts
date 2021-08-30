@@ -1,6 +1,4 @@
-import invariant_violation from "../../common/err/invariant_violation";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
-import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
 import nullthrows from "../../common/err/nullthrows";
@@ -92,17 +90,6 @@ export default class ConcordiaGame implements IGame {
     } as ConcordiaMap,
   } as const;
 
-  public static readonly MARKET_DECK_PHASE_1: ReadonlyArray<string> = [
-    "Architect",
-    "Prefect",
-    "Mercator",
-    "Colonist",
-    "Diplomat",
-    "Mason",
-    "Farmer",
-    "Smith",
-  ];
-
   private readonly steps: Readonly<{ [id: string]: IGameStep }>;
 
   public constructor() {
@@ -135,23 +122,6 @@ export default class ConcordiaGame implements IGame {
 
   public get order(): StepId[] {
     return Object.keys(this.steps);
-  }
-
-  public resolveDefault(
-    stepId: StepId,
-    instance: ReadonlyArray<SetupStep>,
-    playersTotal: number
-  ): string {
-    switch (stepId) {
-      case "map":
-        const recommendedMap: keyof typeof ConcordiaGame.MAPS =
-          playersTotal < 4 ? "italia" : "imperium";
-        return recommendedMap;
-    }
-
-    invariant_violation(
-      `Step ${stepId} could not be resolved with DEFAULT strategy`
-    );
   }
 
   public get playerColors(): GamePiecesColor[] {
@@ -214,14 +184,5 @@ export default class ConcordiaGame implements IGame {
         }),
       ])
     );
-  }
-
-  public static getMarketForHash(hash: string): ReadonlyArray<string> {
-    const permutationIdx = Base32.decode(hash);
-    return nullthrows(
-      PermutationsLazyArray.forPermutation(this.MARKET_DECK_PHASE_1).at(
-        permutationIdx
-      )
-    ).slice(0, 7);
   }
 }

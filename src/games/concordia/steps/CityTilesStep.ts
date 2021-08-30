@@ -2,8 +2,7 @@ import Base32 from "../../../common/Base32";
 import invariant_violation from "../../../common/err/invariant_violation";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { Strategy } from "../../../core/Strategy";
-import { SetupStep } from "../../../features/instance/instanceSlice";
-import IGameStep, { TemplateContext } from "../../IGameStep";
+import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
 import ConcordiaGame, { MapZone } from "../ConcordiaGame";
 
 const HASH_SEPERATOR = "-";
@@ -12,7 +11,7 @@ export default class CityTilesStep implements IGameStep {
   public readonly id: string = "cityTiles";
   public readonly label: string = "City Resources";
 
-  public resolveRandom(instance: ReadonlyArray<SetupStep>): string {
+  public resolveRandom({ instance }: InstanceContext): string {
     const mapDef = instance.find((step) => step.id === "map");
     if (mapDef == null || mapDef.id !== "map") {
       // TODO: create a generic dependancy error

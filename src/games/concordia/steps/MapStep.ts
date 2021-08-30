@@ -1,5 +1,5 @@
 import { Strategy } from "../../../core/Strategy";
-import IGameStep, { TemplateContext } from "../../IGameStep";
+import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
 import ConcordiaGame from "../ConcordiaGame";
 
 export default class MapStep implements IGameStep {
@@ -8,6 +8,12 @@ export default class MapStep implements IGameStep {
 
   public resolveRandom(): string {
     return this.items[Math.floor(Math.random() * this.items.length)];
+  }
+
+  public resolveDefault({ playersTotal }: InstanceContext): string {
+    const recommendedMap: keyof typeof ConcordiaGame.MAPS =
+      playersTotal < 4 ? "italia" : "imperium";
+    return recommendedMap;
   }
 
   public get items(): string[] {

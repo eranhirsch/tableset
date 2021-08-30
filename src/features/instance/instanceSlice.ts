@@ -115,10 +115,10 @@ export const instanceSlice = createSlice({
                   step = {
                     id: element.id,
                     global: false,
-                    value: game.at(element.id)!.resolveRandom!(
-                      payload,
-                      playerIds.length
-                    ),
+                    value: game.at(element.id)!.resolveRandom!({
+                      instance: payload,
+                      playersTotal: playerIds.length,
+                    }),
                   };
               }
               break;
@@ -135,11 +135,10 @@ export const instanceSlice = createSlice({
                   step = {
                     id: element.id,
                     global: false,
-                    value: game.resolveDefault(
-                      element.id,
-                      payload,
-                      playerIds.length
-                    ),
+                    value: game.at(element.id)!.resolveDefault!({
+                      instance: payload,
+                      playersTotal: playerIds.length,
+                    }),
                   };
               }
               break;

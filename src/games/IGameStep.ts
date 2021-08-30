@@ -9,14 +9,20 @@ export interface TemplateContext {
   playersTotal: number;
 }
 
+export interface InstanceContext {
+  instance: readonly SetupStep[];
+  playersTotal: number;
+}
+
 export default interface IGameStep {
   readonly id: StepId;
   readonly label: string;
   readonly items?: readonly string[];
 
-  resolveRandom?(instance: readonly SetupStep[], playersTotal: number): string;
-
   labelForItem?(value: string): string;
 
   strategies?(context: Readonly<TemplateContext>): readonly Strategy[];
+
+  resolveRandom?(context: InstanceContext): string;
+  resolveDefault?(context: InstanceContext): string;
 }

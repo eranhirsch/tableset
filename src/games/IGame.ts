@@ -9,10 +9,4 @@ export default interface IGame {
   readonly order: readonly StepId[];
 
   at(id: StepId): IGameStep | undefined;
-
-  resolveDefault(
-    stepId: StepId,
-    instance: readonly SetupStep[],
-    playersTotal: number
-  ): string;
 }

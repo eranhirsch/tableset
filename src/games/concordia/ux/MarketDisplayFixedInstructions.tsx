@@ -7,10 +7,10 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
-import ConcordiaGame from "../ConcordiaGame";
+import MarketDisplayStep from "../steps/MarketDisplayStep";
 
 export function MarketDisplayFixedInstructions({ hash }: { hash: string }) {
-  const market = ConcordiaGame.getMarketForHash(hash);
+  const market = MarketDisplayStep.fromHash(hash);
   return (
     <Stack direction="column" alignItems="center">
       <TableContainer>
