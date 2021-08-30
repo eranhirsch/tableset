@@ -12,11 +12,11 @@ import CityTilesStep from "./steps/CityTilesStep";
 import MarketDisplayStep from "./steps/MarketDisplayStep";
 import BonusTilesStep from "./steps/BonusTilesStep";
 import PlayOrderStep from "../steps/PlayOrderStep";
-import PlayerColorsStep from "./steps/PlayerColorsStep";
 import StartingColonistsStep from "./steps/StartingColonistsStep";
-import FirstPlayerStep from "./steps/FirstPlayerStep";
 import StartingMoneyStep from "./steps/StartingMoneyStep";
 import { PraefectusMagnusStep } from "./steps/PraefectusMagnusStep";
+import FirstPlayerStep from "../steps/FirstPlayerStep";
+import PlayerColorsStep from "../steps/PlayerColorsStep";
 
 const HASH_SEPERATOR = "-";
 
@@ -118,7 +118,7 @@ export default class ConcordiaGame implements IGame {
         new GenericGameStep("resourcePiles"),
         new GenericGameStep("bank"),
         new PlayOrderStep(),
-        new PlayerColorsStep(),
+        new PlayerColorsStep(this.playerColors),
         new GenericGameStep("playerPieces", "Player Components"),
         new StartingColonistsStep(),
         new GenericGameStep("startingResources"),
