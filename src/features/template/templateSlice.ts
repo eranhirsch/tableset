@@ -9,7 +9,7 @@ import invariant from "../../common/err/invariant";
 import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
 import { Strategy } from "../../core/Strategy";
-import playersSlice, { Player } from "../players/playersSlice";
+import playersSlice, { Player, PlayerId } from "../players/playersSlice";
 import PlayerColors from "../../common/PlayerColors";
 import Game, { StepId } from "../../games/IGame";
 import GameMapper, { GameId } from "../../games/GameMapper";
@@ -19,7 +19,7 @@ type ConstantTemplateElement =
       id: "playOrder";
       strategy: Strategy.FIXED;
       global: true;
-      value: EntityId[];
+      value: PlayerId[];
     }
   | {
       id: "playerColors";
@@ -131,7 +131,7 @@ export const templateSlice = createSlice({
     },
 
     enabledConstantValue: {
-      prepare(id: StepId, gameId: GameId, playerIds: EntityId[]) {
+      prepare(id: StepId, gameId: GameId, playerIds: PlayerId[]) {
         return {
           payload: id,
           meta: { playerIds, gameId },
@@ -145,7 +145,7 @@ export const templateSlice = createSlice({
         }: PayloadAction<
           StepId,
           string,
-          { playerIds: EntityId[]; gameId: GameId }
+          { playerIds: PlayerId[]; gameId: GameId }
         >
       ) {
         templateAdapter.upsertOne(
@@ -185,7 +185,7 @@ export const templateSlice = createSlice({
           {
             payload: playerId,
             meta: playersTotal,
-          }: PayloadAction<EntityId, any, number>
+          }: PayloadAction<PlayerId, any, number>
         ) =>
           filter_nulls(Object.values(state.entities)).forEach((step) => {
             switch (step.id) {
@@ -260,7 +260,7 @@ export const selectors = templateAdapter.getSelectors<RootState>(
 function fixedSetupStep(
   id: StepId,
   game: Game,
-  playerIds: EntityId[]
+  playerIds: PlayerId[]
 ): ConstantTemplateElement {
   switch (id) {
     case "playOrder": {

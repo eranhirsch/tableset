@@ -20,27 +20,30 @@ import { gameSelector } from "../game/gameSlice";
 function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element {
   const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
 
+  const game = useAppSelector(gameSelector);
+
+  const firstPlayerId = useAppSelector(
+    (state) => playersSelectors.selectIds(state)[0]
+  );
   const players = useAppSelector(playersSelectors.selectEntities);
 
   if (step == null || step.strategy !== Strategy.FIXED) {
     return <>{strategyLabel(step?.strategy ?? Strategy.OFF)}</>;
   }
 
-  switch (step.id) {
-    case "playOrder":
-      if (Array.isArray(step.value)) {
+  if (step.global) {
+    switch (step.id) {
+      case "playOrder":
         return (
           <>
-            {step.value
+            {[firstPlayerId]
+              .concat(step.value)
               .map((playerId) => first_name(players[playerId]!.name))
               .join(" > ")}
           </>
         );
-      }
-      break;
 
-    case "playerColors":
-      if (step.value != null) {
+      case "playerColors":
         return (
           <>
             {Object.entries(step.value)
@@ -51,11 +54,24 @@ function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element {
               .join(", ")}
           </>
         );
-      }
-      break;
+
+      case "firstPlayer":
+        return <>{players[step.value]?.name ?? "Unknown Player"}</>;
+    }
   }
 
-  return <>{step.value}</>;
+  const gameStep = game.at(step.id);
+  if (gameStep?.labelForItem == null) {
+    return (
+      <>
+        {`Unexpected Value from step id ${step.id}: ${JSON.stringify(
+          step.value
+        )}`}
+      </>
+    );
+  }
+
+  return <>{gameStep.labelForItem(step.value)}</>;
 }
 
 export default function TemplateItem({

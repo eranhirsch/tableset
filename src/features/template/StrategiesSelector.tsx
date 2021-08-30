@@ -7,7 +7,10 @@ import templateSlice, {
 } from "./templateSlice";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { Strategy } from "../../core/Strategy";
-import { selectors as playersSelectors } from "../players/playersSlice";
+import {
+  PlayerId,
+  selectors as playersSelectors,
+} from "../players/playersSlice";
 import { gameIdSelector } from "../game/gameSlice";
 import GameMapper from "../../games/GameMapper";
 import { StepId } from "../../games/IGame";
@@ -49,7 +52,7 @@ export default function StrategiesSelector({ stepId }: { stepId: StepId }) {
                       ? templateSlice.actions.enabledConstantValue(
                           stepId,
                           gameId,
-                          playerIds
+                          playerIds as PlayerId[]
                         )
                       : strategy === Strategy.OFF
                       ? templateSlice.actions.disabled(

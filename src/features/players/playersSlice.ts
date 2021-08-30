@@ -9,8 +9,10 @@ import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
 import { GameId } from "../../games/GameMapper";
 
+export type PlayerId = string;
+
 export interface Player {
-  id: string;
+  id: PlayerId;
   name: string;
 }
 
@@ -30,7 +32,7 @@ const playersSlice = createSlice({
       reducer: playersAdapter.addOne,
     },
     removed: {
-      prepare: (id: EntityId, playersTotal: number) => ({
+      prepare: (id: PlayerId, playersTotal: number) => ({
         payload: id,
         // Needed for the templateSlice
         meta: playersTotal,
