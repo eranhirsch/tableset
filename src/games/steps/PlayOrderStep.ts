@@ -1,5 +1,4 @@
 import { WritableDraft } from "immer/dist/internal";
-import invariant from "../../common/err/invariant";
 import invariant_violation from "../../common/err/invariant_violation";
 import { Strategy } from "../../core/Strategy";
 import { PlayerId } from "../../features/players/playersSlice";
