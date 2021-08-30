@@ -134,7 +134,7 @@ export default class ConcordiaGame implements IGame {
   }
 
   public get order(): StepId[] {
-    return Object.values(this.steps).map((step) => step.id);
+    return Object.keys(this.steps);
   }
 
   public resolveDefault(

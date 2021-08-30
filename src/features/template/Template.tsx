@@ -9,6 +9,7 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import instanceSlice from "../instance/instanceSlice";
 import { Link as RouterLink } from "react-router-dom";
 import { gameSelector } from "../game/gameSlice";
+import nullthrows from "../../common/err/nullthrows";
 
 export default function Template() {
   const dispatch = useAppDispatch();
@@ -22,11 +23,14 @@ export default function Template() {
   const templatableItems = useMemo(
     () =>
       allItems.filter((stepId) => {
-        const strategiesFunc = game.at(stepId)!.strategies;
-        return strategiesFunc == null
-          ? false
-          : strategiesFunc({ template, playersTotal: playerIds.length })
-              .length > 1;
+        const step = nullthrows(game.at(stepId));
+        if (step.strategies == null) {
+          return false;
+        }
+        return (
+          step.strategies({ template, playersTotal: playerIds.length }).length >
+          1
+        );
       }),
     [allItems, game, playerIds.length, template]
   );

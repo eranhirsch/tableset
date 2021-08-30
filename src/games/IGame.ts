@@ -1,21 +1,18 @@
-import { Dictionary } from "@reduxjs/toolkit";
-import { Strategy } from "../core/Strategy";
 import { GamePiecesColor } from "../core/themeWithGameColors";
 import { SetupStep } from "../features/instance/instanceSlice";
-import { TemplateElement } from "../features/template/templateSlice";
 import IGameStep from "./IGameStep";
 
 export type StepId = string;
 
 export default interface IGame {
-  readonly playerColors: GamePiecesColor[];
-  readonly order: StepId[];
+  readonly playerColors: readonly GamePiecesColor[];
+  readonly order: readonly StepId[];
 
   at(id: StepId): IGameStep | undefined;
 
   resolveDefault(
     stepId: StepId,
-    instance: ReadonlyArray<SetupStep>,
+    instance: readonly SetupStep[],
     playersTotal: number
   ): string;
 }
