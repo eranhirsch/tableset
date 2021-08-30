@@ -11,30 +11,33 @@ import filter_nulls from "../../common/lib_utils/filter_nulls";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import PlayerColors from "../../common/PlayerColors";
 import { Strategy } from "../../core/Strategy";
-import { SetupStepName } from "../../games/concordia/ConcordiaGame";
-import Game from "../../games/Game";
+import Game, { StepId } from "../../games/Game";
 import { TemplateElement } from "../template/templateSlice";
 
-export type SetupStep<T> = Readonly<
+export type SetupStep = Readonly<
   | {
       id: "playOrder";
+      global: true;
       value: ReadonlyArray<EntityId>;
     }
   | {
       id: "playerColors";
+      global: true;
       value: PlayerColors;
     }
   | {
       id: "firstPlayer";
+      global: true;
       value: EntityId;
     }
   | {
-      id: Exclude<T, "playOrder" | "playerColors" | "firstPlayer">;
+      id: StepId;
+      global: false;
       value: string;
     }
 >;
 
-const instanceAdapter = createEntityAdapter<SetupStep<SetupStepName>>({
+const instanceAdapter = createEntityAdapter<SetupStep>({
   selectId: (step) => step.id,
 });
 
@@ -45,12 +48,12 @@ export const instanceSlice = createSlice({
     created: {
       prepare(
         game: Game,
-        template: Dictionary<TemplateElement<SetupStepName>>,
+        template: Dictionary<TemplateElement>,
         playerIds: ReadonlyArray<EntityId>
       ) {
-        const payload: SetupStep<SetupStepName>[] = [];
+        const payload: SetupStep[] = [];
         for (const element of filter_nulls(Object.values(template))) {
-          let step: SetupStep<SetupStepName>;
+          let step: SetupStep;
 
           switch (element.strategy) {
             case Strategy.RANDOM:
@@ -68,6 +71,7 @@ export const instanceSlice = createSlice({
                     );
                     step = {
                       id: "playerColors",
+                      global: true,
                       value: Object.fromEntries(
                         playerIds.map((playerId, index) => [
                           playerId,
@@ -90,13 +94,18 @@ export const instanceSlice = createSlice({
                     const permutation = nullthrows(
                       permutations.at(selectedIdx)
                     );
-                    step = { id: "playOrder", value: permutation };
+                    step = {
+                      id: "playOrder",
+                      global: true,
+                      value: permutation,
+                    };
                   }
                   break;
 
                 case "firstPlayer":
                   step = {
                     id: "firstPlayer",
+                    global: true,
                     value:
                       playerIds[Math.floor(Math.random() * playerIds.length)],
                   };
@@ -105,6 +114,7 @@ export const instanceSlice = createSlice({
                 default:
                   step = {
                     id: element.id,
+                    global: false,
                     value: game.resolveRandom(
                       element.id,
                       payload,
@@ -125,6 +135,7 @@ export const instanceSlice = createSlice({
                 default:
                   step = {
                     id: element.id,
+                    global: false,
                     value: game.resolveDefault(
                       element.id,
                       payload,
@@ -135,7 +146,11 @@ export const instanceSlice = createSlice({
               break;
 
             case Strategy.FIXED:
-              step = { id: element.id, value: element.value as any };
+              step = {
+                id: element.id,
+                global: false,
+                value: element.value as any,
+              };
               break;
 
             default:

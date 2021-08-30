@@ -7,28 +7,9 @@ import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
 import nullthrows from "../../common/err/nullthrows";
-import IGame from "../Game";
+import IGame, { StepId } from "../Game";
 
 const HASH_SEPERATOR = "-";
-
-export type SetupStepName =
-  | "bank"
-  | "bonusTiles"
-  | "cityTiles"
-  | "concordiaCard"
-  | "firstPlayer"
-  | "map"
-  | "marketCards"
-  | "marketDeck"
-  | "marketDisplay"
-  | "playerColors"
-  | "playerPieces"
-  | "playOrder"
-  | "praefectusMagnus"
-  | "resourcePiles"
-  | "startingColonists"
-  | "startingMoney"
-  | "startingResources";
 
 type MapZone = "A" | "B" | "C" | "D";
 type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
@@ -113,7 +94,7 @@ export default class ConcordiaGame implements IGame {
     "Smith",
   ];
 
-  public get order(): SetupStepName[] {
+  public get order(): StepId[] {
     return [
       "map",
       "cityTiles",
@@ -136,8 +117,8 @@ export default class ConcordiaGame implements IGame {
   }
 
   public resolveRandom(
-    stepId: SetupStepName,
-    instance: ReadonlyArray<SetupStep<SetupStepName>>,
+    stepId: StepId,
+    instance: ReadonlyArray<SetupStep>,
     playersTotal: number
   ): string {
     switch (stepId) {
@@ -175,8 +156,8 @@ export default class ConcordiaGame implements IGame {
   }
 
   public resolveDefault(
-    stepId: SetupStepName,
-    instance: ReadonlyArray<SetupStep<SetupStepName>>,
+    stepId: StepId,
+    instance: ReadonlyArray<SetupStep>,
     playersTotal: number
   ): string {
     switch (stepId) {
@@ -192,8 +173,8 @@ export default class ConcordiaGame implements IGame {
   }
 
   public strategiesFor(
-    stepId: SetupStepName,
-    template: Dictionary<TemplateElement<SetupStepName>>,
+    stepId: StepId,
+    template: Dictionary<TemplateElement>,
     playersTotal: number
   ): Strategy[] {
     switch (stepId) {
@@ -279,7 +260,7 @@ export default class ConcordiaGame implements IGame {
     return ["black", "blue", "green", "red", "yellow"];
   }
 
-  public itemsForStep(stepId: SetupStepName): readonly string[] {
+  public itemsForStep(stepId: StepId): readonly string[] {
     switch (stepId) {
       case "map":
         return Object.keys(ConcordiaGame.MAPS);
@@ -291,7 +272,7 @@ export default class ConcordiaGame implements IGame {
     }
   }
 
-  public labelForItem(stepId: SetupStepName, value: string): string {
+  public labelForItem(stepId: StepId, value: string): string {
     switch (stepId) {
       case "map":
         return ConcordiaGame.MAPS[value as keyof typeof ConcordiaGame.MAPS]

@@ -6,7 +6,6 @@ import {
   Paper,
 } from "@material-ui/core";
 import { strategyLabel } from "../../core/content";
-import { SetupStepName } from "../../games/concordia/ConcordiaGame";
 import { stepLabel } from "../../games/concordia/content";
 import { selectors as templateSelectors } from "./templateSlice";
 import StrategyIcon from "./StrategyIcon";
@@ -16,8 +15,9 @@ import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityI
 import { useAppSelector } from "../../app/hooks";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import first_name from "../../common/first_name";
+import { StepId } from "../../games/Game";
 
-function ItemLabel({ stepId }: { stepId: SetupStepName }): JSX.Element {
+function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element {
   const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
 
   const players = useAppSelector(playersSelectors.selectEntities);
@@ -63,7 +63,7 @@ export default function TemplateItem({
   expanded,
   onClick,
 }: {
-  stepId: SetupStepName;
+  stepId: StepId;
   expanded: boolean;
   onClick: (isExpanded: boolean) => void;
 }) {
@@ -78,7 +78,7 @@ export default function TemplateItem({
           <StrategyIcon strategy={strategy} />
         </ListItemIcon>
         <ListItemText secondary={<ItemLabel stepId={stepId} />}>
-          {stepLabel(stepId as SetupStepName)}
+          {stepLabel(stepId)}
         </ListItemText>
       </ListItemButton>
       <Collapse in={expanded} unmountOnExit>

@@ -36,6 +36,7 @@ function Player({
                 dispatch(
                   templateSlice.actions.constantValueChanged({
                     id: "firstPlayer",
+                    global: true,
                     value: playerId,
                   })
                 )

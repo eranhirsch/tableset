@@ -1,14 +1,10 @@
-import { SetupStepName } from "../../games/concordia/ConcordiaGame";
+import { StepId } from "../../games/Game";
 import ItemsListPanel from "./panels/ItemsListPanel";
 import PlayerColorPanel from "./panels/PlayerColorPanel";
 import PlayerOrderPanel from "./panels/PlayerOrderPanel";
 import StartingPlayerPanel from "./panels/StartingPlayerPanel";
 
-export default function FixedSettingsConfig({
-  stepId,
-}: {
-  stepId: SetupStepName;
-}) {
+export default function FixedSettingsConfig({ stepId }: { stepId: StepId }) {
   switch (stepId) {
     case "playOrder":
       return <PlayerOrderPanel />;

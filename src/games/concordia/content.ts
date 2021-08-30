@@ -1,7 +1,8 @@
-import { SetupStepName } from "./ConcordiaGame";
+import invariant_violation from "../../common/err/invariant_violation";
+import { StepId } from "../Game";
 
-export function stepLabel(stepName: SetupStepName): string {
-  switch (stepName) {
+export function stepLabel(id: StepId): string {
+  switch (id) {
     case "map":
       return "Map";
     case "cityTiles":
@@ -37,4 +38,8 @@ export function stepLabel(stepName: SetupStepName): string {
     case "startingResources":
       return "Starting Resources";
   }
+
+  invariant_violation(
+    `For the game Concordia, we don't have a label for the step id '${id}'`
+  );
 }

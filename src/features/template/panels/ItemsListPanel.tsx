@@ -3,14 +3,14 @@ import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import { SetupStepName } from "../../../games/concordia/ConcordiaGame";
 import { Strategy } from "../../../core/Strategy";
 import templateSlice, {
   selectors as templateStepSelectors,
 } from "../templateSlice";
 import { gameSelector } from "../../game/gameSlice";
+import { StepId } from "../../../games/Game";
 
-export default function ItemsListPanel({ stepId }: { stepId: SetupStepName }) {
+export default function ItemsListPanel({ stepId }: { stepId: StepId }) {
   const dispatch = useAppDispatch();
 
   const game = useAppSelector(gameSelector);
@@ -41,6 +41,7 @@ export default function ItemsListPanel({ stepId }: { stepId: SetupStepName }) {
                   dispatch(
                     templateSlice.actions.constantValueChanged({
                       id: step.id,
+                      global: false,
                       value: item,
                     })
                   )

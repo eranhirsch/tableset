@@ -5,18 +5,14 @@ import { strategyLabel } from "../../core/content";
 import templateSlice, {
   selectors as templateStepSelectors,
 } from "./templateSlice";
-import { SetupStepName } from "../../games/concordia/ConcordiaGame";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { Strategy } from "../../core/Strategy";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import { gameIdSelector } from "../game/gameSlice";
 import GameMapper from "../../games/GameMapper";
+import { StepId } from "../../games/Game";
 
-export default function StrategiesSelector({
-  stepId,
-}: {
-  stepId: SetupStepName;
-}) {
+export default function StrategiesSelector({ stepId }: { stepId: StepId }) {
   const dispatch = useAppDispatch();
 
   const gameId = useAppSelector(gameIdSelector);

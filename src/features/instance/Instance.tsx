@@ -22,7 +22,6 @@ import {
 } from "../../common/hooks/useAppEntityIdSelector";
 import PlayerColors from "../../common/PlayerColors";
 import short_name from "../../common/short_name";
-import { SetupStepName } from "../../games/concordia/ConcordiaGame";
 import { stepLabel } from "../../games/concordia/content";
 import {
   firstPlayerSelector,
@@ -32,6 +31,7 @@ import { MarketDisplayFixedInstructions } from "../../games/concordia/ux/MarketD
 import { selectors as instanceSelectors } from "./instanceSlice";
 import { CityTilesFixedInstructions } from "../../games/concordia/ux/CityTilesFixedInstructions";
 import { gameSelector } from "../game/gameSlice";
+import { StepId } from "../../games/Game";
 
 const IDEAL_STEP_COUNT = 6;
 
@@ -79,7 +79,7 @@ function FirstPlayerPanel({ playerId }: { playerId: EntityId }) {
   return <Avatar>{short_name(player.name)}</Avatar>;
 }
 
-function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
+function InstanceItemContent({ stepId }: { stepId: StepId }) {
   const step = useAppEntityIdSelectorNullable(instanceSelectors, stepId);
   const game = useAppSelector(gameSelector);
 
@@ -87,31 +87,36 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
     return null;
   }
 
-  switch (step.id) {
-    case "playOrder":
-      return <PlayOrderPanel playOrder={step.value} />;
+  if (step.global) {
+    switch (step.id) {
+      case "playOrder":
+        return <PlayOrderPanel playOrder={step.value} />;
 
-    case "playerColors":
-      return <PlayerColorsPanel playerColor={step.value} />;
+      case "playerColors":
+        return <PlayerColorsPanel playerColor={step.value} />;
 
-    case "firstPlayer":
-      return <FirstPlayerPanel playerId={step.value} />;
+      case "firstPlayer":
+        return <FirstPlayerPanel playerId={step.value} />;
+    }
+  } else {
+    // TODO: Move this to a game specific parser
+    switch (step.id) {
+      case "map":
+        return (
+          <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
+            {game.labelForItem("map", step.value)}
+          </Typography>
+        );
 
-    case "map":
-      return (
-        <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
-          {game.labelForItem("map", step.value)}
-        </Typography>
-      );
+      case "cityTiles":
+        return <CityTilesFixedInstructions hash={step.value} />;
 
-    case "cityTiles":
-      return <CityTilesFixedInstructions hash={step.value} />;
+      case "marketDisplay":
+        return <MarketDisplayFixedInstructions hash={step.value} />;
 
-    case "marketDisplay":
-      return <MarketDisplayFixedInstructions hash={step.value} />;
-
-    default:
-      return <Typography variant="h4">{step.value}</Typography>;
+      default:
+        return <Typography variant="h4">{step.value}</Typography>;
+    }
   }
 }
 
@@ -121,16 +126,14 @@ export default function Instance() {
 
   const game = useAppSelector(gameSelector);
 
-  const [completedSteps, setCompletedSteps] = useState<
-    readonly SetupStepName[]
-  >([]);
+  const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
 
   const instanceStepIds = useAppSelector(instanceSelectors.selectIds);
 
   const groups = useMemo(() => {
     const nonManualSteps = [...instanceStepIds];
     return game.order.reduce(
-      (groups: SetupStepName[][], stepId, index) => {
+      (groups: StepId[][], stepId, index) => {
         let lastGroup = groups[groups.length - 1];
 
         const manualStepIdx = nonManualSteps.indexOf(stepId);
@@ -182,7 +185,7 @@ export default function Instance() {
     );
   }, [game.order, instanceStepIds]);
 
-  const activeStepId = location.hash.substring(1) as SetupStepName;
+  const activeStepId = location.hash.substring(1) as StepId;
   const activeStepIdx = game.order.indexOf(activeStepId);
 
   const expandedGroupIdx = useMemo(
@@ -190,7 +193,7 @@ export default function Instance() {
     [activeStepId, groups]
   );
 
-  const setActiveStepId = (stepId: SetupStepName | undefined) =>
+  const setActiveStepId = (stepId: StepId | undefined) =>
     history.push(stepId != null ? `#${stepId}` : "#");
 
   return (

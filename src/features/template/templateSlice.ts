@@ -8,110 +8,48 @@ import { RootState } from "../../app/store";
 import invariant from "../../common/err/invariant";
 import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
-import { SetupStepName } from "../../games/concordia/ConcordiaGame";
 import { Strategy } from "../../core/Strategy";
 import playersSlice, { Player } from "../players/playersSlice";
 import PlayerColors from "../../common/PlayerColors";
-import Game from "../../games/Game";
+import Game, { StepId } from "../../games/Game";
 import GameMapper, { GameId } from "../../games/GameMapper";
 
-type ConstantTemplateElement<T> =
+type ConstantTemplateElement =
   | {
       id: "playOrder";
       strategy: Strategy.FIXED;
+      global: true;
       value: EntityId[];
     }
   | {
       id: "playerColors";
       strategy: Strategy.FIXED;
+      global: true;
       value: PlayerColors;
     }
   | {
       id: "firstPlayer";
       strategy: Strategy.FIXED;
+      global: true;
       value: EntityId;
     }
   | {
-      id: Exclude<T, "playOrder" | "playerColors" | "firstPlayer">;
+      id: StepId;
       strategy: Strategy.FIXED;
+      global: false;
       value: string;
     };
 
-export type TemplateElement<T> =
-  | ConstantTemplateElement<T>
+export type TemplateElement =
+  | ConstantTemplateElement
   | {
-      id: T;
+      id: StepId;
       strategy: Exclude<Strategy, Strategy.FIXED>;
     };
 
-const templateAdapter = createEntityAdapter<TemplateElement<SetupStepName>>({
+const templateAdapter = createEntityAdapter<TemplateElement>({
   selectId: (step) => step.id,
 });
-
-function fixedSetupStep(
-  id: "firstPlayer",
-  game: Game,
-  playerIds: EntityId[]
-): ConstantTemplateElement<"firstPlayer">;
-function fixedSetupStep(
-  id: "playOrder",
-  game: Game,
-  playerIds: EntityId[]
-): ConstantTemplateElement<"playOrder">;
-function fixedSetupStep(
-  id: "playerColors",
-  game: Game,
-  playerIds: EntityId[]
-): ConstantTemplateElement<"playerColors">;
-function fixedSetupStep(
-  id: SetupStepName,
-  game: Game,
-  playerIds: EntityId[]
-): ConstantTemplateElement<SetupStepName>;
-function fixedSetupStep(
-  id: any,
-  game: Game,
-  playerIds: EntityId[]
-): ConstantTemplateElement<SetupStepName> {
-  switch (id) {
-    case "playOrder": {
-      // Remove the first player which would be used as a pivot
-      const [, ...restOfPlayers] = playerIds;
-      return {
-        id: "playOrder",
-        strategy: Strategy.FIXED,
-        value: restOfPlayers,
-      };
-    }
-
-    case "firstPlayer": {
-      return {
-        id: "firstPlayer",
-        strategy: Strategy.FIXED,
-        value: playerIds[0],
-      };
-    }
-
-    case "playerColors":
-      return {
-        id: "playerColors",
-        strategy: Strategy.FIXED,
-        value: Object.fromEntries(
-          playerIds.map((playerId, index) => [
-            playerId,
-            game.playerColors[index],
-          ])
-        ),
-      };
-
-    default:
-      return {
-        id: id,
-        strategy: Strategy.FIXED,
-        value: game.itemsForStep(id)[0],
-      };
-  }
-}
 
 export const templateSlice = createSlice({
   name: "template",
@@ -122,7 +60,7 @@ export const templateSlice = createSlice({
       {
         payload: { id, strategy },
       }: PayloadAction<{
-        id: SetupStepName;
+        id: StepId;
         strategy:
           | Strategy.RANDOM
           | Strategy.DEFAULT
@@ -139,7 +77,7 @@ export const templateSlice = createSlice({
     },
 
     disabled: {
-      prepare: (gameId: GameId, id: SetupStepName, playersTotal: number) => ({
+      prepare: (gameId: GameId, id: StepId, playersTotal: number) => ({
         payload: id,
         meta: { gameId, playersTotal },
       }),
@@ -149,8 +87,8 @@ export const templateSlice = createSlice({
           payload: id,
           meta: { gameId, playersTotal },
         }: PayloadAction<
-          SetupStepName,
-          any,
+          StepId,
+          string,
           { gameId: GameId; playersTotal: number }
         >
       ) {
@@ -188,7 +126,7 @@ export const templateSlice = createSlice({
     },
 
     enabledConstantValue: {
-      prepare(id: SetupStepName, gameId: GameId, playerIds: EntityId[]) {
+      prepare(id: StepId, gameId: GameId, playerIds: EntityId[]) {
         return {
           payload: id,
           meta: { playerIds, gameId },
@@ -200,7 +138,7 @@ export const templateSlice = createSlice({
           payload: id,
           meta: { playerIds, gameId },
         }: PayloadAction<
-          SetupStepName,
+          StepId,
           string,
           { playerIds: EntityId[]; gameId: GameId }
         >
@@ -216,7 +154,7 @@ export const templateSlice = createSlice({
       state,
       {
         payload: { id, value },
-      }: PayloadAction<Omit<ConstantTemplateElement<SetupStepName>, "strategy">>
+      }: PayloadAction<Omit<ConstantTemplateElement, "strategy">>
     ) {
       const step = state.entities[id];
       if (step == null) {
@@ -250,7 +188,7 @@ export const templateSlice = createSlice({
                 if (playersTotal >= 3) {
                   // When we only have 2 players there is no sense in play order
                   state = templateAdapter.removeOne(state, "playOrder");
-                } else if (step.strategy === Strategy.FIXED) {
+                } else if (step.strategy === Strategy.FIXED && step.global) {
                   const playerIndex = step.value.indexOf(playerId);
                   invariant(playerIndex !== -1);
                   step.value.splice(playerIndex, 1);
@@ -258,7 +196,7 @@ export const templateSlice = createSlice({
                 break;
 
               case "playerColors":
-                if (step.strategy === Strategy.FIXED) {
+                if (step.strategy === Strategy.FIXED && step.global) {
                   delete step.value[playerId];
                 }
                 break;
@@ -286,6 +224,10 @@ export const templateSlice = createSlice({
               return;
             }
 
+            if (!step.global) {
+              return;
+            }
+
             switch (step.id) {
               case "playOrder":
                 step.value.push(player.name);
@@ -304,9 +246,57 @@ export const templateSlice = createSlice({
       );
   },
 });
+export default templateSlice;
 
 export const selectors = templateAdapter.getSelectors<RootState>(
   (state) => state.template
 );
 
-export default templateSlice;
+function fixedSetupStep(
+  id: StepId,
+  game: Game,
+  playerIds: EntityId[]
+): ConstantTemplateElement {
+  switch (id) {
+    case "playOrder": {
+      // Remove the first player which would be used as a pivot
+      const [, ...restOfPlayers] = playerIds;
+      return {
+        id: "playOrder",
+        strategy: Strategy.FIXED,
+        global: true,
+        value: restOfPlayers,
+      };
+    }
+
+    case "firstPlayer": {
+      return {
+        id: "firstPlayer",
+        strategy: Strategy.FIXED,
+        global: true,
+        value: playerIds[0],
+      };
+    }
+
+    case "playerColors":
+      return {
+        id: "playerColors",
+        strategy: Strategy.FIXED,
+        global: true,
+        value: Object.fromEntries(
+          playerIds.map((playerId, index) => [
+            playerId,
+            game.playerColors[index],
+          ])
+        ),
+      };
+
+    default:
+      return {
+        id: id,
+        strategy: Strategy.FIXED,
+        global: false,
+        value: game.itemsForStep(id)[0],
+      };
+  }
+}

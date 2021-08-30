@@ -121,7 +121,11 @@ export default function PlayerColorPanel() {
   const game = useAppSelector(gameSelector);
 
   const step = useAppEntityIdSelectorEnforce(templateSelectors, "playerColors");
-  if (step.id !== "playerColors" || step.strategy !== Strategy.FIXED) {
+  if (
+    step.id !== "playerColors" ||
+    step.strategy !== Strategy.FIXED ||
+    !step.global
+  ) {
     invariant_violation(`Step ${step} is misconfigured for this panel`);
   }
   const playerColors = step.value;
@@ -202,6 +206,7 @@ export default function PlayerColorPanel() {
       dispatch(
         templateSlice.actions.constantValueChanged({
           id: "playerColors",
+          global: true,
           value: newColors,
         })
       );
