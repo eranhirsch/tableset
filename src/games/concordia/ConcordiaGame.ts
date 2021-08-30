@@ -13,8 +13,6 @@ import { PraefectusMagnusStep } from "./steps/PraefectusMagnusStep";
 import FirstPlayerStep from "../steps/FirstPlayerStep";
 import PlayerColorsStep from "../steps/PlayerColorsStep";
 
-export type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
-
 export default class ConcordiaGame implements IGame {
   private readonly steps: Readonly<{ [id: string]: IGameStep }>;
 

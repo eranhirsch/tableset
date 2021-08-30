@@ -4,10 +4,11 @@ import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { Strategy } from "../../../core/Strategy";
 import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
-import { Resource } from "../ConcordiaGame";
 import { MapId, MAPS, Zone } from "./MapStep";
 
 const HASH_SEPERATOR = "-";
+
+export type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
 
 const CITY_TILES: Readonly<Record<Zone, Readonly<Record<Resource, number>>>> = {
   A: { bricks: 2, food: 2, tools: 1, wine: 1, cloth: 1 },

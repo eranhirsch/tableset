@@ -1,7 +1,8 @@
 import { Strategy } from "../../../core/Strategy";
 import IGameStep, { TemplateContext } from "../../IGameStep";
-import { Resource } from "../ConcordiaGame";
-import { CityResourceMapping } from "./CityTilesStep";
+import { CityResourceMapping, Resource } from "./CityTilesStep";
+
+type ProvinceResourceMapping = Readonly<{ [provinceName: string]: Resource }>;
 
 export default class BonusTilesStep implements IGameStep {
   public readonly id: string = "bonusTiles";
@@ -9,7 +10,7 @@ export default class BonusTilesStep implements IGameStep {
 
   public static fromCityTiles(
     cityResourceMapping: CityResourceMapping
-  ): Readonly<{ [provinceName: string]: Resource }> {
+  ): ProvinceResourceMapping {
     return Object.fromEntries(
       Object.entries(cityResourceMapping).map(([provinceName, cities]) => [
         provinceName,
