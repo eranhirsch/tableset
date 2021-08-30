@@ -4,7 +4,6 @@ import {
   Badge,
   Box,
   Button,
-  Grid,
   Stack,
   Step,
   StepButton,
@@ -16,7 +15,6 @@ import { EntityId } from "@reduxjs/toolkit";
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
 import {
   useAppEntityIdSelectorEnforce,
@@ -32,54 +30,11 @@ import {
   firstPlayerSelector,
   selectors as playersSelectors,
 } from "../players/playersSlice";
-import { MarketDisplayFixedInstructions } from "../../games/concordia/ux/ConcordiaMarket";
+import { MarketDisplayFixedInstructions } from "../../games/concordia/ux/MarketDisplayFixedInstructions";
 import { selectors as instanceSelectors } from "./instanceSlice";
+import { CityTilesFixedInstructions } from "../../games/concordia/ux/CityTilesFixedInstructions";
 
 const IDEAL_STEP_COUNT = 6;
-
-function ConcordiaCityTiles({ hash }: { hash: string }) {
-  const mapStep = useAppEntityIdSelectorEnforce(instanceSelectors, "map");
-  if (mapStep.id !== "map") {
-    invariant_violation();
-  }
-  const mapId = mapStep.value;
-
-  const provinces = useMemo(
-    () => ConcordiaGame.cityResources(mapId, hash),
-    [hash, mapId]
-  );
-
-  return (
-    <Grid container textAlign="center" spacing={1}>
-      {Object.entries(provinces).map(([provinceName, cities]) => {
-        const mapping = Object.entries(cities);
-        return (
-          <>
-            <Grid key={provinceName} item xs={12}>
-              <Typography
-                variant="subtitle1"
-                sx={{ fontVariantCaps: "petite-caps" }}
-              >
-                {provinceName}
-              </Typography>
-            </Grid>
-            {mapping.map(([cityName, resource]) => (
-              <Grid key={cityName} item xs={mapping.length === 2 ? 6 : 4}>
-                <Typography variant="caption">{resource}</Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ fontVariantCaps: "petite-caps" }}
-                >
-                  {cityName}
-                </Typography>
-              </Grid>
-            ))}
-          </>
-        );
-      })}
-    </Grid>
-  );
-}
 
 function PlayOrderPanel({ playOrder }: { playOrder: ReadonlyArray<EntityId> }) {
   const firstPlayer = useAppSelector(firstPlayerSelector);
@@ -150,7 +105,7 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
       );
 
     case "cityTiles":
-      return <ConcordiaCityTiles hash={step.value} />;
+      return <CityTilesFixedInstructions hash={step.value} />;
 
     case "marketDisplay":
       return <MarketDisplayFixedInstructions hash={step.value} />;
