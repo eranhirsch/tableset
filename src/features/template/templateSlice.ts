@@ -11,7 +11,7 @@ import filter_nulls from "../../common/lib_utils/filter_nulls";
 import { Strategy } from "../../core/Strategy";
 import playersSlice, { Player } from "../players/playersSlice";
 import PlayerColors from "../../common/PlayerColors";
-import Game, { StepId } from "../../games/Game";
+import Game, { StepId } from "../../games/IGame";
 import GameMapper, { GameId } from "../../games/GameMapper";
 
 type ConstantTemplateElement =
@@ -296,7 +296,7 @@ function fixedSetupStep(
         id: id,
         strategy: Strategy.FIXED,
         global: false,
-        value: game.itemsForStep(id)[0],
+        value: game.at(id)!.items![0],
       };
   }
 }

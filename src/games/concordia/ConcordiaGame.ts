@@ -7,13 +7,16 @@ import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
 import nullthrows from "../../common/err/nullthrows";
-import IGame, { StepId } from "../Game";
+import IGame, { StepId } from "../IGame";
 import IGameStep from "../IGameStep";
 import GenericGameStep from "../GenericGameStep";
+import MapStep from "./steps/MapStep";
+import CityTilesStep from "./steps/CityTilesStep";
+import MarketDisplayStep from "./steps/MarketDisplayStep";
 
 const HASH_SEPERATOR = "-";
 
-type MapZone = "A" | "B" | "C" | "D";
+export type MapZone = "A" | "B" | "C" | "D";
 type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
 
 type ConcordiaMap = Readonly<{
@@ -26,7 +29,7 @@ type ConcordiaMap = Readonly<{
 }>;
 
 export default class ConcordiaGame implements IGame {
-  private static readonly CITY_TILES: Readonly<
+  public static readonly CITY_TILES: Readonly<
     Record<MapZone, Readonly<Record<Resource, number>>>
   > = {
     A: { bricks: 2, food: 2, tools: 1, wine: 1, cloth: 1 },
@@ -35,7 +38,7 @@ export default class ConcordiaGame implements IGame {
     D: { bricks: 1, food: 1, tools: 1, wine: 1, cloth: 1 },
   };
 
-  private static readonly MAPS = {
+  public static readonly MAPS = {
     italia: {
       name: "Italia",
       provinces: {
@@ -85,7 +88,7 @@ export default class ConcordiaGame implements IGame {
     } as ConcordiaMap,
   } as const;
 
-  private static readonly MARKET_DECK_PHASE_1: ReadonlyArray<string> = [
+  public static readonly MARKET_DECK_PHASE_1: ReadonlyArray<string> = [
     "Architect",
     "Prefect",
     "Mercator",
@@ -100,11 +103,11 @@ export default class ConcordiaGame implements IGame {
 
   public constructor() {
     this.steps = {
-      map: new GenericGameStep("map"),
-      cityTiles: new GenericGameStep("cityTiles", "City Resources"),
+      map: new MapStep(),
+      cityTiles: new CityTilesStep(),
       bonusTiles: new GenericGameStep("bonusTiles", "Province Bonus"),
       marketCards: new GenericGameStep("marketCards"),
-      marketDisplay: new GenericGameStep("marketDisplay", "Cards Display"),
+      marketDisplay: new MarketDisplayStep(),
       marketDeck: new GenericGameStep("marketDeck", "Cards Deck"),
       concordiaCard: new GenericGameStep("concordiaCard"),
       resourcePiles: new GenericGameStep("resourcePiles"),
@@ -120,51 +123,12 @@ export default class ConcordiaGame implements IGame {
     };
   }
 
+  public at(id: string): IGameStep | undefined {
+    return this.steps[id];
+  }
+
   public get order(): StepId[] {
     return Object.values(this.steps).map((step) => step.id);
-  }
-
-  public stepLabel(id: StepId): string {
-    return this.steps[id].label;
-  }
-
-  public resolveRandom(
-    stepId: StepId,
-    instance: ReadonlyArray<SetupStep>,
-    playersTotal: number
-  ): string {
-    switch (stepId) {
-      case "map":
-        const items = this.itemsForStep(stepId);
-        return items[Math.floor(Math.random() * items.length)];
-
-      case "cityTiles":
-        const mapDef = instance.find((step) => step.id === "map");
-        if (mapDef == null || mapDef.id !== "map") {
-          // TODO: create a generic dependancy error
-          invariant_violation(`Couldn't find 'map' dependancy`);
-        }
-        const mapId = mapDef.value as keyof typeof ConcordiaGame.MAPS;
-        const { provinces } = ConcordiaGame.MAPS[mapId];
-        const hashes = Object.keys(provinces).map((zone) => {
-          const tiles = ConcordiaGame.CITY_TILES[zone as MapZone];
-          const permutations = new PermutationsLazyArray(tiles);
-          const selectedIdx = Math.floor(Math.random() * permutations.length);
-          return Base32.encode(selectedIdx);
-        });
-        return hashes.join(HASH_SEPERATOR);
-
-      case "marketDisplay":
-        const permutations = PermutationsLazyArray.forPermutation(
-          ConcordiaGame.MARKET_DECK_PHASE_1
-        );
-        const selectedIdx = Math.floor(Math.random() * permutations.length);
-        return Base32.encode(selectedIdx);
-    }
-
-    invariant_violation(
-      `Step ${stepId} could not be resolved with RANDOM strategy`
-    );
   }
 
   public resolveDefault(
@@ -270,31 +234,6 @@ export default class ConcordiaGame implements IGame {
 
   public get playerColors(): GamePiecesColor[] {
     return ["black", "blue", "green", "red", "yellow"];
-  }
-
-  public itemsForStep(stepId: StepId): readonly string[] {
-    switch (stepId) {
-      case "map":
-        return Object.keys(ConcordiaGame.MAPS);
-
-      default:
-        invariant_violation(
-          `No items for step ${stepId}, the step shouldn't have FIXED strategy enabled for it`
-        );
-    }
-  }
-
-  public labelForItem(stepId: StepId, value: string): string {
-    switch (stepId) {
-      case "map":
-        return ConcordiaGame.MAPS[value as keyof typeof ConcordiaGame.MAPS]
-          .name;
-
-      default:
-        invariant_violation(
-          `No labels defined for step ${stepId} and value ${value}`
-        );
-    }
   }
 
   public static cityResources(

@@ -1,4 +1,4 @@
-import { StepId } from "./Game";
+import { StepId } from "./IGame";
 import IGameStep from "./IGameStep";
 
 export default class GenericGameStep implements IGameStep {

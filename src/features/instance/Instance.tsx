@@ -30,7 +30,7 @@ import { MarketDisplayFixedInstructions } from "../../games/concordia/ux/MarketD
 import { selectors as instanceSelectors } from "./instanceSlice";
 import { CityTilesFixedInstructions } from "../../games/concordia/ux/CityTilesFixedInstructions";
 import { gameSelector } from "../game/gameSlice";
-import { StepId } from "../../games/Game";
+import { StepId } from "../../games/IGame";
 
 const IDEAL_STEP_COUNT = 6;
 
@@ -103,7 +103,7 @@ function InstanceItemContent({ stepId }: { stepId: StepId }) {
       case "map":
         return (
           <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
-            {game.labelForItem("map", step.value)}
+            {game.at("map")!.labelForItem!(step.value)}
           </Typography>
         );
 
@@ -217,7 +217,7 @@ export default function Instance() {
                 <Typography variant="caption">
                   {`${group
                     .slice(0, 2)
-                    .map((stepId) => game.stepLabel(stepId))
+                    .map((stepId) => game.at(stepId)!.label)
                     .join(", ")}${
                     group.length > 2 ? `, and ${group.length - 1} more...` : ""
                   }`}
@@ -241,7 +241,7 @@ export default function Instance() {
                   : undefined
               }
             >
-              {game.stepLabel(stepId)}
+              {game.at(stepId)!.label}
             </StepButton>
             <StepContent>
               <InstanceItemContent stepId={stepId} />

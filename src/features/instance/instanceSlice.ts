@@ -11,7 +11,7 @@ import filter_nulls from "../../common/lib_utils/filter_nulls";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import PlayerColors from "../../common/PlayerColors";
 import { Strategy } from "../../core/Strategy";
-import Game, { StepId } from "../../games/Game";
+import Game, { StepId } from "../../games/IGame";
 import { TemplateElement } from "../template/templateSlice";
 
 export type SetupStep = Readonly<
@@ -115,8 +115,7 @@ export const instanceSlice = createSlice({
                   step = {
                     id: element.id,
                     global: false,
-                    value: game.resolveRandom(
-                      element.id,
+                    value: game.at(element.id)!.resolveRandom!(
                       payload,
                       playerIds.length
                     ),

@@ -14,7 +14,7 @@ import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityI
 import { useAppSelector } from "../../app/hooks";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import first_name from "../../common/first_name";
-import { StepId } from "../../games/Game";
+import { StepId } from "../../games/IGame";
 import { gameSelector } from "../game/gameSlice";
 
 function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element {
@@ -80,7 +80,7 @@ export default function TemplateItem({
           <StrategyIcon strategy={strategy} />
         </ListItemIcon>
         <ListItemText secondary={<ItemLabel stepId={stepId} />}>
-          {game.stepLabel(stepId)}
+          {game.at(stepId)!.label}
         </ListItemText>
       </ListItemButton>
       <Collapse in={expanded} unmountOnExit>

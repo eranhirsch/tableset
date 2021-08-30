@@ -1,4 +1,4 @@
-import { StepId } from "../../games/Game";
+import { StepId } from "../../games/IGame";
 import ItemsListPanel from "./panels/ItemsListPanel";
 import PlayerColorPanel from "./panels/PlayerColorPanel";
 import PlayerOrderPanel from "./panels/PlayerOrderPanel";

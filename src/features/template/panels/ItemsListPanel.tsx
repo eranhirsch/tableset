@@ -8,7 +8,7 @@ import templateSlice, {
   selectors as templateStepSelectors,
 } from "../templateSlice";
 import { gameSelector } from "../../game/gameSlice";
-import { StepId } from "../../../games/Game";
+import { StepId } from "../../../games/IGame";
 
 export default function ItemsListPanel({ stepId }: { stepId: StepId }) {
   const dispatch = useAppDispatch();
@@ -20,7 +20,7 @@ export default function ItemsListPanel({ stepId }: { stepId: StepId }) {
     invariant_violation(`strategy isn't FIXED for step ${stepId}`);
   }
 
-  const items = useMemo(() => game.itemsForStep(step.id), [game, step.id]);
+  const items = useMemo(() => game.at(step.id)!.items, [game, step.id]);
 
   if (items == null || items.length === 0) {
     invariant_violation(
@@ -34,7 +34,7 @@ export default function ItemsListPanel({ stepId }: { stepId: StepId }) {
         <Chip
           key={`${step.id}_${item}`}
           variant={step.value === item ? "filled" : "outlined"}
-          label={game.labelForItem(stepId, item)}
+          label={game.at(stepId)!.labelForItem!(item)}
           onClick={
             step.value !== item
               ? () =>

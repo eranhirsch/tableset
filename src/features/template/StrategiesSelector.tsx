@@ -10,7 +10,7 @@ import { Strategy } from "../../core/Strategy";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import { gameIdSelector } from "../game/gameSlice";
 import GameMapper from "../../games/GameMapper";
-import { StepId } from "../../games/Game";
+import { StepId } from "../../games/IGame";
 
 export default function StrategiesSelector({ stepId }: { stepId: StepId }) {
   const dispatch = useAppDispatch();

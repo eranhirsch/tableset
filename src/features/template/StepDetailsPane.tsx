@@ -5,7 +5,7 @@ import { Strategy } from "../../core/Strategy";
 import StrategiesSelector from "./StrategiesSelector";
 import FixedSettingsConfig from "./FixedSettingsConfig";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
-import { StepId } from "../../games/Game";
+import { StepId } from "../../games/IGame";
 
 export default function StepDetailsPane({ stepId }: { stepId: StepId }) {
   const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
