@@ -1,8 +1,9 @@
 import Base32 from "../../../common/Base32";
 import invariant_violation from "../../../common/err/invariant_violation";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
+import { Strategy } from "../../../core/Strategy";
 import { SetupStep } from "../../../features/instance/instanceSlice";
-import IGameStep from "../../IGameStep";
+import IGameStep, { TemplateContext } from "../../IGameStep";
 import ConcordiaGame, { MapZone } from "../ConcordiaGame";
 
 const HASH_SEPERATOR = "-";
@@ -26,5 +27,13 @@ export default class CityTilesStep implements IGameStep {
       return Base32.encode(selectedIdx);
     });
     return hashes.join(HASH_SEPERATOR);
+  }
+
+  public strategies({ template }: TemplateContext): Strategy[] {
+    const { map } = template;
+    if (map == null || map.strategy === Strategy.OFF) {
+      return [Strategy.OFF];
+    }
+    return [Strategy.OFF, Strategy.RANDOM];
   }
 }

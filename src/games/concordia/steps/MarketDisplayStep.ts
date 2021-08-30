@@ -1,5 +1,6 @@
 import Base32 from "../../../common/Base32";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
+import { Strategy } from "../../../core/Strategy";
 import IGameStep from "../../IGameStep";
 import ConcordiaGame from "../ConcordiaGame";
 
@@ -13,5 +14,9 @@ export default class MarketDisplayStep implements IGameStep {
     );
     const selectedIdx = Math.floor(Math.random() * permutations.length);
     return Base32.encode(selectedIdx);
+  }
+
+  public strategies(): Strategy[] {
+    return [Strategy.OFF, Strategy.RANDOM];
   }
 }

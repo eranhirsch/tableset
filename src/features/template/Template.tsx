@@ -21,10 +21,13 @@ export default function Template() {
   const allItems = game.order;
   const templatableItems = useMemo(
     () =>
-      allItems.filter(
-        (stepId) =>
-          game.strategiesFor(stepId, template, playerIds.length).length > 1
-      ),
+      allItems.filter((stepId) => {
+        const strategiesFunc = game.at(stepId)!.strategies;
+        return strategiesFunc == null
+          ? false
+          : strategiesFunc({ template, playersTotal: playerIds.length })
+              .length > 1;
+      }),
     [allItems, game, playerIds.length, template]
   );
 

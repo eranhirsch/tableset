@@ -1,7 +1,4 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import invariant_violation from "../../common/err/invariant_violation";
-import { TemplateElement } from "../../features/template/templateSlice";
-import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
@@ -13,6 +10,13 @@ import GenericGameStep from "../GenericGameStep";
 import MapStep from "./steps/MapStep";
 import CityTilesStep from "./steps/CityTilesStep";
 import MarketDisplayStep from "./steps/MarketDisplayStep";
+import BonusTilesStep from "./steps/BonusTilesStep";
+import PlayOrderStep from "./steps/PlayOrderStep";
+import PlayerColorsStep from "./steps/PlayerColorsStep";
+import StartingColonistsStep from "./steps/StartingColonistsStep";
+import FirstPlayerStep from "./steps/FirstPlayerStep";
+import StartingMoneyStep from "./steps/StartingMoneyStep";
+import { PraefectusMagnusStep } from "./steps/PraefectusMagnusStep";
 
 const HASH_SEPERATOR = "-";
 
@@ -102,25 +106,27 @@ export default class ConcordiaGame implements IGame {
   private readonly steps: Readonly<{ [id: string]: IGameStep }>;
 
   public constructor() {
-    this.steps = {
-      map: new MapStep(),
-      cityTiles: new CityTilesStep(),
-      bonusTiles: new GenericGameStep("bonusTiles", "Province Bonus"),
-      marketCards: new GenericGameStep("marketCards"),
-      marketDisplay: new MarketDisplayStep(),
-      marketDeck: new GenericGameStep("marketDeck", "Cards Deck"),
-      concordiaCard: new GenericGameStep("concordiaCard"),
-      resourcePiles: new GenericGameStep("resourcePiles"),
-      bank: new GenericGameStep("bank"),
-      playOrder: new GenericGameStep("playOrder", "Seating"),
-      playerColors: new GenericGameStep("playerColors", "Colors"),
-      playerPieces: new GenericGameStep("playerPieces", "Player Components"),
-      startingColonists: new GenericGameStep("startingColonists"),
-      startingResources: new GenericGameStep("startingResources"),
-      firstPlayer: new GenericGameStep("firstPlayer"),
-      startingMoney: new GenericGameStep("startingMoney"),
-      praefectusMagnus: new GenericGameStep("praefectusMagnus"),
-    };
+    this.steps = Object.fromEntries(
+      [
+        new MapStep(),
+        new CityTilesStep(),
+        new BonusTilesStep(),
+        new GenericGameStep("marketCards"),
+        new MarketDisplayStep(),
+        new GenericGameStep("marketDeck", "Cards Deck"),
+        new GenericGameStep("concordiaCard"),
+        new GenericGameStep("resourcePiles"),
+        new GenericGameStep("bank"),
+        new PlayOrderStep(),
+        new PlayerColorsStep(),
+        new GenericGameStep("playerPieces", "Player Components"),
+        new StartingColonistsStep(),
+        new GenericGameStep("startingResources"),
+        new FirstPlayerStep(),
+        new StartingMoneyStep(),
+        new PraefectusMagnusStep(),
+      ].map((step) => [step.id, step])
+    );
   }
 
   public at(id: string): IGameStep | undefined {
@@ -146,90 +152,6 @@ export default class ConcordiaGame implements IGame {
     invariant_violation(
       `Step ${stepId} could not be resolved with DEFAULT strategy`
     );
-  }
-
-  public strategiesFor(
-    stepId: StepId,
-    template: Dictionary<TemplateElement>,
-    playersTotal: number
-  ): Strategy[] {
-    switch (stepId) {
-      case "map":
-        const strategies = [
-          Strategy.OFF,
-          Strategy.RANDOM,
-          Strategy.ASK,
-          Strategy.FIXED,
-        ];
-        if (playersTotal >= 2 && playersTotal <= 5) {
-          strategies.push(Strategy.DEFAULT);
-        }
-        return strategies;
-
-      case "cityTiles": {
-        const { map } = template;
-        if (map == null || map.strategy === Strategy.OFF) {
-          return [Strategy.OFF];
-        }
-        return [Strategy.OFF, Strategy.RANDOM];
-      }
-
-      case "bonusTiles": {
-        const { cityTiles } = template;
-        if (cityTiles != null && cityTiles.strategy !== Strategy.OFF) {
-          return [Strategy.COMPUTED];
-        }
-        return [Strategy.OFF];
-      }
-
-      case "marketDisplay":
-        return [Strategy.OFF, Strategy.RANDOM];
-
-      case "playOrder":
-        if (playersTotal < 3 || playersTotal > 5) {
-          return [Strategy.OFF];
-        }
-        return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
-
-      case "playerColors":
-        if (playersTotal === 0 || playersTotal > 5) {
-          return [Strategy.OFF];
-        }
-        return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
-
-      case "startingMoney": {
-        const { playOrder } = template;
-        if (playOrder != null && playOrder.strategy !== Strategy.OFF) {
-          return [Strategy.COMPUTED];
-        }
-        return [Strategy.OFF];
-      }
-
-      case "praefectusMagnus": {
-        const { playOrder } = template;
-        if (playOrder != null && playOrder.strategy !== Strategy.OFF) {
-          return [Strategy.COMPUTED];
-        }
-        return [Strategy.OFF];
-      }
-
-      case "startingColonists": {
-        const { map } = template;
-        if (map != null && map.strategy !== Strategy.OFF) {
-          return [Strategy.COMPUTED];
-        }
-        return [Strategy.OFF];
-      }
-
-      case "firstPlayer":
-        if (playersTotal < 2 || playersTotal > 5) {
-          return [Strategy.OFF];
-        }
-        return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
-
-      default:
-        return [Strategy.OFF];
-    }
   }
 
   public get playerColors(): GamePiecesColor[] {

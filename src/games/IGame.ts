@@ -13,12 +13,6 @@ export default interface IGame {
 
   at(id: StepId): IGameStep | undefined;
 
-  strategiesFor(
-    stepId: StepId,
-    template: Dictionary<TemplateElement>,
-    playersTotal: number
-  ): Strategy[];
-
   resolveDefault(
     stepId: StepId,
     instance: ReadonlyArray<SetupStep>,

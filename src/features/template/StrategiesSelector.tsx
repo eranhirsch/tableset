@@ -17,13 +17,17 @@ export default function StrategiesSelector({ stepId }: { stepId: StepId }) {
 
   const gameId = useAppSelector(gameIdSelector);
   const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
-  const steps = useAppSelector(templateStepSelectors.selectEntities);
+  const template = useAppSelector(templateStepSelectors.selectEntities);
   const playerIds = useAppSelector(playersSelectors.selectIds);
   const playersTotal = useAppSelector(playersSelectors.selectTotal);
 
   const strategies = useMemo(
-    () => GameMapper.forId(gameId).strategiesFor(stepId, steps, playersTotal),
-    [gameId, playersTotal, stepId, steps]
+    () =>
+      GameMapper.forId(gameId).at(stepId)!.strategies!({
+        template,
+        playersTotal,
+      }),
+    [gameId, playersTotal, stepId, template]
   );
 
   const stepStrategy = step?.strategy ?? Strategy.OFF;
