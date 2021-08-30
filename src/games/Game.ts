@@ -29,4 +29,3 @@ export default interface IGame {
 
   labelForItem(stepId: SetupStepName, value: string): string;
 }
-
