@@ -291,10 +291,11 @@ export default class ConcordiaGame extends Game {
     }
   }
 
-  public static labelForItem(stepId: SetupStepName, value: string): string {
+  public labelForItem(stepId: SetupStepName, value: string): string {
     switch (stepId) {
       case "map":
-        return this.MAPS[value as keyof typeof ConcordiaGame.MAPS].name;
+        return ConcordiaGame.MAPS[value as keyof typeof ConcordiaGame.MAPS]
+          .name;
 
       default:
         invariant_violation(

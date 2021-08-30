@@ -33,6 +33,7 @@ import {
 import { MarketDisplayFixedInstructions } from "../../games/concordia/ux/MarketDisplayFixedInstructions";
 import { selectors as instanceSelectors } from "./instanceSlice";
 import { CityTilesFixedInstructions } from "../../games/concordia/ux/CityTilesFixedInstructions";
+import { gameSelector } from "../game/gameSlice";
 
 const IDEAL_STEP_COUNT = 6;
 
@@ -82,6 +83,7 @@ function FirstPlayerPanel({ playerId }: { playerId: EntityId }) {
 
 function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
   const step = useAppEntityIdSelectorNullable(instanceSelectors, stepId);
+  const game = useAppSelector(gameSelector);
 
   if (step == null) {
     return null;
@@ -100,7 +102,7 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
     case "map":
       return (
         <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
-          {ConcordiaGame.labelForItem("map", step.value)}
+          {game.labelForItem("map", step.value)}
         </Typography>
       );
 

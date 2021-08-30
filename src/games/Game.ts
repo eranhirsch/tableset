@@ -25,4 +25,6 @@ export default abstract class Game {
     instance: ReadonlyArray<SetupStep<SetupStepName>>,
     playersTotal: number
   ): string;
+
+  public abstract labelForItem(stepId: SetupStepName, value: string): string;
 }
