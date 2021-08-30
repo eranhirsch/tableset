@@ -37,7 +37,7 @@ function draggablePlayerRendererFactory(player: Player) {
 
 function DraggablePlayer({ player }: { player: Player }) {
   return (
-    <Draggable draggableId={player.name} index={0}>
+    <Draggable draggableId={player.id} index={0}>
       {draggablePlayerRendererFactory(player)}
     </Draggable>
   );
@@ -224,7 +224,7 @@ export default function PlayerColorPanel() {
         spacing={1}
         height={48}
       >
-        {game.playerColors.map((color, index) => (
+        {game.playerColors.map((color) => (
           <ColorSlot
             key={color}
             color={color}
