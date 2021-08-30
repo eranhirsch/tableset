@@ -1,5 +1,5 @@
-import { Strategy } from "../../../core/Strategy";
-import IGameStep, { TemplateContext } from "../../IGameStep";
+import { Strategy } from "../../core/Strategy";
+import IGameStep, { TemplateContext } from "../IGameStep";
 
 // TODO: Move this to a global scope
 export default class FirstPlayerStep implements IGameStep {
