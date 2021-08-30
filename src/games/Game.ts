@@ -6,7 +6,8 @@ import { TemplateElement } from "../features/template/templateSlice";
 import { SetupStepName } from "./concordia/ConcordiaGame";
 
 export default abstract class Game {
-  public abstract get playerColors(): GamePiecesColor[];
+  public abstract readonly playerColors: GamePiecesColor[];
+  public abstract readonly order: SetupStepName[];
 
   public abstract strategiesFor(
     stepId: SetupStepName,

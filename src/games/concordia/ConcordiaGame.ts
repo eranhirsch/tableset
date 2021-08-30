@@ -113,7 +113,7 @@ export default class ConcordiaGame extends Game {
     "Smith",
   ];
 
-  public static get order(): SetupStepName[] {
+  public get order(): SetupStepName[] {
     return [
       "map",
       "cityTiles",

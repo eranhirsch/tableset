@@ -22,9 +22,7 @@ import {
 } from "../../common/hooks/useAppEntityIdSelector";
 import PlayerColors from "../../common/PlayerColors";
 import short_name from "../../common/short_name";
-import ConcordiaGame, {
-  SetupStepName,
-} from "../../games/concordia/ConcordiaGame";
+import { SetupStepName } from "../../games/concordia/ConcordiaGame";
 import { stepLabel } from "../../games/concordia/content";
 import {
   firstPlayerSelector,
@@ -121,6 +119,8 @@ export default function Instance() {
   const location = useLocation();
   const history = useHistory();
 
+  const game = useAppSelector(gameSelector);
+
   const [completedSteps, setCompletedSteps] = useState<
     readonly SetupStepName[]
   >([]);
@@ -129,7 +129,7 @@ export default function Instance() {
 
   const groups = useMemo(() => {
     const nonManualSteps = [...instanceStepIds];
-    return ConcordiaGame.order.reduce(
+    return game.order.reduce(
       (groups: SetupStepName[][], stepId, index) => {
         let lastGroup = groups[groups.length - 1];
 
@@ -159,7 +159,7 @@ export default function Instance() {
         // We want to spread the steps that aren't special into the remaining
         // slots they have as fairly as possible
         const manualStepsLeft =
-          ConcordiaGame.order.length - index - nonManualSteps.length;
+          game.order.length - index - nonManualSteps.length;
         const manualStepGroupsLeft =
           IDEAL_STEP_COUNT - (groups.length - 1) - nonManualSteps.length;
 
@@ -180,10 +180,10 @@ export default function Instance() {
       },
       [[]]
     );
-  }, [instanceStepIds]);
+  }, [game.order, instanceStepIds]);
 
   const activeStepId = location.hash.substring(1) as SetupStepName;
-  const activeStepIdx = ConcordiaGame.order.indexOf(activeStepId);
+  const activeStepIdx = game.order.indexOf(activeStepId);
 
   const expandedGroupIdx = useMemo(
     () => groups.findIndex((group) => group.includes(activeStepId)),
@@ -251,7 +251,7 @@ export default function Instance() {
                   setCompletedSteps((steps) =>
                     steps.includes(stepId) ? steps : [...steps, stepId]
                   );
-                  const nextStepId = ConcordiaGame.order.find(
+                  const nextStepId = game.order.find(
                     (x) => !completedSteps.includes(x) && x !== stepId
                   );
                   setActiveStepId(nextStepId);
