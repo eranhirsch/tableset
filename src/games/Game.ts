@@ -28,4 +28,6 @@ export default interface IGame {
   ): string;
 
   labelForItem(stepId: SetupStepName, value: string): string;
+
+  itemsForStep(stepId: SetupStepName): readonly string[];
 }

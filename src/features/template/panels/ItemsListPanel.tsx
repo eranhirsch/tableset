@@ -3,9 +3,7 @@ import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import ConcordiaGame, {
-  SetupStepName,
-} from "../../../games/concordia/ConcordiaGame";
+import { SetupStepName } from "../../../games/concordia/ConcordiaGame";
 import { Strategy } from "../../../core/Strategy";
 import templateSlice, {
   selectors as templateStepSelectors,
@@ -22,7 +20,7 @@ export default function ItemsListPanel({ stepId }: { stepId: SetupStepName }) {
     invariant_violation(`strategy isn't FIXED for step ${stepId}`);
   }
 
-  const items = useMemo(() => ConcordiaGame.itemsForStep(step.id), [step.id]);
+  const items = useMemo(() => game.itemsForStep(step.id), [game, step.id]);
 
   if (items == null || items.length === 0) {
     invariant_violation(

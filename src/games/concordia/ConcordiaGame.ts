@@ -142,7 +142,7 @@ export default class ConcordiaGame implements IGame {
   ): string {
     switch (stepId) {
       case "map":
-        const items = ConcordiaGame.itemsForStep(stepId);
+        const items = this.itemsForStep(stepId);
         return items[Math.floor(Math.random() * items.length)];
 
       case "cityTiles":
@@ -279,10 +279,10 @@ export default class ConcordiaGame implements IGame {
     return ["black", "blue", "green", "red", "yellow"];
   }
 
-  public static itemsForStep(stepId: SetupStepName): readonly string[] {
+  public itemsForStep(stepId: SetupStepName): readonly string[] {
     switch (stepId) {
       case "map":
-        return Object.keys(this.MAPS);
+        return Object.keys(ConcordiaGame.MAPS);
 
       default:
         invariant_violation(
