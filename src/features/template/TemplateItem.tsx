@@ -6,7 +6,6 @@ import {
   Paper,
 } from "@material-ui/core";
 import { strategyLabel } from "../../core/content";
-import { stepLabel } from "../../games/concordia/content";
 import { selectors as templateSelectors } from "./templateSlice";
 import StrategyIcon from "./StrategyIcon";
 import StepDetailsPane from "./StepDetailsPane";
@@ -16,6 +15,7 @@ import { useAppSelector } from "../../app/hooks";
 import { selectors as playersSelectors } from "../players/playersSlice";
 import first_name from "../../common/first_name";
 import { StepId } from "../../games/Game";
+import { gameSelector } from "../game/gameSlice";
 
 function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element {
   const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
@@ -69,6 +69,8 @@ export default function TemplateItem({
 }) {
   const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
 
+  const game = useAppSelector(gameSelector);
+
   const strategy = step?.strategy ?? Strategy.OFF;
 
   return (
@@ -78,7 +80,7 @@ export default function TemplateItem({
           <StrategyIcon strategy={strategy} />
         </ListItemIcon>
         <ListItemText secondary={<ItemLabel stepId={stepId} />}>
-          {stepLabel(stepId)}
+          {game.stepLabel(stepId)}
         </ListItemText>
       </ListItemButton>
       <Collapse in={expanded} unmountOnExit>

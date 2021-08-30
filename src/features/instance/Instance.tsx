@@ -22,7 +22,6 @@ import {
 } from "../../common/hooks/useAppEntityIdSelector";
 import PlayerColors from "../../common/PlayerColors";
 import short_name from "../../common/short_name";
-import { stepLabel } from "../../games/concordia/content";
 import {
   firstPlayerSelector,
   selectors as playersSelectors,
@@ -218,7 +217,7 @@ export default function Instance() {
                 <Typography variant="caption">
                   {`${group
                     .slice(0, 2)
-                    .map((stepId) => stepLabel(stepId))
+                    .map((stepId) => game.stepLabel(stepId))
                     .join(", ")}${
                     group.length > 2 ? `, and ${group.length - 1} more...` : ""
                   }`}
@@ -242,7 +241,7 @@ export default function Instance() {
                   : undefined
               }
             >
-              {stepLabel(stepId)}
+              {game.stepLabel(stepId)}
             </StepButton>
             <StepContent>
               <InstanceItemContent stepId={stepId} />

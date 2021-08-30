@@ -7,7 +7,7 @@ import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
 import nullthrows from "../../common/err/nullthrows";
-import IGame, { StepId } from "../Game";
+import IGame, { GenericGameStep, IGameStep, StepId } from "../Game";
 
 const HASH_SEPERATOR = "-";
 
@@ -94,26 +94,36 @@ export default class ConcordiaGame implements IGame {
     "Smith",
   ];
 
+  private readonly steps: Readonly<{ [id: string]: IGameStep }>;
+
+  public constructor() {
+    this.steps = {
+      map: new GenericGameStep("map"),
+      cityTiles: new GenericGameStep("cityTiles", "City Resources"),
+      bonusTiles: new GenericGameStep("bonusTiles", "Province Bonus"),
+      marketCards: new GenericGameStep("marketCards"),
+      marketDisplay: new GenericGameStep("marketDisplay", "Cards Display"),
+      marketDeck: new GenericGameStep("marketDeck", "Cards Deck"),
+      concordiaCard: new GenericGameStep("concordiaCard"),
+      resourcePiles: new GenericGameStep("resourcePiles"),
+      bank: new GenericGameStep("bank"),
+      playOrder: new GenericGameStep("playOrder", "Seating"),
+      playerColors: new GenericGameStep("playerColors", "Colors"),
+      playerPieces: new GenericGameStep("playerPieces", "Player Components"),
+      startingColonists: new GenericGameStep("startingColonists"),
+      startingResources: new GenericGameStep("startingResources"),
+      firstPlayer: new GenericGameStep("firstPlayer"),
+      startingMoney: new GenericGameStep("startingMoney"),
+      praefectusMagnus: new GenericGameStep("praefectusMagnus"),
+    };
+  }
+
   public get order(): StepId[] {
-    return [
-      "map",
-      "cityTiles",
-      "bonusTiles",
-      "marketCards",
-      "marketDisplay",
-      "marketDeck",
-      "concordiaCard",
-      "resourcePiles",
-      "bank",
-      "playOrder",
-      "playerColors",
-      "playerPieces",
-      "startingColonists",
-      "startingResources",
-      "firstPlayer",
-      "startingMoney",
-      "praefectusMagnus",
-    ];
+    return Object.values(this.steps).map((step) => step.id);
+  }
+
+  public stepLabel(id: StepId): string {
+    return this.steps[id].label;
   }
 
   public resolveRandom(
