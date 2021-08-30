@@ -5,6 +5,7 @@ import {
   nanoid,
   PayloadAction,
 } from "@reduxjs/toolkit";
+import AppContext from "../../app/AppContext";
 import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
 import { GameId } from "../../games/GameMapper";
@@ -32,13 +33,15 @@ const playersSlice = createSlice({
       reducer: playersAdapter.addOne,
     },
     removed: {
-      prepare: (id: PlayerId, playersTotal: number) => ({
+      prepare: (id: PlayerId, meta: AppContext) => ({
         payload: id,
         // Needed for the templateSlice
-        meta: playersTotal,
+        meta,
       }),
-      reducer: (state, { payload: id }: PayloadAction<EntityId, any, number>) =>
-        playersAdapter.removeOne(state, id),
+      reducer: (
+        state,
+        { payload: id }: PayloadAction<EntityId, any, AppContext>
+      ) => playersAdapter.removeOne(state, id),
     },
   },
 });

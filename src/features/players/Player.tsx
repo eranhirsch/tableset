@@ -4,10 +4,12 @@ import PersonIcon from "@material-ui/icons/Person";
 import playersSlice, { selectors as playersSelectors } from "./playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
+import { gameIdSelector } from "../game/gameSlice";
 
 export default function Player({ playerId }: { playerId: EntityId }) {
   const dispatch = useAppDispatch();
 
+  const gameId = useAppSelector(gameIdSelector);
   const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
   const playersTotal = useAppSelector(playersSelectors.selectTotal);
 
@@ -17,7 +19,9 @@ export default function Player({ playerId }: { playerId: EntityId }) {
       avatar={<PersonIcon />}
       label={player.name}
       onDelete={() =>
-        dispatch(playersSlice.actions.removed(player.id, playersTotal))
+        dispatch(
+          playersSlice.actions.removed(player.id, { playersTotal, gameId })
+        )
       }
     />
   );

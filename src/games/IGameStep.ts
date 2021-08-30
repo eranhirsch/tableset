@@ -1,7 +1,11 @@
 import { Dictionary } from "@reduxjs/toolkit";
+import { WritableDraft } from "immer/dist/internal";
 import { Strategy } from "../core/Strategy";
 import { SetupStep } from "../features/instance/instanceSlice";
-import { TemplateElement } from "../features/template/templateSlice";
+import { PlayerId } from "../features/players/playersSlice";
+import templateSlice, {
+  TemplateElement,
+} from "../features/template/templateSlice";
 import { StepId } from "./IGame";
 
 export interface TemplateContext {
@@ -14,8 +18,8 @@ export interface InstanceContext {
   playersTotal: number;
 }
 
-export default interface IGameStep {
-  readonly id: StepId;
+export default interface IGameStep<S extends StepId = StepId> {
+  readonly id: S;
   readonly label: string;
   readonly items?: readonly string[];
 
@@ -25,4 +29,10 @@ export default interface IGameStep {
 
   resolveRandom?(context: InstanceContext): string;
   resolveDefault?(context: InstanceContext): string;
+
+  onPlayerRemoved?(
+    state: WritableDraft<ReturnType<typeof templateSlice["reducer"]>>,
+    removedPlayerId: PlayerId,
+    playersTotal: number
+  ): void;
 }

@@ -4,7 +4,6 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import invariant from "../../common/err/invariant";
 import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
 import { Strategy } from "../../core/Strategy";
@@ -12,22 +11,26 @@ import playersSlice, { Player, PlayerId } from "../players/playersSlice";
 import PlayerColors from "../../common/PlayerColors";
 import Game, { StepId } from "../../games/IGame";
 import GameMapper, { GameId } from "../../games/GameMapper";
+import AppContext from "../../app/AppContext";
+import PlayOrderStep from "../../games/steps/PlayOrderStep";
+import PlayerColorsStep from "../../games/steps/PlayerColorsStep";
+import FirstPlayerStep from "../../games/steps/FirstPlayerStep";
 
 type ConstantTemplateElement =
   | {
-      id: "playOrder";
+      id: PlayOrderStep["id"];
       strategy: Strategy.FIXED;
       global: true;
       value: PlayerId[];
     }
   | {
-      id: "playerColors";
+      id: PlayerColorsStep["id"];
       strategy: Strategy.FIXED;
       global: true;
       value: PlayerColors;
     }
   | {
-      id: "firstPlayer";
+      id: FirstPlayerStep["id"];
       strategy: Strategy.FIXED;
       global: true;
       value: PlayerId;
@@ -46,7 +49,7 @@ export type TemplateElement =
       strategy: Exclude<Strategy, Strategy.FIXED>;
     };
 
-const templateAdapter = createEntityAdapter<TemplateElement>({
+export const templateAdapter = createEntityAdapter<TemplateElement>({
   selectId: (step) => step.id,
 });
 
@@ -183,35 +186,17 @@ export const templateSlice = createSlice({
           state,
           {
             payload: playerId,
-            meta: playersTotal,
-          }: PayloadAction<PlayerId, any, number>
-        ) =>
-          filter_nulls(Object.values(state.entities)).forEach((step) => {
-            switch (step.id) {
-              case "playOrder":
-                if (playersTotal >= 3) {
-                  // When we only have 2 players there is no sense in play order
-                  state = templateAdapter.removeOne(state, "playOrder");
-                } else if (step.strategy === Strategy.FIXED && step.global) {
-                  const playerIndex = step.value.indexOf(playerId);
-                  invariant(playerIndex !== -1);
-                  step.value.splice(playerIndex, 1);
-                }
-                break;
-
-              case "playerColors":
-                if (step.strategy === Strategy.FIXED && step.global) {
-                  delete step.value[playerId];
-                }
-                break;
-
-              case "firstPlayer":
-                if (step.strategy === Strategy.FIXED) {
-                  state = templateAdapter.removeOne(state, "firstPlayer");
-                }
-                break;
+            meta: { playersTotal, gameId },
+          }: PayloadAction<PlayerId, any, AppContext>
+        ) => {
+          const game = GameMapper.forId(gameId);
+          Object.values(state.ids).forEach((stepId) => {
+            const gameStep = game.at(stepId as StepId);
+            if (gameStep?.onPlayerRemoved != null) {
+              gameStep.onPlayerRemoved(state, playerId, playersTotal);
             }
-          })
+          });
+        }
       )
 
       .addCase(
@@ -234,12 +219,12 @@ export const templateSlice = createSlice({
 
             switch (step.id) {
               case "playOrder":
-                step.value.push(player.name);
+                step.value.push(player.id);
                 break;
 
               case "playerColors":
                 const usedColors = Object.values(step.value);
-                step.value[player.name] = nullthrows(
+                step.value[player.id] = nullthrows(
                   GameMapper.forId(gameId).playerColors.find(
                     (color) => !usedColors.includes(color)
                   )
