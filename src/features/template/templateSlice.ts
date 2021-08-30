@@ -4,7 +4,6 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
 import { Strategy } from "../../core/Strategy";
 import playersSlice, { Player, PlayerId } from "../players/playersSlice";
@@ -188,15 +187,13 @@ export const templateSlice = createSlice({
             payload: playerId,
             meta: { playersTotal, gameId },
           }: PayloadAction<PlayerId, any, AppContext>
-        ) => {
-          const game = GameMapper.forId(gameId);
+        ) =>
           Object.values(state.ids).forEach((stepId) => {
-            const gameStep = game.at(stepId as StepId);
+            const gameStep = GameMapper.forId(gameId).at(stepId as StepId);
             if (gameStep?.onPlayerRemoved != null) {
               gameStep.onPlayerRemoved(state, playerId, playersTotal);
             }
-          });
-        }
+          })
       )
 
       .addCase(
@@ -208,28 +205,10 @@ export const templateSlice = createSlice({
             meta: gameId,
           }: PayloadAction<Player, string, GameId>
         ) =>
-          filter_nulls(Object.values(state.entities)).forEach((step) => {
-            if (step.strategy !== Strategy.FIXED) {
-              return;
-            }
-
-            if (!step.global) {
-              return;
-            }
-
-            switch (step.id) {
-              case "playOrder":
-                step.value.push(player.id);
-                break;
-
-              case "playerColors":
-                const usedColors = Object.values(step.value);
-                step.value[player.id] = nullthrows(
-                  GameMapper.forId(gameId).playerColors.find(
-                    (color) => !usedColors.includes(color)
-                  )
-                );
-                break;
+          Object.values(state.ids).forEach((stepId) => {
+            const gameStep = GameMapper.forId(gameId).at(stepId as StepId);
+            if (gameStep?.onPlayerAdded != null) {
+              gameStep.onPlayerAdded(state, player);
             }
           })
       );
