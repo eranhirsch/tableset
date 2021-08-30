@@ -8,8 +8,8 @@ import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
 import nullthrows from "../../common/err/nullthrows";
 import IGame, { StepId } from "../Game";
-import { GenericGameStep } from "../GenericGameStep";
-import { IGameStep } from "../IGameStep";
+import IGameStep from "../IGameStep";
+import GenericGameStep from "../GenericGameStep";
 
 const HASH_SEPERATOR = "-";
 

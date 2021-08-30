@@ -1,6 +1,6 @@
 import { StepId } from "./Game";
 
-export interface IGameStep {
+export default interface IGameStep {
   readonly id: StepId;
   readonly label: string;
 }

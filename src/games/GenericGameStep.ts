@@ -1,7 +1,7 @@
-import { IGameStep } from "./IGameStep";
 import { StepId } from "./Game";
+import IGameStep from "./IGameStep";
 
-export class GenericGameStep implements IGameStep {
+export default class GenericGameStep implements IGameStep {
   public constructor(
     public readonly id: StepId,
     public readonly labelOverride?: string
