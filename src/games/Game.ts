@@ -5,27 +5,28 @@ import { SetupStep } from "../features/instance/instanceSlice";
 import { TemplateElement } from "../features/template/templateSlice";
 import { SetupStepName } from "./concordia/ConcordiaGame";
 
-export default abstract class Game {
-  public abstract readonly playerColors: GamePiecesColor[];
-  public abstract readonly order: SetupStepName[];
+export default interface IGame {
+  readonly playerColors: GamePiecesColor[];
+  readonly order: SetupStepName[];
 
-  public abstract strategiesFor(
+  strategiesFor(
     stepId: SetupStepName,
     template: Dictionary<TemplateElement<SetupStepName>>,
     playersTotal: number
   ): Strategy[];
 
-  public abstract resolveRandom(
+  resolveRandom(
     stepId: SetupStepName,
     instance: ReadonlyArray<SetupStep<SetupStepName>>,
     playersTotal: number
   ): string;
 
-  public abstract resolveDefault(
+  resolveDefault(
     stepId: SetupStepName,
     instance: ReadonlyArray<SetupStep<SetupStepName>>,
     playersTotal: number
   ): string;
 
-  public abstract labelForItem(stepId: SetupStepName, value: string): string;
+  labelForItem(stepId: SetupStepName, value: string): string;
 }
+

@@ -7,7 +7,7 @@ import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
 import nullthrows from "../../common/err/nullthrows";
-import Game from "../Game";
+import IGame from "../Game";
 
 const HASH_SEPERATOR = "-";
 
@@ -42,7 +42,7 @@ type ConcordiaMap = Readonly<{
   >;
 }>;
 
-export default class ConcordiaGame extends Game {
+export default class ConcordiaGame implements IGame {
   private static readonly CITY_TILES: Readonly<
     Record<MapZone, Readonly<Record<Resource, number>>>
   > = {

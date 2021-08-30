@@ -2,7 +2,6 @@ import { Fab, List } from "@material-ui/core";
 import { useMemo, useState } from "react";
 import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
-import ConcordiaGame from "../../games/concordia/ConcordiaGame";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectors as templateSelectors } from "./templateSlice";
 import { selectors as playersSelectors } from "../players/playersSlice";
@@ -19,7 +18,7 @@ export default function Template() {
   const template = useAppSelector(templateSelectors.selectEntities);
   const playerIds = useAppSelector(playersSelectors.selectIds);
 
-  const allItems = ConcordiaGame.order;
+  const allItems = game.order;
   const templatableItems = useMemo(
     () =>
       allItems.filter(
