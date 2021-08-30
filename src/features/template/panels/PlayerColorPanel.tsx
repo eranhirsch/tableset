@@ -19,9 +19,9 @@ import {
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import object_flip from "../../../common/lib_utils/object_flip";
 import invariant_violation from "../../../common/err/invariant_violation";
-import ConcordiaGame from "../../../games/concordia/ConcordiaGame";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import { Strategy } from "../../../core/Strategy";
+import { gameSelector } from "../../game/gameSlice";
 
 function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (
@@ -118,6 +118,8 @@ function ColorSlot({
 export default function PlayerColorPanel() {
   const dispatch = useAppDispatch();
 
+  const game = useAppSelector(gameSelector);
+
   const step = useAppEntityIdSelectorEnforce(templateSelectors, "playerColors");
   if (step.id !== "playerColors" || step.strategy !== Strategy.FIXED) {
     invariant_violation(`Step ${step} is misconfigured for this panel`);
@@ -138,7 +140,7 @@ export default function PlayerColorPanel() {
       treatAsAvailable: GamePiecesColor
     ): GamePiecesColor => {
       const isSlotAvailble = (slot: number): boolean => {
-        const colorAtSlot = ConcordiaGame.playerColors[slot];
+        const colorAtSlot = game.playerColors[slot];
         return (
           colorAtSlot != null &&
           (colorAtSlot === treatAsAvailable ||
@@ -146,27 +148,27 @@ export default function PlayerColorPanel() {
         );
       };
 
-      const currentPos = ConcordiaGame.playerColors.findIndex(
+      const currentPos = game.playerColors.findIndex(
         (color) => color === start
       );
 
       for (
         let distance = 1;
-        distance < ConcordiaGame.playerColors.length;
+        distance < game.playerColors.length;
         distance += 1
       ) {
         if (isSlotAvailble(currentPos - distance)) {
-          return ConcordiaGame.playerColors[currentPos - distance];
+          return game.playerColors[currentPos - distance];
         }
 
         if (isSlotAvailble(currentPos + distance)) {
-          return ConcordiaGame.playerColors[currentPos + distance];
+          return game.playerColors[currentPos + distance];
         }
       }
 
       invariant_violation("Couldn't find an available color!");
     },
-    [colorPlayers]
+    [colorPlayers, game.playerColors]
   );
 
   const onDragEnd = useCallback(
@@ -217,7 +219,7 @@ export default function PlayerColorPanel() {
         spacing={1}
         height={48}
       >
-        {ConcordiaGame.playerColors.map((color, index) => (
+        {game.playerColors.map((color, index) => (
           <ColorSlot
             key={color}
             color={color}

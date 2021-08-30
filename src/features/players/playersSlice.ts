@@ -7,6 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
+import { GameId } from "../../games/GameMapper";
 
 export interface Player {
   id: string;
@@ -22,7 +23,10 @@ const playersSlice = createSlice({
   initialState: playersAdapter.getInitialState(),
   reducers: {
     added: {
-      prepare: (name: string) => ({ payload: { id: nanoid(), name: name } }),
+      prepare: (name: string, gameId: GameId) => ({
+        payload: { id: nanoid(), name: name },
+        meta: gameId,
+      }),
       reducer: playersAdapter.addOne,
     },
     removed: {

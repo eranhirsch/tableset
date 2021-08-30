@@ -7,6 +7,7 @@ import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
 import nullthrows from "../../common/err/nullthrows";
+import Game from "../Game";
 
 const HASH_SEPERATOR = "-";
 
@@ -41,7 +42,7 @@ type ConcordiaMap = Readonly<{
   >;
 }>;
 
-export default class ConcordiaGame {
+export default class ConcordiaGame extends Game {
   private static readonly CITY_TILES: Readonly<
     Record<MapZone, Readonly<Record<Resource, number>>>
   > = {
@@ -274,7 +275,7 @@ export default class ConcordiaGame {
     }
   }
 
-  public static get playerColors(): GamePiecesColor[] {
+  public get playerColors(): GamePiecesColor[] {
     return ["black", "blue", "green", "red", "yellow"];
   }
 

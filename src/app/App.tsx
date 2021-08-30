@@ -4,24 +4,27 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import themeWithGameColors from "../core/themeWithGameColors";
 import Players from "../features/players/Players";
 import { useEffect, useState } from "react";
-import { useAppDispatch } from "./hooks";
+import { useAppDispatch, useAppSelector } from "./hooks";
 import playersSlice from "../features/players/playersSlice";
 import Instance from "../features/instance/Instance";
 import { TableSetAppBar } from "./TableSetAppBar";
+import { gameIdSelector } from "../features/game/gameSlice";
 
 function App() {
   const dispatch = useAppDispatch();
   const [isInitialized, setIsInitialized] = useState(false);
 
+  const gameId = useAppSelector(gameIdSelector);
+
   useEffect(() => {
     if (!isInitialized) {
       // TODO: Remove this when we can load the previous players from somewhere
       ["Eran Hirsch", "Adam Maoz", "Amit Cwajghaft"].forEach((name) =>
-        dispatch(playersSlice.actions.added(name))
+        dispatch(playersSlice.actions.added(name, gameId))
       );
       setIsInitialized(true);
     }
-  }, [dispatch, isInitialized]);
+  }, [dispatch, gameId, isInitialized]);
 
   return (
     <ThemeProvider theme={themeWithGameColors}>

@@ -9,11 +9,13 @@ import { selectors as playersSelectors } from "../players/playersSlice";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import instanceSlice from "../instance/instanceSlice";
 import { Link as RouterLink } from "react-router-dom";
+import { gameSelector } from "../game/gameSlice";
 
 export default function Template() {
   const dispatch = useAppDispatch();
   const [expandedStepId, setExpandedStepId] = useState<EntityId>();
 
+  const game = useAppSelector(gameSelector);
   const template = useAppSelector(templateSelectors.selectEntities);
   const playerIds = useAppSelector(playersSelectors.selectIds);
 
@@ -49,7 +51,7 @@ export default function Template() {
         color="primary"
         aria-label="go"
         onClick={() => {
-          dispatch(instanceSlice.actions.created(template, playerIds));
+          dispatch(instanceSlice.actions.created(game, template, playerIds));
         }}
       >
         <PlayArrowIcon />

@@ -14,6 +14,7 @@ import { Strategy } from "../../core/Strategy";
 import ConcordiaGame, {
   SetupStepName,
 } from "../../games/concordia/ConcordiaGame";
+import Game from "../../games/Game";
 import { TemplateElement } from "../template/templateSlice";
 
 export type SetupStep<T> = Readonly<
@@ -45,6 +46,7 @@ export const instanceSlice = createSlice({
   reducers: {
     created: {
       prepare(
+        game: Game,
         template: Dictionary<TemplateElement<SetupStepName>>,
         playerIds: ReadonlyArray<EntityId>
       ) {
@@ -58,7 +60,7 @@ export const instanceSlice = createSlice({
                 case "playerColors":
                   {
                     const permutations = PermutationsLazyArray.forPermutation(
-                      ConcordiaGame.playerColors
+                      game.playerColors
                     );
                     const selectedIdx = Math.floor(
                       Math.random() * permutations.length

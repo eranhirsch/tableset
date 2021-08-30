@@ -1,4 +1,5 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import gameSlice from "../features/game/gameSlice";
 import { instanceSlice } from "../features/instance/instanceSlice";
 import playersSlice from "../features/players/playersSlice";
 import templateSlice from "../features/template/templateSlice";
@@ -8,6 +9,7 @@ export const store = configureStore({
     [templateSlice.name]: templateSlice.reducer,
     [playersSlice.name]: playersSlice.reducer,
     [instanceSlice.name]: instanceSlice.reducer,
+    [gameSlice.name]: gameSlice.reducer,
   },
 });
 

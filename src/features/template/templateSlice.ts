@@ -14,6 +14,8 @@ import ConcordiaGame, {
 import { Strategy } from "../../core/Strategy";
 import playersSlice, { Player } from "../players/playersSlice";
 import PlayerColors from "../../common/PlayerColors";
+import Game from "../../games/Game";
+import GameMapper, { GameId } from "../../games/GameMapper";
 
 type ConstantTemplateElement<T> =
   | {
@@ -50,22 +52,27 @@ const templateAdapter = createEntityAdapter<TemplateElement<SetupStepName>>({
 
 function fixedSetupStep(
   id: "firstPlayer",
+  game: Game,
   playerIds: EntityId[]
 ): ConstantTemplateElement<"firstPlayer">;
 function fixedSetupStep(
   id: "playOrder",
+  game: Game,
   playerIds: EntityId[]
 ): ConstantTemplateElement<"playOrder">;
 function fixedSetupStep(
   id: "playerColors",
+  game: Game,
   playerIds: EntityId[]
 ): ConstantTemplateElement<"playerColors">;
 function fixedSetupStep(
   id: SetupStepName,
+  game: Game,
   playerIds: EntityId[]
 ): ConstantTemplateElement<SetupStepName>;
 function fixedSetupStep(
   id: any,
+  game: Game,
   playerIds: EntityId[]
 ): ConstantTemplateElement<SetupStepName> {
   switch (id) {
@@ -87,16 +94,17 @@ function fixedSetupStep(
       };
     }
 
-    case "playerColors": {
-      const colors = ConcordiaGame.playerColors;
+    case "playerColors":
       return {
         id: "playerColors",
         strategy: Strategy.FIXED,
         value: Object.fromEntries(
-          playerIds.map((playerId, index) => [playerId, colors[index]])
+          playerIds.map((playerId, index) => [
+            playerId,
+            game.playerColors[index],
+          ])
         ),
       };
-    }
 
     default:
       return {
@@ -180,20 +188,27 @@ export const templateSlice = createSlice({
     },
 
     enabledConstantValue: {
-      prepare(id: SetupStepName, playerIds: EntityId[]) {
+      prepare(id: SetupStepName, gameId: GameId, playerIds: EntityId[]) {
         return {
           payload: id,
-          meta: playerIds,
+          meta: { playerIds, gameId },
         };
       },
       reducer(
         state,
         {
           payload: id,
-          meta: playerIds,
-        }: PayloadAction<SetupStepName, string, EntityId[]>
+          meta: { playerIds, gameId },
+        }: PayloadAction<
+          SetupStepName,
+          string,
+          { playerIds: EntityId[]; gameId: GameId }
+        >
       ) {
-        templateAdapter.upsertOne(state, fixedSetupStep(id, playerIds));
+        templateAdapter.upsertOne(
+          state,
+          fixedSetupStep(id, GameMapper.forId(gameId), playerIds)
+        );
       },
     },
 
@@ -259,7 +274,13 @@ export const templateSlice = createSlice({
 
       .addCase(
         playersSlice.actions.added,
-        (state, { payload: player }: PayloadAction<Player>) =>
+        (
+          state,
+          {
+            payload: player,
+            meta: gameId,
+          }: PayloadAction<Player, string, GameId>
+        ) =>
           filter_nulls(Object.values(state.entities)).forEach((step) => {
             if (step.strategy !== Strategy.FIXED) {
               return;
@@ -273,7 +294,7 @@ export const templateSlice = createSlice({
               case "playerColors":
                 const usedColors = Object.values(step.value);
                 step.value[player.name] = nullthrows(
-                  ConcordiaGame.playerColors.find(
+                  GameMapper.forId(gameId).playerColors.find(
                     (color) => !usedColors.includes(color)
                   )
                 );
