@@ -1,11 +1,13 @@
 import { Avatar, Badge, Stack } from "@material-ui/core";
-import { EntityId } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import templateSlice, {
   selectors as templateSelectors,
 } from "../templateSlice";
-import { selectors as playersSelectors } from "../../players/playersSlice";
+import {
+  PlayerId,
+  selectors as playersSelectors,
+} from "../../players/playersSlice";
 import short_name from "../../../common/short_name";
 import { Strategy } from "../../../core/Strategy";
 import invariant_violation from "../../../common/err/invariant_violation";
@@ -14,7 +16,7 @@ function Player({
   playerId,
   isSelected,
 }: {
-  playerId: EntityId;
+  playerId: PlayerId;
   isSelected: boolean;
 }) {
   const dispatch = useAppDispatch();
@@ -50,7 +52,7 @@ function Player({
 }
 
 export default function StartingPlayerPanel() {
-  const playerIds = useAppSelector(playersSelectors.selectIds);
+  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 
   const step = useAppEntityIdSelectorEnforce(templateSelectors, "firstPlayer");
   if (step.id !== "firstPlayer" || step.strategy !== Strategy.FIXED) {

@@ -1,7 +1,6 @@
 import {
   createEntityAdapter,
   createSlice,
-  EntityId,
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
@@ -31,7 +30,7 @@ type ConstantTemplateElement =
       id: "firstPlayer";
       strategy: Strategy.FIXED;
       global: true;
-      value: EntityId;
+      value: PlayerId;
     }
   | {
       id: StepId;

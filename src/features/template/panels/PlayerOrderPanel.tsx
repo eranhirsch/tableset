@@ -4,8 +4,10 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import templateSlice, {
   selectors as templateSelectors,
 } from "../templateSlice";
-import { selectors as playersSelectors } from "../../players/playersSlice";
-import { EntityId } from "@reduxjs/toolkit";
+import {
+  PlayerId,
+  selectors as playersSelectors,
+} from "../../players/playersSlice";
 import {
   DragDropContext,
   Droppable,
@@ -17,7 +19,6 @@ import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntit
 import LockIcon from "@material-ui/icons/Lock";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { Strategy } from "../../../core/Strategy";
-import nullthrows from "../../../common/err/nullthrows";
 
 function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
   const clone = items.slice();
@@ -30,7 +31,7 @@ function DraggablePlayer({
   playerId,
   index,
 }: {
-  playerId: EntityId;
+  playerId: PlayerId;
   index: number;
   badgeContent?: string;
 }) {
@@ -53,8 +54,8 @@ function DraggablePlayer({
 }
 
 function FirstAvatar() {
-  const player = useAppSelector((state) =>
-    nullthrows(state.players.entities[state.players.ids[0]])
+  const player = useAppSelector(
+    (state) => playersSelectors.selectAll(state)[0]
   );
   return (
     <Badge
@@ -95,7 +96,7 @@ export default function PlayerOrderPanelV2() {
         templateSlice.actions.constantValueChanged({
           id: "playOrder",
           global: true,
-          value: moveItem(order, source.index + 1, destination.index + 1),
+          value: moveItem(order, source.index, destination.index),
         })
       );
     },
