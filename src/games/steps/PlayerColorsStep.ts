@@ -6,9 +6,7 @@ export default class PlayerColorsStep implements IGameStep {
   public readonly id: string = "playerColors";
   public readonly label: string = "Colors";
 
-  public constructor(private availableColors: readonly GamePiecesColor[]) {
-    console.log(availableColors);
-  }
+  public constructor(private availableColors: readonly GamePiecesColor[]) {}
 
   public strategies({ playersTotal }: TemplateContext): readonly Strategy[] {
     if (playersTotal < 1) {
