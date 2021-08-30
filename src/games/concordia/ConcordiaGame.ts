@@ -191,7 +191,7 @@ export default class ConcordiaGame extends Game {
     );
   }
 
-  public static strategiesFor(
+  public strategiesFor(
     stepId: SetupStepName,
     template: Dictionary<TemplateElement<SetupStepName>>,
     playersTotal: number

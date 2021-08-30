@@ -141,16 +141,20 @@ export const templateSlice = createSlice({
     },
 
     disabled: {
-      prepare: (id: SetupStepName, playersTotal: number) => ({
+      prepare: (gameId: GameId, id: SetupStepName, playersTotal: number) => ({
         payload: id,
-        meta: playersTotal,
+        meta: { gameId, playersTotal },
       }),
       reducer(
         state,
         {
           payload: id,
-          meta: playersTotal,
-        }: PayloadAction<SetupStepName, any, number>
+          meta: { gameId, playersTotal },
+        }: PayloadAction<
+          SetupStepName,
+          any,
+          { gameId: GameId; playersTotal: number }
+        >
       ) {
         state = templateAdapter.removeOne(state, id);
 
@@ -168,11 +172,9 @@ export const templateSlice = createSlice({
             Object.values(state.entities)
           ).filter(
             (step) =>
-              !ConcordiaGame.strategiesFor(
-                step.id,
-                currentEntities,
-                playersTotal
-              ).includes(step.strategy)
+              !GameMapper.forId(gameId)
+                .strategiesFor(step.id, currentEntities, playersTotal)
+                .includes(step.strategy)
           );
 
           if (invalidSteps.length === 0) {

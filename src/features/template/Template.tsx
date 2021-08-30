@@ -24,10 +24,9 @@ export default function Template() {
     () =>
       allItems.filter(
         (stepId) =>
-          ConcordiaGame.strategiesFor(stepId, template, playerIds.length)
-            .length > 1
+          game.strategiesFor(stepId, template, playerIds.length).length > 1
       ),
-    [allItems, playerIds.length, template]
+    [allItems, game, playerIds.length, template]
   );
 
   return (
