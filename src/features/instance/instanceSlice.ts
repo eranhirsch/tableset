@@ -11,9 +11,7 @@ import filter_nulls from "../../common/lib_utils/filter_nulls";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import PlayerColors from "../../common/PlayerColors";
 import { Strategy } from "../../core/Strategy";
-import ConcordiaGame, {
-  SetupStepName,
-} from "../../games/concordia/ConcordiaGame";
+import { SetupStepName } from "../../games/concordia/ConcordiaGame";
 import Game from "../../games/Game";
 import { TemplateElement } from "../template/templateSlice";
 
@@ -107,7 +105,7 @@ export const instanceSlice = createSlice({
                 default:
                   step = {
                     id: element.id,
-                    value: ConcordiaGame.resolveRandom(
+                    value: game.resolveRandom(
                       element.id,
                       payload,
                       playerIds.length
@@ -127,7 +125,7 @@ export const instanceSlice = createSlice({
                 default:
                   step = {
                     id: element.id,
-                    value: ConcordiaGame.resolveDefault(
+                    value: game.resolveDefault(
                       element.id,
                       payload,
                       playerIds.length

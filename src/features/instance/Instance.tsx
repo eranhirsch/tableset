@@ -10,11 +10,6 @@ import {
   StepButton,
   StepContent,
   Stepper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
   Typography,
 } from "@material-ui/core";
 import { EntityId } from "@reduxjs/toolkit";
@@ -37,31 +32,10 @@ import {
   firstPlayerSelector,
   selectors as playersSelectors,
 } from "../players/playersSlice";
+import { MarketDisplayFixedInstructions } from "../../games/concordia/ux/ConcordiaMarket";
 import { selectors as instanceSelectors } from "./instanceSlice";
 
 const IDEAL_STEP_COUNT = 6;
-
-function ConcordiaMarket({ hash }: { hash: string }) {
-  const market = ConcordiaGame.getMarketForHash(hash);
-  return (
-    <Stack direction="column" alignItems="center">
-      <TableContainer>
-        <Table size="small">
-          <TableBody>
-            {market.map((cardName) => (
-              <TableRow key={cardName}>
-                <TableCell>
-                  <Typography variant="body2">{cardName}</Typography>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Typography variant="caption">Hash: {hash}</Typography>
-    </Stack>
-  );
-}
 
 function ConcordiaCityTiles({ hash }: { hash: string }) {
   const mapStep = useAppEntityIdSelectorEnforce(instanceSelectors, "map");
@@ -179,7 +153,7 @@ function InstanceItemContent({ stepId }: { stepId: SetupStepName }) {
       return <ConcordiaCityTiles hash={step.value} />;
 
     case "marketDisplay":
-      return <ConcordiaMarket hash={step.value} />;
+      return <MarketDisplayFixedInstructions hash={step.value} />;
 
     default:
       return <Typography variant="h4">{step.value}</Typography>;

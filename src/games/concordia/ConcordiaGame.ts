@@ -135,14 +135,14 @@ export default class ConcordiaGame extends Game {
     ];
   }
 
-  public static resolveRandom(
+  public resolveRandom(
     stepId: SetupStepName,
     instance: ReadonlyArray<SetupStep<SetupStepName>>,
     playersTotal: number
   ): string {
     switch (stepId) {
       case "map":
-        const items = this.itemsForStep(stepId);
+        const items = ConcordiaGame.itemsForStep(stepId);
         return items[Math.floor(Math.random() * items.length)];
 
       case "cityTiles":
@@ -152,9 +152,9 @@ export default class ConcordiaGame extends Game {
           invariant_violation(`Couldn't find 'map' dependancy`);
         }
         const mapId = mapDef.value as keyof typeof ConcordiaGame.MAPS;
-        const { provinces } = this.MAPS[mapId];
+        const { provinces } = ConcordiaGame.MAPS[mapId];
         const hashes = Object.keys(provinces).map((zone) => {
-          const tiles = this.CITY_TILES[zone as MapZone];
+          const tiles = ConcordiaGame.CITY_TILES[zone as MapZone];
           const permutations = new PermutationsLazyArray(tiles);
           const selectedIdx = Math.floor(Math.random() * permutations.length);
           return Base32.encode(selectedIdx);
@@ -163,7 +163,7 @@ export default class ConcordiaGame extends Game {
 
       case "marketDisplay":
         const permutations = PermutationsLazyArray.forPermutation(
-          this.MARKET_DECK_PHASE_1
+          ConcordiaGame.MARKET_DECK_PHASE_1
         );
         const selectedIdx = Math.floor(Math.random() * permutations.length);
         return Base32.encode(selectedIdx);
@@ -174,7 +174,7 @@ export default class ConcordiaGame extends Game {
     );
   }
 
-  public static resolveDefault(
+  public resolveDefault(
     stepId: SetupStepName,
     instance: ReadonlyArray<SetupStep<SetupStepName>>,
     playersTotal: number
