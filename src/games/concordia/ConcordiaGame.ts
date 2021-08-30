@@ -11,7 +11,7 @@ import MapStep from "./steps/MapStep";
 import CityTilesStep from "./steps/CityTilesStep";
 import MarketDisplayStep from "./steps/MarketDisplayStep";
 import BonusTilesStep from "./steps/BonusTilesStep";
-import PlayOrderStep from "./steps/PlayOrderStep";
+import PlayOrderStep from "../steps/PlayOrderStep";
 import PlayerColorsStep from "./steps/PlayerColorsStep";
 import StartingColonistsStep from "./steps/StartingColonistsStep";
 import FirstPlayerStep from "./steps/FirstPlayerStep";
