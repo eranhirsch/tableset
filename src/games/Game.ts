@@ -6,28 +6,6 @@ import { TemplateElement } from "../features/template/templateSlice";
 
 export type StepId = string;
 
-export interface IGameStep {
-  readonly id: StepId;
-  readonly label: string;
-}
-
-export class GenericGameStep implements IGameStep {
-  public constructor(
-    public readonly id: StepId,
-    public readonly labelOverride?: string
-  ) {}
-
-  public get label(): string {
-    if (this.labelOverride) {
-      return this.labelOverride;
-    }
-
-    return (
-      this.id[0].toUpperCase() + this.id.replaceAll(/[A-Z]/g, " $&").slice(1)
-    );
-  }
-}
-
 export default interface IGame {
   readonly playerColors: GamePiecesColor[];
   readonly order: StepId[];

@@ -7,7 +7,9 @@ import { SetupStep } from "../../features/instance/instanceSlice";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import Base32 from "../../common/Base32";
 import nullthrows from "../../common/err/nullthrows";
-import IGame, { GenericGameStep, IGameStep, StepId } from "../Game";
+import IGame, { StepId } from "../Game";
+import { GenericGameStep } from "../GenericGameStep";
+import { IGameStep } from "../IGameStep";
 
 const HASH_SEPERATOR = "-";
 
