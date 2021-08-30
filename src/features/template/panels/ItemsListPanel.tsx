@@ -1,6 +1,6 @@
 import { Chip } from "@material-ui/core";
 import { useMemo } from "react";
-import { useAppDispatch } from "../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import ConcordiaGame, {
@@ -10,9 +10,12 @@ import { Strategy } from "../../../core/Strategy";
 import templateSlice, {
   selectors as templateStepSelectors,
 } from "../templateSlice";
+import { gameSelector } from "../../game/gameSlice";
 
 export default function ItemsListPanel({ stepId }: { stepId: SetupStepName }) {
   const dispatch = useAppDispatch();
+
+  const game = useAppSelector(gameSelector);
 
   const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
   if (step.strategy !== Strategy.FIXED) {
@@ -33,7 +36,7 @@ export default function ItemsListPanel({ stepId }: { stepId: SetupStepName }) {
         <Chip
           key={`${step.id}_${item}`}
           variant={step.value === item ? "filled" : "outlined"}
-          label={ConcordiaGame.labelForItem(stepId, item)}
+          label={game.labelForItem(stepId, item)}
           onClick={
             step.value !== item
               ? () =>
