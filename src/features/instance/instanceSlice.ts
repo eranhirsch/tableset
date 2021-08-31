@@ -69,16 +69,20 @@ function elementResolver(
 
   switch (element.strategy) {
     case Strategy.RANDOM:
-      return nullthrows(
-        gameStep.resolveRandom,
-        `Element ${JSON.stringify(element)} does not have a random resolver`
-      )(context);
+      if (gameStep.resolveRandom == null) {
+        invariant_violation(
+          `Element ${JSON.stringify(element)} does not have a random resolver`
+        );
+      }
+      return gameStep.resolveRandom(context);
 
     case Strategy.DEFAULT:
-      return nullthrows(
-        gameStep.resolveDefault,
-        `Element ${JSON.stringify(element)} does not have a default resolver`
-      )(context);
+      if (gameStep.resolveDefault == null) {
+        invariant_violation(
+          `Element ${JSON.stringify(element)} does not have a default resolver`
+        );
+      }
+      return gameStep.resolveDefault(context);
 
     case Strategy.FIXED:
       // Just copy the value
