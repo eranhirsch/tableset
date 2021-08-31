@@ -8,6 +8,7 @@ import {
   TemplateState,
 } from "../../features/template/templateSlice";
 import IGameStep, { TemplateContext } from "../IGameStep";
+import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
 
 export default class PlayOrderStep implements IGameStep<"playOrder"> {
@@ -37,6 +38,10 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
 
   public renderTemplateFixedLabel(value: any): JSX.Element {
     return <PlayOrderFixedTemplateLabel value={value as readonly PlayerId[]} />;
+  }
+
+  public renderTemplateFixedValueSelector(): JSX.Element {
+    return <PlayerOrderPanel />;
   }
 
   public onPlayerAdded(

@@ -1,24 +1,24 @@
-import { Avatar, Stack, Badge, Typography } from "@material-ui/core";
+import { Avatar, Badge, Stack, Typography } from "@material-ui/core";
 import { useCallback } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import templateSlice, {
-  selectors as templateSelectors,
-} from "../templateSlice";
+import {
+  Draggable,
+  DropResult,
+  DragDropContext,
+  Droppable,
+} from "react-beautiful-dnd";
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import invariant_violation from "../../common/err/invariant_violation";
+import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
+import short_name from "../../common/short_name";
+import { Strategy } from "../../core/Strategy";
 import {
   PlayerId,
   selectors as playersSelectors,
-} from "../../players/playersSlice";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
-import short_name from "../../../common/short_name";
-import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
+} from "../../features/players/playersSlice";
+import templateSlice, {
+  selectors as templateSelectors,
+} from "../../features/template/templateSlice";
 import LockIcon from "@material-ui/icons/Lock";
-import invariant_violation from "../../../common/err/invariant_violation";
-import { Strategy } from "../../../core/Strategy";
 
 function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
   const clone = items.slice();
@@ -68,7 +68,7 @@ function FirstAvatar() {
   );
 }
 
-export default function PlayerOrderPanelV2() {
+export default function PlayerOrderPanel() {
   const dispatch = useAppDispatch();
 
   const step = useAppEntityIdSelectorEnforce(templateSelectors, "playOrder");

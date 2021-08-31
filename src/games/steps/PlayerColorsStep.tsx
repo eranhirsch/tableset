@@ -10,6 +10,7 @@ import {
   TemplateState,
 } from "../../features/template/templateSlice";
 import IGameStep, { TemplateContext } from "../IGameStep";
+import PlayerColorPanel from "../ux/PlayerColorPanel";
 import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
 
 export default class PlayerColorsStep implements IGameStep<"playerColors"> {
@@ -48,6 +49,10 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
 
   public renderTemplateFixedLabel(value: any): JSX.Element {
     return <PlayersColorsFixedTemplateLabel value={value as PlayerColors} />;
+  }
+
+  public renderTemplateFixedValueSelector(): JSX.Element {
+    return <PlayerColorPanel />;
   }
 
   public onPlayerAdded(

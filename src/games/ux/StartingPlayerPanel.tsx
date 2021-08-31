@@ -1,16 +1,16 @@
 import { Avatar, Badge, Stack } from "@material-ui/core";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import templateSlice, {
-  selectors as templateSelectors,
-} from "../templateSlice";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import invariant_violation from "../../common/err/invariant_violation";
+import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
+import short_name from "../../common/short_name";
+import { Strategy } from "../../core/Strategy";
 import {
   PlayerId,
   selectors as playersSelectors,
-} from "../../players/playersSlice";
-import short_name from "../../../common/short_name";
-import { Strategy } from "../../../core/Strategy";
-import invariant_violation from "../../../common/err/invariant_violation";
+} from "../../features/players/playersSlice";
+import templateSlice, {
+  selectors as templateSelectors,
+} from "../../features/template/templateSlice";
 
 function Player({
   playerId,

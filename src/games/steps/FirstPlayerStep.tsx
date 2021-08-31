@@ -9,6 +9,7 @@ import {
 } from "../../features/template/templateSlice";
 import IGameStep, { TemplateContext } from "../IGameStep";
 import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";
+import StartingPlayerPanel from "../ux/StartingPlayerPanel";
 
 export default class FirstPlayerStep implements IGameStep<"firstPlayer"> {
   public readonly id = "firstPlayer";
@@ -33,6 +34,10 @@ export default class FirstPlayerStep implements IGameStep<"firstPlayer"> {
 
   public renderTemplateFixedLabel(value: any): JSX.Element {
     return <FirstPlayerFixedTemplateLabel value={value as PlayerId} />;
+  }
+
+  public renderTemplateFixedValueSelector(): JSX.Element {
+    return <StartingPlayerPanel />;
   }
 
   public onPlayerRemoved(

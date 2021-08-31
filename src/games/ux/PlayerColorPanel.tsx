@@ -1,27 +1,27 @@
 import { Avatar, Badge, Box, Stack, useTheme } from "@material-ui/core";
-import { useCallback, useMemo } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { useMemo, useCallback } from "react";
+import {
+  DraggableProvided,
+  Draggable,
+  Droppable,
+  DropResult,
+  DragDropContext,
+} from "react-beautiful-dnd";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import invariant_violation from "../../common/err/invariant_violation";
+import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
+import object_flip from "../../common/lib_utils/object_flip";
+import short_name from "../../common/short_name";
+import { Strategy } from "../../core/Strategy";
+import { GamePiecesColor } from "../../core/themeWithGameColors";
+import { gameSelector } from "../../features/game/gameSlice";
 import {
   Player,
   selectors as playersSelectors,
-} from "../../players/playersSlice";
+} from "../../features/players/playersSlice";
 import templateSlice, {
   selectors as templateSelectors,
-} from "../templateSlice";
-import short_name from "../../../common/short_name";
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DropResult,
-} from "react-beautiful-dnd";
-import { GamePiecesColor } from "../../../core/themeWithGameColors";
-import object_flip from "../../../common/lib_utils/object_flip";
-import invariant_violation from "../../../common/err/invariant_violation";
-import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import { Strategy } from "../../../core/Strategy";
-import { gameSelector } from "../../game/gameSlice";
+} from "../../features/template/templateSlice";
 
 function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (
