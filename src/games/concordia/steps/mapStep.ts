@@ -1,4 +1,4 @@
-import createGenericItemsGameStep from "../../createGenericItemsGameStep";
+import createGenericItemsGameStep from "../../core/steps/createGenericItemsGameStep";
 
 export type Zone = "A" | "B" | "C" | "D";
 

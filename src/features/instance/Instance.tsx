@@ -12,8 +12,8 @@ import { useAppSelector } from "../../app/hooks";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { selectors as instanceSelectors } from "./instanceSlice";
 import { gameSelector } from "../game/gameSlice";
-import { StepId } from "../../games/IGame";
 import nullthrows from "../../common/err/nullthrows";
+import { StepId } from "../../games/core/IGame";
 
 const IDEAL_STEP_COUNT = 6;
 

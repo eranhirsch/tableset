@@ -1,14 +1,14 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer/dist/internal";
-import { Strategy } from "../core/Strategy";
-import { SetupStep } from "../features/instance/instanceSlice";
-import { Player, PlayerId } from "../features/players/playersSlice";
+import { Strategy } from "../../../core/Strategy";
+import { SetupStep } from "../../../features/instance/instanceSlice";
+import { PlayerId, Player } from "../../../features/players/playersSlice";
 import {
-  ConstantTemplateElement,
   TemplateElement,
+  ConstantTemplateElement,
   TemplateState,
-} from "../features/template/templateSlice";
-import { StepId } from "./IGame";
+} from "../../../features/template/templateSlice";
+import { StepId } from "../IGame";
 
 export interface TemplateContext {
   template: Readonly<Dictionary<Readonly<TemplateElement>>>;

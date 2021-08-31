@@ -1,19 +1,22 @@
 import { WritableDraft } from "immer/dist/internal";
-import invariant from "../../common/err/invariant";
-import invariant_violation from "../../common/err/invariant_violation";
-import nullthrows from "../../common/err/nullthrows";
-import PermutationsLazyArray from "../../common/PermutationsLazyArray";
-import PlayerColors from "../../common/PlayerColors";
-import { Strategy } from "../../core/Strategy";
-import { GamePiecesColor } from "../../core/themeWithGameColors";
-import { Player, PlayerId } from "../../features/players/playersSlice";
+import invariant from "../../../common/err/invariant";
+import invariant_violation from "../../../common/err/invariant_violation";
+import nullthrows from "../../../common/err/nullthrows";
+import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
+import PlayerColors from "../../../common/PlayerColors";
+import { Strategy } from "../../../core/Strategy";
+import { GamePiecesColor } from "../../../core/themeWithGameColors";
+import { Player, PlayerId } from "../../../features/players/playersSlice";
 import {
   ConstantTemplateElement,
-  templateAdapter,
   TemplateElement,
   TemplateState,
-} from "../../features/template/templateSlice";
-import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
+  templateAdapter,
+} from "../../../features/template/templateSlice";
+import IGameStep, {
+  TemplateContext,
+  InstanceContext,
+} from "../../core/steps/IGameStep";
 import PlayerColorPanel from "../ux/PlayerColorPanel";
 import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
 import { PlayerColorsPanel } from "../ux/PlayerColorsPanel";

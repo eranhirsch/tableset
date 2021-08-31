@@ -3,7 +3,10 @@ import invariant_violation from "../../../common/err/invariant_violation";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { Strategy } from "../../../core/Strategy";
-import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
+import IGameStep, {
+  TemplateContext,
+  InstanceContext,
+} from "../../core/steps/IGameStep";
 import { CityTilesFixedInstructions } from "../ux/CityTilesFixedInstructions";
 import { MapId, MAPS, Zone } from "./mapStep";
 

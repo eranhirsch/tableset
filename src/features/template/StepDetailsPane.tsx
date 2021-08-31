@@ -4,9 +4,9 @@ import { selectors as templateStepSelectors } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
 import StrategiesSelector from "./StrategiesSelector";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
-import { StepId } from "../../games/IGame";
 import { useAppSelector } from "../../app/hooks";
 import { gameSelector } from "../game/gameSlice";
+import { StepId } from "../../games/core/IGame";
 
 export default function StepDetailsPane({ stepId }: { stepId: StepId }) {
   const game = useAppSelector(gameSelector);

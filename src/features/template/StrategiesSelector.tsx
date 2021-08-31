@@ -12,8 +12,8 @@ import {
   selectors as playersSelectors,
 } from "../players/playersSlice";
 import { gameIdSelector } from "../game/gameSlice";
-import GameMapper from "../../games/GameMapper";
-import { StepId } from "../../games/IGame";
+import GameMapper from "../../games/core/GameMapper";
+import { StepId } from "../../games/core/IGame";
 
 export default function StrategiesSelector({ stepId }: { stepId: StepId }) {
   const dispatch = useAppDispatch();

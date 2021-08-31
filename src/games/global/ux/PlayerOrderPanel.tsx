@@ -6,18 +6,18 @@ import {
   DragDropContext,
   Droppable,
 } from "react-beautiful-dnd";
-import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
-import short_name from "../../common/short_name";
+import { useAppSelector, useAppDispatch } from "../../../app/hooks";
+import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
+import short_name from "../../../common/short_name";
 import {
   PlayerId,
   selectors as playersSelectors,
-} from "../../features/players/playersSlice";
+} from "../../../features/players/playersSlice";
 import templateSlice, {
   selectors as templateSelectors,
-} from "../../features/template/templateSlice";
-import LockIcon from "@material-ui/icons/Lock";
+} from "../../../features/template/templateSlice";
 import PlayOrderStep from "../steps/PlayOrderStep";
+import LockIcon from "@material-ui/icons/Lock";
 
 function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
   const clone = items.slice();

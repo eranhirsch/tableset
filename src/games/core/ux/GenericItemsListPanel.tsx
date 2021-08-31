@@ -1,6 +1,6 @@
 import { Chip } from "@material-ui/core";
 import { Action } from "@reduxjs/toolkit";
-import { useAppDispatch } from "../../app/hooks";
+import { useAppDispatch } from "../../../app/hooks";
 
 export default function GenericItemsListPanel<T extends string = string>({
   itemIds,

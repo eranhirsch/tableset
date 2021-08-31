@@ -2,7 +2,7 @@ import Base32 from "../../../common/Base32";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { Strategy } from "../../../core/Strategy";
-import IGameStep from "../../IGameStep";
+import IGameStep from "../../core/steps/IGameStep";
 import { MarketDisplayFixedInstructions } from "../ux/MarketDisplayFixedInstructions";
 
 const MARKET_DECK_PHASE_1: readonly string[] = [

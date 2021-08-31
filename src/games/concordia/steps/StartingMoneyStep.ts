@@ -1,5 +1,5 @@
 import { Strategy } from "../../../core/Strategy";
-import IGameStep, { TemplateContext } from "../../IGameStep";
+import IGameStep, { TemplateContext } from "../../core/steps/IGameStep";
 
 export default class StartingMoneyStep implements IGameStep {
   public readonly id: string = "startingMoney";

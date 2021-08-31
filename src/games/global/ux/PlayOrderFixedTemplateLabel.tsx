@@ -1,6 +1,6 @@
-import { useAppSelector } from "../../app/hooks";
-import first_name from "../../common/first_name";
-import { PlayerId, selectors } from "../../features/players/playersSlice";
+import { useAppSelector } from "../../../app/hooks";
+import first_name from "../../../common/first_name";
+import { PlayerId, selectors } from "../../../features/players/playersSlice";
 
 export default function PlayOrderFixedTemplateLabel({
   value,

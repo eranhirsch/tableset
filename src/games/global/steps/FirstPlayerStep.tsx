@@ -1,13 +1,16 @@
 import { WritableDraft } from "immer/dist/internal";
-import invariant_violation from "../../common/err/invariant_violation";
-import { Strategy } from "../../core/Strategy";
-import { PlayerId } from "../../features/players/playersSlice";
+import invariant_violation from "../../../common/err/invariant_violation";
+import { Strategy } from "../../../core/Strategy";
+import { PlayerId } from "../../../features/players/playersSlice";
 import {
   ConstantTemplateElement,
   templateAdapter,
   TemplateState,
-} from "../../features/template/templateSlice";
-import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
+} from "../../../features/template/templateSlice";
+import IGameStep, {
+  TemplateContext,
+  InstanceContext,
+} from "../../core/steps/IGameStep";
 import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";
 import { FirstPlayerPanel } from "../ux/FirstPlayerPanel";
 import StartingPlayerPanel from "../ux/StartingPlayerPanel";

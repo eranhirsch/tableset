@@ -3,8 +3,8 @@ import { RootState } from "../../app/store";
 import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
 import { Strategy } from "../../core/Strategy";
-import Game, { StepId } from "../../games/IGame";
-import { InstanceContext } from "../../games/IGameStep";
+import IGame, { StepId } from "../../games/core/IGame";
+import { InstanceContext } from "../../games/core/steps/IGameStep";
 import { PlayerId } from "../players/playersSlice";
 import { TemplateElement } from "../template/templateSlice";
 
@@ -23,7 +23,7 @@ export const instanceSlice = createSlice({
   reducers: {
     created: {
       prepare: (
-        game: Game,
+        game: IGame,
         template: Dictionary<TemplateElement>,
         playerIds: readonly PlayerId[]
       ) => ({
@@ -57,7 +57,7 @@ export default instanceSlice;
 
 function elementResolver(
   element: TemplateElement,
-  game: Game,
+  game: IGame,
   context: InstanceContext
 ): any {
   const gameStep = nullthrows(

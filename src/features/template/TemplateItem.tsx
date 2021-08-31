@@ -11,9 +11,9 @@ import StepDetailsPane from "./StepDetailsPane";
 import { Strategy } from "../../core/Strategy";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { useAppSelector } from "../../app/hooks";
-import { StepId } from "../../games/IGame";
 import { gameSelector } from "../game/gameSlice";
 import { ItemLabel } from "./ItemLabel";
+import { StepId } from "../../games/core/IGame";
 
 export default function TemplateItem({
   stepId,

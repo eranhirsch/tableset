@@ -1,5 +1,5 @@
 import { Strategy } from "../../../core/Strategy";
-import IGameStep, { TemplateContext } from "../../IGameStep";
+import IGameStep, { TemplateContext } from "../../core/steps/IGameStep";
 
 export class PraefectusMagnusStep implements IGameStep {
   public readonly id: string = "praefectusMagnus";

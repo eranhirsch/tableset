@@ -1,17 +1,20 @@
 import { WritableDraft } from "immer/dist/internal";
-import invariant from "../../common/err/invariant";
-import invariant_violation from "../../common/err/invariant_violation";
-import nullthrows from "../../common/err/nullthrows";
-import PermutationsLazyArray from "../../common/PermutationsLazyArray";
-import { Strategy } from "../../core/Strategy";
-import { Player, PlayerId } from "../../features/players/playersSlice";
+import invariant from "../../../common/err/invariant";
+import invariant_violation from "../../../common/err/invariant_violation";
+import nullthrows from "../../../common/err/nullthrows";
+import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
+import { Strategy } from "../../../core/Strategy";
+import { PlayerId, Player } from "../../../features/players/playersSlice";
 import {
   ConstantTemplateElement,
-  templateAdapter,
   TemplateElement,
   TemplateState,
-} from "../../features/template/templateSlice";
-import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
+  templateAdapter,
+} from "../../../features/template/templateSlice";
+import IGameStep, {
+  TemplateContext,
+  InstanceContext,
+} from "../../core/steps/IGameStep";
 import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
 import { PlayOrderPanel } from "../ux/PlayOrderPanel";

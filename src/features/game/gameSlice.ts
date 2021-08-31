@@ -1,6 +1,6 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import GameMapper, { GameId } from "../../games/GameMapper";
+import GameMapper, { GameId } from "../../games/core/GameMapper";
 
 interface GameState {
   id: GameId;

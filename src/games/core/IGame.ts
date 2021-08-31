@@ -1,6 +1,5 @@
-import { GamePiecesColor } from "../core/themeWithGameColors";
-import { SetupStep } from "../features/instance/instanceSlice";
-import IGameStep from "./IGameStep";
+import { GamePiecesColor } from "../../core/themeWithGameColors";
+import IGameStep from "./steps/IGameStep";
 
 export type StepId = string;
 

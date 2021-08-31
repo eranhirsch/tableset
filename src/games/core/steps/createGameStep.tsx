@@ -1,8 +1,8 @@
-import nullthrows from "../common/err/nullthrows";
-import { Strategy } from "../core/Strategy";
-import { PlayerId } from "../features/players/playersSlice";
-import { ConstantTemplateElement } from "../features/template/templateSlice";
-import { StepId } from "./IGame";
+import nullthrows from "../../../common/err/nullthrows";
+import { Strategy } from "../../../core/Strategy";
+import { PlayerId } from "../../../features/players/playersSlice";
+import { ConstantTemplateElement } from "../../../features/template/templateSlice";
+import { StepId } from "../IGame";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
 export interface CreateGameStepDeriversOptions<T = never> {

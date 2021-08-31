@@ -1,12 +1,12 @@
 import { Avatar, AvatarGroup, Box } from "@material-ui/core";
-import { useAppSelector } from "../../app/hooks";
-import nullthrows from "../../common/err/nullthrows";
-import short_name from "../../common/short_name";
+import { useAppSelector } from "../../../app/hooks";
+import nullthrows from "../../../common/err/nullthrows";
+import short_name from "../../../common/short_name";
 import {
-  firstPlayerSelector,
   PlayerId,
+  firstPlayerSelector,
   selectors as playersSelectors,
-} from "../../features/players/playersSlice";
+} from "../../../features/players/playersSlice";
 
 export function PlayOrderPanel({
   playOrder,

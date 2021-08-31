@@ -8,7 +8,7 @@ import {
 import AppContext from "../../app/AppContext";
 import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
-import { GameId } from "../../games/GameMapper";
+import { GameId } from "../../games/core/GameMapper";
 
 export type PlayerId = string;
 

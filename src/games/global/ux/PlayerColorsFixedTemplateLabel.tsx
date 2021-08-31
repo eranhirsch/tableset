@@ -1,7 +1,7 @@
-import { useAppSelector } from "../../app/hooks";
-import first_name from "../../common/first_name";
-import PlayerColors from "../../common/PlayerColors";
-import { selectors } from "../../features/players/playersSlice";
+import { useAppSelector } from "../../../app/hooks";
+import first_name from "../../../common/first_name";
+import PlayerColors from "../../../common/PlayerColors";
+import { selectors } from "../../../features/players/playersSlice";
 
 export default function PlayersColorsFixedTemplateLabel({
   value,

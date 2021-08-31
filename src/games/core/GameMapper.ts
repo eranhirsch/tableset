@@ -1,4 +1,4 @@
-import ConcordiaGame from "./concordia/ConcordiaGame";
+import ConcordiaGame from "../concordia/ConcordiaGame";
 import Game from "./IGame";
 
 export type GameId = "concordia";

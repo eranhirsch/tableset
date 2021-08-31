@@ -1,11 +1,11 @@
 import { Typography } from "@material-ui/core";
-import { Strategy } from "../core/Strategy";
-import templateSlice from "../features/template/templateSlice";
+import { Strategy } from "../../../core/Strategy";
+import templateSlice from "../../../features/template/templateSlice";
+import { StepId } from "../IGame";
+import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
+import GenericItemsListPanel from "../ux/GenericItemsListPanel";
 import { createGameStep } from "./createGameStep";
-import { StepId } from "./IGame";
 import IGameStep, { InstanceContext } from "./IGameStep";
-import GenericItemsFixedTemplateLabel from "./ux/GenericItemsFixedTemplateLabel";
-import GenericItemsListPanel from "./ux/GenericItemsListPanel";
 
 interface CreateGenericItemsGameStepOptions<T extends string = string> {
   id: StepId;

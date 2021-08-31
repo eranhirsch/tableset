@@ -7,9 +7,9 @@ import { RootState } from "../../app/store";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
 import { Strategy } from "../../core/Strategy";
 import playersSlice, { Player, PlayerId } from "../players/playersSlice";
-import { StepId } from "../../games/IGame";
-import GameMapper, { GameId } from "../../games/GameMapper";
+import GameMapper, { GameId } from "../../games/core/GameMapper";
 import AppContext from "../../app/AppContext";
+import { StepId } from "../../games/core/IGame";
 
 export type ConstantTemplateElement = Readonly<{
   id: StepId;

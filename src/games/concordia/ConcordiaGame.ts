@@ -1,17 +1,17 @@
 import { GamePiecesColor } from "../../core/themeWithGameColors";
-import IGame, { StepId } from "../IGame";
-import IGameStep from "../IGameStep";
-import { createGameStep } from "../createGameStep";
 import CityTilesStep from "./steps/CityTilesStep";
 import MarketDisplayStep from "./steps/MarketDisplayStep";
 import BonusTilesStep from "./steps/BonusTilesStep";
-import PlayOrderStep from "../steps/PlayOrderStep";
 import StartingColonistsStep from "./steps/StartingColonistsStep";
 import StartingMoneyStep from "./steps/StartingMoneyStep";
 import { PraefectusMagnusStep } from "./steps/PraefectusMagnusStep";
-import FirstPlayerStep from "../steps/FirstPlayerStep";
-import PlayerColorsStep from "../steps/PlayerColorsStep";
+import FirstPlayerStep from "../global/steps/FirstPlayerStep";
 import mapStep from "./steps/mapStep";
+import { createGameStep } from "../core/steps/createGameStep";
+import IGameStep from "../core/steps/IGameStep";
+import IGame, { StepId } from "../core/IGame";
+import PlayerColorsStep from "../global/steps/PlayerColorsStep";
+import PlayOrderStep from "../global/steps/PlayOrderStep";
 
 export default class ConcordiaGame implements IGame {
   private readonly steps: Readonly<{ [id: string]: IGameStep }>;
