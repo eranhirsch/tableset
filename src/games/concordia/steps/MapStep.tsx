@@ -6,6 +6,7 @@ import {
   TemplateState,
 } from "../../../features/template/templateSlice";
 import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
+import GenericItemsFixedTemplateLabel from "../../ux/GenericItemsFixedTemplateLabel";
 
 export type Zone = "A" | "B" | "C" | "D";
 
@@ -120,6 +121,14 @@ export default class MapStep implements IGameStep {
       global: false,
       value: this.items[0],
     };
+  }
+
+  public renderTemplateFixedLabel(value: any): JSX.Element {
+    return (
+      <GenericItemsFixedTemplateLabel
+        value={this.labelForItem(value as string)}
+      />
+    );
   }
 
   public onPlayerRemoved(

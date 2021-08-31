@@ -1,5 +1,6 @@
 import { WritableDraft } from "immer/dist/internal";
 import invariant_violation from "../../common/err/invariant_violation";
+import PlayerColors from "../../common/PlayerColors";
 import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import { Player, PlayerId } from "../../features/players/playersSlice";
@@ -9,6 +10,7 @@ import {
   TemplateState,
 } from "../../features/template/templateSlice";
 import IGameStep, { TemplateContext } from "../IGameStep";
+import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
 
 export default class PlayerColorsStep implements IGameStep<"playerColors"> {
   public readonly id = "playerColors";
@@ -42,6 +44,10 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
         ])
       ),
     };
+  }
+
+  public renderTemplateFixedLabel(value: any): JSX.Element {
+    return <PlayersColorsFixedTemplateLabel value={value as PlayerColors} />;
   }
 
   public onPlayerAdded(

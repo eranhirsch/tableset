@@ -25,6 +25,8 @@ export default interface IGameStep<S extends StepId = StepId> {
   readonly label: string;
   readonly items?: readonly string[];
 
+  renderTemplateFixedLabel?(value: any): JSX.Element;
+
   labelForItem?(value: string): string;
 
   strategies?(context: Readonly<TemplateContext>): readonly Strategy[];

@@ -8,6 +8,7 @@ import {
   TemplateState,
 } from "../../features/template/templateSlice";
 import IGameStep, { TemplateContext } from "../IGameStep";
+import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
 
 export default class PlayOrderStep implements IGameStep<"playOrder"> {
   public readonly id = "playOrder";
@@ -32,6 +33,10 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
       global: true,
       value: restOfPlayers,
     };
+  }
+
+  public renderTemplateFixedLabel(value: any): JSX.Element {
+    return <PlayOrderFixedTemplateLabel value={value as readonly PlayerId[]} />;
   }
 
   public onPlayerAdded(
