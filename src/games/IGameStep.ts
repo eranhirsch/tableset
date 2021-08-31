@@ -23,13 +23,10 @@ export interface InstanceContext {
 export default interface IGameStep<S extends StepId = StepId> {
   readonly id: S;
   readonly label: string;
-  readonly items?: readonly string[];
 
   renderTemplateFixedLabel?(value: any): JSX.Element;
   renderTemplateFixedValueSelector?(current: any): JSX.Element;
   renderInstanceContent?(value: any): JSX.Element;
-
-  labelForItem?(value: string): string;
 
   strategies?(context: Readonly<TemplateContext>): readonly Strategy[];
 
