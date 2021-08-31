@@ -1,5 +1,11 @@
+import invariant_violation from "../../../common/err/invariant_violation";
 import { Strategy } from "../../../core/Strategy";
-import { ConstantTemplateElement } from "../../../features/template/templateSlice";
+import { PlayerId } from "../../../features/players/playersSlice";
+import {
+  ConstantTemplateElement,
+  templateAdapter,
+  TemplateState,
+} from "../../../features/template/templateSlice";
 import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
 
 export type Zone = "A" | "B" | "C" | "D";
@@ -67,6 +73,9 @@ export const MAPS: Record<MapId, MapBoard> = {
   },
 };
 
+const DEFAULT_MIN_PLAYER_COUNT = 2;
+const DEFAULT_MAX_PLAYER_COUNT = 5;
+
 export default class MapStep implements IGameStep {
   public readonly id: string = "map";
   public readonly label: string = "Map";
@@ -96,7 +105,10 @@ export default class MapStep implements IGameStep {
       Strategy.ASK,
       Strategy.FIXED,
     ];
-    if (playersTotal >= 2 && playersTotal <= 5) {
+    if (
+      playersTotal >= DEFAULT_MIN_PLAYER_COUNT &&
+      playersTotal <= DEFAULT_MAX_PLAYER_COUNT
+    ) {
       strategies.push(Strategy.DEFAULT);
     }
     return strategies;
@@ -109,5 +121,30 @@ export default class MapStep implements IGameStep {
       global: false,
       value: this.items[0],
     };
+  }
+
+  public onPlayerRemoved(
+    state: TemplateState,
+    { playersTotal }: { playersTotal: number }
+  ): void {
+    const step = state.entities[this.id];
+    if (step == null) {
+      // Step not in template
+      return;
+    }
+
+    if (step.id !== this.id) {
+      invariant_violation(
+        `Step ID ${step.id} is different it's index ${this.id}`
+      );
+    }
+
+    if (
+      step.strategy === Strategy.DEFAULT &&
+      playersTotal === DEFAULT_MIN_PLAYER_COUNT
+    ) {
+      // We disable the default strategy if we don't have enough players
+      templateAdapter.removeOne(state, this.id);
+    }
   }
 }
