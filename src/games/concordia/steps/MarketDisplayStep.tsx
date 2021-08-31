@@ -3,6 +3,7 @@ import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { Strategy } from "../../../core/Strategy";
 import IGameStep from "../../IGameStep";
+import { MarketDisplayFixedInstructions } from "../ux/MarketDisplayFixedInstructions";
 
 const MARKET_DECK_PHASE_1: readonly string[] = [
   "Architect",
@@ -37,5 +38,9 @@ export default class MarketDisplayStep implements IGameStep {
       PermutationsLazyArray.forPermutation(MARKET_DECK_PHASE_1);
     const selectedIdx = Math.floor(Math.random() * permutations.length);
     return Base32.encode(selectedIdx);
+  }
+
+  public renderInstanceContent(value: any): JSX.Element {
+    return <MarketDisplayFixedInstructions hash={value as string} />;
   }
 }

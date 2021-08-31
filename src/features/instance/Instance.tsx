@@ -1,82 +1,21 @@
 import {
-  Avatar,
-  AvatarGroup,
-  Badge,
-  Box,
   Button,
-  Stack,
   Step,
   StepButton,
   StepContent,
   Stepper,
   Typography,
 } from "@material-ui/core";
-import { EntityId } from "@reduxjs/toolkit";
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import nullthrows from "../../common/err/nullthrows";
-import {
-  useAppEntityIdSelectorEnforce,
-  useAppEntityIdSelectorNullable,
-} from "../../common/hooks/useAppEntityIdSelector";
-import PlayerColors from "../../common/PlayerColors";
-import short_name from "../../common/short_name";
-import {
-  firstPlayerSelector,
-  selectors as playersSelectors,
-} from "../players/playersSlice";
-import { MarketDisplayFixedInstructions } from "../../games/concordia/ux/MarketDisplayFixedInstructions";
+import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { selectors as instanceSelectors } from "./instanceSlice";
-import { CityTilesFixedInstructions } from "../../games/concordia/ux/CityTilesFixedInstructions";
 import { gameSelector } from "../game/gameSlice";
 import { StepId } from "../../games/IGame";
+import nullthrows from "../../common/err/nullthrows";
 
 const IDEAL_STEP_COUNT = 6;
-
-function PlayOrderPanel({ playOrder }: { playOrder: ReadonlyArray<EntityId> }) {
-  const firstPlayer = useAppSelector(firstPlayerSelector);
-  const players = useAppSelector(playersSelectors.selectEntities);
-
-  return (
-    <Box display="flex">
-      <AvatarGroup>
-        <Avatar>{short_name(firstPlayer.name)}</Avatar>
-        {playOrder.map((playerId) => (
-          <Avatar key={playerId}>
-            {short_name(nullthrows(players[playerId]).name)}
-          </Avatar>
-        ))}
-      </AvatarGroup>
-    </Box>
-  );
-}
-
-function PlayerColorsPanel({ playerColor }: { playerColor: PlayerColors }) {
-  const players = useAppSelector(playersSelectors.selectEntities);
-
-  return (
-    <Stack direction="row" spacing={1}>
-      {Object.entries(playerColor).map(([playerId, color]) => (
-        <Badge
-          key={playerId}
-          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          overlap="circular"
-          invisible={false}
-          color={color}
-        >
-          <Avatar>{short_name(nullthrows(players[playerId]).name)}</Avatar>
-        </Badge>
-      ))}
-    </Stack>
-  );
-}
-
-function FirstPlayerPanel({ playerId }: { playerId: EntityId }) {
-  const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
-
-  return <Avatar>{short_name(player.name)}</Avatar>;
-}
 
 function InstanceItemContent({ stepId }: { stepId: StepId }) {
   const step = useAppEntityIdSelectorNullable(instanceSelectors, stepId);
@@ -86,31 +25,12 @@ function InstanceItemContent({ stepId }: { stepId: StepId }) {
     return null;
   }
 
-  switch (step.id) {
-    case "playOrder":
-      return <PlayOrderPanel playOrder={step.value} />;
+  const gameStep = nullthrows(
+    game.at(stepId),
+    `Step ${stepId} missing in game`
+  );
 
-    case "playerColors":
-      return <PlayerColorsPanel playerColor={step.value} />;
-
-    case "firstPlayer":
-      return <FirstPlayerPanel playerId={step.value} />;
-    case "map":
-      return (
-        <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
-          {game.at("map")!.labelForItem!(step.value)}
-        </Typography>
-      );
-
-    case "cityTiles":
-      return <CityTilesFixedInstructions hash={step.value} />;
-
-    case "marketDisplay":
-      return <MarketDisplayFixedInstructions hash={step.value} />;
-
-    default:
-      return <Typography variant="h4">{step.value}</Typography>;
-  }
+  return gameStep.renderInstanceContent!(step.value);
 }
 
 export default function Instance() {

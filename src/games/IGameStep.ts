@@ -27,6 +27,7 @@ export default interface IGameStep<S extends StepId = StepId> {
 
   renderTemplateFixedLabel?(value: any): JSX.Element;
   renderTemplateFixedValueSelector?(current: any): JSX.Element;
+  renderInstanceContent?(value: any): JSX.Element;
 
   labelForItem?(value: string): string;
 

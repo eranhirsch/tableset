@@ -4,6 +4,7 @@ import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { Strategy } from "../../../core/Strategy";
 import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
+import { CityTilesFixedInstructions } from "../ux/CityTilesFixedInstructions";
 import { MapId, MAPS, Zone } from "./MapStep";
 
 const HASH_SEPERATOR = "-";
@@ -77,5 +78,9 @@ export default class CityTilesStep implements IGameStep {
       return Base32.encode(selectedIdx);
     });
     return hashes.join(HASH_SEPERATOR);
+  }
+
+  public renderInstanceContent(value: any): JSX.Element {
+    return <CityTilesFixedInstructions hash={value as string} />;
   }
 }

@@ -12,6 +12,7 @@ import {
 import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
 import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
+import { PlayOrderPanel } from "../ux/PlayOrderPanel";
 
 export default class PlayOrderStep implements IGameStep<"playOrder"> {
   public readonly id = "playOrder";
@@ -52,6 +53,10 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
 
   public renderTemplateFixedValueSelector(): JSX.Element {
     return <PlayerOrderPanel />;
+  }
+
+  public renderInstanceContent(value: any): JSX.Element {
+    return <PlayOrderPanel playOrder={value as PlayerId[]} />;
   }
 
   public onPlayerAdded(

@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import { Action } from "@reduxjs/toolkit";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { Strategy } from "../../../core/Strategy";
@@ -142,6 +143,14 @@ export default class MapStep implements IGameStep, IItemsGameStep {
         itemsStep={this}
         selectedItemId={current as string}
       />
+    );
+  }
+
+  public renderInstanceContent(value: any): JSX.Element {
+    return (
+      <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
+        {this.labelForItem(value as string)}
+      </Typography>
     );
   }
 

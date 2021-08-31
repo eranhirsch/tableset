@@ -14,6 +14,7 @@ import {
 import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
 import PlayerColorPanel from "../ux/PlayerColorPanel";
 import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
+import { PlayerColorsPanel } from "../ux/PlayerColorsPanel";
 
 export default class PlayerColorsStep implements IGameStep<"playerColors"> {
   public readonly id = "playerColors";
@@ -66,6 +67,10 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
 
   public renderTemplateFixedValueSelector(): JSX.Element {
     return <PlayerColorPanel />;
+  }
+
+  public renderInstanceContent(value: any): JSX.Element {
+    return <PlayerColorsPanel playerColor={value as PlayerColors} />;
   }
 
   public onPlayerAdded(
