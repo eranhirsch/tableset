@@ -1,13 +1,16 @@
+import { Action } from "@reduxjs/toolkit";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { Strategy } from "../../../core/Strategy";
-import {
+import templateSlice, {
   ConstantTemplateElement,
   templateAdapter,
   TemplateState,
 } from "../../../features/template/templateSlice";
 import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
 import GenericItemsFixedTemplateLabel from "../../ux/GenericItemsFixedTemplateLabel";
-import GenericItemsListPanel from "../../ux/GenericItemsListPanel";
+import GenericItemsListPanel, {
+  IItemsGameStep,
+} from "../../ux/GenericItemsListPanel";
 
 export type Zone = "A" | "B" | "C" | "D";
 
@@ -77,7 +80,7 @@ export const MAPS: Record<MapId, MapBoard> = {
 const DEFAULT_MIN_PLAYER_COUNT = 2;
 const DEFAULT_MAX_PLAYER_COUNT = 5;
 
-export default class MapStep implements IGameStep {
+export default class MapStep implements IGameStep, IItemsGameStep {
   public readonly id: string = "map";
   public readonly label: string = "Map";
 
@@ -124,16 +127,30 @@ export default class MapStep implements IGameStep {
     };
   }
 
-  public renderTemplateFixedLabel(value: any): JSX.Element {
+  public renderTemplateFixedLabel(current: any): JSX.Element {
     return (
       <GenericItemsFixedTemplateLabel
-        value={this.labelForItem(value as string)}
+        itemsStep={this}
+        selectedItemId={current as string}
       />
     );
   }
 
-  public renderTemplateFixedValueSelector(): JSX.Element {
-    return <GenericItemsListPanel stepId={this.id} />;
+  public renderTemplateFixedValueSelector(current: any): JSX.Element {
+    return (
+      <GenericItemsListPanel
+        itemsStep={this}
+        selectedItemId={current as string}
+      />
+    );
+  }
+
+  public updateFixedItemActionForId(itemId: string): Action {
+    return templateSlice.actions.constantValueChanged({
+      id: this.id,
+      global: false,
+      value: itemId,
+    });
   }
 
   public onPlayerRemoved(

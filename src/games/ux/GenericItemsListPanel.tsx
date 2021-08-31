@@ -1,50 +1,32 @@
 import { Chip } from "@material-ui/core";
-import { useMemo } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import invariant_violation from "../../common/err/invariant_violation";
-import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
-import { Strategy } from "../../core/Strategy";
-import templateSlice, {
-  selectors as templateStepSelectors,
-} from "../../features/template/templateSlice";
-import { gameSelector } from "../../features/game/gameSlice";
-import { StepId } from "../IGame";
+import { Action } from "@reduxjs/toolkit";
+import { useAppDispatch } from "../../app/hooks";
 
-export default function GenericItemsListPanel({ stepId }: { stepId: StepId }) {
+export type IItemsGameStep = Readonly<{
+  items: readonly string[];
+  labelForItem(itemId: string): string;
+  updateFixedItemActionForId(itemId: string): Action;
+}>;
+
+export default function GenericItemsListPanel({
+  itemsStep,
+  selectedItemId,
+}: {
+  itemsStep: IItemsGameStep;
+  selectedItemId: string;
+}) {
   const dispatch = useAppDispatch();
-
-  const game = useAppSelector(gameSelector);
-
-  const step = useAppEntityIdSelectorEnforce(templateStepSelectors, stepId);
-  if (step.strategy !== Strategy.FIXED) {
-    invariant_violation(`strategy isn't FIXED for step ${stepId}`);
-  }
-
-  const items = useMemo(() => game.at(step.id)!.items, [game, step.id]);
-
-  if (items == null || items.length === 0) {
-    invariant_violation(
-      `Step ${stepId} does not have any valid items for use with the FIXED strategy`
-    );
-  }
 
   return (
     <>
-      {items.map((item) => (
+      {itemsStep.items.map((itemId) => (
         <Chip
-          key={`${step.id}_${item}`}
-          variant={step.value === item ? "filled" : "outlined"}
-          label={game.at(stepId)!.labelForItem!(item)}
+          key={itemId}
+          variant={selectedItemId === itemId ? "filled" : "outlined"}
+          label={itemsStep.labelForItem(itemId)}
           onClick={
-            step.value !== item
-              ? () =>
-                  dispatch(
-                    templateSlice.actions.constantValueChanged({
-                      id: step.id,
-                      global: false,
-                      value: item,
-                    })
-                  )
+            selectedItemId !== itemId
+              ? () => dispatch(itemsStep.updateFixedItemActionForId(itemId))
               : undefined
           }
         />

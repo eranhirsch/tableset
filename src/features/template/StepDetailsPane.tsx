@@ -13,11 +13,11 @@ export default function StepDetailsPane({ stepId }: { stepId: StepId }) {
   const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
 
   const strategyControls = useMemo(() => {
-    if (step?.strategy === Strategy.FIXED) {
-      return game.at(stepId)!.renderTemplateFixedValueSelector!();
+    if (step != null && step.strategy === Strategy.FIXED) {
+      return game.at(stepId)!.renderTemplateFixedValueSelector!(step.value);
     }
     return null;
-  }, [step?.strategy, game, stepId]);
+  }, [game, step, stepId]);
 
   return (
     <Stack sx={{ padding: 1 }} alignItems="center" spacing={1}>

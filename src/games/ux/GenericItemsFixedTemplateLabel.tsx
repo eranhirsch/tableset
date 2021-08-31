@@ -1,7 +1,11 @@
+import { IItemsGameStep } from "./GenericItemsListPanel";
+
 export default function GenericItemsFixedTemplateLabel({
-  value,
+  itemsStep,
+  selectedItemId,
 }: {
-  value: string;
+  itemsStep: IItemsGameStep;
+  selectedItemId: string;
 }) {
-  return <>{value}</>;
+  return <>{itemsStep.labelForItem(selectedItemId)}</>;
 }
