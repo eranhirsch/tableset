@@ -20,8 +20,8 @@ export interface InstanceContext {
   playerIds: readonly PlayerId[];
 }
 
-export default interface IGameStep<S extends StepId = StepId> {
-  readonly id: S;
+export default interface IGameStep {
+  readonly id: StepId;
   readonly label: string;
 
   renderTemplateFixedLabel?(value: any): JSX.Element;
@@ -43,4 +43,26 @@ export default interface IGameStep<S extends StepId = StepId> {
     state: WritableDraft<TemplateState>,
     context: { removedPlayerId: PlayerId; playersTotal: number }
   ): void;
+}
+
+interface CreateGameStepOptions {
+  // Used to identify, validate, and find the game step inside the game. Use
+  // camelCase!
+  id: StepId;
+
+  // Optional: We convert the camelCase id into a label automatically. Only use
+  // this if you want a different label for your step
+  labelOverride?: string;
+}
+
+export function createGameStep({
+  id,
+  labelOverride,
+}: CreateGameStepOptions): IGameStep {
+  return {
+    id,
+    label:
+      labelOverride ??
+      id[0].toUpperCase() + id.replaceAll(/[A-Z]/g, " $&").slice(1),
+  };
 }

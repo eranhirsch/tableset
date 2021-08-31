@@ -1,7 +1,6 @@
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import IGame, { StepId } from "../IGame";
-import IGameStep from "../IGameStep";
-import GenericGameStep from "../GenericGameStep";
+import IGameStep, { createGameStep } from "../IGameStep";
 import MapStep from "./steps/MapStep";
 import CityTilesStep from "./steps/CityTilesStep";
 import MarketDisplayStep from "./steps/MarketDisplayStep";
@@ -22,17 +21,20 @@ export default class ConcordiaGame implements IGame {
         new MapStep(),
         new CityTilesStep(),
         new BonusTilesStep(),
-        new GenericGameStep("marketCards"),
+        createGameStep({ id: "marketCards" }),
         new MarketDisplayStep(),
-        new GenericGameStep("marketDeck", "Cards Deck"),
-        new GenericGameStep("concordiaCard"),
-        new GenericGameStep("resourcePiles"),
-        new GenericGameStep("bank"),
+        createGameStep({ id: "marketDeck", labelOverride: "Cards Deck" }),
+        createGameStep({ id: "concordiaCard" }),
+        createGameStep({ id: "resourcePiles" }),
+        createGameStep({ id: "bank" }),
         new PlayOrderStep(),
         new PlayerColorsStep(this.playerColors),
-        new GenericGameStep("playerPieces", "Player Components"),
+        createGameStep({
+          id: "playerPieces",
+          labelOverride: "Player Components",
+        }),
         new StartingColonistsStep(),
-        new GenericGameStep("startingResources"),
+        createGameStep({ id: "startingResources" }),
         new FirstPlayerStep(),
         new StartingMoneyStep(),
         new PraefectusMagnusStep(),

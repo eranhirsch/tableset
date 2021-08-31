@@ -12,8 +12,8 @@ import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";
 import { FirstPlayerPanel } from "../ux/FirstPlayerPanel";
 import StartingPlayerPanel from "../ux/StartingPlayerPanel";
 
-export default class FirstPlayerStep implements IGameStep<"firstPlayer"> {
-  public readonly id = "firstPlayer";
+export default class FirstPlayerStep implements IGameStep {
+  public readonly id: string = "firstPlayer";
   public readonly label: string = "First Player";
 
   public strategies({ playersTotal }: TemplateContext): Strategy[] {
@@ -64,10 +64,7 @@ export default class FirstPlayerStep implements IGameStep<"firstPlayer"> {
       );
     }
 
-    if (
-      step.strategy === Strategy.FIXED &&
-      step.value === removedPlayerId
-    ) {
+    if (step.strategy === Strategy.FIXED && step.value === removedPlayerId) {
       // The first player was removed, we can't deduce another first player so
       // revert the step back to the default (most likely "OFF") state.
       templateAdapter.removeOne(state, "firstPlayer");
