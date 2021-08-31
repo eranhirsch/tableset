@@ -1,5 +1,5 @@
 import { strategyLabel } from "../../core/content";
-import { selectors as templateSelectors } from "./templateSlice";
+import { templateSelectors } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { useAppSelector } from "../../app/hooks";

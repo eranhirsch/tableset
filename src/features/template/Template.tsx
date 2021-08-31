@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectors as templateSelectors } from "./templateSlice";
+import { templateSelectors } from "./templateSlice";
 import {
   PlayerId,
   selectors as playersSelectors,

@@ -201,6 +201,6 @@ export default templateSlice;
 
 export type TemplateState = ReturnType<typeof templateSlice["reducer"]>;
 
-export const selectors = templateAdapter.getSelectors<RootState>(
+export const templateSelectors = templateAdapter.getSelectors<RootState>(
   (state) => state.template
 );

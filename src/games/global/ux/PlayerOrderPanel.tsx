@@ -14,7 +14,7 @@ import {
   selectors as playersSelectors,
 } from "../../../features/players/playersSlice";
 import templateSlice, {
-  selectors as templateSelectors,
+  templateSelectors,
 } from "../../../features/template/templateSlice";
 import PlayOrderStep from "../steps/PlayOrderStep";
 import LockIcon from "@material-ui/icons/Lock";

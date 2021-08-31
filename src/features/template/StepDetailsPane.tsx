@@ -1,6 +1,6 @@
 import { Collapse, Stack } from "@material-ui/core";
 import { useMemo } from "react";
-import { selectors as templateStepSelectors } from "./templateSlice";
+import { templateSelectors } from "./templateSlice";
 import { Strategy } from "../../core/Strategy";
 import StrategiesSelector from "./StrategiesSelector";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
@@ -10,7 +10,7 @@ import { StepId } from "../../games/core/IGame";
 
 export default function StepDetailsPane({ stepId }: { stepId: StepId }) {
   const game = useAppSelector(gameSelector);
-  const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
+  const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
 
   const strategyControls = useMemo(() => {
     if (step != null && step.strategy === Strategy.FIXED) {

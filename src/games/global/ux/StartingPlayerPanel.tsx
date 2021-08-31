@@ -9,7 +9,7 @@ import {
   selectors as playersSelectors,
 } from "../../../features/players/playersSlice";
 import templateSlice, {
-  selectors as templateSelectors,
+  templateSelectors,
 } from "../../../features/template/templateSlice";
 
 function Player({

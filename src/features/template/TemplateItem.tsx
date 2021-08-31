@@ -5,7 +5,7 @@ import {
   ListItemText,
   Paper,
 } from "@material-ui/core";
-import { selectors as templateSelectors } from "./templateSlice";
+import { templateSelectors } from "./templateSlice";
 import StrategyIcon from "./StrategyIcon";
 import StepDetailsPane from "./StepDetailsPane";
 import { Strategy } from "../../core/Strategy";

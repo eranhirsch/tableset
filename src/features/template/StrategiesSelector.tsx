@@ -2,9 +2,7 @@ import { Chip, Stack } from "@material-ui/core";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
-import templateSlice, {
-  selectors as templateStepSelectors,
-} from "./templateSlice";
+import templateSlice, { templateSelectors } from "./templateSlice";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { Strategy } from "../../core/Strategy";
 import {
@@ -19,8 +17,8 @@ export default function StrategiesSelector({ stepId }: { stepId: StepId }) {
   const dispatch = useAppDispatch();
 
   const gameId = useAppSelector(gameIdSelector);
-  const step = useAppEntityIdSelectorNullable(templateStepSelectors, stepId);
-  const template = useAppSelector(templateStepSelectors.selectEntities);
+  const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
+  const template = useAppSelector(templateSelectors.selectEntities);
   const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 
   const strategies = useMemo(
