@@ -54,19 +54,23 @@ export const templateSlice = createSlice({
     },
 
     disabled: {
-      prepare: (gameId: GameId, id: StepId, playersTotal: number) => ({
+      prepare: (
+        gameId: GameId,
+        id: StepId,
+        playerIds: readonly PlayerId[]
+      ) => ({
         payload: id,
-        meta: { gameId, playersTotal },
+        meta: { gameId, playerIds },
       }),
       reducer(
         state,
         {
           payload: id,
-          meta: { gameId, playersTotal },
+          meta: { gameId, playerIds },
         }: PayloadAction<
           StepId,
           string,
-          { gameId: GameId; playersTotal: number }
+          { gameId: GameId; playerIds: readonly PlayerId[] }
         >
       ) {
         state = templateAdapter.removeOne(state, id);
@@ -91,7 +95,7 @@ export const templateSlice = createSlice({
               ? true
               : !strategiesFunc({
                   template: currentEntities,
-                  playersTotal,
+                  playerIds,
                 }).includes(step.strategy);
           });
 

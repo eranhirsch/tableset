@@ -5,7 +5,7 @@ import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { Strategy } from "../../../core/Strategy";
 import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
 import { CityTilesFixedInstructions } from "../ux/CityTilesFixedInstructions";
-import { MapId, MAPS, Zone } from "./MapStep";
+import { MapId, MAPS, Zone } from "./mapStep";
 
 const HASH_SEPERATOR = "-";
 

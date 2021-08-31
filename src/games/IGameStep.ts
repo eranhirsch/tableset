@@ -12,7 +12,7 @@ import { StepId } from "./IGame";
 
 export interface TemplateContext {
   template: Readonly<Dictionary<Readonly<TemplateElement>>>;
-  playersTotal: number;
+  playerIds: readonly PlayerId[];
 }
 
 export interface InstanceContext {
@@ -28,12 +28,12 @@ export default interface IGameStep {
   renderTemplateFixedValueSelector?(current: any): JSX.Element;
   renderInstanceContent?(value: any): JSX.Element;
 
-  strategies?(context: Readonly<TemplateContext>): readonly Strategy[];
+  strategies?(context: TemplateContext): readonly Strategy[];
 
   initialFixedValue?(playerIds: string[]): ConstantTemplateElement;
 
   resolveRandom?(context: InstanceContext): any;
-  resolveDefault?(context: InstanceContext): string;
+  resolveDefault?(context: InstanceContext): any;
 
   onPlayerAdded?(
     state: WritableDraft<TemplateState>,
@@ -43,26 +43,4 @@ export default interface IGameStep {
     state: WritableDraft<TemplateState>,
     context: { removedPlayerId: PlayerId; playersTotal: number }
   ): void;
-}
-
-interface CreateGameStepOptions {
-  // Used to identify, validate, and find the game step inside the game. Use
-  // camelCase!
-  id: StepId;
-
-  // Optional: We convert the camelCase id into a label automatically. Only use
-  // this if you want a different label for your step
-  labelOverride?: string;
-}
-
-export function createGameStep({
-  id,
-  labelOverride,
-}: CreateGameStepOptions): IGameStep {
-  return {
-    id,
-    label:
-      labelOverride ??
-      id[0].toUpperCase() + id.replaceAll(/[A-Z]/g, " $&").slice(1),
-  };
 }

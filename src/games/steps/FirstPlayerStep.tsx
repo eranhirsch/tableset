@@ -16,8 +16,8 @@ export default class FirstPlayerStep implements IGameStep {
   public readonly id: string = "firstPlayer";
   public readonly label: string = "First Player";
 
-  public strategies({ playersTotal }: TemplateContext): Strategy[] {
-    if (playersTotal < 2) {
+  public strategies({ playerIds }: TemplateContext): Strategy[] {
+    if (playerIds.length < 2) {
       // Solo games don't have a starting player...
       return [Strategy.OFF];
     }

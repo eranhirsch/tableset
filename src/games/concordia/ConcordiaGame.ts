@@ -1,7 +1,7 @@
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import IGame, { StepId } from "../IGame";
-import IGameStep, { createGameStep } from "../IGameStep";
-import MapStep from "./steps/MapStep";
+import IGameStep from "../IGameStep";
+import { createGameStep } from "../createGameStep";
 import CityTilesStep from "./steps/CityTilesStep";
 import MarketDisplayStep from "./steps/MarketDisplayStep";
 import BonusTilesStep from "./steps/BonusTilesStep";
@@ -11,6 +11,7 @@ import StartingMoneyStep from "./steps/StartingMoneyStep";
 import { PraefectusMagnusStep } from "./steps/PraefectusMagnusStep";
 import FirstPlayerStep from "../steps/FirstPlayerStep";
 import PlayerColorsStep from "../steps/PlayerColorsStep";
+import mapStep from "./steps/mapStep";
 
 export default class ConcordiaGame implements IGame {
   private readonly steps: Readonly<{ [id: string]: IGameStep }>;
@@ -18,7 +19,7 @@ export default class ConcordiaGame implements IGame {
   public constructor() {
     this.steps = Object.fromEntries(
       [
-        new MapStep(),
+        mapStep,
         new CityTilesStep(),
         new BonusTilesStep(),
         createGameStep({ id: "marketCards" }),

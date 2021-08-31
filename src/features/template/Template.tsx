@@ -30,12 +30,9 @@ export default function Template() {
         if (step.strategies == null) {
           return false;
         }
-        return (
-          step.strategies({ template, playersTotal: playerIds.length }).length >
-          1
-        );
+        return step.strategies({ template, playerIds }).length > 1;
       }),
-    [allItems, game, playerIds.length, template]
+    [allItems, game, playerIds, template]
   );
 
   return (

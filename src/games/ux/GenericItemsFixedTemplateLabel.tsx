@@ -1,11 +1,11 @@
-import { IItemsGameStep } from "./GenericItemsListPanel";
-
-export default function GenericItemsFixedTemplateLabel({
-  itemsStep,
-  selectedItemId,
+export default function GenericItemsFixedTemplateLabel<
+  T extends string = string
+>({
+  onLabelForItem,
+  selectedId,
 }: {
-  itemsStep: IItemsGameStep;
-  selectedItemId: string;
+  onLabelForItem: (id: T) => string;
+  selectedId: T;
 }) {
-  return <>{itemsStep.labelForItem(selectedItemId)}</>;
+  return <>{onLabelForItem(selectedId)}</>;
 }

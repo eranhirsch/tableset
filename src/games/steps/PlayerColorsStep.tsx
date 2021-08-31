@@ -24,13 +24,13 @@ export default class PlayerColorsStep implements IGameStep {
 
   public constructor(private availableColors: readonly GamePiecesColor[]) {}
 
-  public strategies({ playersTotal }: TemplateContext): readonly Strategy[] {
-    if (playersTotal < 1) {
+  public strategies({ playerIds }: TemplateContext): readonly Strategy[] {
+    if (playerIds.length < 1) {
       // No one to assign a color to
       return [Strategy.OFF];
     }
 
-    if (playersTotal > this.availableColors.length) {
+    if (playerIds.length > this.availableColors.length) {
       // Too many players to assign colors to
       return [Strategy.OFF];
     }

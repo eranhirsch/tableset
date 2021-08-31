@@ -2,31 +2,29 @@ import { Chip } from "@material-ui/core";
 import { Action } from "@reduxjs/toolkit";
 import { useAppDispatch } from "../../app/hooks";
 
-export type IItemsGameStep = Readonly<{
-  items: readonly string[];
-  labelForItem(itemId: string): string;
-  updateFixedItemActionForId(itemId: string): Action;
-}>;
-
-export default function GenericItemsListPanel({
-  itemsStep,
-  selectedItemId,
+export default function GenericItemsListPanel<T extends string = string>({
+  itemIds,
+  onLabelForItem,
+  onUpdateItem,
+  selectedId,
 }: {
-  itemsStep: IItemsGameStep;
-  selectedItemId: string;
+  itemIds: readonly T[];
+  onLabelForItem: (itemId: T) => string;
+  onUpdateItem: (itemId: T) => Action;
+  selectedId: T;
 }) {
   const dispatch = useAppDispatch();
 
   return (
     <>
-      {itemsStep.items.map((itemId) => (
+      {itemIds.map((itemId) => (
         <Chip
           key={itemId}
-          variant={selectedItemId === itemId ? "filled" : "outlined"}
-          label={itemsStep.labelForItem(itemId)}
+          variant={selectedId === itemId ? "filled" : "outlined"}
+          label={onLabelForItem(itemId)}
           onClick={
-            selectedItemId !== itemId
-              ? () => dispatch(itemsStep.updateFixedItemActionForId(itemId))
+            selectedId !== itemId
+              ? () => dispatch(onUpdateItem(itemId))
               : undefined
           }
         />
