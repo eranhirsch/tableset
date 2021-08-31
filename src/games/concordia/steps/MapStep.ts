@@ -1,4 +1,5 @@
 import { Strategy } from "../../../core/Strategy";
+import { ConstantTemplateElement } from "../../../features/template/templateSlice";
 import IGameStep, { InstanceContext, TemplateContext } from "../../IGameStep";
 
 export type Zone = "A" | "B" | "C" | "D";
@@ -99,5 +100,14 @@ export default class MapStep implements IGameStep {
       strategies.push(Strategy.DEFAULT);
     }
     return strategies;
+  }
+
+  public initialFixedValue?(playerIds: string[]): ConstantTemplateElement {
+    return {
+      id: this.id,
+      strategy: Strategy.FIXED,
+      global: false,
+      value: this.items[0],
+    };
   }
 }

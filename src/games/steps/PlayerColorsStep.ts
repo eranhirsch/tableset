@@ -1,10 +1,13 @@
 import { WritableDraft } from "immer/dist/internal";
 import invariant_violation from "../../common/err/invariant_violation";
-import nullthrows from "../../common/err/nullthrows";
 import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import { Player, PlayerId } from "../../features/players/playersSlice";
-import templateSlice from "../../features/template/templateSlice";
+import {
+  ConstantTemplateElement,
+  templateAdapter,
+  TemplateState,
+} from "../../features/template/templateSlice";
 import IGameStep, { TemplateContext } from "../IGameStep";
 
 export default class PlayerColorsStep implements IGameStep<"playerColors"> {
@@ -27,9 +30,23 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
     return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
   }
 
-  onPlayerAdded(
-    state: WritableDraft<ReturnType<typeof templateSlice["reducer"]>>,
-    addedPlayer: Player
+  public initialFixedValue?(playerIds: string[]): ConstantTemplateElement {
+    return {
+      id: "playerColors",
+      strategy: Strategy.FIXED,
+      global: true,
+      value: Object.fromEntries(
+        playerIds.map((playerId, index) => [
+          playerId,
+          this.availableColors[index],
+        ])
+      ),
+    };
+  }
+
+  public onPlayerAdded(
+    state: WritableDraft<TemplateState>,
+    { addedPlayer }: { addedPlayer: Player }
   ): void {
     const step = state.entities[this.id];
     if (step == null) {
@@ -52,16 +69,21 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
     }
 
     const usedColors = Object.values(step.value);
-    step.value[addedPlayer.id] = nullthrows(
-      this.availableColors.find((color) => !usedColors.includes(color)),
-      `No more colors available for new player`
+    const availableColor = this.availableColors.find(
+      (color) => !usedColors.includes(color)
     );
+    if (availableColor != null) {
+      step.value[addedPlayer.id] = availableColor;
+    } else {
+      // Too many players for this step, just remove the whole thing from the
+      // template
+      templateAdapter.removeOne(state, this.id);
+    }
   }
 
   public onPlayerRemoved(
-    state: WritableDraft<ReturnType<typeof templateSlice["reducer"]>>,
-    removedPlayerId: PlayerId,
-    playersTotal: number
+    state: WritableDraft<TemplateState>,
+    { removedPlayerId }: { removedPlayerId: PlayerId }
   ): void {
     const step = state.entities[this.id];
     if (step == null) {

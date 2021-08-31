@@ -2,8 +2,10 @@ import { WritableDraft } from "immer/dist/internal";
 import invariant_violation from "../../common/err/invariant_violation";
 import { Strategy } from "../../core/Strategy";
 import { Player, PlayerId } from "../../features/players/playersSlice";
-import templateSlice, {
+import {
+  ConstantTemplateElement,
   templateAdapter,
+  TemplateState,
 } from "../../features/template/templateSlice";
 import IGameStep, { TemplateContext } from "../IGameStep";
 
@@ -21,9 +23,20 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
     return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
   }
 
-  onPlayerAdded(
-    state: WritableDraft<ReturnType<typeof templateSlice["reducer"]>>,
-    addedPlayer: Player
+  public initialFixedValue?(playerIds: string[]): ConstantTemplateElement {
+    // Remove the first player which would be used as a pivot
+    const [, ...restOfPlayers] = playerIds;
+    return {
+      id: "playOrder",
+      strategy: Strategy.FIXED,
+      global: true,
+      value: restOfPlayers,
+    };
+  }
+
+  public onPlayerAdded(
+    state: WritableDraft<TemplateState>,
+    { addedPlayer }: { addedPlayer: Player }
   ): void {
     const step = state.entities[this.id];
     if (step == null) {
@@ -49,9 +62,11 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
   }
 
   public onPlayerRemoved(
-    state: WritableDraft<ReturnType<typeof templateSlice["reducer"]>>,
-    removedPlayerId: PlayerId,
-    playersTotal: number
+    state: WritableDraft<TemplateState>,
+    {
+      removedPlayerId,
+      playersTotal,
+    }: { removedPlayerId: PlayerId; playersTotal: number }
   ): void {
     const step = state.entities[this.id];
     if (step == null) {

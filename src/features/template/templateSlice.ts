@@ -8,14 +8,14 @@ import filter_nulls from "../../common/lib_utils/filter_nulls";
 import { Strategy } from "../../core/Strategy";
 import playersSlice, { Player, PlayerId } from "../players/playersSlice";
 import PlayerColors from "../../common/PlayerColors";
-import Game, { StepId } from "../../games/IGame";
+import { StepId } from "../../games/IGame";
 import GameMapper, { GameId } from "../../games/GameMapper";
 import AppContext from "../../app/AppContext";
 import PlayOrderStep from "../../games/steps/PlayOrderStep";
 import PlayerColorsStep from "../../games/steps/PlayerColorsStep";
 import FirstPlayerStep from "../../games/steps/FirstPlayerStep";
 
-type ConstantTemplateElement =
+export type ConstantTemplateElement =
   | {
       id: PlayOrderStep["id"];
       strategy: Strategy.FIXED;
@@ -151,7 +151,7 @@ export const templateSlice = createSlice({
       ) {
         templateAdapter.upsertOne(
           state,
-          fixedSetupStep(id, GameMapper.forId(gameId), playerIds)
+          GameMapper.forId(gameId).at(id)!.initialFixedValue!(playerIds)
         );
       },
     },
@@ -184,14 +184,17 @@ export const templateSlice = createSlice({
         (
           state,
           {
-            payload: playerId,
+            payload: removedPlayerId,
             meta: { playersTotal, gameId },
           }: PayloadAction<PlayerId, any, AppContext>
         ) =>
           Object.values(state.ids).forEach((stepId) => {
             const gameStep = GameMapper.forId(gameId).at(stepId as StepId);
             if (gameStep?.onPlayerRemoved != null) {
-              gameStep.onPlayerRemoved(state, playerId, playersTotal);
+              gameStep.onPlayerRemoved(state, {
+                removedPlayerId,
+                playersTotal,
+              });
             }
           })
       )
@@ -201,14 +204,14 @@ export const templateSlice = createSlice({
         (
           state,
           {
-            payload: player,
+            payload: addedPlayer,
             meta: gameId,
           }: PayloadAction<Player, string, GameId>
         ) =>
           Object.values(state.ids).forEach((stepId) => {
             const gameStep = GameMapper.forId(gameId).at(stepId as StepId);
             if (gameStep?.onPlayerAdded != null) {
-              gameStep.onPlayerAdded(state, player);
+              gameStep.onPlayerAdded(state, { addedPlayer });
             }
           })
       );
@@ -216,55 +219,8 @@ export const templateSlice = createSlice({
 });
 export default templateSlice;
 
+export type TemplateState = ReturnType<typeof templateSlice["reducer"]>;
+
 export const selectors = templateAdapter.getSelectors<RootState>(
   (state) => state.template
 );
-
-function fixedSetupStep(
-  id: StepId,
-  game: Game,
-  playerIds: PlayerId[]
-): ConstantTemplateElement {
-  switch (id) {
-    case "playOrder": {
-      // Remove the first player which would be used as a pivot
-      const [, ...restOfPlayers] = playerIds;
-      return {
-        id: "playOrder",
-        strategy: Strategy.FIXED,
-        global: true,
-        value: restOfPlayers,
-      };
-    }
-
-    case "firstPlayer": {
-      return {
-        id: "firstPlayer",
-        strategy: Strategy.FIXED,
-        global: true,
-        value: playerIds[0],
-      };
-    }
-
-    case "playerColors":
-      return {
-        id: "playerColors",
-        strategy: Strategy.FIXED,
-        global: true,
-        value: Object.fromEntries(
-          playerIds.map((playerId, index) => [
-            playerId,
-            game.playerColors[index],
-          ])
-        ),
-      };
-
-    default:
-      return {
-        id: id,
-        strategy: Strategy.FIXED,
-        global: false,
-        value: game.at(id)!.items![0],
-      };
-  }
-}

@@ -2,8 +2,10 @@ import { WritableDraft } from "immer/dist/internal";
 import invariant_violation from "../../common/err/invariant_violation";
 import { Strategy } from "../../core/Strategy";
 import { PlayerId } from "../../features/players/playersSlice";
-import templateSlice, {
+import {
+  ConstantTemplateElement,
   templateAdapter,
+  TemplateState,
 } from "../../features/template/templateSlice";
 import IGameStep, { TemplateContext } from "../IGameStep";
 
@@ -19,10 +21,18 @@ export default class FirstPlayerStep implements IGameStep<"firstPlayer"> {
     return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
   }
 
+  public initialFixedValue?(playerIds: string[]): ConstantTemplateElement {
+    return {
+      id: "firstPlayer",
+      strategy: Strategy.FIXED,
+      global: true,
+      value: playerIds[0],
+    };
+  }
+
   public onPlayerRemoved(
-    state: WritableDraft<ReturnType<typeof templateSlice["reducer"]>>,
-    removedPlayerId: PlayerId,
-    playersTotal: number
+    state: WritableDraft<TemplateState>,
+    { removedPlayerId }: { removedPlayerId: PlayerId }
   ): void {
     const step = state.entities[this.id];
     if (step == null) {

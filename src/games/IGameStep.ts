@@ -4,7 +4,9 @@ import { Strategy } from "../core/Strategy";
 import { SetupStep } from "../features/instance/instanceSlice";
 import { Player, PlayerId } from "../features/players/playersSlice";
 import templateSlice, {
+  ConstantTemplateElement,
   TemplateElement,
+  TemplateState,
 } from "../features/template/templateSlice";
 import { StepId } from "./IGame";
 
@@ -18,6 +20,16 @@ export interface InstanceContext {
   playersTotal: number;
 }
 
+// switch (id) {
+//   default:
+//     return {
+//       id: id,
+//       strategy: Strategy.FIXED,
+//       global: false,
+//       value: game.at(id)!.items![0],
+//     };
+// }
+
 export default interface IGameStep<S extends StepId = StepId> {
   readonly id: S;
   readonly label: string;
@@ -27,16 +39,17 @@ export default interface IGameStep<S extends StepId = StepId> {
 
   strategies?(context: Readonly<TemplateContext>): readonly Strategy[];
 
+  initialFixedValue?(playerIds: string[]): ConstantTemplateElement;
+
   resolveRandom?(context: InstanceContext): string;
   resolveDefault?(context: InstanceContext): string;
 
   onPlayerAdded?(
-    state: WritableDraft<ReturnType<typeof templateSlice["reducer"]>>,
-    addedPlayer: Player
+    state: WritableDraft<TemplateState>,
+    context: { addedPlayer: Player }
   ): void;
   onPlayerRemoved?(
-    state: WritableDraft<ReturnType<typeof templateSlice["reducer"]>>,
-    removedPlayerId: PlayerId,
-    playersTotal: number
+    state: WritableDraft<TemplateState>,
+    context: { removedPlayerId: PlayerId; playersTotal: number }
   ): void;
 }
