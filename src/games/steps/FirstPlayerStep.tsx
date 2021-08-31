@@ -7,7 +7,7 @@ import {
   templateAdapter,
   TemplateState,
 } from "../../features/template/templateSlice";
-import IGameStep, { TemplateContext } from "../IGameStep";
+import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
 import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";
 import StartingPlayerPanel from "../ux/StartingPlayerPanel";
 
@@ -30,6 +30,10 @@ export default class FirstPlayerStep implements IGameStep<"firstPlayer"> {
       global: true,
       value: playerIds[0],
     };
+  }
+
+  public resolveRandom({ playerIds }: InstanceContext): PlayerId {
+    return playerIds[Math.floor(Math.random() * playerIds.length)];
   }
 
   public renderTemplateFixedLabel(value: any): JSX.Element {

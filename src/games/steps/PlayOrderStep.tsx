@@ -1,5 +1,7 @@
 import { WritableDraft } from "immer/dist/internal";
 import invariant_violation from "../../common/err/invariant_violation";
+import nullthrows from "../../common/err/nullthrows";
+import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import { Strategy } from "../../core/Strategy";
 import { Player, PlayerId } from "../../features/players/playersSlice";
 import {
@@ -7,7 +9,7 @@ import {
   templateAdapter,
   TemplateState,
 } from "../../features/template/templateSlice";
-import IGameStep, { TemplateContext } from "../IGameStep";
+import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
 import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
 
@@ -34,6 +36,14 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
       global: true,
       value: restOfPlayers,
     };
+  }
+
+  public resolveRandom({ playerIds }: InstanceContext): readonly PlayerId[] {
+    // Remove the first player as the pivot
+    const [, ...restOfPlayers] = playerIds;
+    const permutations = PermutationsLazyArray.forPermutation(restOfPlayers);
+    const selectedIdx = Math.floor(Math.random() * permutations.length);
+    return nullthrows(permutations.at(selectedIdx));
   }
 
   public renderTemplateFixedLabel(value: any): JSX.Element {

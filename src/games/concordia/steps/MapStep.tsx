@@ -88,9 +88,9 @@ export default class MapStep implements IGameStep, IItemsGameStep {
     return this.items[Math.floor(Math.random() * this.items.length)];
   }
 
-  public resolveDefault({ playersTotal }: InstanceContext): string {
+  public resolveDefault({ playerIds }: InstanceContext): string {
     // Using typescript to verify the Ids here are valid
-    const recommendedMap: MapId = playersTotal < 4 ? "italia" : "imperium";
+    const recommendedMap: MapId = playerIds.length < 4 ? "italia" : "imperium";
     return recommendedMap;
   }
 

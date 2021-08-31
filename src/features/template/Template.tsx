@@ -4,7 +4,10 @@ import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectors as templateSelectors } from "./templateSlice";
-import { selectors as playersSelectors } from "../players/playersSlice";
+import {
+  PlayerId,
+  selectors as playersSelectors,
+} from "../players/playersSlice";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import instanceSlice from "../instance/instanceSlice";
 import { Link as RouterLink } from "react-router-dom";
@@ -17,7 +20,7 @@ export default function Template() {
 
   const game = useAppSelector(gameSelector);
   const template = useAppSelector(templateSelectors.selectEntities);
-  const playerIds = useAppSelector(playersSelectors.selectIds);
+  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 
   const allItems = game.order;
   const templatableItems = useMemo(

@@ -17,7 +17,7 @@ export interface TemplateContext {
 
 export interface InstanceContext {
   instance: readonly SetupStep[];
-  playersTotal: number;
+  playerIds: readonly PlayerId[];
 }
 
 export default interface IGameStep<S extends StepId = StepId> {
@@ -34,7 +34,7 @@ export default interface IGameStep<S extends StepId = StepId> {
 
   initialFixedValue?(playerIds: string[]): ConstantTemplateElement;
 
-  resolveRandom?(context: InstanceContext): string;
+  resolveRandom?(context: InstanceContext): any;
   resolveDefault?(context: InstanceContext): string;
 
   onPlayerAdded?(

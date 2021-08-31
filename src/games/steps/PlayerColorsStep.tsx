@@ -1,5 +1,7 @@
 import { WritableDraft } from "immer/dist/internal";
 import invariant_violation from "../../common/err/invariant_violation";
+import nullthrows from "../../common/err/nullthrows";
+import PermutationsLazyArray from "../../common/PermutationsLazyArray";
 import PlayerColors from "../../common/PlayerColors";
 import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
@@ -9,7 +11,7 @@ import {
   templateAdapter,
   TemplateState,
 } from "../../features/template/templateSlice";
-import IGameStep, { TemplateContext } from "../IGameStep";
+import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
 import PlayerColorPanel from "../ux/PlayerColorPanel";
 import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
 
@@ -45,6 +47,17 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
         ])
       ),
     };
+  }
+
+  public resolveRandom({ playerIds }: InstanceContext): PlayerColors {
+    const permutations = PermutationsLazyArray.forPermutation(
+      this.availableColors
+    );
+    const selectedIdx = Math.floor(Math.random() * permutations.length);
+    const permutation = nullthrows(permutations.at(selectedIdx));
+    return Object.fromEntries(
+      playerIds.map((playerId, index) => [playerId, permutation[index]])
+    );
   }
 
   public renderTemplateFixedLabel(value: any): JSX.Element {

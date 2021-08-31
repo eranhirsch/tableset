@@ -86,36 +86,30 @@ function InstanceItemContent({ stepId }: { stepId: StepId }) {
     return null;
   }
 
-  if (step.global) {
-    switch (step.id) {
-      case "playOrder":
-        return <PlayOrderPanel playOrder={step.value} />;
+  switch (step.id) {
+    case "playOrder":
+      return <PlayOrderPanel playOrder={step.value} />;
 
-      case "playerColors":
-        return <PlayerColorsPanel playerColor={step.value} />;
+    case "playerColors":
+      return <PlayerColorsPanel playerColor={step.value} />;
 
-      case "firstPlayer":
-        return <FirstPlayerPanel playerId={step.value} />;
-    }
-  } else {
-    // TODO: Move this to a game specific parser
-    switch (step.id) {
-      case "map":
-        return (
-          <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
-            {game.at("map")!.labelForItem!(step.value)}
-          </Typography>
-        );
+    case "firstPlayer":
+      return <FirstPlayerPanel playerId={step.value} />;
+    case "map":
+      return (
+        <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
+          {game.at("map")!.labelForItem!(step.value)}
+        </Typography>
+      );
 
-      case "cityTiles":
-        return <CityTilesFixedInstructions hash={step.value} />;
+    case "cityTiles":
+      return <CityTilesFixedInstructions hash={step.value} />;
 
-      case "marketDisplay":
-        return <MarketDisplayFixedInstructions hash={step.value} />;
+    case "marketDisplay":
+      return <MarketDisplayFixedInstructions hash={step.value} />;
 
-      default:
-        return <Typography variant="h4">{step.value}</Typography>;
-    }
+    default:
+      return <Typography variant="h4">{step.value}</Typography>;
   }
 }
 
