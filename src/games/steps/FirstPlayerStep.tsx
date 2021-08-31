@@ -28,7 +28,6 @@ export default class FirstPlayerStep implements IGameStep<"firstPlayer"> {
     return {
       id: "firstPlayer",
       strategy: Strategy.FIXED,
-      global: true,
       value: playerIds[0],
     };
   }
@@ -67,7 +66,6 @@ export default class FirstPlayerStep implements IGameStep<"firstPlayer"> {
 
     if (
       step.strategy === Strategy.FIXED &&
-      step.global &&
       step.value === removedPlayerId
     ) {
       // The first player was removed, we can't deduce another first player so

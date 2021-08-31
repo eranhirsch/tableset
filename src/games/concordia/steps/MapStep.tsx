@@ -123,7 +123,6 @@ export default class MapStep implements IGameStep, IItemsGameStep {
     return {
       id: this.id,
       strategy: Strategy.FIXED,
-      global: false,
       value: this.items[0],
     };
   }
@@ -157,7 +156,6 @@ export default class MapStep implements IGameStep, IItemsGameStep {
   public updateFixedItemActionForId(itemId: string): Action {
     return templateSlice.actions.constantValueChanged({
       id: this.id,
-      global: false,
       value: itemId,
     });
   }

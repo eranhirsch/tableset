@@ -1,4 +1,5 @@
 import { WritableDraft } from "immer/dist/internal";
+import invariant from "../../common/err/invariant";
 import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
@@ -7,6 +8,7 @@ import { Player, PlayerId } from "../../features/players/playersSlice";
 import {
   ConstantTemplateElement,
   templateAdapter,
+  TemplateElement,
   TemplateState,
 } from "../../features/template/templateSlice";
 import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
@@ -34,7 +36,6 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
     return {
       id: "playOrder",
       strategy: Strategy.FIXED,
-      global: true,
       value: restOfPlayers,
     };
   }
@@ -52,11 +53,28 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
   }
 
   public renderTemplateFixedValueSelector(): JSX.Element {
-    return <PlayerOrderPanel />;
+    return <PlayerOrderPanel gameStep={this} />;
   }
 
   public renderInstanceContent(value: any): JSX.Element {
     return <PlayOrderPanel playOrder={value as PlayerId[]} />;
+  }
+
+  public extractTemplateFixedValue(element: TemplateElement): PlayerId[] {
+    invariant(
+      this.id === element.id,
+      `Element ${JSON.stringify(element)} does not match this step id ${
+        this.id
+      }`
+    );
+
+    if (element.strategy !== Strategy.FIXED) {
+      invariant_violation(
+        `Element ${JSON.stringify(element)} does not have a fixed strategy`
+      );
+    }
+
+    return element.value as PlayerId[];
   }
 
   public onPlayerAdded(
@@ -77,10 +95,6 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
 
     if (step.strategy !== Strategy.FIXED) {
       return;
-    }
-
-    if (!step.global) {
-      invariant_violation(`Global step ${this.id} not marked as global`);
     }
 
     step.value.push(addedPlayer.id);
@@ -114,10 +128,6 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
 
     if (step.strategy !== Strategy.FIXED) {
       return;
-    }
-
-    if (!step.global) {
-      invariant_violation(`Global step ${this.id} not marked as global`);
     }
 
     const playerIndex = step.value.indexOf(removedPlayerId);

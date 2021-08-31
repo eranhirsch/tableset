@@ -12,9 +12,7 @@ import invariant_violation from "../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
 import object_flip from "../../common/lib_utils/object_flip";
 import short_name from "../../common/short_name";
-import { Strategy } from "../../core/Strategy";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
-import { gameSelector } from "../../features/game/gameSlice";
 import {
   Player,
   selectors as playersSelectors,
@@ -22,6 +20,7 @@ import {
 import templateSlice, {
   selectors as templateSelectors,
 } from "../../features/template/templateSlice";
+import PlayerColorsStep from "../steps/PlayerColorsStep";
 
 function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (
@@ -115,20 +114,20 @@ function ColorSlot({
   );
 }
 
-export default function PlayerColorPanel() {
+export default function PlayerColorPanel({
+  availableColors,
+  gameStep,
+}: {
+  availableColors: readonly GamePiecesColor[];
+  gameStep: PlayerColorsStep;
+}) {
   const dispatch = useAppDispatch();
 
-  const game = useAppSelector(gameSelector);
-
-  const step = useAppEntityIdSelectorEnforce(templateSelectors, "playerColors");
-  if (
-    step.id !== "playerColors" ||
-    step.strategy !== Strategy.FIXED ||
-    !step.global
-  ) {
-    invariant_violation(`Step ${step} is misconfigured for this panel`);
-  }
-  const playerColors = step.value;
+  const element = useAppEntityIdSelectorEnforce(
+    templateSelectors,
+    "playerColors"
+  );
+  const playerColors = gameStep.extractTemplateFixedValue(element);
 
   const players = useAppSelector(playersSelectors.selectEntities);
 
@@ -144,7 +143,7 @@ export default function PlayerColorPanel() {
       treatAsAvailable: GamePiecesColor
     ): GamePiecesColor => {
       const isSlotAvailble = (slot: number): boolean => {
-        const colorAtSlot = game.playerColors[slot];
+        const colorAtSlot = availableColors[slot];
         return (
           colorAtSlot != null &&
           (colorAtSlot === treatAsAvailable ||
@@ -152,27 +151,21 @@ export default function PlayerColorPanel() {
         );
       };
 
-      const currentPos = game.playerColors.findIndex(
-        (color) => color === start
-      );
+      const currentPos = availableColors.findIndex((color) => color === start);
 
-      for (
-        let distance = 1;
-        distance < game.playerColors.length;
-        distance += 1
-      ) {
+      for (let distance = 1; distance < availableColors.length; distance += 1) {
         if (isSlotAvailble(currentPos - distance)) {
-          return game.playerColors[currentPos - distance];
+          return availableColors[currentPos - distance];
         }
 
         if (isSlotAvailble(currentPos + distance)) {
-          return game.playerColors[currentPos + distance];
+          return availableColors[currentPos + distance];
         }
       }
 
       invariant_violation("Couldn't find an available color!");
     },
-    [colorPlayers, game.playerColors]
+    [availableColors, colorPlayers]
   );
 
   const onDragEnd = useCallback(
@@ -206,7 +199,6 @@ export default function PlayerColorPanel() {
       dispatch(
         templateSlice.actions.constantValueChanged({
           id: "playerColors",
-          global: true,
           value: newColors,
         })
       );
@@ -224,7 +216,7 @@ export default function PlayerColorPanel() {
         spacing={1}
         height={48}
       >
-        {game.playerColors.map((color) => (
+        {availableColors.map((color) => (
           <ColorSlot
             key={color}
             color={color}

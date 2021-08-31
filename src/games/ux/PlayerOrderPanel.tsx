@@ -7,10 +7,8 @@ import {
   Droppable,
 } from "react-beautiful-dnd";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import invariant_violation from "../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
 import short_name from "../../common/short_name";
-import { Strategy } from "../../core/Strategy";
 import {
   PlayerId,
   selectors as playersSelectors,
@@ -19,6 +17,7 @@ import templateSlice, {
   selectors as templateSelectors,
 } from "../../features/template/templateSlice";
 import LockIcon from "@material-ui/icons/Lock";
+import PlayOrderStep from "../steps/PlayOrderStep";
 
 function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
   const clone = items.slice();
@@ -68,18 +67,15 @@ function FirstAvatar() {
   );
 }
 
-export default function PlayerOrderPanel() {
+export default function PlayerOrderPanel({
+  gameStep,
+}: {
+  gameStep: PlayOrderStep;
+}) {
   const dispatch = useAppDispatch();
 
-  const step = useAppEntityIdSelectorEnforce(templateSelectors, "playOrder");
-  if (
-    step.id !== "playOrder" ||
-    step.strategy !== Strategy.FIXED ||
-    !step.global
-  ) {
-    invariant_violation(`Step ${step} is misconfigured for this panel`);
-  }
-  const order = step.value;
+  const element = useAppEntityIdSelectorEnforce(templateSelectors, "playOrder");
+  const order = gameStep.extractTemplateFixedValue(element);
 
   const onDragEnd = useCallback(
     ({ reason, source, destination }: DropResult) => {
@@ -95,7 +91,6 @@ export default function PlayerOrderPanel() {
       dispatch(
         templateSlice.actions.constantValueChanged({
           id: "playOrder",
-          global: true,
           value: moveItem(order, source.index, destination.index),
         })
       );

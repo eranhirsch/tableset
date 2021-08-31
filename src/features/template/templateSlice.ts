@@ -7,46 +7,22 @@ import { RootState } from "../../app/store";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
 import { Strategy } from "../../core/Strategy";
 import playersSlice, { Player, PlayerId } from "../players/playersSlice";
-import PlayerColors from "../../common/PlayerColors";
 import { StepId } from "../../games/IGame";
 import GameMapper, { GameId } from "../../games/GameMapper";
 import AppContext from "../../app/AppContext";
-import PlayOrderStep from "../../games/steps/PlayOrderStep";
-import PlayerColorsStep from "../../games/steps/PlayerColorsStep";
-import FirstPlayerStep from "../../games/steps/FirstPlayerStep";
 
-export type ConstantTemplateElement =
-  | {
-      id: PlayOrderStep["id"];
-      strategy: Strategy.FIXED;
-      global: true;
-      value: PlayerId[];
-    }
-  | {
-      id: PlayerColorsStep["id"];
-      strategy: Strategy.FIXED;
-      global: true;
-      value: PlayerColors;
-    }
-  | {
-      id: FirstPlayerStep["id"];
-      strategy: Strategy.FIXED;
-      global: true;
-      value: PlayerId;
-    }
-  | {
-      id: StepId;
-      strategy: Strategy.FIXED;
-      global: false;
-      value: string;
-    };
+export type ConstantTemplateElement = Readonly<{
+  id: StepId;
+  strategy: Strategy.FIXED;
+  value: any;
+}>;
 
 export type TemplateElement =
   | ConstantTemplateElement
-  | {
+  | Readonly<{
       id: StepId;
       strategy: Exclude<Strategy, Strategy.FIXED>;
-    };
+    }>;
 
 export const templateAdapter = createEntityAdapter<TemplateElement>({
   selectId: (step) => step.id,

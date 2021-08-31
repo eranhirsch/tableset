@@ -1,4 +1,5 @@
 import { WritableDraft } from "immer/dist/internal";
+import invariant from "../../common/err/invariant";
 import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
 import PermutationsLazyArray from "../../common/PermutationsLazyArray";
@@ -9,6 +10,7 @@ import { Player, PlayerId } from "../../features/players/playersSlice";
 import {
   ConstantTemplateElement,
   templateAdapter,
+  TemplateElement,
   TemplateState,
 } from "../../features/template/templateSlice";
 import IGameStep, { InstanceContext, TemplateContext } from "../IGameStep";
@@ -40,7 +42,6 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
     return {
       id: "playerColors",
       strategy: Strategy.FIXED,
-      global: true,
       value: Object.fromEntries(
         playerIds.map((playerId, index) => [
           playerId,
@@ -66,11 +67,33 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
   }
 
   public renderTemplateFixedValueSelector(): JSX.Element {
-    return <PlayerColorPanel />;
+    return (
+      <PlayerColorPanel
+        availableColors={this.availableColors}
+        gameStep={this}
+      />
+    );
   }
 
   public renderInstanceContent(value: any): JSX.Element {
     return <PlayerColorsPanel playerColor={value as PlayerColors} />;
+  }
+
+  public extractTemplateFixedValue(element: TemplateElement): PlayerColors {
+    invariant(
+      this.id === element.id,
+      `Element ${JSON.stringify(element)} does not match this step id ${
+        this.id
+      }`
+    );
+
+    if (element.strategy !== Strategy.FIXED) {
+      invariant_violation(
+        `Element ${JSON.stringify(element)} does not have a fixed strategy`
+      );
+    }
+
+    return element.value as PlayerColors;
   }
 
   public onPlayerAdded(
@@ -91,10 +114,6 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
 
     if (step.strategy !== Strategy.FIXED) {
       return;
-    }
-
-    if (!step.global) {
-      invariant_violation(`Global step ${this.id} not marked as global`);
     }
 
     const usedColors = Object.values(step.value);
@@ -126,7 +145,7 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
       );
     }
 
-    if (step.strategy === Strategy.FIXED && step.global) {
+    if (step.strategy === Strategy.FIXED) {
       // Remove the removed players color config
       delete step.value[removedPlayerId];
     }
