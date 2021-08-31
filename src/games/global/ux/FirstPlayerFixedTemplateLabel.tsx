@@ -1,11 +1,14 @@
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import { PlayerId, selectors } from "../../../features/players/playersSlice";
+import {
+  PlayerId,
+  playersSelectors,
+} from "../../../features/players/playersSlice";
 
 export default function FirstPlayerFixedTemplateLabel({
   value,
 }: {
   value: PlayerId;
 }) {
-  const player = useAppEntityIdSelectorEnforce(selectors, value);
+  const player = useAppEntityIdSelectorEnforce(playersSelectors, value);
   return <>{player.name}</>;
 }

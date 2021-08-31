@@ -1,7 +1,7 @@
 import { Chip } from "@material-ui/core";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import PersonIcon from "@material-ui/icons/Person";
-import playersSlice, { selectors as playersSelectors } from "./playersSlice";
+import playersSlice, { playersSelectors } from "./playersSlice";
 import { EntityId } from "@reduxjs/toolkit";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
 import { gameIdSelector } from "../game/gameSlice";

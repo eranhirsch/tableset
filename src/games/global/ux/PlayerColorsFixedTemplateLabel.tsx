@@ -1,14 +1,14 @@
 import { useAppSelector } from "../../../app/hooks";
 import first_name from "../../../common/first_name";
 import PlayerColors from "../../../common/PlayerColors";
-import { selectors } from "../../../features/players/playersSlice";
+import { playersSelectors } from "../../../features/players/playersSlice";
 
 export default function PlayersColorsFixedTemplateLabel({
   value,
 }: {
   value: PlayerColors;
 }) {
-  const players = useAppSelector(selectors.selectEntities);
+  const players = useAppSelector(playersSelectors.selectEntities);
   return (
     <>
       {Object.entries(value)

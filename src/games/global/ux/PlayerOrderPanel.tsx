@@ -11,7 +11,7 @@ import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntit
 import short_name from "../../../common/short_name";
 import {
   PlayerId,
-  selectors as playersSelectors,
+  playersSelectors,
 } from "../../../features/players/playersSlice";
 import templateSlice, {
   templateSelectors,

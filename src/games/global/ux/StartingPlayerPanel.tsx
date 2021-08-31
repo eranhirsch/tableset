@@ -6,7 +6,7 @@ import short_name from "../../../common/short_name";
 import { Strategy } from "../../../core/Strategy";
 import {
   PlayerId,
-  selectors as playersSelectors,
+  playersSelectors,
 } from "../../../features/players/playersSlice";
 import templateSlice, {
   templateSelectors,

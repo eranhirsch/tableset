@@ -1,5 +1,5 @@
 import { useAppSelector } from "../../app/hooks";
-import { selectors as playersSelectors } from "./playersSlice";
+import { playersSelectors } from "./playersSlice";
 import Player from "./Player";
 import NewPlayerInput from "./NewPlayerInput";
 

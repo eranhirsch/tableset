@@ -46,7 +46,7 @@ const playersSlice = createSlice({
   },
 });
 
-export const selectors = playersAdapter.getSelectors<RootState>(
+export const playersSelectors = playersAdapter.getSelectors<RootState>(
   (state) => state.players
 );
 

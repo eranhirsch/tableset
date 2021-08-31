@@ -5,7 +5,7 @@ import short_name from "../../../common/short_name";
 import {
   PlayerId,
   firstPlayerSelector,
-  selectors as playersSelectors,
+  playersSelectors,
 } from "../../../features/players/playersSlice";
 
 export function PlayOrderPanel({

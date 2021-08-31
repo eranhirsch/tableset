@@ -15,7 +15,7 @@ import short_name from "../../../common/short_name";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import {
   Player,
-  selectors as playersSelectors,
+  playersSelectors,
 } from "../../../features/players/playersSlice";
 import templateSlice, {
   templateSelectors,

@@ -4,10 +4,7 @@ import TemplateItem from "./TemplateItem";
 import { EntityId } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { templateSelectors } from "./templateSlice";
-import {
-  PlayerId,
-  selectors as playersSelectors,
-} from "../players/playersSlice";
+import { PlayerId, playersSelectors } from "../players/playersSlice";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import instanceSlice from "../instance/instanceSlice";
 import { Link as RouterLink } from "react-router-dom";
