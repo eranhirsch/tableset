@@ -30,7 +30,7 @@ export default class PlayerColorsStep implements IGameStep<"playerColors"> {
     return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
   }
 
-  public initialFixedValue?(playerIds: string[]): ConstantTemplateElement {
+  public initialFixedValue(playerIds: string[]): ConstantTemplateElement {
     return {
       id: "playerColors",
       strategy: Strategy.FIXED,

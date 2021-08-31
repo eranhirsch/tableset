@@ -21,7 +21,7 @@ export default class FirstPlayerStep implements IGameStep<"firstPlayer"> {
     return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
   }
 
-  public initialFixedValue?(playerIds: string[]): ConstantTemplateElement {
+  public initialFixedValue(playerIds: string[]): ConstantTemplateElement {
     return {
       id: "firstPlayer",
       strategy: Strategy.FIXED,

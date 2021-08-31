@@ -102,7 +102,7 @@ export default class MapStep implements IGameStep {
     return strategies;
   }
 
-  public initialFixedValue?(playerIds: string[]): ConstantTemplateElement {
+  public initialFixedValue(playerIds: string[]): ConstantTemplateElement {
     return {
       id: this.id,
       strategy: Strategy.FIXED,

@@ -23,7 +23,7 @@ export default class PlayOrderStep implements IGameStep<"playOrder"> {
     return [Strategy.OFF, Strategy.RANDOM, Strategy.ASK, Strategy.FIXED];
   }
 
-  public initialFixedValue?(playerIds: string[]): ConstantTemplateElement {
+  public initialFixedValue(playerIds: string[]): ConstantTemplateElement {
     // Remove the first player which would be used as a pivot
     const [, ...restOfPlayers] = playerIds;
     return {

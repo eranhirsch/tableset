@@ -20,16 +20,6 @@ export interface InstanceContext {
   playersTotal: number;
 }
 
-// switch (id) {
-//   default:
-//     return {
-//       id: id,
-//       strategy: Strategy.FIXED,
-//       global: false,
-//       value: game.at(id)!.items![0],
-//     };
-// }
-
 export default interface IGameStep<S extends StepId = StepId> {
   readonly id: S;
   readonly label: string;
