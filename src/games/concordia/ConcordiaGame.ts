@@ -14,7 +14,7 @@ import PlayOrderStep from "../global/steps/PlayOrderStep";
 import cityTilesStep from "./steps/cityTilesStep";
 
 export default class ConcordiaGame implements IGame {
-  private readonly steps: Readonly<{ [id: string]: IGameStep }>;
+  private readonly steps: Readonly<{ [id: string]: IGameStep<any> }>;
 
   public constructor() {
     this.steps = Object.fromEntries(
@@ -43,7 +43,7 @@ export default class ConcordiaGame implements IGame {
     );
   }
 
-  public at(id: string): IGameStep | undefined {
+  public at(id: string): IGameStep<any> | undefined {
     return this.steps[id];
   }
 

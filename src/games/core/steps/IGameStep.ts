@@ -20,7 +20,7 @@ export interface InstanceContext {
   playerIds: readonly PlayerId[];
 }
 
-export default interface IGameStep {
+export default interface IGameStep<T = never> {
   readonly id: StepId;
   readonly label: string;
 
@@ -32,8 +32,8 @@ export default interface IGameStep {
 
   initialFixedValue?(playerIds: string[]): ConstantTemplateElement;
 
-  resolveRandom?(context: InstanceContext): any;
-  resolveDefault?(context: InstanceContext): any;
+  resolveRandom?(context: InstanceContext): T;
+  resolveDefault?(context: InstanceContext): T;
 
   onPlayerAdded?(
     state: WritableDraft<TemplateState>,

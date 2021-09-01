@@ -19,7 +19,7 @@ import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
 import { PlayOrderPanel } from "../ux/PlayOrderPanel";
 
-export default class PlayOrderStep implements IGameStep {
+export default class PlayOrderStep implements IGameStep<readonly PlayerId[]> {
   public readonly id: string = "playOrder";
   public readonly label: string = "Seating";
 

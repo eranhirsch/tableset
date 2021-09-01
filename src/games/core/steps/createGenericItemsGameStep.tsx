@@ -19,8 +19,8 @@ export default function createGenericItemsGameStep<T extends string = string>({
   itemIds,
   labelFor,
   recommended,
-}: CreateGenericItemsGameStepOptions<T>): IGameStep {
-  return createGameStep<T>({
+}: CreateGenericItemsGameStepOptions<T>): IGameStep<T> {
+  return createGameStep({
     id,
     derivers: {
       renderInstanceItem: (itemId) => (

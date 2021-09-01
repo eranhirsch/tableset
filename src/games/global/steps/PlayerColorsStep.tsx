@@ -21,7 +21,7 @@ import PlayerColorPanel from "../ux/PlayerColorPanel";
 import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
 import { PlayerColorsPanel } from "../ux/PlayerColorsPanel";
 
-export default class PlayerColorsStep implements IGameStep {
+export default class PlayerColorsStep implements IGameStep<PlayerColors> {
   public readonly id: string = "playerColors";
   public readonly label: string = "Colors";
 

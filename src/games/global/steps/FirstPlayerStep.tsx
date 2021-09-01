@@ -15,7 +15,7 @@ import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";
 import { FirstPlayerPanel } from "../ux/FirstPlayerPanel";
 import StartingPlayerPanel from "../ux/StartingPlayerPanel";
 
-export default class FirstPlayerStep implements IGameStep {
+export default class FirstPlayerStep implements IGameStep<PlayerId> {
   public readonly id: string = "firstPlayer";
   public readonly label: string = "First Player";
 

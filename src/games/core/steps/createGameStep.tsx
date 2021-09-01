@@ -5,7 +5,7 @@ import { ConstantTemplateElement } from "../../../features/template/templateSlic
 import { StepId } from "../IGame";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
-export interface CreateGameStepDeriversOptions<T = never> {
+export interface CreateGameStepDeriversOptions<T> {
   renderInstanceItem(item: T): JSX.Element;
   random(context: InstanceContext): T | undefined;
   recommended?(context: InstanceContext): T | undefined;
@@ -18,7 +18,7 @@ export interface CreateGameStepDeriversOptions<T = never> {
   };
 }
 
-interface CreateGameStepOptions<T = never> {
+interface CreateGameStepOptions<T> {
   // Used to identify, validate, and find the game step inside the game. Use
   // camelCase!
   id: StepId;
@@ -26,16 +26,15 @@ interface CreateGameStepOptions<T = never> {
   // Optional: We convert the camelCase id into a label automatically. Only use
   // this if you want a different label for your step
   labelOverride?: string;
-
   derivers?: CreateGameStepDeriversOptions<T>;
 }
 
-export function createGameStep<T = never>({
+export function createGameStep<T>({
   id,
   labelOverride,
   derivers,
-}: CreateGameStepOptions<T>): IGameStep {
-  const gameStep: IGameStep = {
+}: CreateGameStepOptions<T>): IGameStep<T> {
+  const gameStep: IGameStep<T> = {
     id,
     label:
       labelOverride ??

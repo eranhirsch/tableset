@@ -16,7 +16,7 @@ const MARKET_DECK_PHASE_1: readonly string[] = [
   "Smith",
 ];
 
-export default class MarketDisplayStep implements IGameStep {
+export default class MarketDisplayStep implements IGameStep<string> {
   public readonly id: string = "marketDisplay";
   public readonly label: string = "Cards Display";
 
