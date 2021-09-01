@@ -24,6 +24,8 @@ export default interface IGameStep<T = never> {
   readonly id: StepId;
   readonly label: string;
 
+  isType?(value: any): value is T;
+
   renderTemplateFixedLabel?(value: any): JSX.Element;
   renderTemplateFixedValueSelector?(current: any): JSX.Element;
   renderInstanceContent?(value: any): JSX.Element;

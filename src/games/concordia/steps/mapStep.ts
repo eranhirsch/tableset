@@ -77,4 +77,7 @@ export default createGenericItemsGameStep<MapId>({
       : playerIds.length <= 5
       ? "imperium"
       : undefined,
+  isType(x: string): x is MapId {
+    return MAPS[x as MapId] != null;
+  },
 });
