@@ -88,15 +88,15 @@ export const templateSlice = createSlice({
           const invalidSteps = filter_nulls(
             Object.values(state.entities)
           ).filter((step) => {
-            const strategiesFunc = GameMapper.forId(gameId).at(
-              step.id
-            )!.strategies;
-            return strategiesFunc == null
+            const gameStep = GameMapper.forId(gameId).at(step.id);
+            return gameStep?.strategies == null
               ? true
-              : !strategiesFunc({
-                  template: currentEntities,
-                  playerIds,
-                }).includes(step.strategy);
+              : gameStep
+                  .strategies({
+                    template: currentEntities,
+                    playerIds,
+                  })
+                  .includes(step.strategy);
           });
 
           if (invalidSteps.length === 0) {
