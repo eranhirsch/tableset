@@ -7,20 +7,6 @@ import { ConstantTemplateElement } from "../../../features/template/templateSlic
 import { StepId } from "../IGame";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
-interface CreateGameStepDeriversOptionsAny<T> {
-  isType(value: any): value is T;
-  renderInstanceItem(item: T): JSX.Element;
-  random(context: InstanceContext, ...dependancies: any[]): T;
-  recommended?(context: InstanceContext): T | undefined;
-  fixed?: {
-    initializer(
-      playerIds: readonly PlayerId[]
-    ): ConstantTemplateElement | undefined;
-    renderTemplateLabel(current: T): JSX.Element;
-    renderSelector(current: T): JSX.Element;
-  };
-}
-
 interface CreateGameStepOptionsAny<T> {
   // Used to identify, validate, and find the game step inside the game. Use
   // camelCase!
@@ -32,38 +18,34 @@ interface CreateGameStepOptionsAny<T> {
 
   dependencies?: [...IGameStep<any>[]];
 
-  derivers?: CreateGameStepDeriversOptionsAny<T>;
-}
-
-interface CreateGameStepDeriversOptions0<T> {
-  isType(value: any): value is T;
-  renderInstanceItem(item: T): JSX.Element;
-  random(context: InstanceContext): T;
-  recommended?(context: InstanceContext): T | undefined;
-  fixed?: {
-    initializer(
-      playerIds: readonly PlayerId[]
-    ): ConstantTemplateElement | undefined;
-    renderTemplateLabel(current: T): JSX.Element;
-    renderSelector(current: T): JSX.Element;
+  derivers?: {
+    isType(value: any): value is T;
+    renderInstanceItem(item: T): JSX.Element;
+    random(context: InstanceContext, ...dependancies: any[]): T;
+    recommended?(context: InstanceContext): T | undefined;
+    fixed?: {
+      initializer(
+        playerIds: readonly PlayerId[]
+      ): ConstantTemplateElement | undefined;
+      renderTemplateLabel(current: T): JSX.Element;
+      renderSelector(current: T): JSX.Element;
+    };
   };
 }
 
-interface CreateGameStepDeriversOptions1<T, D> {
-  isType(value: any): value is T;
-  renderInstanceItem(item: T): JSX.Element;
-  random(context: InstanceContext, dependant: D): T;
-  recommended?(context: InstanceContext): T | undefined;
-  fixed?: {
-    initializer(
-      playerIds: readonly PlayerId[]
-    ): ConstantTemplateElement | undefined;
-    renderTemplateLabel(current: T): JSX.Element;
-    renderSelector(current: T): JSX.Element;
-  };
-}
-
-interface CreateGameStepOptions0<T> {
+interface CreateGameStepOptions<
+  T,
+  D1 = never,
+  D2 = never,
+  D3 = never,
+  D4 = never,
+  D5 = never,
+  D6 = never,
+  D7 = never,
+  D8 = never,
+  D9 = never,
+  D10 = never
+> {
   // Used to identify, validate, and find the game step inside the game. Use
   // camelCase!
   id: StepId;
@@ -72,38 +54,132 @@ interface CreateGameStepOptions0<T> {
   // this if you want a different label for your step
   labelOverride?: string;
 
-  dependencies?: [];
+  dependencies?:
+    | [IGameStep<D1>]
+    | [IGameStep<D1>, IGameStep<D2>]
+    | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>]
+    | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>, IGameStep<D4>]
+    | [
+        IGameStep<D1>,
+        IGameStep<D2>,
+        IGameStep<D3>,
+        IGameStep<D4>,
+        IGameStep<D5>
+      ]
+    | [
+        IGameStep<D1>,
+        IGameStep<D2>,
+        IGameStep<D3>,
+        IGameStep<D4>,
+        IGameStep<D5>,
+        IGameStep<D6>
+      ]
+    | [
+        IGameStep<D1>,
+        IGameStep<D2>,
+        IGameStep<D3>,
+        IGameStep<D4>,
+        IGameStep<D5>,
+        IGameStep<D6>,
+        IGameStep<D7>
+      ]
+    | [
+        IGameStep<D1>,
+        IGameStep<D2>,
+        IGameStep<D3>,
+        IGameStep<D4>,
+        IGameStep<D5>,
+        IGameStep<D6>,
+        IGameStep<D7>,
+        IGameStep<D8>
+      ]
+    | [
+        IGameStep<D1>,
+        IGameStep<D2>,
+        IGameStep<D3>,
+        IGameStep<D4>,
+        IGameStep<D5>,
+        IGameStep<D6>,
+        IGameStep<D7>,
+        IGameStep<D8>,
+        IGameStep<D9>
+      ]
+    | [
+        IGameStep<D1>,
+        IGameStep<D2>,
+        IGameStep<D3>,
+        IGameStep<D4>,
+        IGameStep<D5>,
+        IGameStep<D6>,
+        IGameStep<D7>,
+        IGameStep<D8>,
+        IGameStep<D9>,
+        IGameStep<D10>
+      ];
 
-  derivers?: CreateGameStepDeriversOptions0<T>;
+  derivers?: {
+    isType(value: any): value is T;
+    renderInstanceItem(item: T): JSX.Element;
+    random(
+      context: InstanceContext,
+      dependant1: D1,
+      dependant2: D2,
+      dependant3: D3,
+      dependant4: D4,
+      dependant5: D5,
+      dependant6: D6,
+      dependant7: D7,
+      dependant8: D8,
+      dependant9: D9,
+      dependant10: D10
+    ): T;
+    recommended?(context: InstanceContext): T | undefined;
+    fixed?: {
+      initializer(
+        playerIds: readonly PlayerId[]
+      ): ConstantTemplateElement | undefined;
+      renderTemplateLabel(current: T): JSX.Element;
+      renderSelector(current: T): JSX.Element;
+    };
+  };
 }
 
-interface CreateGameStepOptions1<T, D> {
-  // Used to identify, validate, and find the game step inside the game. Use
-  // camelCase!
-  id: StepId;
-
-  // Optional: We convert the camelCase id into a label automatically. Only use
-  // this if you want a different label for your step
-  labelOverride?: string;
-
-  dependencies?: [IGameStep<D>];
-
-  derivers?: CreateGameStepDeriversOptions1<T, D>;
-}
-
-export function createGameStep<T>(
-  options: CreateGameStepOptions0<T>
-): IGameStep<T>;
-export function createGameStep<T, D>(
-  options: CreateGameStepOptions1<T, D>
-): IGameStep<T>;
-
+export function createGameStep<
+  T,
+  D1 = never,
+  D2 = never,
+  D3 = never,
+  D4 = never,
+  D5 = never,
+  D6 = never,
+  D7 = never,
+  D8 = never,
+  D9 = never,
+  D10 = never
+>({
+  id,
+  labelOverride,
+  dependencies,
+  derivers,
+}: CreateGameStepOptions<
+  T,
+  D1,
+  D2,
+  D3,
+  D4,
+  D5,
+  D6,
+  D7,
+  D8,
+  D9,
+  D10
+>): IGameStep<T>;
 export function createGameStep<T>({
   id,
   labelOverride,
   dependencies,
   derivers,
-}: CreateGameStepOptionsAny<T>) {
+}: CreateGameStepOptionsAny<T>): IGameStep<T> {
   const gameStep: IGameStep<T> = {
     id,
     label:
