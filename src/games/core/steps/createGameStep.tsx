@@ -1,5 +1,4 @@
 import { type_invariant } from "../../../common/err/invariant";
-import invariant_violation from "../../../common/err/invariant_violation";
 import nullthrows from "../../../common/err/nullthrows";
 import { Strategy } from "../../../core/Strategy";
 import { SetupStep } from "../../../features/instance/instanceSlice";
@@ -8,7 +7,35 @@ import { ConstantTemplateElement } from "../../../features/template/templateSlic
 import { StepId } from "../IGame";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
-export interface CreateGameStepDeriversOptions0<T> {
+interface CreateGameStepDeriversOptionsAny<T> {
+  isType(value: any): value is T;
+  renderInstanceItem(item: T): JSX.Element;
+  random(context: InstanceContext, ...dependancies: any[]): T | undefined;
+  recommended?(context: InstanceContext): T | undefined;
+  fixed?: {
+    initializer(
+      playerIds: readonly PlayerId[]
+    ): ConstantTemplateElement | undefined;
+    renderTemplateLabel(current: T): JSX.Element;
+    renderSelector(current: T): JSX.Element;
+  };
+}
+
+interface CreateGameStepOptionsAny<T> {
+  // Used to identify, validate, and find the game step inside the game. Use
+  // camelCase!
+  id: StepId;
+
+  // Optional: We convert the camelCase id into a label automatically. Only use
+  // this if you want a different label for your step
+  labelOverride?: string;
+
+  dependants?: [...IGameStep<any>[]];
+
+  derivers?: CreateGameStepDeriversOptionsAny<T>;
+}
+
+interface CreateGameStepDeriversOptions0<T> {
   isType(value: any): value is T;
   renderInstanceItem(item: T): JSX.Element;
   random(context: InstanceContext): T | undefined;
@@ -22,7 +49,7 @@ export interface CreateGameStepDeriversOptions0<T> {
   };
 }
 
-export interface CreateGameStepDeriversOptions1<T, D> {
+interface CreateGameStepDeriversOptions1<T, D> {
   isType(value: any): value is T;
   renderInstanceItem(item: T): JSX.Element;
   random(context: InstanceContext, dependant: D): T | undefined;
@@ -44,6 +71,9 @@ interface CreateGameStepOptions0<T> {
   // Optional: We convert the camelCase id into a label automatically. Only use
   // this if you want a different label for your step
   labelOverride?: string;
+
+  dependants?: [];
+
   derivers?: CreateGameStepDeriversOptions0<T>;
 }
 
@@ -55,6 +85,9 @@ interface CreateGameStepOptions1<T, D> {
   // Optional: We convert the camelCase id into a label automatically. Only use
   // this if you want a different label for your step
   labelOverride?: string;
+
+  dependants?: [IGameStep<D>];
+
   derivers?: CreateGameStepDeriversOptions1<T, D>;
 }
 
@@ -62,18 +95,15 @@ export function createGameStep<T>(
   options: CreateGameStepOptions0<T>
 ): IGameStep<T>;
 export function createGameStep<T, D>(
-  options: CreateGameStepOptions1<T, D>,
-  dependant: IGameStep<D>
+  options: CreateGameStepOptions1<T, D>
 ): IGameStep<T>;
 
-export function createGameStep<T>(
-  {
-    id,
-    labelOverride,
-    derivers,
-  }: CreateGameStepOptions0<T> | CreateGameStepOptions1<T, any>,
-  dependant?: IGameStep<any>
-): IGameStep<T> {
+export function createGameStep<T>({
+  id,
+  labelOverride,
+  dependants,
+  derivers,
+}: CreateGameStepOptionsAny<T>) {
   const gameStep: IGameStep<T> = {
     id,
     label:
@@ -88,16 +118,16 @@ export function createGameStep<T>(
   const { renderInstanceItem, random, recommended, fixed } = derivers;
   gameStep.renderInstanceContent = renderInstanceItem;
 
-  gameStep.resolveRandom = (context) =>
-    nullthrows(
-      random(
-        context,
-        dependant != null
-          ? extractInstanceValue(dependant, context.instance)
-          : undefined
-      ),
+  gameStep.resolveRandom = (context) => {
+    const resolvedDependancies =
+      dependants?.map((dependant) =>
+        extractInstanceValue(dependant, context.instance)
+      ) ?? [];
+    return nullthrows(
+      random(context, ...resolvedDependancies),
       `Trying to derive the 'random' item when it shouldn't be allowed for id ${id}`
     );
+  };
 
   if (recommended != null) {
     gameStep.resolveDefault = (context) =>
@@ -160,20 +190,17 @@ function extractInstanceValue<T>(
   gameStep: IGameStep<T>,
   instance: readonly SetupStep[]
 ): T | null {
-  const step = instance.find((setupStep) => setupStep.id === gameStep.id);
-  if (step == null) {
-    return null;
-  }
-
-  if (gameStep.isType == null) {
-    invariant_violation(
-      `Game step ${gameStep.id} does not have a type predicate defined`
-    );
-  }
+  const step = nullthrows(
+    instance.find((setupStep) => setupStep.id === gameStep.id),
+    `Step ${gameStep.id} is missing from instance`
+  );
 
   return type_invariant(
     step.value,
-    gameStep.isType,
+    nullthrows(
+      gameStep.isType,
+      `Game step ${gameStep.id} does not have a type predicate defined`
+    ),
     `Value ${step.value} couldn't be converted to the type defined by it's type ${gameStep.id}`
   );
 }
