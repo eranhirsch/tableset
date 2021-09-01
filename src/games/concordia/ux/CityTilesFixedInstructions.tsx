@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import { selectors as instanceSelectors } from "../../../features/instance/instanceSlice";
-import CityTilesStep from "../steps/CityTilesStep";
+import { CityResourcesEncoder } from "../utils/CityResourcesEncoder";
 
 export function CityTilesFixedInstructions({ hash }: { hash: string }) {
   const mapStep = useAppEntityIdSelectorEnforce(instanceSelectors, "map");
@@ -13,7 +13,7 @@ export function CityTilesFixedInstructions({ hash }: { hash: string }) {
   const mapId = mapStep.value;
 
   const provinces = useMemo(
-    () => CityTilesStep.fromHash(mapId, hash),
+    () => CityResourcesEncoder.forMapId(mapId).decode(hash),
     [hash, mapId]
   );
 

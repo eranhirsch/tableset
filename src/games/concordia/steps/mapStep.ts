@@ -5,7 +5,7 @@ export type Zone = "A" | "B" | "C" | "D";
 export type MapId = "italia" | "imperium";
 
 // We can't use `Map` as that's already a thing in js
-type MapBoard = Readonly<{
+export type MapBoard = Readonly<{
   name: string;
   provinces: Readonly<
     Partial<

@@ -1,6 +1,6 @@
 import { Strategy } from "../../../core/Strategy";
 import IGameStep, { TemplateContext } from "../../core/steps/IGameStep";
-import { CityResourceMapping, Resource } from "./CityTilesStep";
+import { Resource, CityResourceMapping } from "../utils/CityResourcesEncoder";
 
 type ProvinceResourceMapping = Readonly<{ [provinceName: string]: Resource }>;
 
