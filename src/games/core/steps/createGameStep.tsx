@@ -16,9 +16,8 @@ interface CreateGameStepOptionsAny<T> {
   // this if you want a different label for your step
   labelOverride?: string;
 
-  dependencies?: [...IGameStep<any>[]];
-
   derivers?: {
+    dependencies?: [IGameStep<any>, ...IGameStep<any>[]];
     isType(value: any): value is T;
     renderInstanceItem(item: T): JSX.Element;
     random(context: InstanceContext, ...dependancies: any[]): T;
@@ -54,70 +53,70 @@ interface CreateGameStepOptions<
   // this if you want a different label for your step
   labelOverride?: string;
 
-  dependencies?:
-    | [IGameStep<D1>]
-    | [IGameStep<D1>, IGameStep<D2>]
-    | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>]
-    | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>, IGameStep<D4>]
-    | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>
-      ]
-    | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>
-      ]
-    | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>
-      ]
-    | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>,
-        IGameStep<D8>
-      ]
-    | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>,
-        IGameStep<D8>,
-        IGameStep<D9>
-      ]
-    | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>,
-        IGameStep<D8>,
-        IGameStep<D9>,
-        IGameStep<D10>
-      ];
-
   derivers?: {
+    dependencies?:
+      | [IGameStep<D1>]
+      | [IGameStep<D1>, IGameStep<D2>]
+      | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>]
+      | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>, IGameStep<D4>]
+      | [
+          IGameStep<D1>,
+          IGameStep<D2>,
+          IGameStep<D3>,
+          IGameStep<D4>,
+          IGameStep<D5>
+        ]
+      | [
+          IGameStep<D1>,
+          IGameStep<D2>,
+          IGameStep<D3>,
+          IGameStep<D4>,
+          IGameStep<D5>,
+          IGameStep<D6>
+        ]
+      | [
+          IGameStep<D1>,
+          IGameStep<D2>,
+          IGameStep<D3>,
+          IGameStep<D4>,
+          IGameStep<D5>,
+          IGameStep<D6>,
+          IGameStep<D7>
+        ]
+      | [
+          IGameStep<D1>,
+          IGameStep<D2>,
+          IGameStep<D3>,
+          IGameStep<D4>,
+          IGameStep<D5>,
+          IGameStep<D6>,
+          IGameStep<D7>,
+          IGameStep<D8>
+        ]
+      | [
+          IGameStep<D1>,
+          IGameStep<D2>,
+          IGameStep<D3>,
+          IGameStep<D4>,
+          IGameStep<D5>,
+          IGameStep<D6>,
+          IGameStep<D7>,
+          IGameStep<D8>,
+          IGameStep<D9>
+        ]
+      | [
+          IGameStep<D1>,
+          IGameStep<D2>,
+          IGameStep<D3>,
+          IGameStep<D4>,
+          IGameStep<D5>,
+          IGameStep<D6>,
+          IGameStep<D7>,
+          IGameStep<D8>,
+          IGameStep<D9>,
+          IGameStep<D10>
+        ];
+
     isType(value: any): value is T;
     renderInstanceItem(item: T): JSX.Element;
     random(
@@ -159,7 +158,6 @@ export function createGameStep<
 >({
   id,
   labelOverride,
-  dependencies,
   derivers,
 }: CreateGameStepOptions<
   T,
@@ -177,7 +175,6 @@ export function createGameStep<
 export function createGameStep<T>({
   id,
   labelOverride,
-  dependencies,
   derivers,
 }: CreateGameStepOptionsAny<T>): IGameStep<T> {
   const gameStep: IGameStep<T> = {
@@ -191,7 +188,14 @@ export function createGameStep<T>({
     return gameStep;
   }
 
-  const { isType, renderInstanceItem, random, recommended, fixed } = derivers;
+  const {
+    dependencies,
+    isType,
+    renderInstanceItem,
+    random,
+    recommended,
+    fixed,
+  } = derivers;
 
   gameStep.isType = isType;
 

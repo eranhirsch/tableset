@@ -7,9 +7,9 @@ export default createGameStep({
   id: "cityTiles",
   labelOverride: "City Resources",
 
-  dependencies: [mapStep],
-
   derivers: {
+    dependencies: [mapStep],
+
     isType(x): x is string {
       return typeof x === "string";
     },
