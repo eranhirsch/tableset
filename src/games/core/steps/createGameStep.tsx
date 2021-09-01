@@ -115,7 +115,10 @@ export function createGameStep<T>({
     return gameStep;
   }
 
-  const { renderInstanceItem, random, recommended, fixed } = derivers;
+  const { isType, renderInstanceItem, random, recommended, fixed } = derivers;
+
+  gameStep.isType = isType;
+
   gameStep.renderInstanceContent = renderInstanceItem;
 
   gameStep.resolveRandom = (context) => {
@@ -189,8 +192,6 @@ function extractInstanceValue<T>(
   gameStep: IGameStep<T>,
   instance: readonly SetupStep[]
 ): T {
-  debugger;
-
   const step = nullthrows(
     instance.find((setupStep) => setupStep.id === gameStep.id),
     `Step ${gameStep.id} is missing from instance`
