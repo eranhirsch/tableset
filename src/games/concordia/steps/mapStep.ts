@@ -65,10 +65,16 @@ export const MAPS: Record<MapId, MapBoard> = {
   },
 };
 
-export default createGenericItemsGameStep<MapId>({
+export default createGenericItemsGameStep({
   id: "map",
+
+  isType(x: string): x is MapId {
+    return MAPS[x as MapId] != null;
+  },
+
   itemIds: Object.keys(MAPS) as MapId[],
   labelFor: (id) => MAPS[id].name,
+
   recommended: ({ playerIds }) =>
     playerIds.length <= 1
       ? undefined
@@ -77,7 +83,4 @@ export default createGenericItemsGameStep<MapId>({
       : playerIds.length <= 5
       ? "imperium"
       : undefined,
-  isType(x: string): x is MapId {
-    return MAPS[x as MapId] != null;
-  },
 });

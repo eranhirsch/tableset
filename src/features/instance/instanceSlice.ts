@@ -1,12 +1,10 @@
 import { createEntityAdapter, createSlice, Dictionary } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import invariant_violation from "../../common/err/invariant_violation";
 import nullthrows from "../../common/err/nullthrows";
-import { Strategy } from "../../core/Strategy";
 import IGame, { StepId } from "../../games/core/IGame";
-import { InstanceContext } from "../../games/core/steps/IGameStep";
 import { PlayerId } from "../players/playersSlice";
 import { TemplateElement } from "../template/templateSlice";
+import { templateElementResolver } from "./templateElementResolver";
 
 export type SetupStep = Readonly<{
   id: StepId;
@@ -33,9 +31,16 @@ export const instanceSlice = createSlice({
             return ongoing;
           }
 
+          const gameStep = nullthrows(
+            game.at(element.id),
+            `Element ${JSON.stringify(
+              element
+            )} does not have a corresponding step in the game`
+          );
+
           const setupStep = {
             id: stepId,
-            value: elementResolver(element, game, {
+            value: templateElementResolver(gameStep, element, {
               instance: ongoing,
               playerIds,
             }),
@@ -55,43 +60,4 @@ export const selectors = instanceAdapter.getSelectors<RootState>(
 
 export default instanceSlice;
 
-function elementResolver(
-  element: TemplateElement,
-  game: IGame,
-  context: InstanceContext
-): any {
-  const gameStep = nullthrows(
-    game.at(element.id),
-    `Element ${JSON.stringify(
-      element
-    )} does not have a corresponding step in the game`
-  );
 
-  switch (element.strategy) {
-    case Strategy.RANDOM:
-      if (gameStep.resolveRandom == null) {
-        invariant_violation(
-          `Element ${JSON.stringify(element)} does not have a random resolver`
-        );
-      }
-      return gameStep.resolveRandom(context);
-
-    case Strategy.DEFAULT:
-      if (gameStep.resolveDefault == null) {
-        invariant_violation(
-          `Element ${JSON.stringify(element)} does not have a default resolver`
-        );
-      }
-      return gameStep.resolveDefault(context);
-
-    case Strategy.FIXED:
-      // Just copy the value
-      return element.value as any;
-  }
-
-  invariant_violation(
-    `Element ${JSON.stringify(
-      element
-    )} is using a strategy that isn't supported`
-  );
-}

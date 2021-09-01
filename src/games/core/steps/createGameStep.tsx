@@ -10,7 +10,7 @@ import IGameStep, { InstanceContext } from "./IGameStep";
 interface CreateGameStepDeriversOptionsAny<T> {
   isType(value: any): value is T;
   renderInstanceItem(item: T): JSX.Element;
-  random(context: InstanceContext, ...dependancies: any[]): T | undefined;
+  random(context: InstanceContext, ...dependancies: any[]): T;
   recommended?(context: InstanceContext): T | undefined;
   fixed?: {
     initializer(
@@ -30,7 +30,7 @@ interface CreateGameStepOptionsAny<T> {
   // this if you want a different label for your step
   labelOverride?: string;
 
-  dependants?: [...IGameStep<any>[]];
+  dependencies?: [...IGameStep<any>[]];
 
   derivers?: CreateGameStepDeriversOptionsAny<T>;
 }
@@ -38,7 +38,7 @@ interface CreateGameStepOptionsAny<T> {
 interface CreateGameStepDeriversOptions0<T> {
   isType(value: any): value is T;
   renderInstanceItem(item: T): JSX.Element;
-  random(context: InstanceContext): T | undefined;
+  random(context: InstanceContext): T;
   recommended?(context: InstanceContext): T | undefined;
   fixed?: {
     initializer(
@@ -52,7 +52,7 @@ interface CreateGameStepDeriversOptions0<T> {
 interface CreateGameStepDeriversOptions1<T, D> {
   isType(value: any): value is T;
   renderInstanceItem(item: T): JSX.Element;
-  random(context: InstanceContext, dependant: D): T | undefined;
+  random(context: InstanceContext, dependant: D): T;
   recommended?(context: InstanceContext): T | undefined;
   fixed?: {
     initializer(
@@ -72,7 +72,7 @@ interface CreateGameStepOptions0<T> {
   // this if you want a different label for your step
   labelOverride?: string;
 
-  dependants?: [];
+  dependencies?: [];
 
   derivers?: CreateGameStepDeriversOptions0<T>;
 }
@@ -86,7 +86,7 @@ interface CreateGameStepOptions1<T, D> {
   // this if you want a different label for your step
   labelOverride?: string;
 
-  dependants?: [IGameStep<D>];
+  dependencies?: [IGameStep<D>];
 
   derivers?: CreateGameStepDeriversOptions1<T, D>;
 }
@@ -101,7 +101,7 @@ export function createGameStep<T, D>(
 export function createGameStep<T>({
   id,
   labelOverride,
-  dependants,
+  dependencies,
   derivers,
 }: CreateGameStepOptionsAny<T>) {
   const gameStep: IGameStep<T> = {
@@ -120,13 +120,10 @@ export function createGameStep<T>({
 
   gameStep.resolveRandom = (context) => {
     const resolvedDependancies =
-      dependants?.map((dependant) =>
+      dependencies?.map((dependant) =>
         extractInstanceValue(dependant, context.instance)
       ) ?? [];
-    return nullthrows(
-      random(context, ...resolvedDependancies),
-      `Trying to derive the 'random' item when it shouldn't be allowed for id ${id}`
-    );
+    return random(context, ...resolvedDependancies);
   };
 
   if (recommended != null) {
@@ -147,11 +144,13 @@ export function createGameStep<T>({
       );
   }
 
-  gameStep.strategies = ({ playerIds }) => {
+  gameStep.strategies = ({ playerIds, template }) => {
     const strategies = [];
 
-    const randVal = random({ playerIds, instance: [] }, undefined);
-    if (randVal != null) {
+    const areDependanciesFulfilled =
+      dependencies?.every((dependency) => template[dependency.id] != null) ??
+      true;
+    if (areDependanciesFulfilled) {
       strategies.push(Strategy.RANDOM);
     }
 
@@ -189,7 +188,9 @@ export function createGameStep<T>({
 function extractInstanceValue<T>(
   gameStep: IGameStep<T>,
   instance: readonly SetupStep[]
-): T | null {
+): T {
+  debugger;
+
   const step = nullthrows(
     instance.find((setupStep) => setupStep.id === gameStep.id),
     `Step ${gameStep.id} is missing from instance`
