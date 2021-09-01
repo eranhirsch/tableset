@@ -1,5 +1,5 @@
 import { GamePiecesColor } from "../../core/themeWithGameColors";
-import MarketDisplayStep from "./steps/MarketDisplayStep";
+import marketDisplayStep from "./steps/marketDisplayStep";
 import BonusTilesStep from "./steps/BonusTilesStep";
 import StartingColonistsStep from "./steps/StartingColonistsStep";
 import StartingMoneyStep from "./steps/StartingMoneyStep";
@@ -23,7 +23,7 @@ export default class ConcordiaGame implements IGame {
         cityTilesStep,
         new BonusTilesStep(),
         createGameStep({ id: "marketCards" }),
-        new MarketDisplayStep(),
+        marketDisplayStep,
         createGameStep({ id: "marketDeck", labelOverride: "Cards Deck" }),
         createGameStep({ id: "concordiaCard" }),
         createGameStep({ id: "resourcePiles" }),

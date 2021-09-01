@@ -7,10 +7,10 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
-import MarketDisplayStep from "../steps/MarketDisplayStep";
+import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 
 export function MarketDisplayFixedInstructions({ hash }: { hash: string }) {
-  const market = MarketDisplayStep.fromHash(hash);
+  const market = MarketDisplayEncoder.decode(hash);
   return (
     <Stack direction="column" alignItems="center">
       <TableContainer>
