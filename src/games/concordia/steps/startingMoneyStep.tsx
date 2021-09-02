@@ -1,29 +1,30 @@
+import React from "react";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createComputedGameStep from "../../core/steps/createComputedGameStep";
 import firstPlayerStep from "../../global/steps/firstPlayerStep";
 import playOrderStep from "../../global/steps/playOrderStep";
-import { Player } from "../ux/Player";
+import { StartingMoney } from "../ux/StartingMoney";
 
 export default createComputedGameStep({
-  id: "praefectusMagnus",
+  id: "startingMoney",
 
   dependencies: [playOrderStep, firstPlayerStep],
 
   renderComputed: ({ playerIds }, playOrder, firstPlayer) => (
-    <Player playerId={lastPlayer(playerIds, playOrder, firstPlayer)} />
+    <StartingMoney order={reordered(playerIds, playOrder, firstPlayer)} />
   ),
 });
 
-function lastPlayer(
+function reordered(
   playerIds: readonly PlayerId[],
   playOrder: readonly PlayerId[],
   firstPlayerId: PlayerId
-): PlayerId {
+): readonly PlayerId[] {
   const fullPlayOrder = [playerIds[0], ...playOrder];
   const firstPlayerIdx = fullPlayOrder.findIndex(
     (playerId) => playerId === firstPlayerId
   );
-  return fullPlayOrder[
-    (firstPlayerIdx > 0 ? firstPlayerIdx : fullPlayOrder.length) - 1
-  ];
+  return fullPlayOrder
+    .slice(firstPlayerIdx)
+    .concat(fullPlayOrder.slice(0, firstPlayerIdx));
 }
