@@ -11,6 +11,9 @@ export default createDerivedGameStep({
   id: "playOrder",
   labelOverride: "Seating",
 
+  isType: (x): x is PlayerId[] =>
+    Array.isArray(x) && x.every((y) => typeof y === "string"),
+
   renderInstanceItem: (playOrder: readonly PlayerId[]) => (
     <PlayOrderPanel playOrder={playOrder} />
   ),

@@ -8,6 +8,8 @@ import StartingPlayerPanel from "../ux/StartingPlayerPanel";
 export default createDerivedGameStep({
   id: "firstPlayer",
 
+  isType: (x): x is PlayerId => typeof x === "string",
+
   renderInstanceItem: (current: PlayerId) => (
     <FirstPlayerPanel playerId={current} />
   ),
