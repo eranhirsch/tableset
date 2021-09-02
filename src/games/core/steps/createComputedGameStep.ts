@@ -137,11 +137,26 @@ export default function createComputedGameStep({
   const gameStep = createGameStep(baseOptions);
 
   gameStep.renderComputedInstanceContent = (context) => {
-    const resolvedDependancies =
-      dependencies?.map((dependency) =>
+    if (dependencies == null) {
+      return renderComputed(context);
+    }
+
+    if (
+      dependencies.some(
+        (dependency) =>
+          context.instance.find((step) => step.id === dependency.id) == null
+      )
+    ) {
+      // Not all dependencies have a value so we can't compute this step either
+      return;
+    }
+
+    return renderComputed(
+      context,
+      ...dependencies.map((dependency) =>
         extractInstanceValue(dependency, context.instance)
-      ) ?? [];
-    return renderComputed(context, ...resolvedDependancies);
+      )
+    );
   };
 
   return gameStep;
