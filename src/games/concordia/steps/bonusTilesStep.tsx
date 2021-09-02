@@ -16,6 +16,7 @@ export default createComputedGameStep({
 
   renderComputed: (_, mapId, hash) => {
     return (
+      // TODO, make a real component here
       <div>
         {JSON.stringify(
           fromCityTiles(CityResourcesEncoder.forMapId(mapId).decode(hash))
