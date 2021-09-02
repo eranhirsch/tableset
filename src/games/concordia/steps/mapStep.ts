@@ -4,9 +4,15 @@ export type Zone = "A" | "B" | "C" | "D";
 
 export type MapId = "italia" | "imperium";
 
+export interface StartingColonistLocation {
+  placement: string;
+  type: "land" | "sea";
+}
+
 // We can't use `Map` as that's already a thing in js
 export type MapBoard = Readonly<{
   name: string;
+  startingColonists: [StartingColonistLocation, StartingColonistLocation];
   provinces: Readonly<
     Partial<
       Record<Zone, Readonly<{ [provinceName: string]: readonly string[] }>>
@@ -17,6 +23,10 @@ export type MapBoard = Readonly<{
 export const MAPS: Record<MapId, MapBoard> = {
   italia: {
     name: "Italia",
+    startingColonists: [
+      { placement: "Roma", type: "land" },
+      { placement: "Roma", type: "sea" },
+    ],
     provinces: {
       A: {
         Venetia: ["Bavsanvm", "Aqvileia", "Verona"],
@@ -40,6 +50,10 @@ export const MAPS: Record<MapId, MapBoard> = {
 
   imperium: {
     name: "Imperium",
+    startingColonists: [
+      { placement: "Roma", type: "land" },
+      { placement: "Roma", type: "sea" },
+    ],
     provinces: {
       A: {
         Britannia: ["Isca D.", "Londonivm"],
