@@ -1,10 +1,9 @@
-import { type_invariant } from "../../../common/err/invariant";
 import nullthrows from "../../../common/err/nullthrows";
 import { Strategy } from "../../../core/Strategy";
-import { SetupStep } from "../../../features/instance/instanceSlice";
 import { PlayerId } from "../../../features/players/playersSlice";
 import { ConstantTemplateElement } from "../../../features/template/templateSlice";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
+import extractInstanceValue from "./extractInstanceValue";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
 interface CreateDerivedGameStepOptionsAny<T> extends CreateGameStepOptions {
@@ -108,16 +107,16 @@ interface CreateDerivedGameStepOptions<
   renderInstanceItem(item: T): JSX.Element;
   random(
     context: InstanceContext,
-    dependant1: D1,
-    dependant2: D2,
-    dependant3: D3,
-    dependant4: D4,
-    dependant5: D5,
-    dependant6: D6,
-    dependant7: D7,
-    dependant8: D8,
-    dependant9: D9,
-    dependant10: D10
+    dependency1: D1,
+    dependency2: D2,
+    dependency3: D3,
+    dependency4: D4,
+    dependency5: D5,
+    dependency6: D6,
+    dependency7: D7,
+    dependency8: D8,
+    dependency9: D9,
+    dependency10: D10
   ): T;
   recommended?(context: InstanceContext): T | undefined;
   fixed?: {
@@ -174,8 +173,8 @@ export function createDerivedGameStep<T>({
 
   gameStep.resolveRandom = (context) => {
     const resolvedDependancies =
-      dependencies?.map((dependant) =>
-        extractInstanceValue(dependant, context.instance)
+      dependencies?.map((dependency) =>
+        extractInstanceValue(dependency, context.instance)
       ) ?? [];
     return random(context, ...resolvedDependancies);
   };
@@ -238,23 +237,4 @@ export function createDerivedGameStep<T>({
   };
 
   return gameStep;
-}
-
-function extractInstanceValue<T>(
-  gameStep: IGameStep<T>,
-  instance: readonly SetupStep[]
-): T {
-  const step = nullthrows(
-    instance.find((setupStep) => setupStep.id === gameStep.id),
-    `Step ${gameStep.id} is missing from instance`
-  );
-
-  return type_invariant(
-    step.value,
-    nullthrows(
-      gameStep.isType,
-      `Game step ${gameStep.id} does not have a type predicate defined`
-    ),
-    `Value ${step.value} couldn't be converted to the type defined by it's type ${gameStep.id}`
-  );
 }
