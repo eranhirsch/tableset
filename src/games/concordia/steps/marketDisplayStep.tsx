@@ -1,15 +1,11 @@
-import { createGameStep } from "../../core/steps/createGameStep";
+import { createDerivedGameStep } from "../../core/steps/createDerivedGameStep";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 import { MarketDisplayFixedInstructions } from "../ux/MarketDisplayFixedInstructions";
 
-export default createGameStep({
+export default createDerivedGameStep({
   id: "marketDisplay",
   labelOverride: "Cards Display",
 
-  derivers: {
-    renderInstanceItem: (hash) => (
-      <MarketDisplayFixedInstructions hash={hash} />
-    ),
-    random: () => MarketDisplayEncoder.randomHash(),
-  },
+  renderInstanceItem: (hash) => <MarketDisplayFixedInstructions hash={hash} />,
+  random: () => MarketDisplayEncoder.randomHash(),
 });

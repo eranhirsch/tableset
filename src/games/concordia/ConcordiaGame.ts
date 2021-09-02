@@ -5,7 +5,7 @@ import StartingColonistsStep from "./steps/StartingColonistsStep";
 import StartingMoneyStep from "./steps/StartingMoneyStep";
 import { PraefectusMagnusStep } from "./steps/PraefectusMagnusStep";
 import mapStep from "./steps/mapStep";
-import { createGameStep } from "../core/steps/createGameStep";
+import createGameStep from "../core/steps/createGameStep";
 import IGameStep from "../core/steps/IGameStep";
 import IGame, { StepId } from "../core/IGame";
 import cityTilesStep from "./steps/cityTilesStep";

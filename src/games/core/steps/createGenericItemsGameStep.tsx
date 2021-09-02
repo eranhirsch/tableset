@@ -4,8 +4,8 @@ import templateSlice from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "../ux/GenericItemsListPanel";
-import { createGameStep } from "./createGameStep";
-import IGameStep, { InstanceContext } from "./IGameStep";
+import { createDerivedGameStep } from "./createDerivedGameStep";
+import { InstanceContext } from "./IGameStep";
 
 interface CreateGenericItemsGameStepOptions<T extends string = string> {
   id: StepId;
@@ -15,55 +15,53 @@ interface CreateGenericItemsGameStepOptions<T extends string = string> {
   isType?: (x: string) => x is T;
 }
 
-export default function createGenericItemsGameStep<T extends string = string>({
+const createGenericItemsGameStep = <T extends string = string>({
   id,
   itemIds,
   labelFor,
   recommended,
   isType,
-}: CreateGenericItemsGameStepOptions<T>): IGameStep<T> {
-  return createGameStep({
+}: CreateGenericItemsGameStepOptions<T>) =>
+  createDerivedGameStep({
     id,
-    derivers: {
-      isType,
+    isType,
 
-      renderInstanceItem: (itemId) => (
-        <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
-          {labelFor(itemId)}
-        </Typography>
+    renderInstanceItem: (itemId) => (
+      <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
+        {labelFor(itemId)}
+      </Typography>
+    ),
+
+    random: () => itemIds[Math.floor(Math.random() * itemIds.length)],
+
+    recommended,
+
+    fixed: {
+      initializer: () => ({
+        id,
+        strategy: Strategy.FIXED,
+        value: itemIds[0],
+      }),
+
+      renderTemplateLabel: (current) => (
+        <GenericItemsFixedTemplateLabel
+          onLabelForItem={labelFor}
+          selectedId={current}
+        />
       ),
-
-      random: () => itemIds[Math.floor(Math.random() * itemIds.length)],
-
-      recommended,
-
-      fixed: {
-        initializer: () => ({
-          id,
-          strategy: Strategy.FIXED,
-          value: itemIds[0],
-        }),
-
-        renderTemplateLabel: (current) => (
-          <GenericItemsFixedTemplateLabel
-            onLabelForItem={labelFor}
-            selectedId={current}
-          />
-        ),
-        renderSelector: (current) => (
-          <GenericItemsListPanel
-            itemIds={itemIds}
-            selectedId={current}
-            onLabelForItem={labelFor}
-            onUpdateItem={(itemId) =>
-              templateSlice.actions.constantValueChanged({
-                id,
-                value: itemId,
-              })
-            }
-          />
-        ),
-      },
+      renderSelector: (current) => (
+        <GenericItemsListPanel
+          itemIds={itemIds}
+          selectedId={current}
+          onLabelForItem={labelFor}
+          onUpdateItem={(itemId) =>
+            templateSlice.actions.constantValueChanged({
+              id,
+              value: itemId,
+            })
+          }
+        />
+      ),
     },
   });
-}
+export default createGenericItemsGameStep;

@@ -1,18 +1,16 @@
-import { createGameStep } from "../../core/steps/createGameStep";
 import { CityTilesFixedInstructions } from "../ux/CityTilesFixedInstructions";
 import { CityResourcesEncoder } from "../utils/CityResourcesEncoder";
 import mapStep from "./mapStep";
+import { createDerivedGameStep } from "../../core/steps/createDerivedGameStep";
 
-export default createGameStep({
+export default createDerivedGameStep({
   id: "cityTiles",
   labelOverride: "City Resources",
 
-  derivers: {
-    dependencies: [mapStep],
+  dependencies: [mapStep],
 
-    renderInstanceItem: (item: string) => (
-      <CityTilesFixedInstructions hash={item} />
-    ),
-    random: (_, mapId) => CityResourcesEncoder.forMapId(mapId).randomHash(),
-  },
+  renderInstanceItem: (item: string) => (
+    <CityTilesFixedInstructions hash={item} />
+  ),
+  random: (_, mapId) => CityResourcesEncoder.forMapId(mapId).randomHash(),
 });
