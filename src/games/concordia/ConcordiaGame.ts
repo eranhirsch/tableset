@@ -4,7 +4,6 @@ import BonusTilesStep from "./steps/BonusTilesStep";
 import StartingColonistsStep from "./steps/StartingColonistsStep";
 import StartingMoneyStep from "./steps/StartingMoneyStep";
 import { PraefectusMagnusStep } from "./steps/PraefectusMagnusStep";
-import FirstPlayerStep from "../global/steps/FirstPlayerStep";
 import mapStep from "./steps/mapStep";
 import { createGameStep } from "../core/steps/createGameStep";
 import IGameStep from "../core/steps/IGameStep";
@@ -12,6 +11,7 @@ import IGame, { StepId } from "../core/IGame";
 import cityTilesStep from "./steps/cityTilesStep";
 import playOrderStep from "../global/steps/playOrderStep";
 import createPlayerColorsStep from "../global/steps/createPlayerColorsStep";
+import firstPlayerStep from "../global/steps/firstPlayerStep";
 
 export default class ConcordiaGame implements IGame {
   private readonly steps: Readonly<{ [id: string]: IGameStep<any> }>;
@@ -36,7 +36,7 @@ export default class ConcordiaGame implements IGame {
         }),
         new StartingColonistsStep(),
         createGameStep({ id: "startingResources" }),
-        new FirstPlayerStep(),
+        firstPlayerStep,
         new StartingMoneyStep(),
         new PraefectusMagnusStep(),
       ].map((step) => [step.id, step])
