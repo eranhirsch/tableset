@@ -1,4 +1,5 @@
 import { Grid, Typography } from "@material-ui/core";
+import React from "react";
 import { useMemo } from "react";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
@@ -22,8 +23,8 @@ export default function CityTilesFixedInstructions({ hash }: { hash: string }) {
       {Object.entries(provinces).map(([provinceName, cities]) => {
         const mapping = Object.entries(cities);
         return (
-          <>
-            <Grid key={provinceName} item xs={12}>
+          <React.Fragment key={provinceName}>
+            <Grid key={provinceName} item xs={3} alignSelf="center">
               <Typography
                 variant="subtitle1"
                 sx={{ fontVariantCaps: "petite-caps" }}
@@ -32,7 +33,7 @@ export default function CityTilesFixedInstructions({ hash }: { hash: string }) {
               </Typography>
             </Grid>
             {mapping.map(([cityName, resource]) => (
-              <Grid key={cityName} item xs={mapping.length === 2 ? 6 : 4}>
+              <Grid key={cityName} item xs={3}>
                 <Typography variant="caption">{resource}</Typography>
                 <Typography
                   variant="body2"
@@ -42,7 +43,8 @@ export default function CityTilesFixedInstructions({ hash }: { hash: string }) {
                 </Typography>
               </Grid>
             ))}
-          </>
+            {mapping.length === 2 && <Grid item xs={3} />}
+          </React.Fragment>
         );
       })}
     </Grid>
