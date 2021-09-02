@@ -12,6 +12,7 @@ import bonusTilesStep from "./steps/bonusTilesStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
 import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
+import marketCardsStep from "./steps/marketCardsStep";
 
 export default class ConcordiaGame implements IGame {
   private readonly steps: Readonly<{ [id: string]: IGameStep<any> }>;
@@ -24,7 +25,7 @@ export default class ConcordiaGame implements IGame {
         bonusTilesStep,
         createGameStep({ id: "marketCards" }),
         marketDisplayStep,
-        createGameStep({ id: "cardsDeck" }),
+        marketCardsStep,
         createGameStep({ id: "concordiaCard" }),
         createGameStep({ id: "resourcePiles" }),
         createGameStep({ id: "bank" }),
