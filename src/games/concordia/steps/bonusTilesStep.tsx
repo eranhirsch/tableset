@@ -1,12 +1,16 @@
+import React from "react";
 import createComputedGameStep from "../../core/steps/createComputedGameStep";
 import CityResourcesEncoder, {
   Resource,
   CityResourceMapping,
 } from "../utils/CityResourcesEncoder";
+import BonusTiles from "../ux/BonusTiles";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
 
-type ProvinceResourceMapping = Readonly<{ [provinceName: string]: Resource }>;
+export type ProvinceResourceMapping = Readonly<{
+  [provinceName: string]: Resource;
+}>;
 
 export default createComputedGameStep({
   id: "bonusTiles",
@@ -14,16 +18,13 @@ export default createComputedGameStep({
 
   dependencies: [mapStep, cityTilesStep],
 
-  renderComputed: (_, mapId, hash) => {
-    return (
-      // TODO, make a real component here
-      <div>
-        {JSON.stringify(
-          fromCityTiles(CityResourcesEncoder.forMapId(mapId).decode(hash))
-        )}
-      </div>
-    );
-  },
+  renderComputed: (_, mapId, hash) => (
+    <BonusTiles
+      provinceResource={fromCityTiles(
+        CityResourcesEncoder.forMapId(mapId).decode(hash)
+      )}
+    />
+  ),
 });
 
 function fromCityTiles(
