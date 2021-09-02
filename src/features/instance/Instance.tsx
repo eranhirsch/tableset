@@ -9,28 +9,41 @@ import {
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { selectors as instanceSelectors } from "./instanceSlice";
 import { gameSelector } from "../game/gameSlice";
 import nullthrows from "../../common/err/nullthrows";
 import { StepId } from "../../games/core/IGame";
+import { PlayerId, playersSelectors } from "../players/playersSlice";
+import filter_nulls from "../../common/lib_utils/filter_nulls";
 
 const IDEAL_STEP_COUNT = 6;
 
 function InstanceItemContent({ stepId }: { stepId: StepId }) {
-  const step = useAppEntityIdSelectorNullable(instanceSelectors, stepId);
   const game = useAppSelector(gameSelector);
-
-  if (step == null) {
-    return null;
-  }
+  const instance = useAppSelector(instanceSelectors.selectEntities);
+  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 
   const gameStep = nullthrows(
     game.at(stepId),
     `Step ${stepId} missing in game`
   );
 
-  return gameStep.renderInstanceContent!(step.value);
+  if (gameStep.renderInstanceContent != null) {
+    const instanceStep = instance[stepId];
+    if (instanceStep != null) {
+      return gameStep.renderInstanceContent(instanceStep.value);
+    }
+  } else if (gameStep.renderComputedInstanceContent != null) {
+    const renderedContent = gameStep.renderComputedInstanceContent({
+      instance: filter_nulls(Object.values(instance)),
+      playerIds,
+    });
+    if (renderedContent != null) {
+      return renderedContent;
+    }
+  }
+
+  return <div>Manual Section</div>;
 }
 
 export default function Instance() {

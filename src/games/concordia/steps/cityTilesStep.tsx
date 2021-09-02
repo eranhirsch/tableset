@@ -9,6 +9,8 @@ export default createDerivedGameStep({
 
   dependencies: [mapStep],
 
+  isType: (x): x is string => typeof x === "string",
+
   renderInstanceItem: (item: string) => (
     <CityTilesFixedInstructions hash={item} />
   ),
