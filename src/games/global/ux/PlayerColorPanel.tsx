@@ -9,18 +9,15 @@ import {
 } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
-import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import object_flip from "../../../common/lib_utils/object_flip";
+import PlayerColors from "../../../common/PlayerColors";
 import short_name from "../../../common/short_name";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import {
   Player,
   playersSelectors,
 } from "../../../features/players/playersSlice";
-import templateSlice, {
-  templateSelectors,
-} from "../../../features/template/templateSlice";
-import PlayerColorsStep from "../steps/PlayerColorsStep";
+import templateSlice from "../../../features/template/templateSlice";
 
 function draggablePlayerRendererFactory(player: Player) {
   return (provided: DraggableProvided) => (
@@ -116,18 +113,12 @@ function ColorSlot({
 
 export default function PlayerColorPanel({
   availableColors,
-  gameStep,
+  playerColors,
 }: {
   availableColors: readonly GamePiecesColor[];
-  gameStep: PlayerColorsStep;
+  playerColors: PlayerColors;
 }) {
   const dispatch = useAppDispatch();
-
-  const element = useAppEntityIdSelectorEnforce(
-    templateSelectors,
-    "playerColors"
-  );
-  const playerColors = gameStep.extractTemplateFixedValue(element);
 
   const players = useAppSelector(playersSelectors.selectEntities);
 
