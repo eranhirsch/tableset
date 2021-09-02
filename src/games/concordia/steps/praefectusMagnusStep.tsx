@@ -2,7 +2,7 @@ import { PlayerId } from "../../../features/players/playersSlice";
 import createComputedGameStep from "../../core/steps/createComputedGameStep";
 import firstPlayerStep from "../../global/steps/firstPlayerStep";
 import playOrderStep from "../../global/steps/playOrderStep";
-import { Player } from "../ux/Player";
+import Player from "../ux/Player";
 
 export default createComputedGameStep({
   id: "praefectusMagnus",

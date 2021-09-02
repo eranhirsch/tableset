@@ -9,7 +9,11 @@ import {
 } from "@material-ui/core";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 
-export function MarketDisplayFixedInstructions({ hash }: { hash: string }) {
+export default function MarketDisplayFixedInstructions({
+  hash,
+}: {
+  hash: string;
+}) {
   const market = MarketDisplayEncoder.decode(hash);
   return (
     <Stack direction="column" alignItems="center">

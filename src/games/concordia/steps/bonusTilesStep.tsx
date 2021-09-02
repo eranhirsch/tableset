@@ -1,8 +1,7 @@
 import createComputedGameStep from "../../core/steps/createComputedGameStep";
-import {
+import CityResourcesEncoder, {
   Resource,
   CityResourceMapping,
-  CityResourcesEncoder,
 } from "../utils/CityResourcesEncoder";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";

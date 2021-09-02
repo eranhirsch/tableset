@@ -1,7 +1,17 @@
 import Base32 from "../../../common/Base32";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import { MARKET_DECK_I } from "../steps/marketCardsStep";
+
+export const MARKET_DECK_I = [
+  "Architect",
+  "Prefect",
+  "Mercator",
+  "Colonist",
+  "Diplomat",
+  "Mason",
+  "Farmer",
+  "Smith",
+] as const;
 
 export default abstract class MarketDisplayEncoder {
   public static randomHash(): string {

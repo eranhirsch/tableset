@@ -1,6 +1,6 @@
 import { createDerivedGameStep } from "../../core/steps/createDerivedGameStep";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
-import { MarketDisplayFixedInstructions } from "../ux/MarketDisplayFixedInstructions";
+import MarketDisplayFixedInstructions from "../ux/MarketDisplayFixedInstructions";
 
 export default createDerivedGameStep({
   id: "marketDisplay",

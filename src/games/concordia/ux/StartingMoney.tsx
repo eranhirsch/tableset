@@ -1,9 +1,13 @@
 import { Grid, Typography } from "@material-ui/core";
 import React from "react";
 import { PlayerId } from "../../../features/players/playersSlice";
-import { Player } from "./Player";
+import Player from "./Player";
 
-export function StartingMoney({ order }: { order: readonly PlayerId[] }) {
+export default function StartingMoney({
+  order,
+}: {
+  order: readonly PlayerId[];
+}) {
   return (
     <Grid container spacing={1} alignItems="center">
       <Grid item xs={12}>

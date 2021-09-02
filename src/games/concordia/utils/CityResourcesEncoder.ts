@@ -18,7 +18,7 @@ export type CityResourceMapping = Readonly<{
   [provinceName: string]: Readonly<{ [cityName: string]: Resource }>;
 }>;
 
-export class CityResourcesEncoder {
+export default class CityResourcesEncoder {
   private static readonly HASH_SEPERATOR = "-";
 
   public static forMapId(mapId: MapId) {

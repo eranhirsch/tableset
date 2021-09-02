@@ -5,7 +5,7 @@ import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntit
 import { selectors as instanceSelectors } from "../../../features/instance/instanceSlice";
 import { CityResourcesEncoder } from "../utils/CityResourcesEncoder";
 
-export function CityTilesFixedInstructions({ hash }: { hash: string }) {
+export default function CityTilesFixedInstructions({ hash }: { hash: string }) {
   const mapStep = useAppEntityIdSelectorEnforce(instanceSelectors, "map");
   if (mapStep.id !== "map") {
     invariant_violation();

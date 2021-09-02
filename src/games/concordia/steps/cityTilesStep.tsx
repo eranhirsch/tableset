@@ -1,7 +1,7 @@
-import { CityTilesFixedInstructions } from "../ux/CityTilesFixedInstructions";
-import { CityResourcesEncoder } from "../utils/CityResourcesEncoder";
 import mapStep from "./mapStep";
 import { createDerivedGameStep } from "../../core/steps/createDerivedGameStep";
+import CityResourcesEncoder from "../utils/CityResourcesEncoder";
+import CityTilesFixedInstructions from "../ux/CityTilesFixedInstructions";
 
 export default createDerivedGameStep({
   id: "cityTiles",
