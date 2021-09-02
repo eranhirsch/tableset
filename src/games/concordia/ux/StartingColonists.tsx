@@ -10,7 +10,7 @@ export default function StartingColonists({ mapId }: { mapId: MapId }) {
     return (
       <div>{`Each player takes ${phrases.join(
         " and "
-      )} from their player board and places them in ${
+      )} from their storehouse and places them in ${
         startingColonists[0].placement
       }`}</div>
     );
