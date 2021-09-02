@@ -230,13 +230,6 @@ export function createGameStep<T>({
   gameStep.strategies = ({ playerIds, template }) => {
     const strategies = [];
 
-    const areDependanciesFulfilled =
-      dependencies?.every((dependency) => template[dependency.id] != null) ??
-      true;
-    if (areDependanciesFulfilled) {
-      strategies.push(Strategy.RANDOM);
-    }
-
     if (recommended != null) {
       // TODO: We use an empty instance here, this is problematic because it
       // doesn't allow us to catch cases where the instance is required to
@@ -247,9 +240,17 @@ export function createGameStep<T>({
         strategies.push(Strategy.DEFAULT);
       }
     }
-    if (fixed != null) {
-      const value = fixed.initializer(playerIds);
-      if (value != null) {
+
+    const fixedValue = fixed != null ? fixed.initializer(playerIds) : undefined;
+    if (fixed == null || fixedValue != null) {
+      const areDependanciesFulfilled =
+        dependencies?.every((dependency) => template[dependency.id] != null) ??
+        true;
+      if (areDependanciesFulfilled) {
+        strategies.push(Strategy.RANDOM);
+      }
+
+      if (fixedValue != null) {
         strategies.push(Strategy.FIXED, Strategy.ASK);
       }
     }

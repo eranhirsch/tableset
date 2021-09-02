@@ -13,13 +13,14 @@ import {
   PlayerId,
   playersSelectors,
 } from "../../../features/players/playersSlice";
-import templateSlice, {
-  templateSelectors,
-} from "../../../features/template/templateSlice";
-import PlayOrderStep from "../steps/PlayOrderStep";
+import templateSlice from "../../../features/template/templateSlice";
 import LockIcon from "@material-ui/icons/Lock";
 
-function moveItem<T>(items: T[], itemIdx: number, targetIdx: number): T[] {
+function moveItem<T>(
+  items: readonly T[],
+  itemIdx: number,
+  targetIdx: number
+): T[] {
   const clone = items.slice();
   const [item] = clone.splice(itemIdx, 1);
   clone.splice(targetIdx, 0, item);
@@ -68,14 +69,11 @@ function FirstAvatar() {
 }
 
 export default function PlayerOrderPanel({
-  gameStep,
+  order,
 }: {
-  gameStep: PlayOrderStep;
+  order: readonly PlayerId[];
 }) {
   const dispatch = useAppDispatch();
-
-  const element = useAppEntityIdSelectorEnforce(templateSelectors, "playOrder");
-  const order = gameStep.extractTemplateFixedValue(element);
 
   const onDragEnd = useCallback(
     ({ reason, source, destination }: DropResult) => {

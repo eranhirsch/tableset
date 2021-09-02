@@ -10,8 +10,8 @@ import { createGameStep } from "../core/steps/createGameStep";
 import IGameStep from "../core/steps/IGameStep";
 import IGame, { StepId } from "../core/IGame";
 import PlayerColorsStep from "../global/steps/PlayerColorsStep";
-import PlayOrderStep from "../global/steps/PlayOrderStep";
 import cityTilesStep from "./steps/cityTilesStep";
+import playOrderStep from "../global/steps/playOrderStep";
 
 export default class ConcordiaGame implements IGame {
   private readonly steps: Readonly<{ [id: string]: IGameStep<any> }>;
@@ -28,7 +28,7 @@ export default class ConcordiaGame implements IGame {
         createGameStep({ id: "concordiaCard" }),
         createGameStep({ id: "resourcePiles" }),
         createGameStep({ id: "bank" }),
-        new PlayOrderStep(),
+        playOrderStep,
         new PlayerColorsStep(this.playerColors),
         createGameStep({
           id: "playerPieces",
