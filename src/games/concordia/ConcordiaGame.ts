@@ -3,7 +3,7 @@ import marketDisplayStep from "./steps/marketDisplayStep";
 import mapStep from "./steps/mapStep";
 import createGameStep from "../core/steps/createGameStep";
 import IGameStep from "../core/steps/IGameStep";
-import IGame, { StepId } from "../core/IGame";
+import IGame from "../core/IGame";
 import cityTilesStep from "./steps/cityTilesStep";
 import playOrderStep from "../global/steps/playOrderStep";
 import createPlayerColorsStep from "../global/steps/createPlayerColorsStep";
@@ -15,38 +15,32 @@ import startingMoneyStep from "./steps/startingMoneyStep";
 import marketCardsStep from "./steps/marketCardsStep";
 
 export default class ConcordiaGame implements IGame {
-  private readonly steps: Readonly<{ [id: string]: IGameStep<any> }>;
+  public readonly steps: readonly IGameStep<unknown>[];
 
   public constructor() {
-    this.steps = Object.fromEntries(
-      [
-        mapStep,
-        cityTilesStep,
-        bonusTilesStep,
-        createGameStep({ id: "marketCards" }),
-        marketDisplayStep,
-        marketCardsStep,
-        createGameStep({ id: "concordiaCard" }),
-        createGameStep({ id: "resourcePiles" }),
-        createGameStep({ id: "bank" }),
-        playOrderStep,
-        createPlayerColorsStep(this.playerColors),
-        createGameStep({ id: "playerComponents" }),
-        startingColonistsStep,
-        createGameStep({ id: "startingResources" }),
-        firstPlayerStep,
-        startingMoneyStep,
-        praefectusMagnusStep,
-      ].map((step) => [step.id, step])
-    );
+    this.steps = [
+      mapStep,
+      cityTilesStep,
+      bonusTilesStep,
+      createGameStep({ id: "marketCards" }),
+      marketDisplayStep,
+      marketCardsStep,
+      createGameStep({ id: "concordiaCard" }),
+      createGameStep({ id: "resourcePiles" }),
+      createGameStep({ id: "bank" }),
+      playOrderStep,
+      createPlayerColorsStep(this.playerColors),
+      createGameStep({ id: "playerComponents" }),
+      startingColonistsStep,
+      createGameStep({ id: "startingResources" }),
+      firstPlayerStep,
+      startingMoneyStep,
+      praefectusMagnusStep,
+    ];
   }
 
-  public at(id: string): IGameStep<any> | undefined {
-    return this.steps[id];
-  }
-
-  public get order(): StepId[] {
-    return Object.keys(this.steps);
+  public at(id: string): IGameStep<unknown> | undefined {
+    return this.steps.find((step) => step.id === id);
   }
 
   public get playerColors(): GamePiecesColor[] {

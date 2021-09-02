@@ -58,11 +58,11 @@ export default function Instance() {
 
   const groups = useMemo(() => {
     const nonManualSteps = [...instanceStepIds];
-    return game.order.reduce(
-      (groups: StepId[][], stepId, index) => {
+    return game.steps.reduce(
+      (groups: StepId[][], step, index) => {
         let lastGroup = groups[groups.length - 1];
 
-        const manualStepIdx = nonManualSteps.indexOf(stepId);
+        const manualStepIdx = nonManualSteps.indexOf(step.id);
         if (manualStepIdx !== -1) {
           // We have something to show for this step, so we want to put it in
           // it's own group.
@@ -78,7 +78,7 @@ export default function Instance() {
             groups.push(lastGroup);
           }
 
-          lastGroup.push(stepId);
+          lastGroup.push(step.id);
           // We push an additional group after the step so that the next
           // next iterations dont add anything to this group.
           groups.push([]);
@@ -88,7 +88,7 @@ export default function Instance() {
         // We want to spread the steps that aren't special into the remaining
         // slots they have as fairly as possible
         const manualStepsLeft =
-          game.order.length - index - nonManualSteps.length;
+          game.steps.length - index - nonManualSteps.length;
         const manualStepGroupsLeft =
           IDEAL_STEP_COUNT - (groups.length - 1) - nonManualSteps.length;
 
@@ -103,16 +103,18 @@ export default function Instance() {
           lastGroup = [];
           groups.push(lastGroup);
         }
-        lastGroup.push(stepId);
+        lastGroup.push(step.id);
 
         return groups;
       },
       [[]]
     );
-  }, [game.order, instanceStepIds]);
+  }, [game.steps, instanceStepIds]);
 
   const activeStepId = location.hash.substring(1) as StepId;
-  const activeStepIdx = game.order.indexOf(activeStepId);
+  const activeStepIdx = game.steps.findIndex(
+    (step) => step.id === activeStepId
+  );
 
   const expandedGroupIdx = useMemo(
     () => groups.findIndex((group) => group.includes(activeStepId)),
@@ -180,9 +182,9 @@ export default function Instance() {
                   setCompletedSteps((steps) =>
                     steps.includes(stepId) ? steps : [...steps, stepId]
                   );
-                  const nextStepId = game.order.find(
-                    (x) => !completedSteps.includes(x) && x !== stepId
-                  );
+                  const nextStepId = game.steps.find(
+                    (x) => !completedSteps.includes(x.id) && x.id !== stepId
+                  )?.id;
                   setActiveStepId(nextStepId);
                 }}
               >

@@ -5,7 +5,7 @@ export type StepId = string;
 
 export default interface IGame {
   readonly playerColors: readonly GamePiecesColor[];
-  readonly order: readonly StepId[];
+  readonly steps: readonly IGameStep<unknown>[];
 
-  at(id: StepId): IGameStep<any> | undefined;
+  at(id: StepId): IGameStep<unknown> | undefined;
 }

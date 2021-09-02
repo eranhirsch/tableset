@@ -25,8 +25,8 @@ export const instanceSlice = createSlice({
         template: Dictionary<TemplateElement>,
         playerIds: readonly PlayerId[]
       ) => ({
-        payload: game.order.reduce((ongoing, stepId) => {
-          const element = template[stepId];
+        payload: game.steps.reduce((ongoing, step) => {
+          const element = template[step.id];
           if (element == null) {
             return ongoing;
           }
@@ -39,7 +39,7 @@ export const instanceSlice = createSlice({
           );
 
           const setupStep = {
-            id: stepId,
+            id: step.id,
             value: templateElementResolver(gameStep, element, {
               instance: ongoing,
               playerIds,

@@ -9,7 +9,6 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import instanceSlice from "../instance/instanceSlice";
 import { Link as RouterLink } from "react-router-dom";
 import { gameSelector } from "../game/gameSlice";
-import nullthrows from "../../common/err/nullthrows";
 
 export default function Template() {
   const dispatch = useAppDispatch();
@@ -19,29 +18,28 @@ export default function Template() {
   const template = useAppSelector(templateSelectors.selectEntities);
   const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 
-  const allItems = game.order;
+  const allItems = game.steps;
   const templatableItems = useMemo(
     () =>
-      allItems.filter((stepId) => {
-        const step = nullthrows(game.at(stepId));
+      allItems.filter((step) => {
         if (step.strategies == null) {
           return false;
         }
         return step.strategies({ template, playerIds }).length > 1;
       }),
-    [allItems, game, playerIds, template]
+    [allItems, playerIds, template]
   );
 
   return (
     <>
       <List component="ol">
-        {templatableItems.map((stepId) => (
+        {templatableItems.map((step) => (
           <TemplateItem
-            key={stepId}
-            stepId={stepId}
-            expanded={stepId === expandedStepId}
+            key={step.id}
+            stepId={step.id}
+            expanded={step.id === expandedStepId}
             onClick={(isExpanded) =>
-              setExpandedStepId(isExpanded ? undefined : stepId)
+              setExpandedStepId(isExpanded ? undefined : step.id)
             }
           />
         ))}
