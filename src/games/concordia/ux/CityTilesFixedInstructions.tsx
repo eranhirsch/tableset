@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import { selectors as instanceSelectors } from "../../../features/instance/instanceSlice";
-import { CityResourcesEncoder } from "../utils/CityResourcesEncoder";
+import CityResourcesEncoder from "../utils/CityResourcesEncoder";
 
 export default function CityTilesFixedInstructions({ hash }: { hash: string }) {
   const mapStep = useAppEntityIdSelectorEnforce(instanceSelectors, "map");
