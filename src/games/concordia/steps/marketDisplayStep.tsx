@@ -7,9 +7,6 @@ export default createGameStep({
   labelOverride: "Cards Display",
 
   derivers: {
-    isType(x): x is string {
-      return typeof x === "string";
-    },
     renderInstanceItem: (hash) => (
       <MarketDisplayFixedInstructions hash={hash} />
     ),

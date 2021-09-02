@@ -18,7 +18,7 @@ interface CreateGameStepOptionsAny<T> {
 
   derivers?: {
     dependencies?: [IGameStep<any>, ...IGameStep<any>[]];
-    isType(value: any): value is T;
+    isType?(value: any): value is T;
     renderInstanceItem(item: T): JSX.Element;
     random(context: InstanceContext, ...dependancies: any[]): T;
     recommended?(context: InstanceContext): T | undefined;
@@ -117,7 +117,7 @@ interface CreateGameStepOptions<
           IGameStep<D10>
         ];
 
-    isType(value: any): value is T;
+    isType?(value: any): value is T;
     renderInstanceItem(item: T): JSX.Element;
     random(
       context: InstanceContext,

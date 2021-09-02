@@ -12,7 +12,7 @@ interface CreateGenericItemsGameStepOptions<T extends string = string> {
   itemIds: readonly T[];
   labelFor(itemId: T): string;
   recommended?(context: InstanceContext): T | undefined;
-  isType: (x: string) => x is T;
+  isType?: (x: string) => x is T;
 }
 
 export default function createGenericItemsGameStep<T extends string = string>({
