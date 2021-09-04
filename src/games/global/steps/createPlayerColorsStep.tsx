@@ -3,13 +3,13 @@ import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import PlayerColors from "../../../common/PlayerColors";
 import { Strategy } from "../../../core/Strategy";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
-import { createDerivedGameStep } from "../../core/steps/createDerivedGameStep";
+import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import PlayerColorPanel from "../ux/PlayerColorPanel";
 import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
 import { PlayerColorsPanel } from "../ux/PlayerColorsPanel";
 
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
-  createDerivedGameStep({
+  createVariableGameStep({
     id: "playerColors",
     labelOverride: "Colors",
 

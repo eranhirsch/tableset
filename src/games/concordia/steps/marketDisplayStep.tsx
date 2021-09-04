@@ -1,8 +1,8 @@
-import { createDerivedGameStep } from "../../core/steps/createDerivedGameStep";
+import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 import MarketDisplayFixedInstructions from "../ux/MarketDisplayFixedInstructions";
 
-export default createDerivedGameStep({
+export default createVariableGameStep({
   id: "marketDisplay",
   labelOverride: "Cards Display",
 

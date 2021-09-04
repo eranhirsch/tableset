@@ -4,7 +4,7 @@ import templateSlice from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "../ux/GenericItemsListPanel";
-import { createDerivedGameStep } from "./createDerivedGameStep";
+import createVariableGameStep from "./createVariableGameStep";
 import { InstanceContext } from "./IGameStep";
 
 interface CreateGenericItemsGameStepOptions<T extends string = string> {
@@ -22,7 +22,7 @@ const createGenericItemsGameStep = <T extends string = string>({
   recommended,
   isType,
 }: CreateGenericItemsGameStepOptions<T>) =>
-  createDerivedGameStep({
+  createVariableGameStep({
     id,
     isType,
 

@@ -1,11 +1,11 @@
 import { Strategy } from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
-import { createDerivedGameStep } from "../../core/steps/createDerivedGameStep";
+import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";
 import { FirstPlayerPanel } from "../ux/FirstPlayerPanel";
 import StartingPlayerPanel from "../ux/StartingPlayerPanel";
 
-export default createDerivedGameStep({
+export default createVariableGameStep({
   id: "firstPlayer",
 
   isType: (x): x is PlayerId => typeof x === "string",

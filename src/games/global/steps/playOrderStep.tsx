@@ -2,12 +2,12 @@ import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { Strategy } from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
-import { createDerivedGameStep } from "../../core/steps/createDerivedGameStep";
+import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
 import { PlayOrderPanel } from "../ux/PlayOrderPanel";
 
-export default createDerivedGameStep({
+export default createVariableGameStep({
   id: "playOrder",
   labelOverride: "Seating",
 

@@ -6,7 +6,7 @@ import createGameStep, { CreateGameStepOptions } from "./createGameStep";
 import extractInstanceValue from "./extractInstanceValue";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
-interface CreateDerivedGameStepOptionsAny<T> extends CreateGameStepOptions {
+interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
   dependencies?: [IGameStep<any>, ...IGameStep<any>[]];
 
   isType?(value: any): value is T;
@@ -27,7 +27,7 @@ interface CreateDerivedGameStepOptionsAny<T> extends CreateGameStepOptions {
   };
 }
 
-interface CreateDerivedGameStepOptions<
+interface CreateVariableGameStepOptions<
   T,
   D1 = never,
   D2 = never,
@@ -128,7 +128,7 @@ interface CreateDerivedGameStepOptions<
   };
 }
 
-export default function createDerivedGameStep<
+export default function createVarialbeGameStep<
   T,
   D1 = never,
   D2 = never,
@@ -141,7 +141,7 @@ export default function createDerivedGameStep<
   D9 = never,
   D10 = never
 >(
-  options: CreateDerivedGameStepOptions<
+  options: CreateVariableGameStepOptions<
     T,
     D1,
     D2,
@@ -156,7 +156,7 @@ export default function createDerivedGameStep<
   >
 ): IGameStep<T>;
 
-export function createDerivedGameStep<T>({
+export default function createVarialbeGameStep<T>({
   dependencies,
   isType,
   renderInstanceItem,
@@ -164,7 +164,7 @@ export function createDerivedGameStep<T>({
   recommended,
   fixed,
   ...baseOptions
-}: CreateDerivedGameStepOptionsAny<T>): IGameStep<T> {
+}: CreateVariableGameStepOptionsAny<T>): IGameStep<T> {
   const gameStep: IGameStep<T> = createGameStep(baseOptions);
 
   gameStep.isType = isType;

@@ -1,9 +1,9 @@
 import mapStep from "./mapStep";
-import { createDerivedGameStep } from "../../core/steps/createDerivedGameStep";
+import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import CityResourcesEncoder from "../utils/CityResourcesEncoder";
 import CityTilesFixedInstructions from "../ux/CityTilesFixedInstructions";
 
-export default createDerivedGameStep({
+export default createVariableGameStep({
   id: "cityTiles",
   labelOverride: "City Resources",
 
