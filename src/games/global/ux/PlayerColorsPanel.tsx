@@ -5,7 +5,7 @@ import PlayerColors from "../../../common/PlayerColors";
 import short_name from "../../../common/short_name";
 import { playersSelectors } from "../../../features/players/playersSlice";
 
-export function PlayerColorsPanel({
+export default function PlayerColorsPanel({
   playerColor,
 }: {
   playerColor: PlayerColors;

@@ -8,7 +8,7 @@ import {
   playersSelectors,
 } from "../../../features/players/playersSlice";
 
-export function PlayOrderPanel({
+export default function PlayOrderPanel({
   playOrder,
 }: {
   playOrder: readonly PlayerId[];

@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
-import { Strategy } from "../../core/Strategy";
+import Strategy from "../../core/Strategy";
 import playersSlice, { Player, PlayerId } from "../players/playersSlice";
 import GameMapper, { GameId } from "../../games/core/GameMapper";
 import AppContext from "../../app/AppContext";

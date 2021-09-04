@@ -1,5 +1,5 @@
 import React from "react";
-import { Strategy } from "../../core/Strategy";
+import Strategy from "../../core/Strategy";
 import PushPinIcon from "@material-ui/icons/PushPin";
 import PanToolIcon from "@material-ui/icons/PanTool";
 import FunctionsIcon from "@material-ui/icons/Functions";

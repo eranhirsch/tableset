@@ -1,7 +1,7 @@
 import { Collapse, Stack } from "@material-ui/core";
 import { useMemo } from "react";
 import { templateSelectors } from "./templateSlice";
-import { Strategy } from "../../core/Strategy";
+import Strategy from "../../core/Strategy";
 import StrategiesSelector from "./StrategiesSelector";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { useAppSelector } from "../../app/hooks";

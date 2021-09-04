@@ -5,7 +5,7 @@ import { PlayerId } from "../../../features/players/playersSlice";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
-import { PlayOrderPanel } from "../ux/PlayOrderPanel";
+import PlayOrderPanel from "../ux/PlayOrderPanel";
 
 export default createVariableGameStep({
   id: "playOrder",

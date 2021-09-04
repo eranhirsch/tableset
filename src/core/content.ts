@@ -1,4 +1,4 @@
-import { Strategy } from "./Strategy";
+import Strategy from "./Strategy";
 
 export function strategyLabel(strategy: Strategy): string {
   switch (strategy) {

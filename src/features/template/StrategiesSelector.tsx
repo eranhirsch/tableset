@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { strategyLabel } from "../../core/content";
 import templateSlice, { templateSelectors } from "./templateSlice";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
-import { Strategy } from "../../core/Strategy";
+import Strategy from "../../core/Strategy";
 import { PlayerId, playersSelectors } from "../players/playersSlice";
 import { gameIdSelector } from "../game/gameSlice";
 import GameMapper from "../../games/core/GameMapper";

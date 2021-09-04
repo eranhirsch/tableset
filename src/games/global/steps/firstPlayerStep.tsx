@@ -2,7 +2,7 @@ import Strategy from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";
-import { FirstPlayerPanel } from "../ux/FirstPlayerPanel";
+import FirstPlayerPanel from "../ux/FirstPlayerPanel";
 import StartingPlayerPanel from "../ux/StartingPlayerPanel";
 
 export default createVariableGameStep({

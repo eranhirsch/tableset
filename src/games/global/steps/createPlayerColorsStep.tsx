@@ -6,7 +6,7 @@ import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import PlayerColorPanel from "../ux/PlayerColorPanel";
 import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
-import { PlayerColorsPanel } from "../ux/PlayerColorsPanel";
+import PlayerColorsPanel from "../ux/PlayerColorsPanel";
 
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
   createVariableGameStep({

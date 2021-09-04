@@ -1,5 +1,5 @@
 import nullthrows from "../../../common/err/nullthrows";
-import { Strategy } from "../../../core/Strategy";
+import Strategy from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
 import { ConstantTemplateElement } from "../../../features/template/templateSlice";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
@@ -169,7 +169,7 @@ export default function createVarialbeGameStep<T>({
 
   gameStep.isType = isType;
 
-  gameStep.renderInstanceContent = renderInstanceItem;
+  gameStep.renderVariableInstanceContent = renderInstanceItem;
 
   gameStep.resolveRandom = (context) => {
     const resolvedDependancies =

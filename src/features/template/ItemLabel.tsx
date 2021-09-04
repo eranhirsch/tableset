@@ -1,6 +1,6 @@
 import { strategyLabel } from "../../core/content";
 import { templateSelectors } from "./templateSlice";
-import { Strategy } from "../../core/Strategy";
+import Strategy from "../../core/Strategy";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { useAppSelector } from "../../app/hooks";
 import { gameSelector } from "../game/gameSlice";

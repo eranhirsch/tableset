@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import short_name from "../../../common/short_name";
-import { Strategy } from "../../../core/Strategy";
+import Strategy from "../../../core/Strategy";
 import {
   PlayerId,
   playersSelectors,

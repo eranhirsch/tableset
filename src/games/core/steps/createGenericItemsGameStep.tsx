@@ -1,5 +1,5 @@
 import { Typography } from "@material-ui/core";
-import { Strategy } from "../../../core/Strategy";
+import Strategy from "../../../core/Strategy";
 import templateSlice from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
