@@ -1,7 +1,7 @@
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import PlayerColors from "../../../common/PlayerColors";
-import { Strategy } from "../../../core/Strategy";
+import Strategy from "../../../core/Strategy";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import PlayerColorPanel from "../ux/PlayerColorPanel";

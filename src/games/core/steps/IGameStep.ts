@@ -1,6 +1,6 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer/dist/internal";
-import { Strategy } from "../../../core/Strategy";
+import Strategy from "../../../core/Strategy";
 import { SetupStep } from "../../../features/instance/instanceSlice";
 import { PlayerId, Player } from "../../../features/players/playersSlice";
 import {

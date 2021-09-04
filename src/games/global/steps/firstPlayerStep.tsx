@@ -1,4 +1,4 @@
-import { Strategy } from "../../../core/Strategy";
+import Strategy from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";

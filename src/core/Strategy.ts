@@ -1,4 +1,4 @@
-export enum Strategy {
+enum Strategy {
   OFF,
   DEFAULT,
   RANDOM,
@@ -6,3 +6,4 @@ export enum Strategy {
   FIXED,
   COMPUTED,
 }
+export default Strategy;
