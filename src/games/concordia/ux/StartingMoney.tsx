@@ -19,18 +19,19 @@ export default function StartingMoney({
   return (
     <Grid container spacing={1} alignItems="center">
       <Grid item xs={12}>
-        <Typography variant="subtitle1">
+        <Typography variant="body1">
           Player receive sestertii from the bank in the following amounts:
         </Typography>
       </Grid>
       {order.map((playerId, index) => (
         <React.Fragment key={playerId}>
-          <Grid item xs={6}>
+          <Grid item xs={2}>
             <Player playerId={playerId} />
           </Grid>
-          <Grid item xs={6}>
-            {5 + index} Sestertii
+          <Grid item xs={3}>
+            <Typography variant="body2">{5 + index} Sestertii</Typography>
           </Grid>
+          <Grid item xs={7} />{" "}
         </React.Fragment>
       ))}
     </Grid>
