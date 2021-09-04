@@ -1,11 +1,11 @@
-import createComputedGameStep from "../../core/steps/createComputedGameStep";
+import createDerivedGameStep from "../../core/steps/createDerivedGameStep";
 import StartingColonists from "../ux/StartingColonists";
 import mapStep from "./mapStep";
 
-export default createComputedGameStep({
+export default createDerivedGameStep({
   id: "startingColonists",
 
   dependencies: [mapStep],
 
-  renderComputed: (_, mapId) => <StartingColonists mapId={mapId} />,
+  renderDerived: (_, mapId) => <StartingColonists mapId={mapId} />,
 });

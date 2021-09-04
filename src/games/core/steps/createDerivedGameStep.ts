@@ -2,16 +2,16 @@ import createGameStep, { CreateGameStepOptions } from "./createGameStep";
 import extractInstanceValue from "./extractInstanceValue";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
-interface CreateComputedGameStepOptionsAny extends CreateGameStepOptions {
+interface CreateDerivedGameStepOptionsAny extends CreateGameStepOptions {
   dependencies?: [IGameStep<any>, ...IGameStep<any>[]];
 
-  renderComputed(
+  renderDerived(
     context: InstanceContext,
     ...dependency1: any[]
   ): undefined | JSX.Element;
 }
 
-interface CreateComputedGameStepOptions<
+interface CreateDerivedGameStepOptions<
   D1 = never,
   D2 = never,
   D3 = never,
@@ -86,7 +86,7 @@ interface CreateComputedGameStepOptions<
         IGameStep<D10>
       ];
 
-  renderComputed(
+  renderDerived(
     context: InstanceContext,
     dependency1: D1,
     dependency2: D2,
@@ -101,7 +101,7 @@ interface CreateComputedGameStepOptions<
   ): undefined | JSX.Element;
 }
 
-export default function createComputedGameStep<
+export default function createDerivedGameStep<
   D1 = never,
   D2 = never,
   D3 = never,
@@ -114,9 +114,9 @@ export default function createComputedGameStep<
   D10 = never
 >({
   dependencies,
-  renderComputed,
+  renderDerived,
   ...baseOptions
-}: CreateComputedGameStepOptions<
+}: CreateDerivedGameStepOptions<
   D1,
   D2,
   D3,
@@ -129,16 +129,16 @@ export default function createComputedGameStep<
   D10
 >): IGameStep<never>;
 
-export default function createComputedGameStep({
+export default function createDerivedGameStep({
   dependencies,
-  renderComputed,
+  renderDerived,
   ...baseOptions
-}: CreateComputedGameStepOptionsAny): IGameStep<never> {
+}: CreateDerivedGameStepOptionsAny): IGameStep<never> {
   const gameStep = createGameStep(baseOptions);
 
-  gameStep.renderComputedInstanceContent = (context) => {
+  gameStep.renderDerivedInstanceContent = (context) => {
     if (dependencies == null) {
-      return renderComputed(context);
+      return renderDerived(context);
     }
 
     if (
@@ -151,7 +151,7 @@ export default function createComputedGameStep({
       return;
     }
 
-    return renderComputed(
+    return renderDerived(
       context,
       ...dependencies.map((dependency) =>
         extractInstanceValue(dependency, context.instance)

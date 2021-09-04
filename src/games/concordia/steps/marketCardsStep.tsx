@@ -1,10 +1,10 @@
-import createComputedGameStep from "../../core/steps/createComputedGameStep";
+import createDerivedGameStep from "../../core/steps/createDerivedGameStep";
 import MarketCards from "../ux/MarketCards";
 
-export default createComputedGameStep({
+export default createDerivedGameStep({
   id: "marketCards",
 
-  renderComputed: ({ playerIds }) => {
+  renderDerived: ({ playerIds }) => {
     if (playerIds.length < 1) {
       // There's really nothing meaningful to do
       return;

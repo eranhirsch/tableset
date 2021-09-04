@@ -28,13 +28,13 @@ function InstanceItemContent({ stepId }: { stepId: StepId }) {
     `Step ${stepId} missing in game`
   );
 
-  if (gameStep.renderInstanceContent != null) {
+  if (gameStep.renderVariableInstanceContent != null) {
     const instanceStep = instance[stepId];
     if (instanceStep != null) {
-      return gameStep.renderInstanceContent(instanceStep.value);
+      return gameStep.renderVariableInstanceContent(instanceStep.value);
     }
-  } else if (gameStep.renderComputedInstanceContent != null) {
-    const renderedContent = gameStep.renderComputedInstanceContent({
+  } else if (gameStep.renderDerivedInstanceContent != null) {
+    const renderedContent = gameStep.renderDerivedInstanceContent({
       instance: filter_nulls(Object.values(instance)),
       playerIds,
     });

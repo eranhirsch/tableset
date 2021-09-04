@@ -1,15 +1,15 @@
 import { PlayerId } from "../../../features/players/playersSlice";
-import createComputedGameStep from "../../core/steps/createComputedGameStep";
+import createDerivedGameStep from "../../core/steps/createDerivedGameStep";
 import firstPlayerStep from "../../global/steps/firstPlayerStep";
 import playOrderStep from "../../global/steps/playOrderStep";
 import Player from "../ux/Player";
 
-export default createComputedGameStep({
+export default createDerivedGameStep({
   id: "praefectusMagnus",
 
   dependencies: [playOrderStep, firstPlayerStep],
 
-  renderComputed: ({ playerIds }, playOrder, firstPlayer) => (
+  renderDerived: ({ playerIds }, playOrder, firstPlayer) => (
     <Player playerId={lastPlayer(playerIds, playOrder, firstPlayer)} />
   ),
 });

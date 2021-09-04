@@ -1,5 +1,5 @@
 import React from "react";
-import createComputedGameStep from "../../core/steps/createComputedGameStep";
+import createDerivedGameStep from "../../core/steps/createDerivedGameStep";
 import CityResourcesEncoder, {
   Resource,
   CityResourceMapping,
@@ -12,13 +12,13 @@ export type ProvinceResourceMapping = Readonly<{
   [provinceName: string]: Resource;
 }>;
 
-export default createComputedGameStep({
+export default createDerivedGameStep({
   id: "bonusTiles",
   labelOverride: "Province Bonuses",
 
   dependencies: [mapStep, cityTilesStep],
 
-  renderComputed: (_, mapId, hash) => (
+  renderDerived: (_, mapId, hash) => (
     <BonusTiles
       provinceResource={fromCityTiles(
         CityResourcesEncoder.forMapId(mapId).decode(hash)
