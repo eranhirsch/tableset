@@ -1,4 +1,5 @@
 import createGenericItemsGameStep from "../../core/steps/createGenericItemsGameStep";
+import ConcordiaMap from "../ux/ConcordiaMap";
 
 export type Zone = "A" | "B" | "C" | "D";
 
@@ -81,14 +82,12 @@ export const MAPS: Record<MapId, MapBoard> = {
 
 export default createGenericItemsGameStep({
   id: "map",
-
-  isType(x: string): x is MapId {
-    return MAPS[x as MapId] != null;
-  },
-
   itemIds: Object.keys(MAPS) as MapId[],
-  labelFor: (id) => MAPS[id].name,
 
+  labelFor: (id) => MAPS[id].name,
+  render: ConcordiaMap,
+
+  isType: (x: string): x is MapId => MAPS[x as MapId] != null,
   recommended: ({ playerIds }) =>
     playerIds.length <= 1
       ? undefined

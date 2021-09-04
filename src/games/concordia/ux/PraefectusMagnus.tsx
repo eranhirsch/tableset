@@ -1,6 +1,6 @@
 import { PlayerId } from "../../../features/players/playersSlice";
 import { DerivedStepInstanceComponentProps } from "../../core/steps/createDerivedGameStep";
-import Player from "./Player";
+import Player from "../../global/ux/Player";
 
 export default function PraefectusMagnus({
   context: { playerIds },

@@ -11,8 +11,6 @@ export default createVariableGameStep({
 
   isType: (x): x is string => typeof x === "string",
 
-  renderInstanceItem: (item: string) => (
-    <CityTilesFixedInstructions hash={item} />
-  ),
+  render: CityTilesFixedInstructions,
   random: (_, mapId) => CityResourcesEncoder.forMapId(mapId).randomHash(),
 });

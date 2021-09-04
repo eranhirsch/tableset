@@ -6,12 +6,16 @@ import createGameStep, { CreateGameStepOptions } from "./createGameStep";
 import extractInstanceValue from "./extractInstanceValue";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
+export interface VariableStepInstanceComponentProps<T> {
+  value: T;
+}
+
 interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
   dependencies?: [IGameStep<any>, ...IGameStep<any>[]];
 
   isType?(value: any): value is T;
 
-  renderInstanceItem(item: T): JSX.Element;
+  render(props: VariableStepInstanceComponentProps<T>): JSX.Element;
 
   random(context: InstanceContext, ...dependancies: any[]): T;
 
@@ -104,7 +108,7 @@ interface CreateVariableGameStepOptions<
       ];
 
   isType?(value: any): value is T;
-  renderInstanceItem(item: T): JSX.Element;
+  render(props: VariableStepInstanceComponentProps<T>): JSX.Element;
   random(
     context: InstanceContext,
     dependency1: D1,
@@ -159,7 +163,7 @@ export default function createVarialbeGameStep<
 export default function createVarialbeGameStep<T>({
   dependencies,
   isType,
-  renderInstanceItem,
+  render,
   random,
   recommended,
   fixed,
@@ -169,7 +173,7 @@ export default function createVarialbeGameStep<T>({
 
   gameStep.isType = isType;
 
-  gameStep.renderVariableInstanceContent = renderInstanceItem;
+  gameStep.renderVariableInstanceContent = (value) => render({ value });
 
   gameStep.resolveRandom = (context) => {
     const resolvedDependancies =

@@ -14,9 +14,7 @@ export default createVariableGameStep({
   isType: (x): x is PlayerId[] =>
     Array.isArray(x) && x.every((y) => typeof y === "string"),
 
-  renderInstanceItem: (playOrder: readonly PlayerId[]) => (
-    <PlayOrderPanel playOrder={playOrder} />
-  ),
+  render: PlayOrderPanel,
 
   random({ playerIds }) {
     const [, ...restOfPlayers] = playerIds;

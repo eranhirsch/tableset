@@ -7,12 +7,11 @@ import {
   firstPlayerSelector,
   playersSelectors,
 } from "../../../features/players/playersSlice";
+import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
 
 export default function PlayOrderPanel({
-  playOrder,
-}: {
-  playOrder: readonly PlayerId[];
-}) {
+  value: playOrder,
+}: VariableStepInstanceComponentProps<readonly PlayerId[]>) {
   const firstPlayer = useAppSelector(firstPlayerSelector);
   const players = useAppSelector(playersSelectors.selectEntities);
 

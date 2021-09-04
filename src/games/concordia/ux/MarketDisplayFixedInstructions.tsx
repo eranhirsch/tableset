@@ -7,13 +7,12 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
+import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 
 export default function MarketDisplayFixedInstructions({
-  hash,
-}: {
-  hash: string;
-}) {
+  value: hash,
+}: VariableStepInstanceComponentProps<string>) {
   const market = MarketDisplayEncoder.decode(hash);
   return (
     <Stack direction="column" alignItems="center">

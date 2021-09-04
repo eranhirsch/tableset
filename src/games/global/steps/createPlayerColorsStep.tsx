@@ -9,13 +9,11 @@ import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabe
 import PlayerColorsPanel from "../ux/PlayerColorsPanel";
 
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
-  createVariableGameStep({
+  createVariableGameStep<PlayerColors>({
     id: "playerColors",
     labelOverride: "Colors",
 
-    renderInstanceItem: (playerColors: PlayerColors) => (
-      <PlayerColorsPanel playerColor={playerColors} />
-    ),
+    render: PlayerColorsPanel,
 
     random({ playerIds }) {
       const permutations =

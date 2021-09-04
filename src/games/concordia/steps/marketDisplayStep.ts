@@ -6,6 +6,6 @@ export default createVariableGameStep({
   id: "marketDisplay",
   labelOverride: "Cards Display",
 
-  renderInstanceItem: (hash) => <MarketDisplayFixedInstructions hash={hash} />,
+  render: MarketDisplayFixedInstructions,
   random: () => MarketDisplayEncoder.randomHash(),
 });

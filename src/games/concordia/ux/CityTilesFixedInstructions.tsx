@@ -4,9 +4,13 @@ import { useMemo } from "react";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import { instanceSelectors } from "../../../features/instance/instanceSlice";
+import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
 import CityResourcesEncoder from "../utils/CityResourcesEncoder";
 
-export default function CityTilesFixedInstructions({ hash }: { hash: string }) {
+export default function CityTilesFixedInstructions({
+  value: hash,
+}: VariableStepInstanceComponentProps<string>) {
+  // Move this to dependancies
   const mapStep = useAppEntityIdSelectorEnforce(instanceSelectors, "map");
   if (mapStep.id !== "map") {
     invariant_violation();

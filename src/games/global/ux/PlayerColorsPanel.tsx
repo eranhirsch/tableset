@@ -4,12 +4,11 @@ import nullthrows from "../../../common/err/nullthrows";
 import PlayerColors from "../../../common/PlayerColors";
 import short_name from "../../../common/short_name";
 import { playersSelectors } from "../../../features/players/playersSlice";
+import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
 
 export default function PlayerColorsPanel({
-  playerColor,
-}: {
-  playerColor: PlayerColors;
-}) {
+  value: playerColor,
+}: VariableStepInstanceComponentProps<PlayerColors>) {
   const players = useAppSelector(playersSelectors.selectEntities);
 
   return (

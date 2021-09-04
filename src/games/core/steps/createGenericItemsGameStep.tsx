@@ -1,36 +1,38 @@
-import { Typography } from "@material-ui/core";
 import Strategy from "../../../core/Strategy";
 import templateSlice from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "../ux/GenericItemsListPanel";
-import createVariableGameStep from "./createVariableGameStep";
+import createVariableGameStep, {
+  VariableStepInstanceComponentProps,
+} from "./createVariableGameStep";
 import { InstanceContext } from "./IGameStep";
 
 interface CreateGenericItemsGameStepOptions<T extends string = string> {
   id: StepId;
+
   itemIds: readonly T[];
+
   labelFor(itemId: T): string;
+  render(props: VariableStepInstanceComponentProps<T>): JSX.Element;
+
+  isType?(x: string): x is T;
   recommended?(context: InstanceContext): T | undefined;
-  isType?: (x: string) => x is T;
 }
 
 const createGenericItemsGameStep = <T extends string = string>({
   id,
   itemIds,
   labelFor,
-  recommended,
+  render,
   isType,
+  recommended,
 }: CreateGenericItemsGameStepOptions<T>) =>
   createVariableGameStep({
     id,
     isType,
 
-    renderInstanceItem: (itemId) => (
-      <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
-        {labelFor(itemId)}
-      </Typography>
-    ),
+    render,
 
     random: () => itemIds[Math.floor(Math.random() * itemIds.length)],
 
