@@ -2,6 +2,7 @@ import { Box, Typography } from "@material-ui/core";
 import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
 import grammatical_list from "../../../common/lib_utils/grammatical_list";
 import range from "../../../common/lib_utils/range";
+import { DerivedStepInstanceComponentProps } from "../../core/steps/createDerivedGameStep";
 
 const CARDS_PER_DECK = [
   // the array is 0-indexed
@@ -20,7 +21,21 @@ const CARDS_PER_DECK = [
 
 export const ROMAN_NUMERALS = [undefined, "I", "II", "III", "IV", "V"];
 
-export default function MarketCards({ playerCount }: { playerCount: number }) {
+export default function MarketCards({
+  context: { playerIds },
+}: DerivedStepInstanceComponentProps) {
+  const playerCount = playerIds.length;
+
+  if (playerCount < 1) {
+    // There's really nothing meaningful to do
+    return;
+  }
+
+  if (playerCount > 5) {
+    // Not enough decks
+    return;
+  }
+
   const inUse = range(1, playerCount + 1).map(
     (i) => `${ROMAN_NUMERALS[i]} (${CARDS_PER_DECK[i]} cards)`
   );

@@ -4,8 +4,6 @@ import mapStep from "./mapStep";
 
 export default createDerivedGameStep({
   id: "startingColonists",
-
   dependencies: [mapStep],
-
-  renderDerived: (_, mapId) => <StartingColonists mapId={mapId} />,
+  renderDerived: StartingColonists,
 });

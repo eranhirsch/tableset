@@ -1,13 +1,21 @@
 import { Grid, Typography } from "@material-ui/core";
 import React from "react";
 import { PlayerId } from "../../../features/players/playersSlice";
+import { DerivedStepInstanceComponentProps } from "../../core/steps/createDerivedGameStep";
 import Player from "./Player";
 
 export default function StartingMoney({
-  order,
-}: {
-  order: readonly PlayerId[];
-}) {
+  context: { playerIds },
+  dependencies: [playOrder, firstPlayerId],
+}: DerivedStepInstanceComponentProps<readonly PlayerId[], PlayerId>) {
+  const fullPlayOrder = [playerIds[0], ...playOrder];
+  const firstPlayerIdx = fullPlayOrder.findIndex(
+    (playerId) => playerId === firstPlayerId
+  );
+  const order = fullPlayOrder
+    .slice(firstPlayerIdx)
+    .concat(fullPlayOrder.slice(0, firstPlayerIdx));
+
   return (
     <Grid container spacing={1} alignItems="center">
       <Grid item xs={12}>
