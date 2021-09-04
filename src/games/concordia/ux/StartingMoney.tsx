@@ -19,7 +19,9 @@ export default function StartingMoney({
   return (
     <Grid container spacing={1} alignItems="center">
       <Grid item xs={12}>
-        Each player takes
+        <Typography variant="subtitle1">
+          Player receive sestertii from the bank in the following amounts:
+        </Typography>
       </Grid>
       {order.map((playerId, index) => (
         <React.Fragment key={playerId}>
@@ -31,9 +33,6 @@ export default function StartingMoney({
           </Grid>
         </React.Fragment>
       ))}
-      <Grid item xs={12}>
-        <Typography variant="caption">(from the bank)</Typography>
-      </Grid>
     </Grid>
   );
 }
