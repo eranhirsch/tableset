@@ -9,7 +9,7 @@ import {
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { selectors as instanceSelectors } from "./instanceSlice";
+import { instanceSelectors } from "./instanceSlice";
 import { gameSelector } from "../game/gameSlice";
 import nullthrows from "../../common/err/nullthrows";
 import { StepId } from "../../games/core/IGame";

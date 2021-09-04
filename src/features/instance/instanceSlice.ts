@@ -54,7 +54,7 @@ export const instanceSlice = createSlice({
   },
 });
 
-export const selectors = instanceAdapter.getSelectors<RootState>(
+export const instanceSelectors = instanceAdapter.getSelectors<RootState>(
   (state) => state.instance
 );
 
