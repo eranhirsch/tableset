@@ -45,13 +45,13 @@ const createGenericItemsGameStep = <T extends string = string>({
         value: itemIds[0],
       }),
 
-      renderTemplateLabel: (current) => (
+      renderTemplateLabel: ({ value }) => (
         <GenericItemsFixedTemplateLabel
           onLabelForItem={labelFor}
-          selectedId={current}
+          selectedId={value}
         />
       ),
-      renderSelector: (current) => (
+      renderSelector: ({ current }) => (
         <GenericItemsListPanel
           itemIds={itemIds}
           selectedId={current}

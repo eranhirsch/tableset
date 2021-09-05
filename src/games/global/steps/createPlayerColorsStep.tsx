@@ -26,15 +26,13 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     },
 
     fixed: {
-      renderSelector: (current) => (
+      renderSelector: ({ current }) => (
         <PlayerColorPanel
           availableColors={availableColors}
           playerColors={current}
         />
       ),
-      renderTemplateLabel: (current) => (
-        <PlayersColorsFixedTemplateLabel value={current} />
-      ),
+      renderTemplateLabel: PlayersColorsFixedTemplateLabel,
 
       initializer(playerIds) {
         if (playerIds.length < 1) {

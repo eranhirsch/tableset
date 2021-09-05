@@ -69,10 +69,10 @@ function FirstAvatar() {
 }
 
 export default function PlayerOrderPanel({
-  order,
+  current: order,
 }: {
-  order: readonly PlayerId[];
-}): JSX.Element | null {
+  current: readonly PlayerId[];
+}): JSX.Element {
   const dispatch = useAppDispatch();
 
   const onDragEnd = useCallback(

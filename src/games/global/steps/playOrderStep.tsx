@@ -24,10 +24,8 @@ export default createVariableGameStep({
   },
 
   fixed: {
-    renderSelector: (playOrder) => <PlayerOrderPanel order={playOrder} />,
-    renderTemplateLabel: (current) => (
-      <PlayOrderFixedTemplateLabel value={current} />
-    ),
+    renderSelector: PlayerOrderPanel,
+    renderTemplateLabel: PlayOrderFixedTemplateLabel,
 
     initializer(playerIds) {
       if (playerIds.length < 3) {

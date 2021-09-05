@@ -16,10 +16,8 @@ export default createVariableGameStep({
     playerIds[Math.floor(Math.random() * playerIds.length)],
 
   fixed: {
-    renderSelector: () => <StartingPlayerPanel />,
-    renderTemplateLabel: (current) => (
-      <FirstPlayerFixedTemplateLabel value={current} />
-    ),
+    renderSelector: StartingPlayerPanel,
+    renderTemplateLabel: FirstPlayerFixedTemplateLabel,
     initializer(playerIds) {
       if (playerIds.length < 2) {
         // meaningless

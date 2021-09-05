@@ -127,8 +127,8 @@ interface CreateVariableGameStepOptions<
     initializer(
       playerIds: readonly PlayerId[]
     ): ConstantTemplateElement | undefined;
-    renderTemplateLabel(current: T): JSX.Element;
-    renderSelector(current: T): JSX.Element;
+    renderTemplateLabel(props: { value: T }): JSX.Element;
+    renderSelector(props: { current: T }): JSX.Element;
   };
 }
 
