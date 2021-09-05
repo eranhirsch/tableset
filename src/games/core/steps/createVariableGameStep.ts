@@ -167,6 +167,8 @@ export default function createVarialbeGameStep<T>({
 }: CreateVariableGameStepOptionsAny<T>): IGameStep<T> {
   const gameStep: IGameStep<T> = createGameStep(baseOptions);
 
+  gameStep.dependencies = dependencies;
+
   gameStep.wouldTemplateGenerateValue = ({ template }) =>
     template[gameStep.id] != null;
 

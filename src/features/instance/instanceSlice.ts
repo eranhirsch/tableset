@@ -1,6 +1,5 @@
 import { createEntityAdapter, createSlice, Dictionary } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import nullthrows from "../../common/err/nullthrows";
 import IGame, { StepId } from "../../games/core/IGame";
 import { PlayerId } from "../players/playersSlice";
 import { TemplateElement } from "../template/templateSlice";
@@ -31,12 +30,7 @@ export const instanceSlice = createSlice({
             return ongoing;
           }
 
-          const gameStep = nullthrows(
-            game.at(element.id),
-            `Element ${JSON.stringify(
-              element
-            )} does not have a corresponding step in the game`
-          );
+          const gameStep = game.atEnforce(element.id);
 
           const setupStep = {
             id: step.id,

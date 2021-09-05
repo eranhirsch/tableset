@@ -1,4 +1,4 @@
-import { Fab, List } from "@material-ui/core";
+import { CircularProgress, Fab, List } from "@material-ui/core";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import { EntityId } from "@reduxjs/toolkit";
 import { useEffect, useMemo, useState } from "react";
@@ -20,6 +20,7 @@ export default function Template(): JSX.Element | null {
 
   const gameId = useAppSelector(gameIdSelector);
   const template = useAppSelector(templateSelectors.selectEntities);
+  const isStale = useAppSelector(templateIsStaleSelector);
   const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 
   const game = GameMapper.forId(gameId);
@@ -35,17 +36,11 @@ export default function Template(): JSX.Element | null {
     [allItems, playerIds, template]
   );
 
-  const isStale = useAppSelector(templateIsStaleSelector);
-
   useEffect(() => {
     if (isStale) {
-      dispatch(templateSlice.actions.refresh({ gameId, playerIds }));
+      dispatch(templateSlice.actions.refresh(playerIds));
     }
-  }, [dispatch, gameId, isStale, playerIds]);
-
-  if (isStale) {
-    return <div>Loading...</div>;
-  }
+  }, [dispatch, isStale, playerIds]);
 
   return (
     <>
@@ -62,6 +57,7 @@ export default function Template(): JSX.Element | null {
         ))}
       </List>
       <Fab
+        disabled={isStale}
         component={RouterLink}
         to="/instance"
         sx={{ position: "absolute", bottom: 16, right: 16 }}
@@ -71,7 +67,7 @@ export default function Template(): JSX.Element | null {
           dispatch(instanceSlice.actions.created(game, template, playerIds));
         }}
       >
-        <PlayArrowIcon />
+        {isStale ? <CircularProgress /> : <PlayArrowIcon />}
       </Fab>
     </>
   );

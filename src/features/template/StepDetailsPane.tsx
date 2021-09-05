@@ -20,7 +20,7 @@ export default function StepDetailsPane({
   const strategyControls = useMemo(() => {
     if (step != null && step.strategy === Strategy.FIXED) {
       const TemplateFixedValueSelector = nullthrows(
-        game.at(stepId)?.TemplateFixedValueSelector,
+        game.atEnforce(stepId).TemplateFixedValueSelector,
         `No selector component defined for step ${stepId}`
       );
       return <TemplateFixedValueSelector current={step.value} />;

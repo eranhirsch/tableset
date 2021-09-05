@@ -7,5 +7,6 @@ export default interface IGame {
   readonly playerColors: readonly GamePiecesColor[];
   readonly steps: readonly IGameStep<unknown>[];
 
-  at(id: StepId): IGameStep<unknown> | undefined;
+  atNullable(id: StepId): IGameStep<unknown> | undefined;
+  atEnforce(id: StepId): IGameStep<unknown>;
 }

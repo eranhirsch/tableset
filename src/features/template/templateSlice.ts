@@ -1,7 +1,7 @@
 import {
   createEntityAdapter,
+  createSelector,
   createSlice,
-  EntityState,
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
@@ -52,12 +52,12 @@ const templateSlice = createSlice({
       >
     ) => {
       templateAdapter.upsertOne(state, action);
+      markDownstreamElementsStale(action.payload.id, state);
     },
 
-    disabled: (state, action) => {
+    disabled(state, action: PayloadAction<StepId>) {
       templateAdapter.removeOne(state, action);
-      // TODO: Go over steps that are dependent on this step and mark them stale
-      state.isStale = true;
+      markDownstreamElementsStale(action.payload, state);
     },
 
     enabledConstantValue: {
@@ -77,10 +77,11 @@ const templateSlice = createSlice({
           id,
           strategy: Strategy.FIXED,
           isStale: false,
-          value: GameMapper.forId(state.gameId).at(id)!.initialFixedValue!(
-            playerIds
-          ),
+          value: GameMapper.forId(state.gameId).atEnforce(id)
+            .initialFixedValue!(playerIds),
         });
+
+        markDownstreamElementsStale(id, state);
       },
     },
 
@@ -88,27 +89,27 @@ const templateSlice = createSlice({
       state,
       { payload: { id, value } }: PayloadAction<{ id: StepId; value: unknown }>
     ) {
-      const step = nullthrows(
+      const element = nullthrows(
         state.entities[id],
         `Couldn't find step: ${id}, This action is only supported on elements which are already in the template`
       );
 
-      if (step.strategy !== Strategy.FIXED) {
+      if (element.strategy !== Strategy.FIXED) {
         throw new Error(
           `Trying to set fixed value when strategy isn't fixed for step: ${id}`
         );
       }
 
-      step.value = value;
+      element.value = value;
+
+      markDownstreamElementsStale(id, state);
     },
 
     refresh: (
       state,
-      {
-        payload: { gameId, playerIds },
-      }: PayloadAction<{ gameId: GameId; playerIds: readonly PlayerId[] }>
+      { payload: playerIds }: PayloadAction<readonly PlayerId[]>
     ) => {
-      const game = GameMapper.forId(gameId);
+      const game = GameMapper.forId(state.gameId);
       game.steps.forEach((step) => {
         const element = state.entities[step.id];
         if (element == null) {
@@ -116,7 +117,18 @@ const templateSlice = createSlice({
           return;
         }
 
-        const strategies = step.strategies!({
+        if (!element.isStale) {
+          return;
+        }
+
+        if (step.strategies == null) {
+          // No strategies method, this might be so rare or impossible it should
+          // be an invariant/nullthrows and not a regular condition.
+          templateAdapter.removeOne(state, step.id);
+          return;
+        }
+
+        const strategies = step.strategies({
           playerIds,
           template: state.entities,
         });
@@ -124,7 +136,10 @@ const templateSlice = createSlice({
         if (!strategies.includes(element.strategy)) {
           // The step is no longer valid in it's current configuration
           templateAdapter.removeOne(state, step.id);
-        } else if (
+          return;
+        }
+
+        if (
           element.strategy === Strategy.FIXED &&
           step.refreshFixedValue != null
         ) {
@@ -142,8 +157,12 @@ const templateSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(playersSlice.actions.added, markPlayerDependentStepsStale)
-      .addCase(playersSlice.actions.removed, markPlayerDependentStepsStale);
+      .addCase(playersSlice.actions.added, (state) =>
+        markDownstreamElementsStale(PLAYERS_DEPENDENCY_META_STEP_ID, state)
+      )
+      .addCase(playersSlice.actions.removed, (state) =>
+        markDownstreamElementsStale(PLAYERS_DEPENDENCY_META_STEP_ID, state)
+      );
   },
 });
 export default templateSlice;
@@ -152,23 +171,21 @@ export const templateSelectors = templateAdapter.getSelectors<RootState>(
   (state) => state.template
 );
 
-function markPlayerDependentStepsStale({
-  gameId,
-  entities,
-}: GlobalTemplateState & EntityState<TemplateElement>): void {
-  const game = GameMapper.forId(gameId);
-  filter_nulls(Object.values(entities)).forEach((element) => {
-    const step = nullthrows(
-      game.at(element.id),
-      `Element for step id ${element.id} couldn't not be found in game ${gameId}`
-    );
-    if (
-      step.dependencies != null &&
-      step.dependencies.find(
-        (dependency) => dependency.id === PLAYERS_DEPENDENCY_META_STEP_ID
-      )
-    ) {
-      element.isStale = true;
-    }
-  });
+export const templateIsStaleSelector = createSelector(
+  templateSelectors.selectAll,
+  (elements) => elements.some(({ isStale }) => isStale)
+);
+
+function markDownstreamElementsStale(
+  changedElementId: StepId,
+  { gameId, entities }: RootState["template"]
+): void {
+  const { steps } = GameMapper.forId(gameId);
+  const downstreamSteps = steps.filter(
+    (x) => x.dependencies?.find(({ id }) => id === changedElementId) != null
+  );
+  const downstreamElements = filter_nulls(
+    downstreamSteps.map(({ id }) => entities[id])
+  );
+  downstreamElements.forEach((element) => (element.isStale = true));
 }

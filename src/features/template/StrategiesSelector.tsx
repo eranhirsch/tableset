@@ -24,7 +24,7 @@ export default function StrategiesSelector({
 
   const strategies = useMemo(
     () =>
-      GameMapper.forId(gameId).at(stepId)!.strategies!({
+      GameMapper.forId(gameId).atEnforce(stepId).strategies!({
         template,
         playerIds,
       }),
@@ -49,7 +49,6 @@ export default function StrategiesSelector({
                     strategy === Strategy.FIXED
                       ? templateSlice.actions.enabledConstantValue(
                           stepId,
-                          gameId,
                           playerIds as PlayerId[]
                         )
                       : strategy === Strategy.OFF

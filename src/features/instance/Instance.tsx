@@ -9,7 +9,6 @@ import {
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import nullthrows from "../../common/err/nullthrows";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
 import { StepId } from "../../games/core/IGame";
 import { gameSelector } from "../game/gameSlice";
@@ -27,10 +26,7 @@ function InstanceItemContent({
   const instance = useAppSelector(instanceSelectors.selectEntities);
   const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 
-  const gameStep = nullthrows(
-    game.at(stepId),
-    `Step ${stepId} missing in game`
-  );
+  const gameStep = game.atEnforce(stepId);
 
   const { InstanceVariableComponent, InstanceDerivedComponent } = gameStep;
 
@@ -150,7 +146,7 @@ export default function Instance(): JSX.Element | null {
                 <Typography variant="caption">
                   {`${group
                     .slice(0, 2)
-                    .map((stepId) => game.at(stepId)!.label)
+                    .map((stepId) => game.atEnforce(stepId).label)
                     .join(", ")}${
                     group.length > 2 ? `, and ${group.length - 1} more...` : ""
                   }`}
@@ -174,7 +170,7 @@ export default function Instance(): JSX.Element | null {
                   : undefined
               }
             >
-              {game.at(stepId)!.label}
+              {game.atEnforce(stepId).label}
             </StepButton>
             <StepContent>
               <InstanceItemContent stepId={stepId} />

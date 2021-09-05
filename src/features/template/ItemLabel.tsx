@@ -24,7 +24,7 @@ export function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element | null {
   }
 
   const TemplateFixedValueLabel = nullthrows(
-    game.at(stepId)?.TemplateFixedValueLabel,
+    game.atEnforce(stepId).TemplateFixedValueLabel,
     `No label component defined for step ${stepId}`
   );
 
