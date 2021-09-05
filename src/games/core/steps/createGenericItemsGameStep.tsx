@@ -1,4 +1,3 @@
-import Strategy from "../../../core/Strategy";
 import templateSlice from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
@@ -39,11 +38,7 @@ const createGenericItemsGameStep = <T extends string = string>({
     recommended,
 
     fixed: {
-      initializer: () => ({
-        id,
-        strategy: Strategy.FIXED,
-        value: itemIds[0],
-      }),
+      initializer: () => itemIds[0],
 
       renderTemplateLabel: ({ value }) => (
         <GenericItemsFixedTemplateLabel

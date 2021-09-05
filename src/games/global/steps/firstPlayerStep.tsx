@@ -1,4 +1,3 @@
-import Strategy from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
@@ -30,11 +29,7 @@ export default createVariableGameStep({
         return;
       }
 
-      return {
-        id: "firstPlayer",
-        strategy: Strategy.FIXED,
-        value: playerIds[0],
-      };
+      return playerIds[0];
     },
 
     refresh: (current, playerIds) =>

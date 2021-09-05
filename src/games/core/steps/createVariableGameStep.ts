@@ -2,7 +2,6 @@ import { type_invariant } from "../../../common/err/invariant";
 import nullthrows from "../../../common/err/nullthrows";
 import Strategy from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
-import { ConstantTemplateElement } from "../../../features/template/templateSlice";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
@@ -22,9 +21,7 @@ interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
   recommended?(context: InstanceContext): T | undefined;
 
   fixed?: {
-    initializer(
-      playerIds: readonly PlayerId[]
-    ): ConstantTemplateElement | undefined;
+    initializer(playerIds: readonly PlayerId[]): T | undefined;
     refresh?(current: T, playerIds: readonly string[]): T | undefined;
 
     renderTemplateLabel(props: { value: T }): JSX.Element;
@@ -124,9 +121,7 @@ interface CreateVariableGameStepOptions<
   ): T;
   recommended?(context: InstanceContext): T | undefined;
   fixed?: {
-    initializer(
-      playerIds: readonly PlayerId[]
-    ): ConstantTemplateElement | undefined;
+    initializer(playerIds: readonly PlayerId[]): T | undefined;
     refresh?(current: T, playerIds: readonly string[]): T | undefined;
     renderTemplateLabel(props: { value: T }): JSX.Element;
     renderSelector(props: { current: T }): JSX.Element;

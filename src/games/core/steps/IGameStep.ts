@@ -2,10 +2,7 @@ import { Dictionary } from "@reduxjs/toolkit";
 import Strategy from "../../../core/Strategy";
 import { SetupStep } from "../../../features/instance/instanceSlice";
 import { PlayerId } from "../../../features/players/playersSlice";
-import {
-  ConstantTemplateElement,
-  TemplateElement,
-} from "../../../features/template/templateSlice";
+import { TemplateElement } from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 
 export interface TemplateContext {
@@ -36,7 +33,7 @@ export default interface IGameStep<T = never> {
 
   strategies?(context: TemplateContext): readonly Strategy[];
 
-  initialFixedValue?(playerIds: readonly string[]): ConstantTemplateElement;
+  initialFixedValue?(playerIds: readonly string[]): T;
   refreshFixedValue?(current: T, playerIds: readonly string[]): T | undefined;
 
   resolveRandom?(context: InstanceContext): T;

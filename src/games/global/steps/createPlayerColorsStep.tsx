@@ -3,7 +3,6 @@ import array_zip from "../../../common/lib_utils/array_zip";
 import map_keys from "../../../common/lib_utils/map_keys";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import PlayerColors from "../../../common/PlayerColors";
-import Strategy from "../../../core/Strategy";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
@@ -53,11 +52,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
           return;
         }
 
-        return {
-          id: "playerColors",
-          strategy: Strategy.FIXED,
-          value: array_zip(playerIds, availableColors),
-        };
+        return array_zip(playerIds, availableColors);
       },
 
       refresh(current, playerIds) {

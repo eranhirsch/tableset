@@ -1,6 +1,5 @@
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import Strategy from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
@@ -40,11 +39,7 @@ export default createVariableGameStep({
       }
 
       const [, ...restOfPlayers] = playerIds;
-      return {
-        id: "playOrder",
-        strategy: Strategy.FIXED,
-        value: restOfPlayers,
-      };
+      return restOfPlayers;
     },
 
     refresh(current, playerIds) {

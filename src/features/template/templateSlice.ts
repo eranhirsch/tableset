@@ -68,10 +68,11 @@ export const templateSlice = createSlice({
           { playerIds: PlayerId[]; gameId: GameId }
         >
       ) {
-        templateAdapter.upsertOne(
-          state,
-          GameMapper.forId(gameId).at(id)!.initialFixedValue!(playerIds)
-        );
+        templateAdapter.upsertOne(state, {
+          id,
+          strategy: Strategy.FIXED,
+          value: GameMapper.forId(gameId).at(id)!.initialFixedValue!(playerIds),
+        });
       },
     },
 
