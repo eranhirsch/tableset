@@ -1,14 +1,6 @@
-import {
-  createEntityAdapter,
-  createSlice,
-  EntityId,
-  nanoid,
-  PayloadAction,
-} from "@reduxjs/toolkit";
-import AppContext from "../../app/AppContext";
+import { createEntityAdapter, createSlice, nanoid } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
-import { GameId } from "../../games/core/GameMapper";
 
 export type PlayerId = string;
 
@@ -26,23 +18,12 @@ const playersSlice = createSlice({
   initialState: playersAdapter.getInitialState(),
   reducers: {
     added: {
-      prepare: (name: string, gameId: GameId) => ({
+      prepare: (name: string) => ({
         payload: { id: nanoid(), name: name },
-        meta: gameId,
       }),
       reducer: playersAdapter.addOne,
     },
-    removed: {
-      prepare: (id: PlayerId, meta: AppContext) => ({
-        payload: id,
-        // Needed for the templateSlice
-        meta,
-      }),
-      reducer: (
-        state,
-        { payload: id }: PayloadAction<EntityId, any, AppContext>
-      ) => playersAdapter.removeOne(state, id),
-    },
+    removed: playersAdapter.removeOne,
   },
 });
 

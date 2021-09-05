@@ -35,17 +35,9 @@ export default interface IGameStep<T = never> {
 
   strategies?(context: TemplateContext): readonly Strategy[];
 
-  initialFixedValue?(playerIds: string[]): ConstantTemplateElement;
+  initialFixedValue?(playerIds: readonly string[]): ConstantTemplateElement;
+  refreshFixedValue?(current: T, playerIds: readonly string[]): T | undefined;
 
   resolveRandom?(context: InstanceContext): T;
   resolveDefault?(context: InstanceContext): T;
-
-  onPlayerAdded?(
-    state: WritableDraft<TemplateState>,
-    context: { addedPlayer: Player }
-  ): void;
-  onPlayerRemoved?(
-    state: WritableDraft<TemplateState>,
-    context: { removedPlayerId: PlayerId; playersTotal: number }
-  ): void;
 }

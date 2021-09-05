@@ -25,6 +25,7 @@ interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
     initializer(
       playerIds: readonly PlayerId[]
     ): ConstantTemplateElement | undefined;
+    refresh?(current: T, playerIds: readonly string[]): T | undefined;
 
     renderTemplateLabel(props: { value: T }): JSX.Element;
     renderSelector(props: { current: T }): JSX.Element;
@@ -127,6 +128,7 @@ interface CreateVariableGameStepOptions<
     initializer(
       playerIds: readonly PlayerId[]
     ): ConstantTemplateElement | undefined;
+    refresh?(current: T, playerIds: readonly string[]): T | undefined;
     renderTemplateLabel(props: { value: T }): JSX.Element;
     renderSelector(props: { current: T }): JSX.Element;
   };
@@ -199,6 +201,7 @@ export default function createVarialbeGameStep<T>({
         fixed.initializer(playerIds),
         `Trying to derive the 'initial fixed' item when it shouldn't be allowed for id ${gameStep.id}`
       );
+    gameStep.refreshFixedValue = fixed.refresh;
   }
 
   gameStep.strategies = ({ playerIds, template }) => {

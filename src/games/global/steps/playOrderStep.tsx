@@ -40,5 +40,29 @@ export default createVariableGameStep({
         value: restOfPlayers,
       };
     },
+
+    refresh(current, playerIds) {
+      // Remove any deleted players from the current value.
+      let currentRefreshed = current.filter((playerId) =>
+        playerIds.includes(playerId)
+      );
+
+      const [newPivot, ...rest] = playerIds;
+
+      const newPivotIdx = currentRefreshed.indexOf(newPivot);
+      if (newPivotIdx > -1) {
+        // the current value can contain the pivot only if the previous pivot
+        // was removed so we need to repivot the current array
+
+        currentRefreshed = currentRefreshed
+          // First take all players after the new pivot
+          .slice(newPivotIdx + 1)
+          // Then add the players who were previously before the new pivot
+          .concat(currentRefreshed.slice(0, newPivotIdx));
+      }
+
+      const missing = rest.filter((playerId) => !current.includes(playerId));
+      return currentRefreshed.concat(missing);
+    },
   },
 });

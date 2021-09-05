@@ -4,17 +4,50 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import filter_nulls from "../../common/lib_utils/filter_nulls";
+import nullthrows from "../../common/err/nullthrows";
 import Strategy from "../../core/Strategy";
-import playersSlice, { Player, PlayerId } from "../players/playersSlice";
 import GameMapper, { GameId } from "../../games/core/GameMapper";
-import AppContext from "../../app/AppContext";
 import { StepId } from "../../games/core/IGame";
+import playersSlice, { PlayerId } from "../players/playersSlice";
+
+// // When strategies change they might make strategies for downstream steps
+// // invalid so we go over all of them and fix any inconsistency.
+// // BUT... because we only provide the user with a 'next strategy' action,
+// // they might not be aware of this and thus a click would cause them to
+// // lose these configurations unintentionally. To solve that we save the
+// // previous config, and, when a change upstream makes the previous config
+// // valid again, we swap it back in.
+
+// while (true) {
+//   const currentEntities = { ...state.entities };
+//   const invalidSteps = filter_nulls(
+//     Object.values(state.entities)
+//   ).filter((step) => {
+//     const gameStep = GameMapper.forId(gameId).at(step.id);
+//     return gameStep?.strategies == null
+//       ? true
+//       : gameStep
+//           .strategies({
+//             template: currentEntities,
+//             playerIds,
+//           })
+//           .includes(step.strategy);
+//   });
+
+//   if (invalidSteps.length === 0) {
+//     break;
+//   }
+
+//   state = templateAdapter.removeMany(
+//     state,
+//     invalidSteps.map((step) => step.id)
+//   );
+// }
 
 export type ConstantTemplateElement = Readonly<{
   id: StepId;
   strategy: Strategy.FIXED;
-  value: any;
+  value: unknown;
 }>;
 
 export type TemplateElement =
@@ -30,94 +63,34 @@ export const templateAdapter = createEntityAdapter<TemplateElement>({
 
 export const templateSlice = createSlice({
   name: "template",
-  initialState: templateAdapter.getInitialState(),
+  initialState: templateAdapter.getInitialState({ isStale: false }),
   reducers: {
-    enabled(
+    enabled: (
       state,
-      {
-        payload: { id, strategy },
-      }: PayloadAction<{
-        id: StepId;
-        strategy:
-          | Strategy.RANDOM
-          | Strategy.DEFAULT
-          | Strategy.ASK
-          | Strategy.COMPUTED;
-      }>
-    ) {
-      const step = state.entities[id];
-      if (step == null) {
-        templateAdapter.addOne(state, { id, strategy });
-      } else {
-        step.strategy = strategy;
-      }
+      action: PayloadAction<
+        TemplateElement & {
+          strategy:
+            | Strategy.RANDOM
+            | Strategy.DEFAULT
+            | Strategy.ASK
+            | Strategy.COMPUTED;
+        }
+      >
+    ) => {
+      templateAdapter.upsertOne(state, action);
     },
 
-    disabled: {
-      prepare: (
-        gameId: GameId,
-        id: StepId,
-        playerIds: readonly PlayerId[]
-      ) => ({
-        payload: id,
-        meta: { gameId, playerIds },
-      }),
-      reducer(
-        state,
-        {
-          payload: id,
-          meta: { gameId, playerIds },
-        }: PayloadAction<
-          StepId,
-          string,
-          { gameId: GameId; playerIds: readonly PlayerId[] }
-        >
-      ) {
-        state = templateAdapter.removeOne(state, id);
-
-        // When strategies change they might make strategies for downstream steps
-        // invalid so we go over all of them and fix any inconsistency.
-        // BUT... because we only provide the user with a 'next strategy' action,
-        // they might not be aware of this and thus a click would cause them to
-        // lose these configurations unintentionally. To solve that we save the
-        // previous config, and, when a change upstream makes the previous config
-        // valid again, we swap it back in.
-
-        while (true) {
-          const currentEntities = { ...state.entities };
-          const invalidSteps = filter_nulls(
-            Object.values(state.entities)
-          ).filter((step) => {
-            const gameStep = GameMapper.forId(gameId).at(step.id);
-            return gameStep?.strategies == null
-              ? true
-              : gameStep
-                  .strategies({
-                    template: currentEntities,
-                    playerIds,
-                  })
-                  .includes(step.strategy);
-          });
-
-          if (invalidSteps.length === 0) {
-            break;
-          }
-
-          state = templateAdapter.removeMany(
-            state,
-            invalidSteps.map((step) => step.id)
-          );
-        }
-      },
+    disabled: (state, action) => {
+      templateAdapter.removeOne(state, action);
+      state.isStale = true;
     },
 
     enabledConstantValue: {
-      prepare(id: StepId, gameId: GameId, playerIds: PlayerId[]) {
-        return {
-          payload: id,
-          meta: { playerIds, gameId },
-        };
-      },
+      prepare: (id: StepId, gameId: GameId, playerIds: PlayerId[]) => ({
+        payload: id,
+        meta: { playerIds, gameId },
+      }),
+
       reducer(
         state,
         {
@@ -142,59 +115,69 @@ export const templateSlice = createSlice({
         payload: { id, value },
       }: PayloadAction<Omit<ConstantTemplateElement, "strategy">>
     ) {
-      const step = state.entities[id];
-      if (step == null) {
-        throw new Error(`Couldn't find setup step ${id}`);
-      }
+      const step = nullthrows(
+        state.entities[id],
+        `Couldn't find step: ${id}, This action is only supported on elements which are already in the template`
+      );
 
       if (step.strategy !== Strategy.FIXED) {
         throw new Error(
-          `Trying to set fixed value when strategy isn't fixed for setup step ${id}`
+          `Trying to set fixed value when strategy isn't fixed for step: ${id}`
         );
       }
 
       step.value = value;
     },
+
+    refresh: (
+      state,
+      {
+        payload: { gameId, playerIds },
+      }: PayloadAction<{ gameId: GameId; playerIds: readonly PlayerId[] }>
+    ) => {
+      const game = GameMapper.forId(gameId);
+      game.steps.forEach((step) => {
+        const element = state.entities[step.id];
+        if (element == null) {
+          // Nothing to update
+          return;
+        }
+
+        const strategies = step.strategies!({
+          playerIds,
+          template: state.entities,
+        });
+
+        if (!strategies.includes(element.strategy)) {
+          // The step is no longer valid in it's current configuration
+          templateAdapter.removeOne(state, step.id);
+        } else if (
+          element.strategy === Strategy.FIXED &&
+          step.refreshFixedValue != null
+        ) {
+          const newValue = step.refreshFixedValue(element.value, playerIds);
+          if (newValue != null) {
+            element.value = newValue;
+          } else {
+            templateAdapter.removeOne(state, step.id);
+          }
+        }
+      });
+
+      state.isStale = false;
+    },
   },
 
   extraReducers: (builder) => {
     builder
-      .addCase(
-        playersSlice.actions.removed,
-        (
-          state,
-          {
-            payload: removedPlayerId,
-            meta: { playersTotal, gameId },
-          }: PayloadAction<PlayerId, any, AppContext>
-        ) =>
-          Object.values(state.ids).forEach((stepId) => {
-            const gameStep = GameMapper.forId(gameId).at(stepId as StepId);
-            if (gameStep?.onPlayerRemoved != null) {
-              gameStep.onPlayerRemoved(state, {
-                removedPlayerId,
-                playersTotal,
-              });
-            }
-          })
-      )
-
-      .addCase(
-        playersSlice.actions.added,
-        (
-          state,
-          {
-            payload: addedPlayer,
-            meta: gameId,
-          }: PayloadAction<Player, string, GameId>
-        ) =>
-          Object.values(state.ids).forEach((stepId) => {
-            const gameStep = GameMapper.forId(gameId).at(stepId as StepId);
-            if (gameStep?.onPlayerAdded != null) {
-              gameStep.onPlayerAdded(state, { addedPlayer });
-            }
-          })
-      );
+      // Player changes mean that some template elements might be invalid or
+      // at least require changes to their fixed values.
+      .addCase(playersSlice.actions.added, (state) => {
+        state.isStale = true;
+      })
+      .addCase(playersSlice.actions.removed, (state) => {
+        state.isStale = true;
+      });
   },
 });
 export default templateSlice;
@@ -204,3 +187,5 @@ export type TemplateState = ReturnType<typeof templateSlice["reducer"]>;
 export const templateSelectors = templateAdapter.getSelectors<RootState>(
   (state) => state.template
 );
+export const templateIsStaleSelector = (state: RootState) =>
+  state.template.isStale;

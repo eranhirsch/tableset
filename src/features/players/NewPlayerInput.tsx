@@ -1,22 +1,20 @@
 import { IconButton, TextField } from "@material-ui/core";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useAppDispatch } from "../../app/hooks";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import { useState } from "react";
 import ClearIcon from "@material-ui/icons/Clear";
 import playersSlice from "./playersSlice";
-import { gameIdSelector } from "../game/gameSlice";
 
 export default function NewPlayerInput(): JSX.Element | null {
   const dispatch = useAppDispatch();
 
-  const gameId = useAppSelector(gameIdSelector);
   const [newPlayerName, setNewPlayerName] = useState("");
 
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        dispatch(playersSlice.actions.added(newPlayerName, gameId));
+        dispatch(playersSlice.actions.added(newPlayerName));
         setNewPlayerName("");
       }}
     >

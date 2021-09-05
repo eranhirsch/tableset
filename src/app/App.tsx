@@ -20,7 +20,7 @@ function App(): JSX.Element | null {
     if (!isInitialized) {
       // TODO: Remove this when we can load the previous players from somewhere
       ["Eran Hirsch", "Adam Maoz", "Amit Cwajghaft"].forEach((name) =>
-        dispatch(playersSlice.actions.added(name, gameId))
+        dispatch(playersSlice.actions.added(name))
       );
       setIsInitialized(true);
     }

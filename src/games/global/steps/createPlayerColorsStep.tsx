@@ -1,4 +1,6 @@
 import nullthrows from "../../../common/err/nullthrows";
+import array_zip from "../../../common/lib_utils/array_zip";
+import map_keys from "../../../common/lib_utils/map_keys";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import PlayerColors from "../../../common/PlayerColors";
 import Strategy from "../../../core/Strategy";
@@ -48,13 +50,22 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
         return {
           id: "playerColors",
           strategy: Strategy.FIXED,
-          value: Object.fromEntries(
-            playerIds.map((playerId, index) => [
-              playerId,
-              availableColors[index],
-            ])
-          ),
+          value: array_zip(playerIds, availableColors),
         };
+      },
+
+      refresh(current, playerIds) {
+        const remainingColors = Object.entries(current).reduce(
+          (remainingColors, [playerId, color]) =>
+            playerIds.includes(playerId)
+              ? remainingColors.filter((c) => color !== c)
+              : remainingColors,
+          availableColors as GamePiecesColor[]
+        );
+        return map_keys(
+          playerIds,
+          (playerId) => current[playerId] ?? remainingColors.shift()
+        );
       },
     },
   });

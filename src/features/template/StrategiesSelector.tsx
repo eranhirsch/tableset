@@ -53,11 +53,7 @@ export default function StrategiesSelector({
                           playerIds as PlayerId[]
                         )
                       : strategy === Strategy.OFF
-                      ? templateSlice.actions.disabled(
-                          gameId,
-                          stepId,
-                          playerIds
-                        )
+                      ? templateSlice.actions.disabled(stepId)
                       : templateSlice.actions.enabled({
                           id: stepId,
                           strategy,
