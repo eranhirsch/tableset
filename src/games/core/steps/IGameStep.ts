@@ -19,6 +19,8 @@ export default interface IGameStep<T = never> {
   readonly id: StepId;
   readonly label: string;
 
+  dependencies?: [...IGameStep<unknown>[]];
+
   isType?(value: any): value is T;
 
   wouldTemplateGenerateValue?(context: TemplateContext): boolean;

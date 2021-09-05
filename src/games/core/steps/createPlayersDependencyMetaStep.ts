@@ -1,6 +1,8 @@
 import { PlayerId } from "../../../features/players/playersSlice";
 import IGameStep from "./IGameStep";
 
+export const PLAYERS_DEPENDENCY_META_STEP_ID = "__players";
+
 type Limits =
   | {
       min: number;
@@ -13,7 +15,7 @@ type Limits =
 
 export default function createPlayersDependencyMetaStep(limits: Limits) {
   const playersMetaStep: IGameStep<readonly PlayerId[]> = {
-    id: "__players",
+    id: PLAYERS_DEPENDENCY_META_STEP_ID,
     label: "<Players>",
 
     wouldTemplateGenerateValue: ({ playerIds }) =>

@@ -1,35 +1,43 @@
 import {
   createEntityAdapter,
   createSlice,
+  EntityState,
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
+import filter_nulls from "../../common/lib_utils/filter_nulls";
 import Strategy from "../../core/Strategy";
 import GameMapper, { GameId } from "../../games/core/GameMapper";
 import { StepId } from "../../games/core/IGame";
+import { PLAYERS_DEPENDENCY_META_STEP_ID } from "../../games/core/steps/createPlayersDependencyMetaStep";
 import playersSlice, { PlayerId } from "../players/playersSlice";
 
 type ConstantTemplateElement = Readonly<{
-  id: StepId;
   strategy: Strategy.FIXED;
   value: unknown;
 }>;
 
-export type TemplateElement =
+export type TemplateElement = { id: StepId; isStale: boolean } & (
   | ConstantTemplateElement
   | Readonly<{
-      id: StepId;
       strategy: Exclude<Strategy, Strategy.FIXED>;
-    }>;
+    }>
+);
 
 const templateAdapter = createEntityAdapter<TemplateElement>({
   selectId: (step) => step.id,
 });
 
-export default createSlice({
+interface GlobalTemplateState {
+  gameId: GameId;
+}
+
+const INITIAL_GLOBAL_STATE: GlobalTemplateState = { gameId: "concordia" };
+
+const templateSlice = createSlice({
   name: "template",
-  initialState: templateAdapter.getInitialState({ isStale: false }),
+  initialState: templateAdapter.getInitialState(INITIAL_GLOBAL_STATE),
   reducers: {
     enabled: (
       state,
@@ -52,35 +60,32 @@ export default createSlice({
     },
 
     enabledConstantValue: {
-      prepare: (id: StepId, gameId: GameId, playerIds: PlayerId[]) => ({
+      prepare: (id: StepId, playerIds: PlayerId[]) => ({
         payload: id,
-        meta: { playerIds, gameId },
+        meta: { playerIds },
       }),
 
       reducer(
         state,
         {
           payload: id,
-          meta: { playerIds, gameId },
-        }: PayloadAction<
-          StepId,
-          string,
-          { playerIds: PlayerId[]; gameId: GameId }
-        >
+          meta: { playerIds },
+        }: PayloadAction<StepId, string, { playerIds: PlayerId[] }>
       ) {
         templateAdapter.upsertOne(state, {
           id,
           strategy: Strategy.FIXED,
-          value: GameMapper.forId(gameId).at(id)!.initialFixedValue!(playerIds),
+          isStale: false,
+          value: GameMapper.forId(state.gameId).at(id)!.initialFixedValue!(
+            playerIds
+          ),
         });
       },
     },
 
     constantValueChanged(
       state,
-      {
-        payload: { id, value },
-      }: PayloadAction<Omit<ConstantTemplateElement, "strategy">>
+      { payload: { id, value } }: PayloadAction<{ id: StepId; value: unknown }>
     ) {
       const step = nullthrows(
         state.entities[id],
@@ -125,31 +130,44 @@ export default createSlice({
           const newValue = step.refreshFixedValue(element.value, playerIds);
           if (newValue != null) {
             element.value = newValue;
+            element.isStale = false;
           } else {
             templateAdapter.removeOne(state, step.id);
           }
         }
       });
-
-      state.isStale = false;
     },
   },
 
   extraReducers: (builder) => {
     builder
-      // Player changes mean that some template elements might be invalid or
-      // at least require changes to their fixed values.
-      .addCase(playersSlice.actions.added, (state) => {
-        state.isStale = true;
-      })
-      .addCase(playersSlice.actions.removed, (state) => {
-        state.isStale = true;
-      });
+      .addCase(playersSlice.actions.added, markPlayerDependentStepsStale)
+      .addCase(playersSlice.actions.removed, markPlayerDependentStepsStale);
   },
 });
+export default templateSlice;
 
 export const templateSelectors = templateAdapter.getSelectors<RootState>(
   (state) => state.template
 );
-export const templateIsStaleSelector = (state: RootState) =>
-  state.template.isStale;
+
+function markPlayerDependentStepsStale({
+  gameId,
+  entities,
+}: GlobalTemplateState & EntityState<TemplateElement>): void {
+  const game = GameMapper.forId(gameId);
+  filter_nulls(Object.values(entities)).forEach((element) => {
+    const step = nullthrows(
+      game.at(element.id),
+      `Element for step id ${element.id} couldn't not be found in game ${gameId}`
+    );
+    if (
+      step.dependencies != null &&
+      step.dependencies.find(
+        (dependency) => dependency.id === PLAYERS_DEPENDENCY_META_STEP_ID
+      )
+    ) {
+      element.isStale = true;
+    }
+  });
+}
