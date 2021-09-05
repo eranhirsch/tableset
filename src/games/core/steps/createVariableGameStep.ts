@@ -26,8 +26,8 @@ interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
       playerIds: readonly PlayerId[]
     ): ConstantTemplateElement | undefined;
 
-    renderTemplateLabel(current: T): JSX.Element;
-    renderSelector(current: T): JSX.Element;
+    renderTemplateLabel(props: { value: T }): JSX.Element;
+    renderSelector(props: { current: T }): JSX.Element;
   };
 }
 
@@ -173,7 +173,7 @@ export default function createVarialbeGameStep<T>({
 
   gameStep.isType = isType;
 
-  gameStep.renderVariableInstanceContent = (value) => render({ value });
+  gameStep.InstanceVariableComponent = render;
 
   gameStep.resolveRandom = (context) => {
     const resolvedDependancies =
@@ -192,8 +192,8 @@ export default function createVarialbeGameStep<T>({
   }
 
   if (fixed != null) {
-    gameStep.renderTemplateFixedLabel = fixed.renderTemplateLabel;
-    gameStep.renderTemplateFixedValueSelector = fixed.renderSelector;
+    gameStep.TemplateFixedValueLabel = fixed.renderTemplateLabel;
+    gameStep.TemplateFixedValueSelector = fixed.renderSelector;
     gameStep.initialFixedValue = (playerIds) =>
       nullthrows(
         fixed.initializer(playerIds),

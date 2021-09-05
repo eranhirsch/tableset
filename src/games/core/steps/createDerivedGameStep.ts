@@ -153,7 +153,7 @@ export default function createDerivedGameStep({
 }: CreateDerivedGameStepOptionsAny): IGameStep<never> {
   const gameStep = createGameStep(baseOptions);
 
-  gameStep.renderDerivedInstanceContent = (context) => {
+  gameStep.InstanceDerivedComponent = ({ context }) => {
     if (dependencies == null) {
       return renderDerived({ context, dependencies: [] });
     }

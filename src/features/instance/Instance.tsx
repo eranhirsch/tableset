@@ -32,19 +32,19 @@ function InstanceItemContent({
     `Step ${stepId} missing in game`
   );
 
-  if (gameStep.renderVariableInstanceContent != null) {
+  const { InstanceVariableComponent, InstanceDerivedComponent } = gameStep;
+
+  if (InstanceVariableComponent != null) {
     const instanceStep = instance[stepId];
     if (instanceStep != null) {
-      return gameStep.renderVariableInstanceContent(instanceStep.value);
+      return <InstanceVariableComponent value={instanceStep.value} />;
     }
-  } else if (gameStep.renderDerivedInstanceContent != null) {
-    const renderedContent = gameStep.renderDerivedInstanceContent({
-      instance: filter_nulls(Object.values(instance)),
-      playerIds,
-    });
-    if (renderedContent != null) {
-      return renderedContent;
-    }
+  } else if (InstanceDerivedComponent != null) {
+    return (
+      <InstanceDerivedComponent
+        context={{ instance: filter_nulls(Object.values(instance)), playerIds }}
+      />
+    );
   }
 
   return <div>Manual Section</div>;
