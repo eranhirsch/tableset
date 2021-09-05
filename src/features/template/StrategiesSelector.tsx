@@ -1,14 +1,14 @@
 import { Chip, Stack } from "@material-ui/core";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { strategyLabel } from "../../core/content";
-import templateSlice, { templateSelectors } from "./templateSlice";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
+import { strategyLabel } from "../../core/content";
 import Strategy from "../../core/Strategy";
-import { PlayerId, playersSelectors } from "../players/playersSlice";
-import { gameIdSelector } from "../game/gameSlice";
 import GameMapper from "../../games/core/GameMapper";
 import { StepId } from "../../games/core/IGame";
+import { gameIdSelector } from "../game/gameSlice";
+import { PlayerId, playersSelectors } from "../players/playersSlice";
+import templateSlice, { templateSelectors } from "./templateSlice";
 
 export default function StrategiesSelector({
   stepId,

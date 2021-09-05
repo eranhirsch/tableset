@@ -1,12 +1,13 @@
 import { Avatar, Badge, Stack, Typography } from "@material-ui/core";
+import LockIcon from "@material-ui/icons/Lock";
 import { useCallback } from "react";
 import {
-  Draggable,
-  DropResult,
   DragDropContext,
+  Draggable,
   Droppable,
+  DropResult,
 } from "react-beautiful-dnd";
-import { useAppSelector, useAppDispatch } from "../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import short_name from "../../../common/short_name";
 import {
@@ -14,7 +15,6 @@ import {
   playersSelectors,
 } from "../../../features/players/playersSlice";
 import templateSlice from "../../../features/template/templateSlice";
-import LockIcon from "@material-ui/icons/Lock";
 
 function moveItem<T>(
   items: readonly T[],

@@ -9,12 +9,12 @@ import {
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { instanceSelectors } from "./instanceSlice";
-import { gameSelector } from "../game/gameSlice";
 import nullthrows from "../../common/err/nullthrows";
-import { StepId } from "../../games/core/IGame";
-import { PlayerId, playersSelectors } from "../players/playersSlice";
 import filter_nulls from "../../common/lib_utils/filter_nulls";
+import { StepId } from "../../games/core/IGame";
+import { gameSelector } from "../game/gameSlice";
+import { PlayerId, playersSelectors } from "../players/playersSlice";
+import { instanceSelectors } from "./instanceSlice";
 
 const IDEAL_STEP_COUNT = 6;
 

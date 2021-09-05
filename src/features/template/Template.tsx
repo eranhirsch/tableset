@@ -1,18 +1,18 @@
 import { Fab, List } from "@material-ui/core";
-import { useEffect, useMemo, useState } from "react";
-import TemplateItem from "./TemplateItem";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import { EntityId } from "@reduxjs/toolkit";
+import { useEffect, useMemo, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import GameMapper from "../../games/core/GameMapper";
+import { gameIdSelector } from "../game/gameSlice";
+import instanceSlice from "../instance/instanceSlice";
+import { PlayerId, playersSelectors } from "../players/playersSlice";
+import TemplateItem from "./TemplateItem";
 import templateSlice, {
   templateIsStaleSelector,
   templateSelectors,
 } from "./templateSlice";
-import { PlayerId, playersSelectors } from "../players/playersSlice";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import instanceSlice from "../instance/instanceSlice";
-import { Link as RouterLink } from "react-router-dom";
-import { gameIdSelector } from "../game/gameSlice";
-import GameMapper from "../../games/core/GameMapper";
 
 export default function Template(): JSX.Element | null {
   const dispatch = useAppDispatch();

@@ -1,11 +1,11 @@
 import { Avatar, Badge, Box, Stack, useTheme } from "@material-ui/core";
-import { useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
-  DraggableProvided,
+  DragDropContext,
   Draggable,
+  DraggableProvided,
   Droppable,
   DropResult,
-  DragDropContext,
 } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
