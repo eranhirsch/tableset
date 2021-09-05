@@ -23,7 +23,7 @@ export default function StartingMoney({
     <Grid container spacing={1} alignItems="center">
       <Grid item xs={12}>
         <Typography variant="body1">
-          Player receive sestertii from the bank in the following amounts:
+          Players receive sestertii from the bank in the following denomination
         </Typography>
       </Grid>
       {order.map((playerId, index) => (
