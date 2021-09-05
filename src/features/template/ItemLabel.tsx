@@ -6,7 +6,7 @@ import { useAppSelector } from "../../app/hooks";
 import { gameSelector } from "../game/gameSlice";
 import { StepId } from "../../games/core/IGame";
 
-export function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element {
+export function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element | null {
   const templateElement = useAppEntityIdSelectorNullable(
     templateSelectors,
     stepId

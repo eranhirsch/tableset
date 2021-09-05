@@ -4,7 +4,7 @@ import { MapId, MAPS } from "../steps/mapStep";
 
 export default function ConcordiaMap({
   value: mapId,
-}: VariableStepInstanceComponentProps<MapId>) {
+}: VariableStepInstanceComponentProps<MapId>): JSX.Element {
   return (
     <Typography variant="h4" sx={{ fontVariantCaps: "petite-caps" }}>
       {MAPS[mapId].name}

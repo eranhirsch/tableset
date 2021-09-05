@@ -6,7 +6,11 @@ import {
   playersSelectors,
 } from "../../../features/players/playersSlice";
 
-export default function Player({ playerId }: { playerId: PlayerId }) {
+export default function Player({
+  playerId,
+}: {
+  playerId: PlayerId;
+}): JSX.Element | null {
   const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
   return <Avatar>{short_name(player.name)}</Avatar>;
 }

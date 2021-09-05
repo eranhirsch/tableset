@@ -6,7 +6,7 @@ import { DerivedStepInstanceComponentProps } from "../../core/steps/createDerive
 
 export default function StartingColonists({
   dependencies: [mapId],
-}: DerivedStepInstanceComponentProps<MapId>) {
+}: DerivedStepInstanceComponentProps<MapId>): JSX.Element | null {
   const { startingColonists } = MAPS[mapId];
 
   if (startingColonists[0].placement !== startingColonists[1].placement) {

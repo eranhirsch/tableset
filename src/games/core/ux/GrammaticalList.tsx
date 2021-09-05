@@ -4,7 +4,7 @@ export default function GrammaticalList({
   children,
 }: {
   children: JSX.Element[];
-}) {
+}): JSX.Element | null {
   if (children.length === 1) {
     return children[0];
   }

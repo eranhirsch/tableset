@@ -10,7 +10,11 @@ import { gameIdSelector } from "../game/gameSlice";
 import GameMapper from "../../games/core/GameMapper";
 import { StepId } from "../../games/core/IGame";
 
-export default function StrategiesSelector({ stepId }: { stepId: StepId }) {
+export default function StrategiesSelector({
+  stepId,
+}: {
+  stepId: StepId;
+}): JSX.Element | null {
   const dispatch = useAppDispatch();
 
   const gameId = useAppSelector(gameIdSelector);

@@ -9,7 +9,7 @@ import CityResourcesEncoder from "../utils/CityResourcesEncoder";
 
 export default function CityTilesFixedInstructions({
   value: hash,
-}: VariableStepInstanceComponentProps<string>) {
+}: VariableStepInstanceComponentProps<string>): JSX.Element {
   // Move this to dependancies
   const mapStep = useAppEntityIdSelectorEnforce(instanceSelectors, "map");
   if (mapStep.id !== "map") {

@@ -7,7 +7,10 @@ import Player from "../../global/ux/Player";
 export default function StartingMoney({
   context: { playerIds },
   dependencies: [playOrder, firstPlayerId],
-}: DerivedStepInstanceComponentProps<readonly PlayerId[], PlayerId>) {
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  PlayerId
+>): JSX.Element | null {
   const fullPlayOrder = [playerIds[0], ...playOrder];
   const firstPlayerIdx = fullPlayOrder.findIndex(
     (playerId) => playerId === firstPlayerId

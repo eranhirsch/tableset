@@ -6,6 +6,6 @@ export default function GenericItemsFixedTemplateLabel<
 }: {
   onLabelForItem: (id: T) => string;
   selectedId: T;
-}) {
+}): JSX.Element | null {
   return <>{onLabelForItem(selectedId)}</>;
 }

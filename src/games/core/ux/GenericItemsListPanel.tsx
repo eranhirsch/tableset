@@ -12,7 +12,7 @@ export default function GenericItemsListPanel<T extends string = string>({
   onLabelForItem: (itemId: T) => string;
   onUpdateItem: (itemId: T) => Action;
   selectedId: T;
-}) {
+}): JSX.Element | null {
   const dispatch = useAppDispatch();
 
   return (

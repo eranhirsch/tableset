@@ -3,7 +3,7 @@ import { playersSelectors } from "./playersSlice";
 import Player from "./Player";
 import NewPlayerInput from "./NewPlayerInput";
 
-export default function Players() {
+export default function Players(): JSX.Element | null {
   const playerIds = useAppSelector(playersSelectors.selectIds);
 
   return (

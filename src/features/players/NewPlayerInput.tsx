@@ -6,7 +6,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import playersSlice from "./playersSlice";
 import { gameIdSelector } from "../game/gameSlice";
 
-export default function NewPlayerInput() {
+export default function NewPlayerInput(): JSX.Element | null {
   const dispatch = useAppDispatch();
 
   const gameId = useAppSelector(gameIdSelector);

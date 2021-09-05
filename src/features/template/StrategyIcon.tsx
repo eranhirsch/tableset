@@ -11,7 +11,7 @@ export default function StrategyIcon({
   strategy,
 }: {
   strategy: Strategy;
-}): JSX.Element {
+}): JSX.Element | null {
   switch (strategy) {
     case Strategy.FIXED:
       return <PushPinIcon />;

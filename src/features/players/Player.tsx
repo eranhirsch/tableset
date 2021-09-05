@@ -6,7 +6,11 @@ import { EntityId } from "@reduxjs/toolkit";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
 import { gameIdSelector } from "../game/gameSlice";
 
-export default function Player({ playerId }: { playerId: EntityId }) {
+export default function Player({
+  playerId,
+}: {
+  playerId: EntityId;
+}): JSX.Element | null {
   const dispatch = useAppDispatch();
 
   const gameId = useAppSelector(gameIdSelector);

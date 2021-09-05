@@ -12,7 +12,7 @@ import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 
 export default function MarketDisplayFixedInstructions({
   value: hash,
-}: VariableStepInstanceComponentProps<string>) {
+}: VariableStepInstanceComponentProps<string>): JSX.Element {
   const market = MarketDisplayEncoder.decode(hash);
   return (
     <Stack direction="column" alignItems="center">

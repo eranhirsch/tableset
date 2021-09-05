@@ -8,7 +8,7 @@ export default function FirstPlayerFixedTemplateLabel({
   value,
 }: {
   value: PlayerId;
-}) {
+}): JSX.Element | null {
   const player = useAppEntityIdSelectorEnforce(playersSelectors, value);
   return <>{player.name}</>;
 }

@@ -8,7 +8,11 @@ import { useAppSelector } from "../../app/hooks";
 import { gameSelector } from "../game/gameSlice";
 import { StepId } from "../../games/core/IGame";
 
-export default function StepDetailsPane({ stepId }: { stepId: StepId }) {
+export default function StepDetailsPane({
+  stepId,
+}: {
+  stepId: StepId;
+}): JSX.Element | null {
   const game = useAppSelector(gameSelector);
   const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
 

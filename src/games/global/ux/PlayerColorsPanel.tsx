@@ -8,7 +8,7 @@ import { VariableStepInstanceComponentProps } from "../../core/steps/createVaria
 
 export default function PlayerColorsPanel({
   value: playerColor,
-}: VariableStepInstanceComponentProps<PlayerColors>) {
+}: VariableStepInstanceComponentProps<PlayerColors>): JSX.Element {
   const players = useAppSelector(playersSelectors.selectEntities);
 
   return (

@@ -11,7 +11,7 @@ import { VariableStepInstanceComponentProps } from "../../core/steps/createVaria
 
 export default function PlayOrderPanel({
   value: playOrder,
-}: VariableStepInstanceComponentProps<readonly PlayerId[]>) {
+}: VariableStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
   const firstPlayer = useAppSelector(firstPlayerSelector);
   const players = useAppSelector(playersSelectors.selectEntities);
 

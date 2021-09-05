@@ -4,7 +4,7 @@ import PeopleIcon from "@material-ui/icons/People";
 import TuneIcon from "@material-ui/icons/Tune";
 import ClearIcon from "@material-ui/icons/Clear";
 
-export function TableSetAppBar() {
+export function TableSetAppBar(): JSX.Element | null {
   return (
     <AppBar position="absolute">
       <Toolbar>

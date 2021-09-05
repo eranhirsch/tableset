@@ -8,7 +8,7 @@ interface CreateDerivedGameStepOptionsAny extends CreateGameStepOptions {
   renderDerived(props: {
     context: InstanceContext;
     dependencies: [...any[]];
-  }): undefined | JSX.Element;
+  }): JSX.Element | null;
 }
 
 export interface DerivedStepInstanceComponentProps<
@@ -115,7 +115,7 @@ interface CreateDerivedGameStepOptions<
       D9,
       D10
     >
-  ): undefined | JSX.Element;
+  ): JSX.Element | null;
 }
 
 export default function createDerivedGameStep<
@@ -165,7 +165,7 @@ export default function createDerivedGameStep({
       )
     ) {
       // Not all dependencies have a value so we can't compute this step either
-      return;
+      return null;
     }
 
     return renderDerived({

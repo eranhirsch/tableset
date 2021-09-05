@@ -7,7 +7,7 @@ export default function PlayersColorsFixedTemplateLabel({
   value,
 }: {
   value: PlayerColors;
-}) {
+}): JSX.Element | null {
   const players = useAppSelector(playersSelectors.selectEntities);
   return (
     <>

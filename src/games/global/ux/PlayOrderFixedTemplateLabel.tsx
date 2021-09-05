@@ -9,7 +9,7 @@ export default function PlayOrderFixedTemplateLabel({
   value,
 }: {
   value: readonly PlayerId[];
-}) {
+}): JSX.Element | null {
   const firstPlayerId = useAppSelector(
     (state) => playersSelectors.selectIds(state)[0]
   ) as PlayerId;

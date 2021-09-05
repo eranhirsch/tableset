@@ -72,7 +72,7 @@ export default function PlayerOrderPanel({
   order,
 }: {
   order: readonly PlayerId[];
-}) {
+}): JSX.Element | null {
   const dispatch = useAppDispatch();
 
   const onDragEnd = useCallback(

@@ -18,7 +18,11 @@ import filter_nulls from "../../common/lib_utils/filter_nulls";
 
 const IDEAL_STEP_COUNT = 6;
 
-function InstanceItemContent({ stepId }: { stepId: StepId }) {
+function InstanceItemContent({
+  stepId,
+}: {
+  stepId: StepId;
+}): JSX.Element | null {
   const game = useAppSelector(gameSelector);
   const instance = useAppSelector(instanceSelectors.selectEntities);
   const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
@@ -46,7 +50,7 @@ function InstanceItemContent({ stepId }: { stepId: StepId }) {
   return <div>Manual Section</div>;
 }
 
-export default function Instance() {
+export default function Instance(): JSX.Element | null {
   const location = useLocation();
   const history = useHistory();
 

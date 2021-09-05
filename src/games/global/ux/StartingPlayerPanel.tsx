@@ -18,7 +18,7 @@ function Player({
 }: {
   playerId: PlayerId;
   isSelected: boolean;
-}) {
+}): JSX.Element | null {
   const dispatch = useAppDispatch();
 
   const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);

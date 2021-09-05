@@ -117,7 +117,7 @@ export default function PlayerColorPanel({
 }: {
   availableColors: readonly GamePiecesColor[];
   playerColors: PlayerColors;
-}) {
+}): JSX.Element | null {
   const dispatch = useAppDispatch();
 
   const players = useAppSelector(playersSelectors.selectEntities);

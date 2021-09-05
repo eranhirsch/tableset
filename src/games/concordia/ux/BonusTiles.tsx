@@ -13,7 +13,7 @@ type ProvinceResourceMapping = Readonly<{
 
 export default function BonusTiles({
   dependencies: [mapId, hash],
-}: DerivedStepInstanceComponentProps<MapId, string>) {
+}: DerivedStepInstanceComponentProps<MapId, string>): JSX.Element | null {
   const provinceResource = fromCityTiles(
     CityResourcesEncoder.forMapId(mapId).decode(hash)
   );

@@ -29,9 +29,7 @@ export default interface IGameStep<T = never> {
   renderTemplateFixedLabel?(value: any): JSX.Element;
   renderTemplateFixedValueSelector?(current: any): JSX.Element;
   renderVariableInstanceContent?(value: any): JSX.Element;
-  renderDerivedInstanceContent?(
-    context: InstanceContext
-  ): JSX.Element | undefined;
+  renderDerivedInstanceContent?(context: InstanceContext): JSX.Element | null;
 
   strategies?(context: TemplateContext): readonly Strategy[];
 

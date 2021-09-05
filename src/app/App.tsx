@@ -10,7 +10,7 @@ import Instance from "../features/instance/Instance";
 import { TableSetAppBar } from "./TableSetAppBar";
 import { gameIdSelector } from "../features/game/gameSlice";
 
-function App() {
+function App(): JSX.Element | null {
   const dispatch = useAppDispatch();
   const [isInitialized, setIsInitialized] = useState(false);
 

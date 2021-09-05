@@ -23,7 +23,7 @@ export default function TemplateItem({
   stepId: StepId;
   expanded: boolean;
   onClick: (isExpanded: boolean) => void;
-}) {
+}): JSX.Element | null {
   const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
 
   const game = useAppSelector(gameSelector);

@@ -23,17 +23,17 @@ export const ROMAN_NUMERALS = [undefined, "I", "II", "III", "IV", "V"];
 
 export default function MarketCards({
   context: { playerIds },
-}: DerivedStepInstanceComponentProps) {
+}: DerivedStepInstanceComponentProps): JSX.Element | null {
   const playerCount = playerIds.length;
 
   if (playerCount < 1) {
     // There's really nothing meaningful to do
-    return;
+    return null;
   }
 
   if (playerCount > 5) {
     // Not enough decks
-    return;
+    return null;
   }
 
   const inUse = range(1, playerCount + 1).map(

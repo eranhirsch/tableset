@@ -4,6 +4,6 @@ import Player from "./Player";
 
 export default function FirstPlayerPanel({
   value: playerId,
-}: VariableStepInstanceComponentProps<PlayerId>) {
+}: VariableStepInstanceComponentProps<PlayerId>): JSX.Element {
   return <Player playerId={playerId} />;
 }

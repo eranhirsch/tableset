@@ -10,7 +10,7 @@ import instanceSlice from "../instance/instanceSlice";
 import { Link as RouterLink } from "react-router-dom";
 import { gameSelector } from "../game/gameSlice";
 
-export default function Template() {
+export default function Template(): JSX.Element | null {
   const dispatch = useAppDispatch();
   const [expandedStepId, setExpandedStepId] = useState<EntityId>();
 
