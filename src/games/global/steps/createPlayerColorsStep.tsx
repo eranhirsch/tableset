@@ -5,19 +5,25 @@ import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import PlayerColors from "../../../common/PlayerColors";
 import Strategy from "../../../core/Strategy";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
+import { PlayerId } from "../../../features/players/playersSlice";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
+import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import PlayerColorPanel from "../ux/PlayerColorPanel";
 import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
 import PlayerColorsPanel from "../ux/PlayerColorsPanel";
 
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
-  createVariableGameStep<PlayerColors>({
+  createVariableGameStep<PlayerColors, readonly PlayerId[]>({
     id: "playerColors",
     labelOverride: "Colors",
 
+    dependencies: [
+      createPlayersDependencyMetaStep({ min: 1, max: availableColors.length }),
+    ],
+
     render: PlayerColorsPanel,
 
-    random({ playerIds }) {
+    random(playerIds) {
       const permutations =
         PermutationsLazyArray.forPermutation(availableColors);
       const selectedIdx = Math.floor(Math.random() * permutations.length);

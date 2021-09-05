@@ -1,5 +1,4 @@
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
-import extractInstanceValue from "./extractInstanceValue";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
 interface CreateDerivedGameStepOptionsAny extends CreateGameStepOptions {
@@ -171,7 +170,7 @@ export default function createDerivedGameStep({
     return renderDerived({
       context,
       dependencies: dependencies.map((dependency) =>
-        extractInstanceValue(dependency, context.instance)
+        dependency.extractInstanceValue!(context)
       ),
     });
   };

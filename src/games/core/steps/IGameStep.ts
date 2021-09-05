@@ -24,6 +24,9 @@ export default interface IGameStep<T = never> {
 
   isType?(value: any): value is T;
 
+  wouldTemplateGenerateValue?(context: TemplateContext): boolean;
+  extractInstanceValue?(context: InstanceContext): T;
+
   TemplateFixedValueLabel?(props: { value: any }): JSX.Element;
   TemplateFixedValueSelector?(props: { current: any }): JSX.Element;
   InstanceVariableComponent?(props: { value: any }): JSX.Element;

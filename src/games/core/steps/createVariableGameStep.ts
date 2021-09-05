@@ -1,9 +1,9 @@
+import { type_invariant } from "../../../common/err/invariant";
 import nullthrows from "../../../common/err/nullthrows";
 import Strategy from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
 import { ConstantTemplateElement } from "../../../features/template/templateSlice";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
-import extractInstanceValue from "./extractInstanceValue";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
 export interface VariableStepInstanceComponentProps<T> {
@@ -17,7 +17,7 @@ interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
 
   render(props: VariableStepInstanceComponentProps<T>): JSX.Element;
 
-  random(context: InstanceContext, ...dependancies: any[]): T;
+  random(...dependancies: any[]): T;
 
   recommended?(context: InstanceContext): T | undefined;
 
@@ -111,7 +111,6 @@ interface CreateVariableGameStepOptions<
   isType?(value: any): value is T;
   render(props: VariableStepInstanceComponentProps<T>): JSX.Element;
   random(
-    context: InstanceContext,
     dependency1: D1,
     dependency2: D2,
     dependency3: D3,
@@ -173,17 +172,35 @@ export default function createVarialbeGameStep<T>({
 }: CreateVariableGameStepOptionsAny<T>): IGameStep<T> {
   const gameStep: IGameStep<T> = createGameStep(baseOptions);
 
+  gameStep.wouldTemplateGenerateValue = ({ template }) =>
+    template[gameStep.id] != null;
+
+  gameStep.extractInstanceValue = ({ instance }) => {
+    const step = nullthrows(
+      instance.find((setupStep) => setupStep.id === gameStep.id),
+      `Step ${gameStep.id} is missing from instance`
+    );
+
+    return type_invariant(
+      step.value,
+      nullthrows(
+        isType,
+        `Game step ${gameStep.id} does not have a type predicate defined`
+      ),
+      `Value ${step.value} couldn't be converted to the type defined by it's type ${gameStep.id}`
+    );
+  };
+
   gameStep.isType = isType;
 
   gameStep.InstanceVariableComponent = render;
 
-  gameStep.resolveRandom = (context) => {
-    const resolvedDependancies =
-      dependencies?.map((dependency) =>
-        extractInstanceValue(dependency, context.instance)
-      ) ?? [];
-    return random(context, ...resolvedDependancies);
-  };
+  gameStep.resolveRandom = (context) =>
+    random(
+      ...(dependencies?.map((dependency) =>
+        dependency.extractInstanceValue!(context)
+      ) ?? [])
+    );
 
   if (recommended != null) {
     gameStep.resolveDefault = (context) =>
@@ -204,7 +221,7 @@ export default function createVarialbeGameStep<T>({
     gameStep.refreshFixedValue = fixed.refresh;
   }
 
-  gameStep.strategies = ({ playerIds, template }) => {
+  gameStep.strategies = (context) => {
     const strategies = [];
 
     if (recommended != null) {
@@ -212,17 +229,19 @@ export default function createVarialbeGameStep<T>({
       // doesn't allow us to catch cases where the instance is required to
       // calculate the recommended value (e.g. if it relies on the value of
       // a previous step)
-      const value = recommended({ playerIds, instance: [] });
+      const value = recommended({ playerIds: context.playerIds, instance: [] });
       if (value != null) {
         strategies.push(Strategy.DEFAULT);
       }
     }
 
-    const fixedValue = fixed != null ? fixed.initializer(playerIds) : undefined;
+    const fixedValue =
+      fixed != null ? fixed.initializer(context.playerIds) : undefined;
     if (fixed == null || fixedValue != null) {
       const areDependanciesFulfilled =
-        dependencies?.every((dependency) => template[dependency.id] != null) ??
-        true;
+        dependencies?.every((dependency) =>
+          dependency.wouldTemplateGenerateValue!(context)
+        ) ?? true;
       if (areDependanciesFulfilled) {
         strategies.push(Strategy.RANDOM);
       }

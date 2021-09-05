@@ -2,6 +2,7 @@ import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import Strategy from "../../../core/Strategy";
 import { PlayerId } from "../../../features/players/playersSlice";
+import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep from "../../core/steps/createVariableGameStep";
 import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
@@ -11,12 +12,17 @@ export default createVariableGameStep({
   id: "playOrder",
   labelOverride: "Seating",
 
+  dependencies: [
+    // It's meaningless to talk about order with less than 3 players
+    createPlayersDependencyMetaStep({ min: 3 }),
+  ],
+
   isType: (x): x is PlayerId[] =>
     Array.isArray(x) && x.every((y) => typeof y === "string"),
 
   render: PlayOrderPanel,
 
-  random({ playerIds }) {
+  random(playerIds) {
     const [, ...restOfPlayers] = playerIds;
     const permutations = PermutationsLazyArray.forPermutation(restOfPlayers);
     const selectedIdx = Math.floor(Math.random() * permutations.length);
