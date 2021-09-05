@@ -56,6 +56,7 @@ const templateSlice = createSlice({
 
     disabled: (state, action) => {
       templateAdapter.removeOne(state, action);
+      // TODO: Go over steps that are dependent on this step and mark them stale
       state.isStale = true;
     },
 
