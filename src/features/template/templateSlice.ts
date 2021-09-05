@@ -10,40 +10,6 @@ import GameMapper, { GameId } from "../../games/core/GameMapper";
 import { StepId } from "../../games/core/IGame";
 import playersSlice, { PlayerId } from "../players/playersSlice";
 
-// // When strategies change they might make strategies for downstream steps
-// // invalid so we go over all of them and fix any inconsistency.
-// // BUT... because we only provide the user with a 'next strategy' action,
-// // they might not be aware of this and thus a click would cause them to
-// // lose these configurations unintentionally. To solve that we save the
-// // previous config, and, when a change upstream makes the previous config
-// // valid again, we swap it back in.
-
-// while (true) {
-//   const currentEntities = { ...state.entities };
-//   const invalidSteps = filter_nulls(
-//     Object.values(state.entities)
-//   ).filter((step) => {
-//     const gameStep = GameMapper.forId(gameId).at(step.id);
-//     return gameStep?.strategies == null
-//       ? true
-//       : gameStep
-//           .strategies({
-//             template: currentEntities,
-//             playerIds,
-//           })
-//           .includes(step.strategy);
-//   });
-
-//   if (invalidSteps.length === 0) {
-//     break;
-//   }
-
-//   state = templateAdapter.removeMany(
-//     state,
-//     invalidSteps.map((step) => step.id)
-//   );
-// }
-
 export type ConstantTemplateElement = Readonly<{
   id: StepId;
   strategy: Strategy.FIXED;
