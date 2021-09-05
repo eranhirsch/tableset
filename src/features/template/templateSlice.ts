@@ -10,7 +10,7 @@ import GameMapper, { GameId } from "../../games/core/GameMapper";
 import { StepId } from "../../games/core/IGame";
 import playersSlice, { PlayerId } from "../players/playersSlice";
 
-export type ConstantTemplateElement = Readonly<{
+type ConstantTemplateElement = Readonly<{
   id: StepId;
   strategy: Strategy.FIXED;
   value: unknown;
@@ -23,11 +23,11 @@ export type TemplateElement =
       strategy: Exclude<Strategy, Strategy.FIXED>;
     }>;
 
-export const templateAdapter = createEntityAdapter<TemplateElement>({
+const templateAdapter = createEntityAdapter<TemplateElement>({
   selectId: (step) => step.id,
 });
 
-export const templateSlice = createSlice({
+export default createSlice({
   name: "template",
   initialState: templateAdapter.getInitialState({ isStale: false }),
   reducers: {
@@ -147,9 +147,6 @@ export const templateSlice = createSlice({
       });
   },
 });
-export default templateSlice;
-
-export type TemplateState = ReturnType<typeof templateSlice["reducer"]>;
 
 export const templateSelectors = templateAdapter.getSelectors<RootState>(
   (state) => state.template
