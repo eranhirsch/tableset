@@ -15,8 +15,6 @@ import { gameSelector } from "../game/gameSlice";
 import { PlayerId, playersSelectors } from "../players/playersSlice";
 import { instanceSelectors } from "./instanceSlice";
 
-const IDEAL_STEP_COUNT = 6;
-
 function InstanceItemContent({
   stepId,
 }: {
@@ -54,62 +52,36 @@ export default function Instance(): JSX.Element | null {
 
   const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
 
-  const instanceStepIds = useAppSelector(instanceSelectors.selectIds);
+  const groups = useMemo(
+    () =>
+      game.steps
+        .reduce(
+          (
+            groups: StepId[][],
+            { id, InstanceDerivedComponent, InstanceVariableComponent },
+            index
+          ) => {
+            if (
+              InstanceDerivedComponent == null &&
+              InstanceVariableComponent == null
+            ) {
+              // Trivial steps dont have any special component rendering defined,
+              // they will ALWAYS render exactly the same, so we group them to
+              // make it easier to skip them
+              groups[groups.length - 1].push(id);
+              return groups;
+            }
 
-  const groups = useMemo(() => {
-    const nonManualSteps = [...instanceStepIds];
-    return game.steps.reduce(
-      (groups: StepId[][], step, index) => {
-        let lastGroup = groups[groups.length - 1];
-
-        const manualStepIdx = nonManualSteps.indexOf(step.id);
-        if (manualStepIdx !== -1) {
-          // We have something to show for this step, so we want to put it in
-          // it's own group.
-
-          // We want to keep a count of how many of these we are going to
-          // encounter so we can account for them when putting manual items in
-          // groups
-          nonManualSteps.splice(manualStepIdx, 1);
-
-          if (lastGroup.length > 0) {
-            // We need to create a new group for each non-manual step
-            lastGroup = [];
-            groups.push(lastGroup);
-          }
-
-          lastGroup.push(step.id);
-          // We push an additional group after the step so that the next
-          // next iterations dont add anything to this group.
-          groups.push([]);
-          return groups;
-        }
-
-        // We want to spread the steps that aren't special into the remaining
-        // slots they have as fairly as possible
-        const manualStepsLeft =
-          game.steps.length - index - nonManualSteps.length;
-        const manualStepGroupsLeft =
-          IDEAL_STEP_COUNT - (groups.length - 1) - nonManualSteps.length;
-
-        if (
-          // Dont create a new group if we don't have any left
-          manualStepGroupsLeft > 1 &&
-          // Obviously always add at least 1 item to each group
-          lastGroup.length > 0 &&
-          lastGroup.length >= Math.round(manualStepsLeft / manualStepGroupsLeft)
-        ) {
-          // Create a new group
-          lastGroup = [];
-          groups.push(lastGroup);
-        }
-        lastGroup.push(step.id);
-
-        return groups;
-      },
-      [[]]
-    );
-  }, [game.steps, instanceStepIds]);
+            // We need to create a new group for each non-manual step and
+            // push an additional group after the step so that the next
+            // iterations' doesnt add anything to this group.
+            return groups.concat([[id], []]);
+          },
+          [[]]
+        )
+        .filter((group) => group.length > 0),
+    [game.steps]
+  );
 
   const activeStepId = location.hash.substring(1) as StepId;
   const activeStepIdx = game.steps.findIndex(
