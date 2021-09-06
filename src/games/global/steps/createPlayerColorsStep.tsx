@@ -20,7 +20,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
       createPlayersDependencyMetaStep({ min: 1, max: availableColors.length }),
     ],
 
-    render: PlayerColorsPanel,
+    InstanceVariableComponent: PlayerColorsPanel,
 
     random(playerIds) {
       const permutations =

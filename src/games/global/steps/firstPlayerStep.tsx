@@ -15,7 +15,7 @@ export default createVariableGameStep({
 
   isType: (x): x is PlayerId => typeof x === "string",
 
-  render: FirstPlayerPanel,
+  InstanceVariableComponent: FirstPlayerPanel,
 
   random: (playerIds) =>
     playerIds[Math.floor(Math.random() * playerIds.length)],
