@@ -31,6 +31,8 @@ export default createVariableGameStep({
 function InstanceVariableComponent({
   value: hash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
+  const theme = useTheme();
+
   // TODO: Move this to dependancies
   const mapId = nullthrows(
     useInstanceValue(mapStep),
@@ -47,7 +49,7 @@ function InstanceVariableComponent({
       <Typography variant="body1">
         Place the matching city resource tile for each city on the map:
       </Typography>
-      <Grid container>
+      <Grid container component="figure" sx={{ margin: 0 }}>
         {Object.entries(provinces).map(([provinceName, cities]) => {
           const mapping = Object.entries(cities);
           return (
@@ -69,6 +71,13 @@ function InstanceVariableComponent({
             </React.Fragment>
           );
         })}
+        <Typography
+          component="figcaption"
+          variant="caption"
+          sx={{ marginTop: theme.spacing(1) }}
+        >
+          Hash: {hash}
+        </Typography>
       </Grid>
     </>
   );
