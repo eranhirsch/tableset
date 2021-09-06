@@ -6,6 +6,7 @@ import CityResourcesEncoder, {
   Resource,
 } from "../utils/CityResourcesEncoder";
 import { MapId } from "../utils/Maps";
+import RomanTitle from "./RomanTitle";
 
 type ProvinceResourceMapping = Readonly<{
   [provinceName: string]: Resource;
@@ -22,11 +23,8 @@ export default function BonusTiles({
       {Object.entries(provinceResource).map(([provinceName, resource]) => (
         <React.Fragment key={provinceName}>
           <Grid item xs={6}>
-            <Typography
-              variant="subtitle1"
-              sx={{ fontVariantCaps: "petite-caps" }}
-            >
-              {provinceName}
+            <Typography variant="subtitle1">
+              <RomanTitle>{provinceName}</RomanTitle>
             </Typography>
           </Grid>
           <Grid item xs={6}>

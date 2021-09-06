@@ -5,15 +5,11 @@ import createGenericItemsGameStep from "../../core/steps/createGenericItemsGameS
 import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
-import { MAPS, MapId } from "../utils/Maps";
+import { MapId, MAPS } from "../utils/Maps";
+import RomanTitle from "../ux/RomanTitle";
 
-const MapName = styled("span")({
-  fontVariantCaps: "petite-caps",
-});
-
-const ChosenMapName = styled("strong")(({ theme }) => ({
+const ChosenMapName = styled(RomanTitle)(({ theme }) => ({
   color: theme.palette.primary.main,
-  fontVariantCaps: "petite-caps",
   fontSize: "150%",
 }));
 
@@ -33,9 +29,9 @@ function InstanceManualComponent() {
     <BlockWithFootnotes
       footnotes={[
         <>
-          Available maps (maps with a higher tightness score have fewer cities
-          and fewer provinces, this increases player interaction making them
-          more suited for lower player counts):{" "}
+          Available maps (a higher tightness score means fewer cities and fewer
+          provinces; this increases player interaction making them more suited
+          for lower player counts):{" "}
           <GrammaticalList>
             {array_sort_by(
               Object.entries(MAPS),
@@ -43,7 +39,7 @@ function InstanceManualComponent() {
               ([, map]) => -map.tightnessScore
             ).map(([mapId, map]) => (
               <React.Fragment key={mapId}>
-                <MapName>{map.name}</MapName> ({map.tightnessScore})
+                <RomanTitle>{map.name}</RomanTitle> ({map.tightnessScore})
               </React.Fragment>
             ))}
           </GrammaticalList>

@@ -11,6 +11,7 @@ import CityResourcesEncoder, {
   CITY_TILES,
 } from "../utils/CityResourcesEncoder";
 import { MAPS, Zone } from "../utils/Maps";
+import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 
 export default createVariableGameStep({
@@ -48,21 +49,15 @@ function InstanceVariableComponent({
         return (
           <React.Fragment key={provinceName}>
             <Grid key={provinceName} item xs={3} alignSelf="center">
-              <Typography
-                variant="subtitle1"
-                sx={{ fontVariantCaps: "petite-caps" }}
-              >
-                {provinceName}
+              <Typography variant="subtitle1">
+                <RomanTitle>{provinceName}</RomanTitle>
               </Typography>
             </Grid>
             {mapping.map(([cityName, resource]) => (
               <Grid key={cityName} item xs={3}>
                 <Typography variant="caption">{resource}</Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ fontVariantCaps: "petite-caps" }}
-                >
-                  {cityName}
+                <Typography variant="body2">
+                  <RomanTitle>{cityName}</RomanTitle>
                 </Typography>
               </Grid>
             ))}
