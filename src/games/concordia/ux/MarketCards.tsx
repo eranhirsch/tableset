@@ -3,6 +3,7 @@ import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
 import grammatical_list from "../../../common/lib_utils/grammatical_list";
 import range from "../../../common/lib_utils/range";
 import { DerivedStepInstanceComponentProps } from "../../core/steps/createDerivedGameStep";
+import { PlayerId } from "../../../features/players/playersSlice";
 
 const CARDS_PER_DECK = [
   // the array is 0-indexed
@@ -22,8 +23,8 @@ const CARDS_PER_DECK = [
 export const ROMAN_NUMERALS = [undefined, "I", "II", "III", "IV", "V"];
 
 export default function MarketCards({
-  context: { playerIds },
-}: DerivedStepInstanceComponentProps): JSX.Element | null {
+  dependencies: [playerIds],
+}: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element | null {
   const playerCount = playerIds.length;
 
   if (playerCount < 1) {

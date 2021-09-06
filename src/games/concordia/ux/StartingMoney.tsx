@@ -5,9 +5,9 @@ import { DerivedStepInstanceComponentProps } from "../../core/steps/createDerive
 import Player from "../../global/ux/Player";
 
 export default function StartingMoney({
-  context: { playerIds },
-  dependencies: [playOrder, firstPlayerId],
+  dependencies: [playerIds, playOrder, firstPlayerId],
 }: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
   readonly PlayerId[],
   PlayerId
 >): JSX.Element | null {

@@ -169,8 +169,10 @@ export default function createVarialbeGameStep<T>({
 
   gameStep.dependencies = dependencies;
 
-  gameStep.wouldTemplateGenerateValue = ({ template }) =>
-    template[gameStep.id] != null;
+  gameStep.hasValue = (context) =>
+    "template" in context
+      ? context.template[gameStep.id] != null
+      : context.instance.some(({ id }) => id === gameStep.id);
 
   gameStep.extractInstanceValue = ({ instance }) => {
     const step = nullthrows(
@@ -236,9 +238,8 @@ export default function createVarialbeGameStep<T>({
       fixed != null ? fixed.initializer(context.playerIds) : undefined;
     if (fixed == null || fixedValue != null) {
       const areDependanciesFulfilled =
-        dependencies?.every((dependency) =>
-          dependency.wouldTemplateGenerateValue!(context)
-        ) ?? true;
+        dependencies?.every((dependency) => dependency.hasValue!(context)) ??
+        true;
       if (areDependanciesFulfilled) {
         strategies.push(Strategy.RANDOM);
       }
