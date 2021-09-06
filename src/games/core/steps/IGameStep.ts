@@ -26,12 +26,16 @@ export default interface IGameStep<T = never> {
   hasValue?(context: TemplateContext | InstanceContext): boolean;
   extractInstanceValue?(context: InstanceContext): T;
 
-  TemplateFixedValueLabel?(props: { value: any }): JSX.Element;
-  TemplateFixedValueSelector?(props: { current: any }): JSX.Element;
+  // TODO: make this non-optional
+  InstanceManualComponent?(): JSX.Element;
+
   InstanceVariableComponent?(props: { value: any }): JSX.Element;
   InstanceDerivedComponent?(props: {
     context: InstanceContext;
   }): JSX.Element | null;
+
+  TemplateFixedValueLabel?(props: { value: any }): JSX.Element;
+  TemplateFixedValueSelector?(props: { current: any }): JSX.Element;
 
   strategies?(context: TemplateContext): readonly Strategy[];
 

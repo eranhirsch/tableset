@@ -10,7 +10,16 @@ export type Zone = "A" | "B" | "C" | "D";
 // We can't use `Map` as that's already a thing in js
 export type MapBoard = Readonly<{
   name: string;
+
+  /**
+   * @see https://boardgamegeek.com/thread/2611782/big-forum-post-about-maps, We
+   * use the 4 player score here, and simply take different ranges for different
+   * player counts, instead of holding the full table
+   */
+  tightnessScore: number;
+
   startingColonists: [StartingColonistLocation, StartingColonistLocation];
+
   provinces: Readonly<
     Partial<
       Record<Zone, Readonly<{ [provinceName: string]: readonly string[] }>>
@@ -21,6 +30,7 @@ export type MapBoard = Readonly<{
 export const MAPS: Record<MapId, MapBoard> = Object.freeze({
   italia: {
     name: "Italia",
+    tightnessScore: 1.1,
     startingColonists: [
       { locationName: "Roma", type: "land" },
       { locationName: "Roma", type: "sea" },
@@ -48,6 +58,7 @@ export const MAPS: Record<MapId, MapBoard> = Object.freeze({
 
   imperium: {
     name: "Imperium",
+    tightnessScore: 0.8,
     startingColonists: [
       { locationName: "Roma", type: "land" },
       { locationName: "Roma", type: "sea" },

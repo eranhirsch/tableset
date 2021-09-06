@@ -26,7 +26,11 @@ function InstanceItemContent({
 
   const gameStep = game.atEnforce(stepId);
 
-  const { InstanceVariableComponent, InstanceDerivedComponent } = gameStep;
+  const {
+    InstanceVariableComponent,
+    InstanceDerivedComponent,
+    InstanceManualComponent,
+  } = gameStep;
 
   if (InstanceVariableComponent != null) {
     const instanceStep = instance[stepId];
@@ -41,6 +45,11 @@ function InstanceItemContent({
     );
   }
 
+  if (InstanceManualComponent != null) {
+    return <InstanceManualComponent />;
+  }
+
+  // TODO: Kill this, make InstanceManualComponent non nullable
   return <div>Manual Section</div>;
 }
 

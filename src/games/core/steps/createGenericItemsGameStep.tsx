@@ -13,6 +13,7 @@ interface CreateGenericItemsGameStepOptions<T extends string = string> {
   itemIds: readonly T[];
 
   labelFor(itemId: T): string;
+  InstanceManualComponent(): JSX.Element;
   InstanceVariableComponent(
     props: VariableStepInstanceComponentProps<T>
   ): JSX.Element;
@@ -25,6 +26,7 @@ const createGenericItemsGameStep = <T extends string = string>({
   id,
   itemIds,
   labelFor,
+  InstanceManualComponent,
   InstanceVariableComponent,
   isType,
   recommended,
@@ -33,6 +35,7 @@ const createGenericItemsGameStep = <T extends string = string>({
     id,
     isType,
 
+    InstanceManualComponent,
     InstanceVariableComponent,
 
     random: () => itemIds[Math.floor(Math.random() * itemIds.length)],
