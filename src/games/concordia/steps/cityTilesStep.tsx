@@ -74,9 +74,9 @@ function InstanceVariableComponent({
         <Typography
           component="figcaption"
           variant="caption"
-          sx={{ marginTop: theme.spacing(1) }}
+          sx={{ marginTop: theme.spacing(2) }}
         >
-          Hash: {hash}
+          <pre>Hash: {hash}</pre>
         </Typography>
       </Grid>
     </>
