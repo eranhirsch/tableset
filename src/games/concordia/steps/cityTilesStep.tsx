@@ -43,29 +43,34 @@ function InstanceVariableComponent({
   );
 
   return (
-    <Grid container textAlign="center" spacing={1}>
-      {Object.entries(provinces).map(([provinceName, cities]) => {
-        const mapping = Object.entries(cities);
-        return (
-          <React.Fragment key={provinceName}>
-            <Grid key={provinceName} item xs={3} alignSelf="center">
-              <Typography variant="subtitle1">
-                <RomanTitle>{provinceName}</RomanTitle>
-              </Typography>
-            </Grid>
-            {mapping.map(([cityName, resource]) => (
-              <Grid key={cityName} item xs={3}>
-                <Typography variant="caption">{resource}</Typography>
-                <Typography variant="body2">
-                  <RomanTitle>{cityName}</RomanTitle>
+    <>
+      <Typography variant="body1">
+        Place the matching city resource tile for each city on the map:
+      </Typography>
+      <Grid container>
+        {Object.entries(provinces).map(([provinceName, cities]) => {
+          const mapping = Object.entries(cities);
+          return (
+            <React.Fragment key={provinceName}>
+              <Grid item key={provinceName} xs={3} alignSelf="center">
+                <Typography variant="subtitle2">
+                  <RomanTitle>{provinceName}</RomanTitle>
                 </Typography>
               </Grid>
-            ))}
-            {mapping.length === 2 && <Grid item xs={3} />}
-          </React.Fragment>
-        );
-      })}
-    </Grid>
+              {mapping.map(([cityName, resource]) => (
+                <Grid item key={cityName} xs={3} textAlign="center">
+                  <Typography variant="caption">{resource}</Typography>
+                  <Typography variant="body2">
+                    <RomanTitle>{cityName}</RomanTitle>
+                  </Typography>
+                </Grid>
+              ))}
+              {mapping.length === 2 && <Grid item xs={3} />}
+            </React.Fragment>
+          );
+        })}
+      </Grid>
+    </>
   );
 }
 
