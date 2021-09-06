@@ -3,6 +3,7 @@ import React from "react";
 import array_sort_by from "../../../common/lib_utils/array_sort_by";
 import createGenericItemsGameStep from "../../core/steps/createGenericItemsGameStep";
 import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
+import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { MAPS, MapId } from "../utils/Maps";
 
@@ -29,27 +30,33 @@ function InstanceVariableComponent({
 
 function InstanceManualComponent() {
   return (
-    <>
-      <Typography variant="body1">
-        Pick a map board and place it at the center of the table.
-      </Typography>
-      <Typography variant="body2" sx={{ marginTop: 3 }}>
-        Available maps (maps with a higher tightness score have fewer cities and
-        fewer provinces, this increases player interaction making them more
-        suited for lower player counts):{" "}
-        <GrammaticalList>
-          {array_sort_by(
-            Object.entries(MAPS),
-            // Put tighterr maps first
-            ([, map]) => -map.tightnessScore
-          ).map(([mapId, map]) => (
-            <React.Fragment key={mapId}>
-              <MapName>{map.name}</MapName> ({map.tightnessScore})
-            </React.Fragment>
-          ))}
-        </GrammaticalList>
-      </Typography>
-    </>
+    <BlockWithFootnotes
+      footnotes={[
+        <>
+          Available maps (maps with a higher tightness score have fewer cities
+          and fewer provinces, this increases player interaction making them
+          more suited for lower player counts):{" "}
+          <GrammaticalList>
+            {array_sort_by(
+              Object.entries(MAPS),
+              // Put tighterr maps first
+              ([, map]) => -map.tightnessScore
+            ).map(([mapId, map]) => (
+              <React.Fragment key={mapId}>
+                <MapName>{map.name}</MapName> ({map.tightnessScore})
+              </React.Fragment>
+            ))}
+          </GrammaticalList>
+        </>,
+      ]}
+    >
+      {(Footnote) => (
+        <Typography variant="body1">
+          Pick a map board
+          <Footnote index={1} /> and place it at the center of the table.
+        </Typography>
+      )}
+    </BlockWithFootnotes>
   );
 }
 
