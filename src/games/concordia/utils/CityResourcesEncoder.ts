@@ -5,14 +5,15 @@ import { MapBoard, MapId, MAPS, Zone } from "./Maps";
 
 export type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
 
-export const CITY_TILES: Readonly<
-  Record<Zone, Readonly<Record<Resource, number>>>
-> = {
-  A: { bricks: 2, food: 2, tools: 1, wine: 1, cloth: 1 },
-  B: { bricks: 2, food: 3, tools: 1, wine: 1, cloth: 1 },
-  C: { bricks: 3, food: 2, tools: 2, wine: 2, cloth: 1 },
-  D: { bricks: 1, food: 1, tools: 1, wine: 1, cloth: 1 },
-};
+type ZoneResourceTiles = Readonly<Record<Resource, number>>;
+
+export const CITY_TILES: Readonly<Record<Zone, ZoneResourceTiles>> =
+  Object.freeze({
+    A: Object.freeze({ bricks: 2, food: 2, tools: 1, wine: 1, cloth: 1 }),
+    B: Object.freeze({ bricks: 2, food: 3, tools: 1, wine: 1, cloth: 1 }),
+    C: Object.freeze({ bricks: 3, food: 2, tools: 2, wine: 2, cloth: 1 }),
+    D: Object.freeze({ bricks: 1, food: 1, tools: 1, wine: 1, cloth: 1 }),
+  });
 
 export type CityResourceMapping = Readonly<{
   [provinceName: string]: Readonly<{ [cityName: string]: Resource }>;

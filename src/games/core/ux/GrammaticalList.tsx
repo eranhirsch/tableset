@@ -3,10 +3,10 @@ import React from "react";
 export default function GrammaticalList({
   children,
 }: {
-  children: JSX.Element[];
+  children: (JSX.Element | string)[];
 }): JSX.Element | null {
   if (children.length === 1) {
-    return children[0];
+    return <>{children[0]}</>;
   }
 
   if (children.length === 2) {
