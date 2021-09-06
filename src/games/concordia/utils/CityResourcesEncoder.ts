@@ -1,7 +1,7 @@
 import Base32 from "../../../common/Base32";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import { MapBoard, MapId, MAPS, Zone } from "../steps/mapStep";
+import { MapBoard, MapId, MAPS, Zone } from "./Maps";
 
 export type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
 

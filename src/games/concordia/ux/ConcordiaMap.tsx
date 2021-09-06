@@ -1,6 +1,6 @@
 import { Typography } from "@material-ui/core";
 import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
-import { MapId, MAPS } from "../steps/mapStep";
+import { MapId, MAPS } from "../utils/Maps";
 
 export default function ConcordiaMap({
   value: mapId,

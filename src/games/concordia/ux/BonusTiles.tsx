@@ -1,11 +1,11 @@
 import { Grid, Typography } from "@material-ui/core";
 import React from "react";
 import { DerivedStepInstanceComponentProps } from "../../core/steps/createDerivedGameStep";
-import { MapId } from "../steps/mapStep";
 import CityResourcesEncoder, {
   CityResourceMapping,
   Resource,
 } from "../utils/CityResourcesEncoder";
+import { MapId } from "../utils/Maps";
 
 type ProvinceResourceMapping = Readonly<{
   [provinceName: string]: Resource;
