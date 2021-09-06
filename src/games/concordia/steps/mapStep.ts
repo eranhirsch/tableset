@@ -7,7 +7,7 @@ export default createGenericItemsGameStep({
   itemIds: Object.keys(MAPS) as MapId[],
 
   labelFor: (id: MapId) => MAPS[id].name,
-  render: ConcordiaMap,
+  InstanceVariableComponent: ConcordiaMap,
 
   isType: (x: string): x is MapId => MAPS[x as MapId] != null,
   recommended: ({ playerIds }) =>

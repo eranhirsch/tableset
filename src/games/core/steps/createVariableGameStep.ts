@@ -14,7 +14,9 @@ interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
 
   isType?(value: any): value is T;
 
-  render(props: VariableStepInstanceComponentProps<T>): JSX.Element;
+  InstanceVariableComponent(
+    props: VariableStepInstanceComponentProps<T>
+  ): JSX.Element;
 
   random(...dependancies: any[]): T;
 
@@ -106,7 +108,9 @@ interface CreateVariableGameStepOptions<
       ];
 
   isType?(value: any): value is T;
-  render(props: VariableStepInstanceComponentProps<T>): JSX.Element;
+  InstanceVariableComponent(
+    props: VariableStepInstanceComponentProps<T>
+  ): JSX.Element;
   random(
     dependency1: D1,
     dependency2: D2,
@@ -159,7 +163,7 @@ export default function createVarialbeGameStep<
 export default function createVarialbeGameStep<T>({
   dependencies,
   isType,
-  render,
+  InstanceVariableComponent,
   random,
   recommended,
   fixed,
@@ -192,7 +196,7 @@ export default function createVarialbeGameStep<T>({
 
   gameStep.isType = isType;
 
-  gameStep.InstanceVariableComponent = render;
+  gameStep.InstanceVariableComponent = InstanceVariableComponent;
 
   gameStep.resolveRandom = (context) =>
     random(
