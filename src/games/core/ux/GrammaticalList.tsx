@@ -2,23 +2,32 @@ import React from "react";
 
 export default function GrammaticalList({
   children,
+  pluralize,
 }: {
   children: (JSX.Element | string)[];
+  pluralize?: string;
 }): JSX.Element | null {
   if (children.length === 1) {
-    return <>{children[0]}</>;
+    return (
+      <>
+        the {pluralize} {children[0]}
+      </>
+    );
   }
+
+  const prefix = pluralize != null ? `${pluralize}s` : "";
 
   if (children.length === 2) {
     return (
       <>
-        {children[0]} and {children[1]}
+        {prefix} {children[0]} and {children[1]}
       </>
     );
   }
 
   return (
     <>
+      {prefix}{" "}
       {children.slice(0, children.length - 1).map((child, idx) => (
         <React.Fragment key={`grammatical_${idx}`}>{child}, </React.Fragment>
       ))}{" "}
