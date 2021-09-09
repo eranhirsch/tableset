@@ -49,6 +49,11 @@ function InstanceItemContent({
   }
 
   if (InstanceManualComponent != null) {
+    if (typeof InstanceManualComponent === "string") {
+      // We allow simple strings as components too, in those cases we just
+      // insert them into a basic component instead
+      return <Typography variant="body1">{InstanceManualComponent}</Typography>;
+    }
     return <InstanceManualComponent />;
   }
 

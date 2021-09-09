@@ -12,6 +12,7 @@ import mapStep from "./steps/mapStep";
 import marketCardsStep from "./steps/marketCardsStep";
 import marketDeckStep from "./steps/marketDeckStep";
 import marketDisplayStep from "./steps/marketDisplayStep";
+import playerComponentsStep from "./steps/playerComponentsStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
 import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
@@ -27,12 +28,23 @@ export default class ConcordiaGame implements IGame {
       marketCardsStep,
       marketDisplayStep,
       marketDeckStep,
-      createGameStep({ id: "concordiaCard" }),
-      createGameStep({ id: "resourcePiles" }),
-      createGameStep({ id: "bank" }),
+      createGameStep({
+        id: "concordiaCard",
+        InstanceManualComponent: "Place the Concordia card next to the board.",
+      }),
+      createGameStep({
+        id: "resourcePiles",
+        InstanceManualComponent:
+          "Seperate the resources into piles near the board.",
+      }),
+      createGameStep({
+        id: "bank",
+        InstanceManualComponent:
+          "Form a pile of coins as the bank near the board.",
+      }),
       playOrderStep,
       createPlayerColorsStep(this.playerColors),
-      createGameStep({ id: "playerComponents" }),
+      playerComponentsStep,
       startingColonistsStep,
       createGameStep({ id: "startingResources" }),
       firstPlayerStep,

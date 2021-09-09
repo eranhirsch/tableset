@@ -10,7 +10,7 @@ export interface CreateGameStepOptions {
   // this if you want a different label for your step
   labelOverride?: string;
 
-  InstanceManualComponent?: () => JSX.Element;
+  InstanceManualComponent?: (() => JSX.Element) | string;
 }
 
 export default function createGameStep({

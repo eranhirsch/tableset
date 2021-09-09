@@ -27,7 +27,7 @@ export default interface IGameStep<T = never> {
   extractInstanceValue?(context: InstanceContext): T | null;
 
   // TODO: make this non-optional
-  InstanceManualComponent?(): JSX.Element;
+  InstanceManualComponent?: (() => JSX.Element) | string;
 
   InstanceVariableComponent?(props: { value: any }): JSX.Element;
   InstanceDerivedComponent?(props: {
