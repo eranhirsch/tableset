@@ -28,6 +28,16 @@ export default createDerivedGameStep({
 function InstanceDerivedComponent({
   dependencies: [mapId, hash],
 }: DerivedStepInstanceComponentProps<MapId, string>): JSX.Element | null {
+  if (mapId == null) {
+    // No map defined
+    return <div>no map</div>;
+  }
+
+  if (hash == null) {
+    // yes map, but no city tiles
+    return <div>no city tiles</div>;
+  }
+
   const provinceResource = fromCityTiles(
     CityResourcesEncoder.forMapId(mapId).decode(hash)
   );

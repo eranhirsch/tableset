@@ -1,16 +1,16 @@
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
-import IGameStep from "./IGameStep";
+import IGameStep, { InstanceContext } from "./IGameStep";
 
-interface CreateDerivedGameStepOptionsAny extends CreateGameStepOptions {
-  dependencies?: [IGameStep<any>, ...IGameStep<any>[]];
+interface CreateDerivedGameStepOptionsUnknown extends CreateGameStepOptions {
+  dependencies: [IGameStep<unknown>, ...IGameStep<unknown>[]];
 
-  InstanceManualComponent?(): JSX.Element;
   InstanceDerivedComponent(props: {
-    dependencies: [...any[]];
+    dependencies: [unknown, ...unknown[]];
   }): JSX.Element | null;
 }
 
 export interface DerivedStepInstanceComponentProps<
+  D0 = never,
   D1 = never,
   D2 = never,
   D3 = never,
@@ -19,10 +19,20 @@ export interface DerivedStepInstanceComponentProps<
   D6 = never,
   D7 = never,
   D8 = never,
-  D9 = never,
-  D10 = never
+  D9 = never
 > {
-  dependencies: [D1, D2, D3, D4, D5, D6, D7, D8, D9, D10];
+  dependencies: [
+    D0 | null | undefined,
+    D1 | null | undefined,
+    D2 | null | undefined,
+    D3 | null | undefined,
+    D4 | null | undefined,
+    D5 | null | undefined,
+    D6 | null | undefined,
+    D7 | null | undefined,
+    D8 | null | undefined,
+    D9 | null | undefined
+  ];
 }
 
 interface CreateDerivedGameStepOptions<
@@ -37,7 +47,7 @@ interface CreateDerivedGameStepOptions<
   D9 = never,
   D10 = never
 > extends CreateGameStepOptions {
-  dependencies?:
+  dependencies:
     | [IGameStep<D1>]
     | [IGameStep<D1>, IGameStep<D2>]
     | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>]
@@ -100,7 +110,6 @@ interface CreateDerivedGameStepOptions<
         IGameStep<D10>
       ];
 
-  InstanceManualComponent?(): JSX.Element;
   InstanceDerivedComponent(
     props: DerivedStepInstanceComponentProps<
       D1,
@@ -147,28 +156,35 @@ export default function createDerivedGameStep<
 
 export default function createDerivedGameStep({
   dependencies,
-  InstanceManualComponent,
   InstanceDerivedComponent,
   ...baseOptions
-}: CreateDerivedGameStepOptionsAny): IGameStep<never> {
+}: CreateDerivedGameStepOptionsUnknown): IGameStep<never> {
   const gameStep = createGameStep(baseOptions);
 
-  gameStep.InstanceDerivedComponent = ({ context }) => {
-    if (dependencies == null) {
-      return InstanceDerivedComponent({ dependencies: [] });
-    }
-
-    if (!dependencies.every((dependency) => dependency.hasValue!(context))) {
-      // Not all dependencies have a value so we can't compute this step either
-      return null;
-    }
-
-    return InstanceDerivedComponent({
-      dependencies: dependencies.map((dependency) =>
-        dependency.extractInstanceValue!(context)
-      ),
+  gameStep.InstanceDerivedComponent = ({ context }) =>
+    InstanceDerivedComponent({
+      dependencies: [
+        maybeFulfillDependency(context, dependencies[0]),
+        maybeFulfillDependency(context, dependencies[1]),
+        maybeFulfillDependency(context, dependencies[2]),
+        maybeFulfillDependency(context, dependencies[3]),
+        maybeFulfillDependency(context, dependencies[4]),
+        maybeFulfillDependency(context, dependencies[5]),
+        maybeFulfillDependency(context, dependencies[6]),
+        maybeFulfillDependency(context, dependencies[7]),
+        maybeFulfillDependency(context, dependencies[8]),
+        maybeFulfillDependency(context, dependencies[9]),
+      ],
     });
-  };
 
   return gameStep;
+}
+
+function maybeFulfillDependency<T>(
+  context: InstanceContext,
+  dependency: IGameStep<T> | undefined
+): T | null | undefined {
+  return dependency == null
+    ? undefined
+    : dependency.extractInstanceValue!(context);
 }

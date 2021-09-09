@@ -1,9 +1,12 @@
 import { Box, Typography } from "@material-ui/core";
-import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
 import grammatical_list from "../../../common/lib_utils/grammatical_list";
 import range from "../../../common/lib_utils/range";
-import { DerivedStepInstanceComponentProps } from "../../core/steps/createDerivedGameStep";
 import { PlayerId } from "../../../features/players/playersSlice";
+import createDerivedGameStep, {
+  DerivedStepInstanceComponentProps,
+} from "../../core/steps/createDerivedGameStep";
+import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
+import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
 
 const CARDS_PER_DECK = [
   // the array is 0-indexed
@@ -20,11 +23,22 @@ const CARDS_PER_DECK = [
   4,
 ] as const;
 
-export const ROMAN_NUMERALS = [undefined, "I", "II", "III", "IV", "V"];
+const ROMAN_NUMERALS = [undefined, "I", "II", "III", "IV", "V"];
 
-export default function MarketCards({
+export default createDerivedGameStep({
+  id: "marketCards",
+  dependencies: [createPlayersDependencyMetaStep({ max: 5 })],
+  InstanceDerivedComponent,
+});
+
+function InstanceDerivedComponent({
   dependencies: [playerIds],
 }: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element | null {
+  if (playerIds == null) {
+    // No players, we can derive how many decks to use
+    return <div>No Players!</div>;
+  }
+
   const playerCount = playerIds.length;
 
   if (playerCount < 1) {

@@ -1,12 +1,27 @@
 import { Typography } from "@material-ui/core";
 import React from "react";
-import { DerivedStepInstanceComponentProps } from "../../core/steps/createDerivedGameStep";
+import createDerivedGameStep, {
+  DerivedStepInstanceComponentProps,
+} from "../../core/steps/createDerivedGameStep";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { MapId, MAPS } from "../utils/Maps";
+import mapStep from "./mapStep";
 
-export default function StartingColonists({
+export default createDerivedGameStep({
+  id: "startingColonists",
+  dependencies: [mapStep],
+  InstanceDerivedComponent,
+});
+
+function InstanceDerivedComponent({
   dependencies: [mapId],
 }: DerivedStepInstanceComponentProps<MapId>): JSX.Element | null {
+  if (mapId == null) {
+    // We don't know what map we are playing on, so can't say what the capital
+    // is
+    return <div>No capital</div>;
+  }
+
   const { startingColonists } = MAPS[mapId];
 
   if (startingColonists[0].locationName !== startingColonists[1].locationName) {

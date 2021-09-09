@@ -24,7 +24,7 @@ export default interface IGameStep<T = never> {
   isType?(value: any): value is T;
 
   hasValue?(context: TemplateContext | InstanceContext): boolean;
-  extractInstanceValue?(context: InstanceContext): T;
+  extractInstanceValue?(context: InstanceContext): T | null;
 
   // TODO: make this non-optional
   InstanceManualComponent?(): JSX.Element;

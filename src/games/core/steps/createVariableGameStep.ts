@@ -184,11 +184,10 @@ export default function createVarialbeGameStep<T>({
       : context.instance.some(({ id }) => id === gameStep.id);
 
   gameStep.extractInstanceValue = ({ instance }) => {
-    const step = nullthrows(
-      instance.find((setupStep) => setupStep.id === gameStep.id),
-      `Step ${gameStep.id} is missing from instance`
-    );
-
+    const step = instance.find((setupStep) => setupStep.id === gameStep.id);
+    if (step == null) {
+      return null;
+    }
     return type_invariant(
       step.value,
       nullthrows(
@@ -207,7 +206,10 @@ export default function createVarialbeGameStep<T>({
   gameStep.resolveRandom = (context) =>
     random(
       ...(dependencies?.map((dependency) =>
-        dependency.extractInstanceValue!(context)
+        nullthrows(
+          dependency.extractInstanceValue!(context),
+          `Unfulfilled dependency ${dependency.id} for ${gameStep.id}`
+        )
       ) ?? [])
     );
 
