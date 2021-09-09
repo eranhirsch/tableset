@@ -1,6 +1,6 @@
 import { Box, Typography } from "@material-ui/core";
 import grammatical_list from "../../../common/lib_utils/grammatical_list";
-import range from "../../../common/lib_utils/range";
+import array_range from "../../../common/lib_utils/array_range";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -51,10 +51,10 @@ function InstanceDerivedComponent({
     return null;
   }
 
-  const inUse = range(1, playerCount + 1).map(
+  const inUse = array_range(1, playerCount + 1).map(
     (i) => `${ROMAN_NUMERALS[i]} (${CARDS_PER_DECK[i]} cards)`
   );
-  const leaveInBox = range(playerCount + 1, CARDS_PER_DECK.length).map(
+  const leaveInBox = array_range(playerCount + 1, CARDS_PER_DECK.length).map(
     (x) => ROMAN_NUMERALS[x]!
   );
 
