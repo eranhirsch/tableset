@@ -23,11 +23,14 @@ export default function HeaderAndSteps({
         sx={{ paddingInlineStart: theme.spacing(2) }}
         spacing={2}
       >
-        {reactFlattenChildren(children).map((child, index) => (
-          <Typography key={`child_${index}`} component="li" variant="body2">
-            {child}
-          </Typography>
-        ))}
+        {reactFlattenChildren(children).map(
+          (child, index) =>
+            child != null && (
+              <Typography key={`child_${index}`} component="li" variant="body2">
+                {child}
+              </Typography>
+            )
+        )}
       </Stack>
     </>
   );

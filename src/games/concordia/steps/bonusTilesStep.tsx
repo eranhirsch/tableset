@@ -1,4 +1,4 @@
-import { Grid, Stack, Typography, useTheme } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import React, { useMemo } from "react";
 import array_sort_by from "../../../common/lib_utils/array_sort_by";
 import grammatical_list from "../../../common/lib_utils/grammatical_list";
@@ -8,6 +8,7 @@ import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
+import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder, { Resource } from "../utils/CityResourcesEncoder";
 import { MapId, MAPS } from "../utils/Maps";
 import resourceLabel from "../utils/resourceLabel";
@@ -47,8 +48,6 @@ function IncompleteInstanceDerivedComponent({
 }: {
   mapId: MapId | null | undefined;
 }): JSX.Element {
-  const theme = useTheme();
-
   let mapSpecificCount;
   let provinceCityCountsFootnote;
   let tileLocationsStep;
@@ -62,7 +61,9 @@ function IncompleteInstanceDerivedComponent({
       ...zone,
     }));
 
-    mapSpecificCount = ` of the ${Object.keys(provinceCities).length}`;
+    mapSpecificCount = ` of the ${
+      Object.keys(provinceCities).length
+    } provinces`;
 
     provinceCityCountsFootnote = `${grammatical_list(
       Object.keys(
@@ -71,96 +72,86 @@ function IncompleteInstanceDerivedComponent({
     )} have 3 cities each, the other provinces have 2 cities each.`;
 
     tileLocationsStep = (
-      <Typography component="li" variant="body2">
+      <span>
         Put a matching bonus tile, resource side up, on the{" "}
         {hasMinimap
           ? "minimap area on the board, on the square pointing to the province"
           : "area of the board with the province names and thumbnails, covering the numbered province flag"}
         .
-      </Typography>
+      </span>
     );
   } else {
     mapSpecificCount = null;
     provinceCityCountsFootnote =
       "Most provinces have 2 cities, and a few have 3 cities.";
     tileLocationsStep = (
-      <li>
-        <BlockWithFootnotes
-          footnotes={[
-            <>
-              The board would either have a minimap with lines stretching out to
-              the bonus tile location for that province, or it would contain a
-              section with province names and thumbnails of the provinces
-            </>,
-          ]}
-        >
-          {(Footnote) => (
-            <Typography variant="body2">
-              Put a matching bonus tile, resource side up, on the location
-              matching this province on the board
-              <Footnote index={1} />
-            </Typography>
-          )}
-        </BlockWithFootnotes>
-      </li>
+      <BlockWithFootnotes
+        footnotes={[
+          <>
+            The board would either have a minimap with lines stretching out to
+            the bonus tile location for that province, or it would contain a
+            section with province names, thumbnails of the provinces, and a flag
+            with the province number - put the tile on the flag.
+          </>,
+        ]}
+      >
+        {(Footnote) => (
+          <>
+            Put a matching bonus tile, resource side up, on the location
+            matching this province on the board.
+            <Footnote index={1} />
+          </>
+        )}
+      </BlockWithFootnotes>
     );
   }
 
   return (
-    <>
-      <Typography variant="body1">
-        Set up the province bonus tiles. For each{mapSpecificCount} provinces:
-      </Typography>
-      <Stack
-        component="ol"
-        sx={{ paddingInlineStart: theme.spacing(2) }}
-        spacing={2}
+    <HeaderAndSteps
+      synopsis={`Set up the province bonus tiles. For each${
+        mapSpecificCount ?? " province:"
+      }:`}
+    >
+      <BlockWithFootnotes footnotes={[<>{provinceCityCountsFootnote}</>]}>
+        {(Footnote) => (
+          <>
+            Find all cities in the province.
+            <Footnote index={1} />
+          </>
+        )}
+      </BlockWithFootnotes>
+      <BlockWithFootnotes
+        footnotes={[
+          <>
+            The resources (sorted in descending value) are{" "}
+            {grammatical_list(
+              array_sort_by(
+                Object.entries(RESOURCE_PRICES),
+                // We want descending order, so we negate the value
+                ([, value]) => -value
+              ).map(([resource]) => resourceLabel(resource as Resource))
+            )}
+            .
+          </>,
+          <>
+            e.g. if {resourceLabel("cloth")} is produced in one of the cities
+            then the most valuable resource is {resourceLabel("cloth")}, if it
+            isn't then if {resourceLabel("wine")} is produced in one of the
+            cities then the most valuable resource is {resourceLabel("wine")},
+            etc...
+          </>,
+        ]}
       >
-        <li>
-          <BlockWithFootnotes footnotes={[<>{provinceCityCountsFootnote}</>]}>
-            {(Footnote) => (
-              <Typography variant="body2">
-                Find all cities in the province.
-                <Footnote index={1} />
-              </Typography>
-            )}
-          </BlockWithFootnotes>
-        </li>
-        <li>
-          <BlockWithFootnotes
-            footnotes={[
-              <>
-                The resources (sorted in descending value) are{" "}
-                {grammatical_list(
-                  array_sort_by(
-                    Object.entries(RESOURCE_PRICES),
-                    // We want descending order, so we negate the value
-                    ([, value]) => -value
-                  ).map(([resource]) => resourceLabel(resource as Resource))
-                )}
-                .
-              </>,
-              <>
-                e.g. if {resourceLabel("cloth")} is produced in one of the
-                cities then the most valuable resource is{" "}
-                {resourceLabel("cloth")}, if it isn't then if{" "}
-                {resourceLabel("wine")} is produced in one of the cities then
-                the most valuable resource is {resourceLabel("wine")}, etc...
-              </>,
-            ]}
-          >
-            {(Footnote) => (
-              <Typography variant="body2">
-                Find the most valuable resource
-                <Footnote index={1} />
-                <Footnote index={2} /> created in those cities.
-              </Typography>
-            )}
-          </BlockWithFootnotes>
-        </li>
-        {tileLocationsStep}
-      </Stack>
-    </>
+        {(Footnote) => (
+          <>
+            Find the most valuable resource
+            <Footnote index={1} /> created in those cities
+            <Footnote index={2} />.
+          </>
+        )}
+      </BlockWithFootnotes>
+      {tileLocationsStep}
+    </HeaderAndSteps>
   );
 }
 
