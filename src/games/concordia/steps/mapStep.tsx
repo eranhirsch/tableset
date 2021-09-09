@@ -8,6 +8,25 @@ import GrammaticalList from "../../core/ux/GrammaticalList";
 import { MapId, MAPS } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 
+export default createGenericItemsGameStep({
+  id: "map",
+  itemIds: Object.keys(MAPS) as MapId[],
+
+  labelFor: (id: MapId) => MAPS[id].name,
+  InstanceVariableComponent,
+  InstanceManualComponent,
+
+  isType: (x: string): x is MapId => MAPS[x as MapId] != null,
+  recommended: ({ playerIds }) =>
+    playerIds.length <= 1
+      ? undefined
+      : playerIds.length <= 3
+      ? "italia"
+      : playerIds.length <= 5
+      ? "imperium"
+      : undefined,
+});
+
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({
   color: theme.palette.primary.main,
   fontSize: "150%",
@@ -55,22 +74,3 @@ function InstanceManualComponent() {
     </BlockWithFootnotes>
   );
 }
-
-export default createGenericItemsGameStep({
-  id: "map",
-  itemIds: Object.keys(MAPS) as MapId[],
-
-  labelFor: (id: MapId) => MAPS[id].name,
-  InstanceVariableComponent,
-  InstanceManualComponent,
-
-  isType: (x: string): x is MapId => MAPS[x as MapId] != null,
-  recommended: ({ playerIds }) =>
-    playerIds.length <= 1
-      ? undefined
-      : playerIds.length <= 3
-      ? "italia"
-      : playerIds.length <= 5
-      ? "imperium"
-      : undefined,
-});
