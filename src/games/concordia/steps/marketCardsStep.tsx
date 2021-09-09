@@ -39,7 +39,7 @@ function InstanceDerivedComponent({
   return (
     <HeaderAndSteps synopsis="Prepare the personality cards decks:">
       <CardSelectionStep playerIds={playerIds} />
-      Create a seperate deck for each numeral.
+      <>Create a seperate deck for each numeral.</>
     </HeaderAndSteps>
   );
 }

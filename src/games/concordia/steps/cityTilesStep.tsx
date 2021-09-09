@@ -1,4 +1,4 @@
-import { Grid, Stack, Typography, useTheme } from "@material-ui/core";
+import { Grid, Typography, useTheme } from "@material-ui/core";
 import React, { useMemo } from "react";
 import nullthrows from "../../../common/err/nullthrows";
 import { useInstanceValue } from "../../../features/instance/useInstanceValue";
@@ -7,6 +7,7 @@ import createVariableGameStep, {
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
+import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder, {
   CITY_TILES,
 } from "../utils/CityResourcesEncoder";
@@ -87,117 +88,94 @@ function InstanceVariableComponent({
 }
 
 function InstanceManualComponent() {
-  const theme = useTheme();
-
-  return (
-    <>
-      <Typography variant="body1">
-        Set up the city resource tiles on the board:
-      </Typography>
-      <Stack
-        component="ol"
-        sx={{ paddingInlineStart: theme.spacing(2) }}
-        spacing={2}
-      >
-        <ZonesInstructions />
-        <Typography component="li" variant="body2">
-          Shuffle the tiles.
-        </Typography>
-        <Typography component="li" variant="body2">
-          Cover each city with a tile of the same letter as the city.
-        </Typography>
-        <Typography component="li" variant="body2">
-          Flip all tiles so that their resource is showing.
-        </Typography>
-      </Stack>
-    </>
-  );
-}
-
-function ZonesInstructions() {
   const mapId = useInstanceValue(mapStep);
 
   const allZones = Object.keys(CITY_TILES) as Zone[];
 
+  let lettersStep = null;
+  let gatheringStep;
+
   if (mapId == null) {
     // We don't even know what map is used, we need to explain everything!
-    return (
-      <>
-        <li>
-          <BlockWithFootnotes
-            footnotes={[
-              <GrammaticalList>{Object.keys(CITY_TILES)}</GrammaticalList>,
-            ]}
-          >
-            {(Footnote) => (
-              <Typography variant="body2">
-                Go over the cities on the board and see what letters
-                <Footnote index={1} /> are used on this map.
-              </Typography>
-            )}
-          </BlockWithFootnotes>
-        </li>
-        <li>
-          <BlockWithFootnotes
-            footnotes={[<TilesCountFootnote zones={allZones} />]}
-          >
-            {(Footnote) => (
-              <Typography variant="body2">
-                Set all tiles
-                <Footnote index={1} /> on the table so that their letter is
-                showing, returning tiles you don't need back to the box.
-              </Typography>
-            )}
-          </BlockWithFootnotes>
-        </li>
-      </>
+    lettersStep = (
+      <BlockWithFootnotes
+        footnotes={[
+          <GrammaticalList>{Object.keys(CITY_TILES)}</GrammaticalList>,
+        ]}
+      >
+        {(Footnote) => (
+          <>
+            Go over the cities on the board and see what letters
+            <Footnote index={1} /> are used on this map.
+          </>
+        )}
+      </BlockWithFootnotes>
     );
-  }
 
-  const usedZones = Object.keys(MAPS[mapId].provinces) as Zone[];
-  if (usedZones.length === allZones.length) {
-    return (
-      <li>
+    gatheringStep = (
+      <BlockWithFootnotes footnotes={[<TilesCountFootnote zones={allZones} />]}>
+        {(Footnote) => (
+          <>
+            Set all tiles
+            <Footnote index={1} /> on the table so that their letter is showing,
+            returning tiles you don't need back to the box.
+          </>
+        )}
+      </BlockWithFootnotes>
+    );
+  } else {
+    const usedZones = Object.keys(MAPS[mapId].provinces) as Zone[];
+    if (usedZones.length === allZones.length) {
+      gatheringStep = (
         <BlockWithFootnotes
           footnotes={[<TilesCountFootnote zones={allZones} />]}
         >
           {(Footnote) => (
-            <Typography variant="body2">
+            <>
               Set all tiles
               <Footnote index={1} /> on the table so that their letter is
               showing.
-            </Typography>
+            </>
           )}
         </BlockWithFootnotes>
-      </li>
-    );
+      );
+    } else {
+      const unusedZones = allZones.filter((zone) => !usedZones.includes(zone));
+      gatheringStep = (
+        <BlockWithFootnotes
+          footnotes={[<TilesCountFootnote zones={usedZones} />]}
+        >
+          {(Footnote) => (
+            <>
+              Set all tiles with{" "}
+              <GrammaticalList pluralize="letter">{usedZones}</GrammaticalList>
+              <Footnote index={1} /> on the table so that their letter is
+              showing.
+              {unusedZones.length > 0 && (
+                <>
+                  {" "}
+                  Return any tile with{" "}
+                  <GrammaticalList pluralize="letter">
+                    {unusedZones}
+                  </GrammaticalList>{" "}
+                  to the box.
+                </>
+              )}
+            </>
+          )}
+        </BlockWithFootnotes>
+      );
+    }
   }
 
-  const unusedZones = allZones.filter((zone) => !usedZones.includes(zone));
   return (
-    <li>
-      <BlockWithFootnotes
-        footnotes={[<TilesCountFootnote zones={usedZones} />]}
-      >
-        {(Footnote) => (
-          <Typography variant="body2">
-            Set all tiles with{" "}
-            <GrammaticalList pluralize="letter">{usedZones}</GrammaticalList>
-            <Footnote index={1} /> on the table so that their letter is showing.
-            {unusedZones.length > 0 && (
-              <>
-                {" "}
-                Return any tile with{" "}
-                <GrammaticalList pluralize="letter">
-                  {unusedZones}
-                </GrammaticalList>{" "}
-                to the box.
-              </>
-            )}
-          </Typography>
-        )}
-      </BlockWithFootnotes>
-    </li>
+    <HeaderAndSteps synopsis="Set up the city resource tiles on the board:">
+      {lettersStep}
+      {gatheringStep}
+      <>Shuffle the tiles.</>
+      <>Cover each city with a tile of the same letter as the city.</>
+      <>Flip all tiles so that their resource is showing.</>
+    </HeaderAndSteps>
   );
 }
 
