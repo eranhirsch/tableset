@@ -1,12 +1,4 @@
-import {
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Typography,
-} from "@material-ui/core";
+import { List, ListItem, ListItemText, Typography } from "@material-ui/core";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,
@@ -14,6 +6,7 @@ import createVariableGameStep, {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
+import RomanTitle from "../ux/RomanTitle";
 import marketCardsStep from "./marketCardsStep";
 
 export default createVariableGameStep({
@@ -31,22 +24,37 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
   const market = MarketDisplayEncoder.decode(hash);
   return (
-    <Stack direction="column" alignItems="center">
-      <TableContainer>
-        <Table size="small">
-          <TableBody>
-            {market.map((cardName) => (
-              <TableRow key={cardName}>
-                <TableCell>
-                  <Typography variant="body2">{cardName}</Typography>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Typography variant="caption">Hash: {hash}</Typography>
-    </Stack>
+    <>
+      <BlockWithFootnotes
+        footnotes={[
+          <>
+            Set aside previously in <InstanceStepLink step={marketCardsStep} />
+          </>,
+        ]}
+      >
+        {(Footnote) => (
+          <Typography variant="body1">
+            Fill the personality cards market display from left to right using
+            the cards in deck <strong>I</strong>
+            <Footnote index={1} /> :
+          </Typography>
+        )}
+      </BlockWithFootnotes>
+      <figure>
+        <List component="ol">
+          {market.map((cardName) => (
+            <ListItem key={cardName}>
+              <ListItemText primaryTypographyProps={{ variant: "body2" }}>
+                <RomanTitle>{cardName}</RomanTitle>
+              </ListItemText>
+            </ListItem>
+          ))}
+          <Typography component="figcaption" variant="caption">
+            <pre>Hash: {hash}</pre>
+          </Typography>
+        </List>
+      </figure>
+    </>
   );
 }
 
