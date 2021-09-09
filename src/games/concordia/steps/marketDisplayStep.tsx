@@ -43,7 +43,7 @@ function InstanceVariableComponent({
       <figure>
         <List component="ol">
           {market.map((cardName) => (
-            <ListItem key={cardName}>
+            <ListItem key={cardName} dense>
               <ListItemText primaryTypographyProps={{ variant: "body2" }}>
                 <RomanTitle>{cardName}</RomanTitle>
               </ListItemText>
