@@ -1,14 +1,6 @@
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
-interface CreateDerivedGameStepOptionsUnknown extends CreateGameStepOptions {
-  dependencies: [IGameStep<unknown>, ...IGameStep<unknown>[]];
-
-  InstanceDerivedComponent(props: {
-    dependencies: [unknown, ...unknown[]];
-  }): JSX.Element | null;
-}
-
 export interface DerivedStepInstanceComponentProps<
   D0 = never,
   D1 = never,
@@ -152,13 +144,7 @@ export default function createDerivedGameStep<
   D8,
   D9,
   D10
->): IGameStep<never>;
-
-export default function createDerivedGameStep({
-  dependencies,
-  InstanceDerivedComponent,
-  ...baseOptions
-}: CreateDerivedGameStepOptionsUnknown): IGameStep<never> {
+>): IGameStep<never> {
   const gameStep = createGameStep(baseOptions);
 
   gameStep.InstanceDerivedComponent = ({ context }) =>
@@ -186,5 +172,7 @@ function maybeFulfillDependency<T>(
 ): T | null | undefined {
   return dependency == null
     ? undefined
-    : dependency.extractInstanceValue!(context);
+    : dependency.hasValue!(context)
+    ? dependency.extractInstanceValue!(context)
+    : null;
 }

@@ -1,5 +1,3 @@
-import { Box, Typography } from "@material-ui/core";
-import grammatical_list from "../../../common/lib_utils/grammatical_list";
 import array_range from "../../../common/lib_utils/array_range";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createDerivedGameStep, {
@@ -7,6 +5,10 @@ import createDerivedGameStep, {
 } from "../../core/steps/createDerivedGameStep";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
+import GrammaticalList from "../../core/ux/GrammaticalList";
+import React from "react";
+import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
+import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 
 const CARDS_PER_DECK = [
   // the array is 0-indexed
@@ -33,43 +35,82 @@ export default createDerivedGameStep({
 
 function InstanceDerivedComponent({
   dependencies: [playerIds],
-}: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element | null {
+}: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
+  return (
+    <HeaderAndSteps synopsis="Prepare the personality cards decks:">
+      <CardSelectionStep playerIds={playerIds} />
+      Create a seperate deck for each numeral.
+    </HeaderAndSteps>
+  );
+}
+
+function CardSelectionStep({
+  playerIds,
+}: {
+  playerIds: readonly PlayerId[] | null | undefined;
+}): JSX.Element {
   if (playerIds == null) {
-    // No players, we can derive how many decks to use
-    return <div>No Players!</div>;
+    // The player count dependency failed, this could be either that the number
+    // of players is too high to be meaningful for concordia, or too low (0)
+    return (
+      <>
+        <BlockWithFootnotes
+          footnotes={[
+            <>
+              e.g. for a 3 player game take all cards with numerals I, II, and
+              III.
+            </>,
+            <>
+              e.g. for a 3 player game leave cards with numerals IV and V in the
+              box.
+            </>,
+          ]}
+        >
+          {(Footnote) => (
+            <>
+              Take all cards with numerals on their back with value up to and
+              including the number of players
+              <Footnote index={1} />;{" "}
+              <em>
+                leaving cards with higher values
+                <Footnote index={2} /> in the box (they won't be needed)
+              </em>
+              .
+            </>
+          )}
+        </BlockWithFootnotes>
+      </>
+    );
   }
 
   const playerCount = playerIds.length;
-
-  if (playerCount < 1) {
-    // There's really nothing meaningful to do
-    return null;
-  }
-
-  if (playerCount > 5) {
-    // Not enough decks
-    return null;
-  }
-
-  const inUse = array_range(1, playerCount + 1).map(
-    (i) => `${ROMAN_NUMERALS[i]} (${CARDS_PER_DECK[i]} cards)`
-  );
   const leaveInBox = array_range(playerCount + 1, CARDS_PER_DECK.length).map(
-    (x) => ROMAN_NUMERALS[x]!
+    (x) => <strong key={`leave_in_box_deck_${x}`}>{ROMAN_NUMERALS[x]!}</strong>
   );
 
   return (
-    <Box>
-      <Typography variant="body1">
-        Take all cards with numerals {grammatical_list(inUse)} and create a
-        seperate deck for each numeral.
-      </Typography>
+    <>
+      Take all cards with{" "}
+      <GrammaticalList pluralize="numeral">
+        {array_range(playerCount).map((i) => (
+          <React.Fragment key={`deck_${i + 1}`}>
+            <strong>{ROMAN_NUMERALS[i + 1]}</strong> ({CARDS_PER_DECK[i + 1]}{" "}
+            cards)
+          </React.Fragment>
+        ))}
+      </GrammaticalList>{" "}
+      on their back
       {leaveInBox.length > 0 && (
-        <Typography variant="caption">
-          Leave cards with numeral{leaveInBox.length > 1 ? "s" : ""}{" "}
-          {grammatical_list(leaveInBox)} in the box (they won't be needed)
-        </Typography>
+        <>
+          ;{" "}
+          <em>
+            leaving cards with{" "}
+            <GrammaticalList pluralize="numeral">{leaveInBox}</GrammaticalList>{" "}
+            on their back in the box (they won't be needed)
+          </em>
+        </>
       )}
-    </Box>
+      .
+    </>
   );
 }
