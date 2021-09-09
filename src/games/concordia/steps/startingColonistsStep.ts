@@ -5,5 +5,5 @@ import mapStep from "./mapStep";
 export default createDerivedGameStep({
   id: "startingColonists",
   dependencies: [mapStep],
-  renderDerived: StartingColonists,
+  InstanceDerivedComponent: StartingColonists,
 });

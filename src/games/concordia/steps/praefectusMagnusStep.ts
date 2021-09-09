@@ -11,5 +11,5 @@ export default createDerivedGameStep({
     playOrderStep,
     firstPlayerStep,
   ],
-  renderDerived: PraefectusMagnus,
+  InstanceDerivedComponent: PraefectusMagnus,
 });

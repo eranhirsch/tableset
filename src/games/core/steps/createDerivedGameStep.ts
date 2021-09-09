@@ -4,7 +4,10 @@ import IGameStep from "./IGameStep";
 interface CreateDerivedGameStepOptionsAny extends CreateGameStepOptions {
   dependencies?: [IGameStep<any>, ...IGameStep<any>[]];
 
-  renderDerived(props: { dependencies: [...any[]] }): JSX.Element | null;
+  InstanceManualComponent?(): JSX.Element;
+  InstanceDerivedComponent(props: {
+    dependencies: [...any[]];
+  }): JSX.Element | null;
 }
 
 export interface DerivedStepInstanceComponentProps<
@@ -97,7 +100,8 @@ interface CreateDerivedGameStepOptions<
         IGameStep<D10>
       ];
 
-  renderDerived(
+  InstanceManualComponent?(): JSX.Element;
+  InstanceDerivedComponent(
     props: DerivedStepInstanceComponentProps<
       D1,
       D2,
@@ -126,7 +130,7 @@ export default function createDerivedGameStep<
   D10 = never
 >({
   dependencies,
-  renderDerived,
+  InstanceDerivedComponent,
   ...baseOptions
 }: CreateDerivedGameStepOptions<
   D1,
@@ -143,14 +147,15 @@ export default function createDerivedGameStep<
 
 export default function createDerivedGameStep({
   dependencies,
-  renderDerived,
+  InstanceManualComponent,
+  InstanceDerivedComponent,
   ...baseOptions
 }: CreateDerivedGameStepOptionsAny): IGameStep<never> {
   const gameStep = createGameStep(baseOptions);
 
   gameStep.InstanceDerivedComponent = ({ context }) => {
     if (dependencies == null) {
-      return renderDerived({ dependencies: [] });
+      return InstanceDerivedComponent({ dependencies: [] });
     }
 
     if (!dependencies.every((dependency) => dependency.hasValue!(context))) {
@@ -158,7 +163,7 @@ export default function createDerivedGameStep({
       return null;
     }
 
-    return renderDerived({
+    return InstanceDerivedComponent({
       dependencies: dependencies.map((dependency) =>
         dependency.extractInstanceValue!(context)
       ),

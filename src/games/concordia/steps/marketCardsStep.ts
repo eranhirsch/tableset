@@ -5,5 +5,5 @@ import MarketCards from "../ux/MarketCards";
 export default createDerivedGameStep({
   id: "marketCards",
   dependencies: [createPlayersDependencyMetaStep({ max: 5 })],
-  renderDerived: MarketCards,
+  InstanceDerivedComponent: MarketCards,
 });
