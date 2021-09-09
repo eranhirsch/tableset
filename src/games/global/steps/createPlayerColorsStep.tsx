@@ -1,6 +1,6 @@
 import nullthrows from "../../../common/err/nullthrows";
 import array_zip from "../../../common/lib_utils/array_zip";
-import map_keys from "../../../common/lib_utils/map_keys";
+import array_map_keys from "../../../common/lib_utils/array_map_keys";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import PlayerColors from "../../../common/PlayerColors";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
@@ -63,7 +63,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
               : remainingColors,
           availableColors as GamePiecesColor[]
         );
-        return map_keys(
+        return array_map_keys(
           playerIds,
           (playerId) => current[playerId] ?? remainingColors.shift()
         );

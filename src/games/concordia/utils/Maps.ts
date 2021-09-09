@@ -20,6 +20,13 @@ export type MapBoard = Readonly<{
 
   startingColonists: [StartingColonistLocation, StartingColonistLocation];
 
+  /**
+   * Most maps nowadays have a minimap for the province bonus section, but the
+   * first editions came with maps with a dedicated area on the board for it
+   * instead.
+   */
+  hasMinimap: boolean;
+
   provinces: Readonly<
     Partial<
       Record<Zone, Readonly<{ [provinceName: string]: readonly string[] }>>
@@ -31,6 +38,7 @@ export const MAPS: Record<MapId, MapBoard> = Object.freeze({
   italia: {
     name: "Italia",
     tightnessScore: 1.1,
+    hasMinimap: false,
     startingColonists: [
       { locationName: "Roma", type: "land" },
       { locationName: "Roma", type: "sea" },
@@ -59,6 +67,7 @@ export const MAPS: Record<MapId, MapBoard> = Object.freeze({
   imperium: {
     name: "Imperium",
     tightnessScore: 0.8,
+    hasMinimap: false,
     startingColonists: [
       { locationName: "Roma", type: "land" },
       { locationName: "Roma", type: "sea" },

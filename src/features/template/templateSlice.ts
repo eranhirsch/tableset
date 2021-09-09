@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
-import filter_nulls from "../../common/lib_utils/filter_nulls";
+import array_filter_nulls from "../../common/lib_utils/array_filter_nulls";
 import Strategy from "../../core/Strategy";
 import GameMapper, { GameId } from "../../games/core/GameMapper";
 import { StepId } from "../../games/core/IGame";
@@ -184,7 +184,7 @@ function markDownstreamElementsStale(
   const downstreamSteps = steps.filter(
     (x) => x.dependencies?.find(({ id }) => id === changedElementId) != null
   );
-  const downstreamElements = filter_nulls(
+  const downstreamElements = array_filter_nulls(
     downstreamSteps.map(({ id }) => entities[id])
   );
   downstreamElements.forEach((element) => (element.isStale = true));

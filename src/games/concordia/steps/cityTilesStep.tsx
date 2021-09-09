@@ -11,6 +11,7 @@ import CityResourcesEncoder, {
   CITY_TILES,
 } from "../utils/CityResourcesEncoder";
 import { MAPS, Zone } from "../utils/Maps";
+import resourceLabel from "../utils/resourceLabel";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 
@@ -61,7 +62,9 @@ function InstanceVariableComponent({
               </Grid>
               {mapping.map(([cityName, resource]) => (
                 <Grid item key={cityName} xs={3} textAlign="center">
-                  <Typography variant="caption">{resource}</Typography>
+                  <Typography variant="caption">
+                    {resourceLabel(resource)}
+                  </Typography>
                   <Typography variant="body2">
                     <RomanTitle>{cityName}</RomanTitle>
                   </Typography>
@@ -83,17 +86,31 @@ function InstanceVariableComponent({
   );
 }
 
-function TilesCountFootnote({ zones }: { zones: Zone[] }) {
+function InstanceManualComponent() {
+  const theme = useTheme();
+
   return (
-    <GrammaticalList>
-      {Object.entries(CITY_TILES)
-        .filter(([zone]) => zones.includes(zone as Zone))
-        .map(([zone, tiles]) => (
-          <React.Fragment key={`zone_${zone}`}>
-            {zone}: {Object.values(tiles).reduce((sum, x) => sum + x)} tiles
-          </React.Fragment>
-        ))}
-    </GrammaticalList>
+    <>
+      <Typography variant="body1">
+        Set up the city resource tiles on the board:
+      </Typography>
+      <Stack
+        component="ol"
+        sx={{ paddingInlineStart: theme.spacing(2) }}
+        spacing={2}
+      >
+        <ZonesInstructions />
+        <Typography component="li" variant="body2">
+          Shuffle the tiles.
+        </Typography>
+        <Typography component="li" variant="body2">
+          Cover each city with a tile of the same letter as the city.
+        </Typography>
+        <Typography component="li" variant="body2">
+          Flip all tiles so that their resource is showing.
+        </Typography>
+      </Stack>
+    </>
   );
 }
 
@@ -184,30 +201,16 @@ function ZonesInstructions() {
   );
 }
 
-function InstanceManualComponent() {
-  const theme = useTheme();
-
+function TilesCountFootnote({ zones }: { zones: Zone[] }) {
   return (
-    <>
-      <Typography variant="body1">
-        Set up the city resource tiles on the board:
-      </Typography>
-      <Stack
-        component="ol"
-        sx={{ paddingInlineStart: theme.spacing(2) }}
-        spacing={2}
-      >
-        <ZonesInstructions />
-        <Typography component="li" variant="body2">
-          Shuffle the tiles.
-        </Typography>
-        <Typography component="li" variant="body2">
-          Cover each city with a tile of the same letter as the city.
-        </Typography>
-        <Typography component="li" variant="body2">
-          Flip all tiles so that their resource is showing.
-        </Typography>
-      </Stack>
-    </>
+    <GrammaticalList>
+      {Object.entries(CITY_TILES)
+        .filter(([zone]) => zones.includes(zone as Zone))
+        .map(([zone, tiles]) => (
+          <React.Fragment key={`zone_${zone}`}>
+            {zone}: {Object.values(tiles).reduce((sum, x) => sum + x)} tiles
+          </React.Fragment>
+        ))}
+    </GrammaticalList>
   );
 }

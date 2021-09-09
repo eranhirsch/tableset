@@ -9,7 +9,7 @@ import {
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import filter_nulls from "../../common/lib_utils/filter_nulls";
+import array_filter_nulls from "../../common/lib_utils/array_filter_nulls";
 import { StepId } from "../../games/core/IGame";
 import { gameSelector } from "../game/gameSlice";
 import { PlayerId, playersSelectors } from "../players/playersSlice";
@@ -40,7 +40,10 @@ function InstanceItemContent({
   } else if (InstanceDerivedComponent != null) {
     return (
       <InstanceDerivedComponent
-        context={{ instance: filter_nulls(Object.values(instance)), playerIds }}
+        context={{
+          instance: array_filter_nulls(Object.values(instance)),
+          playerIds,
+        }}
       />
     );
   }
