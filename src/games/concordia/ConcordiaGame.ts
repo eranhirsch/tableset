@@ -10,6 +10,7 @@ import bonusTilesStep from "./steps/bonusTilesStep";
 import cityTilesStep from "./steps/cityTilesStep";
 import mapStep from "./steps/mapStep";
 import marketCardsStep from "./steps/marketCardsStep";
+import marketDeckStep from "./steps/marketDeckStep";
 import marketDisplayStep from "./steps/marketDisplayStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
 import startingColonistsStep from "./steps/startingColonistsStep";
@@ -25,7 +26,7 @@ export default class ConcordiaGame implements IGame {
       bonusTilesStep,
       marketCardsStep,
       marketDisplayStep,
-      createGameStep({ id: "marketDeck" }),
+      marketDeckStep,
       createGameStep({ id: "concordiaCard" }),
       createGameStep({ id: "resourcePiles" }),
       createGameStep({ id: "bank" }),

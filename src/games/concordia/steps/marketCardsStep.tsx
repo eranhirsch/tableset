@@ -9,6 +9,7 @@ import GrammaticalList from "../../core/ux/GrammaticalList";
 import React from "react";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
+import { ROMAN_NUMERALS } from "../utils/ROMAN_NUMERALS";
 
 const CARDS_PER_DECK = [
   // the array is 0-indexed
@@ -24,8 +25,6 @@ const CARDS_PER_DECK = [
   // V: Prefect, Mercator, Diplomat, Consul
   4,
 ] as const;
-
-const ROMAN_NUMERALS = [undefined, "I", "II", "III", "IV", "V"];
 
 export default createDerivedGameStep({
   id: "marketCards",

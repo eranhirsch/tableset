@@ -9,16 +9,20 @@ export interface CreateGameStepOptions {
   // Optional: We convert the camelCase id into a label automatically. Only use
   // this if you want a different label for your step
   labelOverride?: string;
+
+  InstanceManualComponent?: () => JSX.Element;
 }
 
 export default function createGameStep({
   id,
   labelOverride,
+  InstanceManualComponent,
 }: CreateGameStepOptions): IGameStep<never> {
   return {
     id,
     label:
       labelOverride ??
       id[0].toUpperCase() + id.replaceAll(/[A-Z]/g, " $&").slice(1),
+    InstanceManualComponent,
   };
 }

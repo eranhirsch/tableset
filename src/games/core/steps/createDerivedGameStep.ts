@@ -38,7 +38,7 @@ interface CreateDerivedGameStepOptions<
   D8 = never,
   D9 = never,
   D10 = never
-> extends CreateGameStepOptions {
+> extends Omit<CreateGameStepOptions, "InstanceManualComponent"> {
   dependencies:
     | [IGameStep<D1>]
     | [IGameStep<D1>, IGameStep<D2>]

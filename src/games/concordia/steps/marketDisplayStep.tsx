@@ -70,7 +70,7 @@ function InstanceManualComponent(): JSX.Element {
       >
         {(Footnote) => (
           <>
-            Shuffle the <strong>I</strong> cards deck
+            Shuffle the <strong>I</strong> personality cards deck
             <Footnote index={1} />.
           </>
         )}
