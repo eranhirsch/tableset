@@ -1,6 +1,5 @@
 import { Stack, Typography, useTheme } from "@material-ui/core";
 import { ReactNode } from "react";
-import reactFlattenChildren from "../../../common/reactFlattenChildren";
 
 export default function HeaderAndSteps({
   synopsis,
@@ -23,7 +22,7 @@ export default function HeaderAndSteps({
         sx={{ paddingInlineStart: theme.spacing(2) }}
         spacing={2}
       >
-        {reactFlattenChildren(children).map(
+        {children.map(
           (child, index) =>
             child != null && (
               <Typography key={`child_${index}`} component="li" variant="body2">
