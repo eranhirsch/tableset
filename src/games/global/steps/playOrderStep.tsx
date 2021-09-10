@@ -106,11 +106,16 @@ function InstanceVariableComponent({
 function InstanceManualComponent(): JSX.Element {
   return (
     <BlockWithFootnotes
-      footnotes={[<>Players would play in clockwise order around the table.</>]}
+      footnotes={[
+        <>
+          Players would play in <strong>clockwise</strong> order around the
+          table.
+        </>,
+      ]}
     >
       {(Footnote) => (
         <>
-          Choose a seat for each player
+          Choose a seat around the table for each player
           <Footnote index={1} />.
         </>
       )}
