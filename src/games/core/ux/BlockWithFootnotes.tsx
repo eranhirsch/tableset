@@ -12,7 +12,7 @@ export function BlockWithFootnotes({
   children: main,
   footnotes,
 }: {
-  footnotes: JSX.Element[];
+  footnotes: readonly JSX.Element[];
   children: (
     footnote: (props: { index: number }) => JSX.Element
   ) => JSX.Element;

@@ -10,6 +10,7 @@ import React from "react";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import { ROMAN_NUMERALS } from "../utils/ROMAN_NUMERALS";
+import array_filter_nulls from "../../../common/lib_utils/array_filter_nulls";
 
 const CARDS_PER_DECK = [
   // the array is 0-indexed
@@ -26,9 +27,11 @@ const CARDS_PER_DECK = [
   4,
 ] as const;
 
+const MAX_PLAYER_COUNT = CARDS_PER_DECK.length - 1;
+
 export default createDerivedGameStep({
-  id: "marketCards",
-  dependencies: [createPlayersDependencyMetaStep({ max: 5 })],
+  id: "personalityCards",
+  dependencies: [createPlayersDependencyMetaStep({ max: MAX_PLAYER_COUNT })],
   InstanceDerivedComponent,
 });
 
@@ -83,33 +86,58 @@ function CardSelectionStep({
   }
 
   const playerCount = playerIds.length;
-  const leaveInBox = array_range(playerCount + 1, CARDS_PER_DECK.length).map(
-    (x) => <strong key={`leave_in_box_deck_${x}`}>{ROMAN_NUMERALS[x]!}</strong>
-  );
 
   return (
-    <>
-      Take all cards with{" "}
-      <GrammaticalList pluralize="numeral">
-        {array_range(playerCount).map((i) => (
-          <React.Fragment key={`deck_${i + 1}`}>
-            <strong>{ROMAN_NUMERALS[i + 1]}</strong> ({CARDS_PER_DECK[i + 1]}{" "}
-            cards)
-          </React.Fragment>
-        ))}
-      </GrammaticalList>{" "}
-      on their back
-      {leaveInBox.length > 0 && (
+    <BlockWithFootnotes
+      footnotes={array_filter_nulls(
+        CARDS_PER_DECK.map(
+          (count, index) =>
+            count && (
+              <>
+                {count} cards with numeral{" "}
+                <strong>{ROMAN_NUMERALS[index]}</strong>.
+              </>
+            )
+        )
+      )}
+    >
+      {(Footnote) => (
         <>
-          ;{" "}
-          <em>
-            leaving cards with{" "}
-            <GrammaticalList pluralize="numeral">{leaveInBox}</GrammaticalList>{" "}
-            on their back in the box (they won't be needed)
-          </em>
+          Take all cards with{" "}
+          <GrammaticalList pluralize="numeral">
+            {array_range(playerCount).map((i) => (
+              <React.Fragment key={`deck_${i + 1}`}>
+                <strong>{ROMAN_NUMERALS[i + 1]}</strong>
+                <Footnote index={i + 1} />
+              </React.Fragment>
+            ))}
+          </GrammaticalList>{" "}
+          on their back
+          {playerCount < MAX_PLAYER_COUNT && (
+            <>
+              ;{" "}
+              <em>
+                leaving cards with{" "}
+                <GrammaticalList pluralize="numeral">
+                  {array_range(playerCount + 1, CARDS_PER_DECK.length).map(
+                    (x) => (
+                      <>
+                        <strong key={`leave_in_box_deck_${x}`}>
+                          {ROMAN_NUMERALS[x]!}
+                        </strong>
+                        <Footnote index={x} />
+                      </>
+                    )
+                  )}
+                </GrammaticalList>{" "}
+                on their back in the box (they won't be needed)
+              </em>
+            </>
+          )}
+          .
         </>
       )}
-      .
-    </>
+    </BlockWithFootnotes>
   );
 }
+

@@ -109,13 +109,13 @@ function IncompleteInstanceDerivedComponent({
   return (
     <HeaderAndSteps
       synopsis={`Set up the province bonus tiles. For each${
-        mapSpecificCount ?? " province:"
+        mapSpecificCount ?? " province"
       }:`}
     >
       <BlockWithFootnotes footnotes={[<>{provinceCityCountsFootnote}</>]}>
         {(Footnote) => (
           <>
-            Find all cities in the province.
+            Find all cities in that province.
             <Footnote index={1} />
           </>
         )}

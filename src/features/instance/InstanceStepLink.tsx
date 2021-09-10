@@ -14,7 +14,7 @@ export function InstanceStepLink({
 
   return (
     <Link component={RouterLink} to={`#${step.id}`}>
-      {stepIdx + 1}: {step.label}
+      Step {stepIdx + 1}: {step.label}
     </Link>
   );
 }

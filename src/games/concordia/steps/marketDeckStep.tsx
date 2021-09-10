@@ -47,7 +47,7 @@ function InstanceDerivedComponent({
   } else if (playerIds.length > 2) {
     stackingStep = (
       <>
-        Stack the decks facedown on top of each other starting from deck{" "}
+        Stack the decks facedown one on top of each other starting from deck{" "}
         <strong>{ROMAN_NUMERALS[playerIds.length]}</strong> then{" "}
         <GrammaticalList>
           {array_range(playerIds.length - 1, 1).map((deck) => (
