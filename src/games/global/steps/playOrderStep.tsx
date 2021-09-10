@@ -1,4 +1,4 @@
-import { Box, AvatarGroup, Avatar } from "@material-ui/core";
+import { Box, AvatarGroup, Avatar, Typography } from "@material-ui/core";
 import { useAppSelector } from "../../../app/hooks";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
@@ -85,16 +85,21 @@ function InstanceVariableComponent({
   const players = useAppSelector(playersSelectors.selectEntities);
 
   return (
-    <Box display="flex">
-      <AvatarGroup>
-        <Avatar>{short_name(firstPlayer.name)}</Avatar>
-        {playOrder.map((playerId) => (
-          <Avatar key={playerId}>
-            {short_name(nullthrows(players[playerId]).name)}
-          </Avatar>
-        ))}
-      </AvatarGroup>
-    </Box>
+    <>
+      <Typography variant="body1">
+        Sit players clockwise around the table in the following order:
+      </Typography>
+      <Box display="flex" component="figure">
+        <AvatarGroup>
+          <Avatar>{short_name(firstPlayer.name)}</Avatar>
+          {playOrder.map((playerId) => (
+            <Avatar key={playerId}>
+              {short_name(nullthrows(players[playerId]).name)}
+            </Avatar>
+          ))}
+        </AvatarGroup>
+      </Box>
+    </>
   );
 }
 
