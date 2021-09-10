@@ -1,11 +1,20 @@
+import { Box, AvatarGroup, Avatar } from "@material-ui/core";
+import { useAppSelector } from "../../../app/hooks";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import { PlayerId } from "../../../features/players/playersSlice";
+import short_name from "../../../common/short_name";
+import {
+  firstPlayerSelector,
+  PlayerId,
+  playersSelectors,
+} from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
-import createVariableGameStep from "../../core/steps/createVariableGameStep";
+import createVariableGameStep, {
+  VariableStepInstanceComponentProps,
+} from "../../core/steps/createVariableGameStep";
+import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
-import PlayOrderPanel from "../ux/PlayOrderPanel";
 
 export default createVariableGameStep({
   id: "playOrder",
@@ -19,7 +28,8 @@ export default createVariableGameStep({
   isType: (x): x is PlayerId[] =>
     Array.isArray(x) && x.every((y) => typeof y === "string"),
 
-  InstanceVariableComponent: PlayOrderPanel,
+  InstanceVariableComponent,
+  InstanceManualComponent,
 
   random(playerIds) {
     const [, ...restOfPlayers] = playerIds;
@@ -67,3 +77,38 @@ export default createVariableGameStep({
     },
   },
 });
+
+function InstanceVariableComponent({
+  value: playOrder,
+}: VariableStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
+  const firstPlayer = useAppSelector(firstPlayerSelector);
+  const players = useAppSelector(playersSelectors.selectEntities);
+
+  return (
+    <Box display="flex">
+      <AvatarGroup>
+        <Avatar>{short_name(firstPlayer.name)}</Avatar>
+        {playOrder.map((playerId) => (
+          <Avatar key={playerId}>
+            {short_name(nullthrows(players[playerId]).name)}
+          </Avatar>
+        ))}
+      </AvatarGroup>
+    </Box>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  return (
+    <BlockWithFootnotes
+      footnotes={[<>Players would play in clockwise order around the table.</>]}
+    >
+      {(Footnote) => (
+        <>
+          Choose a seat for each player
+          <Footnote index={1} />.
+        </>
+      )}
+    </BlockWithFootnotes>
+  );
+}
