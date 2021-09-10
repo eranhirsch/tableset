@@ -10,7 +10,8 @@ export default function GrammaticalList({
   if (children.length === 1) {
     return (
       <>
-        the {pluralize} {children[0]}
+        {pluralize != null && <>the {pluralize} </>}
+        {children[0]}
       </>
     );
   }

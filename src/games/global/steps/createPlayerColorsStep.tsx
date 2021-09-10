@@ -122,6 +122,7 @@ function InstanceManualComponent({
           <GrammaticalList>
             {availableColors.map((color) => (
               <Chip
+                key={`available_color_${color}`}
                 variant="filled"
                 color={color}
                 size="small"
