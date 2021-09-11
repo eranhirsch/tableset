@@ -56,6 +56,7 @@ function InstanceDerivedComponent({
             </React.Fragment>
           ))}
         </GrammaticalList>
+        .
       </>
     );
   }
