@@ -1,3 +1,5 @@
+import { Typography } from "@material-ui/core";
+import { numberSuffix } from "../../../common/lib_utils/numberSuffix";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -25,21 +27,31 @@ function InstanceDerivedComponent({
   PlayerId
 >): JSX.Element | null {
   if (playerIds == null) {
-    // We don't know who the players are so can't say anything
-    return <div>No Players</div>;
+    return (
+      <Typography variant="body1">
+        Give the last player the <strong>Praefectus Magnus</strong> card.
+      </Typography>
+    );
+  }
+
+  if (firstPlayerId == null) {
+    return (
+      <Typography variant="body1">
+        Give the {playerIds.length}
+        {numberSuffix(playerIds.length)} player the{" "}
+        <strong>Praefectus Magnus</strong> card.
+      </Typography>
+    );
   }
 
   if (playOrder == null) {
-    if (firstPlayerId == null) {
-      // we don't know anything
-      return <div>no order or first player</div>;
-    }
-
-    // We at least know who the first player is
-    return <div>first player known, not order</div>;
-  } else if (firstPlayerId == null) {
-    // play order known, but not first player
-    return <div>No first player, but order known</div>;
+    return (
+      <Typography variant="body1">
+        Give the player sitting to the left of{" "}
+        <Player playerId={firstPlayerId} inline /> the{" "}
+        <strong>Praefectus Magnus</strong> card.
+      </Typography>
+    );
   }
 
   const fullPlayOrder = [playerIds[0], ...playOrder];
@@ -51,5 +63,10 @@ function InstanceDerivedComponent({
       (firstPlayerIdx > 0 ? firstPlayerIdx : fullPlayOrder.length) - 1
     ];
 
-  return <Player playerId={lastPlayer} />;
+  return (
+    <Typography variant="body1">
+      Give <Player playerId={lastPlayer} inline /> the{" "}
+      <strong>Praefectus Magnus</strong> card.
+    </Typography>
+  );
 }
