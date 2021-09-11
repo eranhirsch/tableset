@@ -103,11 +103,11 @@ function InstanceDerivedComponent({
         {(Footnote) => (
           <>
             Put the remaining card of deck <strong>I</strong>
-            <Footnote index={1} /> facedown on top of the deck.
+            <Footnote index={1} /> facedown on top of the market deck.
           </>
         )}
       </BlockWithFootnotes>
-      <>Place the personality cards deck close to the market display.</>
+      <>Place the market deck close to the market display.</>
     </HeaderAndSteps>
   );
 }
