@@ -16,6 +16,7 @@ import playerComponentsStep from "./steps/playerComponentsStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
 import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
+import startingResourcesStep from "./steps/startingResourcesStep";
 
 export default class ConcordiaGame implements IGame {
   public readonly steps: readonly IGameStep<unknown>[];
@@ -46,7 +47,7 @@ export default class ConcordiaGame implements IGame {
       createPlayerColorsStep(this.playerColors),
       playerComponentsStep,
       startingColonistsStep,
-      createGameStep({ id: "startingResources" }),
+      startingResourcesStep,
       firstPlayerStep,
       startingMoneyStep,
       praefectusMagnusStep,

@@ -3,6 +3,7 @@ import React from "react";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
+import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { MapId, MAPS } from "../utils/Maps";
 import mapStep from "./mapStep";
@@ -19,7 +20,26 @@ function InstanceDerivedComponent({
   if (mapId == null) {
     // We don't know what map we are playing on, so can't say what the capital
     // is
-    return <div>No capital</div>;
+    return (
+      <BlockWithFootnotes
+        footnotes={[
+          <>
+            On most maps there will be a single <em>capital city</em> where 1{" "}
+            <strong>land</strong> colonist and 1 <strong>sea</strong> colonist
+            are placed.
+            {/* TODO: Add specific instructions for available maps */}
+          </>,
+        ]}
+      >
+        {(Footnote) => (
+          <>
+            Place 2 colonist meeples at the starting locations for the chosen
+            map
+            <Footnote index={1} />.
+          </>
+        )}
+      </BlockWithFootnotes>
+    );
   }
 
   const { startingColonists } = MAPS[mapId];

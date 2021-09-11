@@ -4,7 +4,7 @@ export default function GrammaticalList({
   children,
   pluralize,
 }: {
-  children: (JSX.Element | string)[];
+  children: readonly (JSX.Element | string)[];
   pluralize?: string;
 }): JSX.Element | null {
   if (children.length === 1) {
