@@ -1,8 +1,11 @@
+import { Typography } from "@material-ui/core";
 import { PlayerId } from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
-import createVariableGameStep from "../../core/steps/createVariableGameStep";
+import createVariableGameStep, {
+  VariableStepInstanceComponentProps,
+} from "../../core/steps/createVariableGameStep";
 import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";
-import FirstPlayerPanel from "../ux/FirstPlayerPanel";
+import Player from "../ux/Player";
 import StartingPlayerPanel from "../ux/StartingPlayerPanel";
 
 export default createVariableGameStep({
@@ -15,7 +18,8 @@ export default createVariableGameStep({
 
   isType: (x): x is PlayerId => typeof x === "string",
 
-  InstanceVariableComponent: FirstPlayerPanel,
+  InstanceVariableComponent,
+  InstanceManualComponent: "Choose which player goes first.",
 
   random: (playerIds) =>
     playerIds[Math.floor(Math.random() * playerIds.length)],
@@ -36,3 +40,18 @@ export default createVariableGameStep({
       playerIds.includes(current) ? current : undefined,
   },
 });
+
+function InstanceVariableComponent({
+  value: playerId,
+}: VariableStepInstanceComponentProps<PlayerId>): JSX.Element {
+  return (
+    <>
+      <Typography variant="body1">
+        The first player to play a turn would be:
+      </Typography>
+      <figure>
+        <Player playerId={playerId} />
+      </figure>
+    </>
+  );
+}
