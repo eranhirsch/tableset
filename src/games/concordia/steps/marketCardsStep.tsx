@@ -121,12 +121,10 @@ function CardSelectionStep({
                 <GrammaticalList pluralize="numeral">
                   {array_range(playerCount + 1, CARDS_PER_DECK.length).map(
                     (x) => (
-                      <>
-                        <strong key={`leave_in_box_deck_${x}`}>
-                          {ROMAN_NUMERALS[x]!}
-                        </strong>
+                      <React.Fragment key={`leave_in_box_deck_${x}`}>
+                        <strong>{ROMAN_NUMERALS[x]!}</strong>
                         <Footnote index={x} />
-                      </>
+                      </React.Fragment>
                     )
                   )}
                 </GrammaticalList>{" "}

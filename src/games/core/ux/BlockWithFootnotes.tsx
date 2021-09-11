@@ -41,9 +41,9 @@ export function BlockWithFootnotes({
         <Box component="ol" sx={{ paddingInlineStart: theme.spacing(3) }}>
           {footnotes.map((footnote, idx) => (
             <Typography
+              key={`footnote_${idx}`}
               component="li"
               variant="caption"
-              key={`footnote_${idx}`}
             >
               {footnote}
             </Typography>
