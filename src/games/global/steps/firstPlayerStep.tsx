@@ -45,13 +45,8 @@ function InstanceVariableComponent({
   value: playerId,
 }: VariableStepInstanceComponentProps<PlayerId>): JSX.Element {
   return (
-    <>
-      <Typography variant="body1">
-        The first player to play a turn would be:
-      </Typography>
-      <figure>
-        <Player playerId={playerId} />
-      </figure>
-    </>
+    <Typography variant="body1">
+      <Player playerId={playerId} inline /> will play first.
+    </Typography>
   );
 }

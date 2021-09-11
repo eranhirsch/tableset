@@ -15,7 +15,9 @@ export default function Player({
 }): JSX.Element | null {
   const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
   return (
-    <Avatar {...(inline ? { sx: { display: "inline-flex" } } : {})}>
+    <Avatar
+      {...(inline ? { component: "span", sx: { display: "inline-flex" } } : {})}
+    >
       {short_name(player.name)}
     </Avatar>
   );
