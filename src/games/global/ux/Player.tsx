@@ -8,9 +8,15 @@ import {
 
 export default function Player({
   playerId,
+  inline = false,
 }: {
   playerId: PlayerId;
+  inline?: boolean;
 }): JSX.Element | null {
   const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
-  return <Avatar>{short_name(player.name)}</Avatar>;
+  return (
+    <Avatar {...(inline ? { sx: { display: "inline-flex" } } : {})}>
+      {short_name(player.name)}
+    </Avatar>
+  );
 }
