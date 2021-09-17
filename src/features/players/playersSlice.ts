@@ -1,4 +1,9 @@
-import { createEntityAdapter, createSlice, nanoid } from "@reduxjs/toolkit";
+import {
+  createEntityAdapter,
+  createSelector,
+  createSlice,
+  nanoid,
+} from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
 
@@ -31,7 +36,14 @@ export const playersSelectors = playersAdapter.getSelectors<RootState>(
   (state) => state.players
 );
 
-export const firstPlayerSelector = (state: RootState) =>
-  nullthrows(state.players.entities[state.players.ids[0]]);
+export const firstPlayerSelector = createSelector(
+  playersSelectors.selectAll,
+  (players) => nullthrows(players[0])
+);
+
+export const allPlayerNamesSelector = createSelector(
+  playersSelectors.selectAll,
+  (players) => players.map((player) => player.name)
+);
 
 export default playersSlice;

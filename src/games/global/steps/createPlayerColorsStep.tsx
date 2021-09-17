@@ -8,6 +8,7 @@ import PlayerColors from "../../../common/PlayerColors";
 import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import { colorName, GamePiecesColor } from "../../../core/themeWithGameColors";
 import {
+  allPlayerNamesSelector,
   PlayerId,
   playersSelectors,
 } from "../../../features/players/playersSlice";
@@ -86,6 +87,7 @@ function InstanceVariableComponent({
   value: playerColor,
 }: VariableStepInstanceComponentProps<PlayerColors>): JSX.Element {
   const players = useAppSelector(playersSelectors.selectEntities);
+  const allNames = useAppSelector(allPlayerNamesSelector);
 
   return (
     <>
@@ -104,8 +106,7 @@ function InstanceVariableComponent({
             <Avatar>
               {shortest_unique_abbreviation(
                 nullthrows(players[playerId]).name,
-                // TODO: Send the other player names to get real shortest name
-                [nullthrows(players[playerId]).name]
+                allNames
               )}
             </Avatar>
           </Badge>

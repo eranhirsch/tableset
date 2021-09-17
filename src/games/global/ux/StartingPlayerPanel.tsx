@@ -5,6 +5,7 @@ import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntit
 import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import Strategy from "../../../core/Strategy";
 import {
+  allPlayerNamesSelector,
   PlayerId,
   playersSelectors,
 } from "../../../features/players/playersSlice";
@@ -22,6 +23,7 @@ function Player({
   const dispatch = useAppDispatch();
 
   const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
+  const allNames = useAppSelector(allPlayerNamesSelector);
 
   return (
     <Badge
@@ -44,11 +46,7 @@ function Player({
             : undefined
         }
       >
-        {shortest_unique_abbreviation(
-          player.name,
-          // TODO: Send the other player names to get real shortest name
-          [player.name]
-        )}
+        {shortest_unique_abbreviation(player.name, allNames)}
       </Avatar>
     </Badge>
   );

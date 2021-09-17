@@ -4,6 +4,7 @@ import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import {
+  allPlayerNamesSelector,
   firstPlayerSelector,
   PlayerId,
   playersSelectors,
@@ -83,6 +84,7 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
   const firstPlayer = useAppSelector(firstPlayerSelector);
   const players = useAppSelector(playersSelectors.selectEntities);
+  const allNames = useAppSelector(allPlayerNamesSelector);
 
   return (
     <>
@@ -92,18 +94,13 @@ function InstanceVariableComponent({
       <Box display="flex" component="figure">
         <AvatarGroup>
           <Avatar>
-            {shortest_unique_abbreviation(
-              firstPlayer.name,
-              // TODO: Send the other player names to get real shortest name
-              [firstPlayer.name]
-            )}
+            {shortest_unique_abbreviation(firstPlayer.name, allNames)}
           </Avatar>
           {playOrder.map((playerId) => (
             <Avatar key={playerId}>
               {shortest_unique_abbreviation(
                 nullthrows(players[playerId]).name,
-                // TODO: Send the other player names to get real shortest name
-                [nullthrows(players[playerId]).name]
+                allNames
               )}
             </Avatar>
           ))}

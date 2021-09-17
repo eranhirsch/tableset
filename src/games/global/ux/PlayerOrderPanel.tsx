@@ -11,6 +11,8 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import {
+  allPlayerNamesSelector,
+  firstPlayerSelector,
   PlayerId,
   playersSelectors,
 } from "../../../features/players/playersSlice";
@@ -36,6 +38,7 @@ function DraggablePlayer({
   badgeContent?: string;
 }) {
   const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
+  const allNames = useAppSelector(allPlayerNamesSelector);
 
   return (
     <Draggable draggableId={`${playerId}`} index={index}>
@@ -46,11 +49,7 @@ function DraggablePlayer({
           {...provided.dragHandleProps}
           {...provided.draggableProps}
         >
-          {shortest_unique_abbreviation(
-            player.name,
-            // TODO: Send the other player names to get real shortest name
-            [player.name]
-          )}
+          {shortest_unique_abbreviation(player.name, allNames)}
         </Avatar>
       )}
     </Draggable>
@@ -58,22 +57,15 @@ function DraggablePlayer({
 }
 
 function FirstAvatar() {
-  const player = useAppSelector(
-    (state) => playersSelectors.selectAll(state)[0]
-  );
+  const player = useAppSelector(firstPlayerSelector);
+  const allNames = useAppSelector(allPlayerNamesSelector);
   return (
     <Badge
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       overlap="circular"
       badgeContent={<LockIcon color="primary" fontSize="small" />}
     >
-      <Avatar>
-        {shortest_unique_abbreviation(
-          player.name,
-          // TODO: Send the other player names to get real shortest name
-          [player.name]
-        )}
-      </Avatar>
+      <Avatar>{shortest_unique_abbreviation(player.name, allNames)}</Avatar>
     </Badge>
   );
 }
