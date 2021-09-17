@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import object_flip from "../../../common/lib_utils/object_flip";
 import PlayerColors from "../../../common/PlayerColors";
-import short_name from "../../../common/short_name";
+import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import {
   Player,
@@ -26,7 +26,12 @@ function draggablePlayerRendererFactory(player: Player) {
       {...provided.dragHandleProps}
       {...provided.draggableProps}
     >
-      {short_name(player.name)}
+      {shortest_unique_abbreviation(
+        player.name,
+        // TODO: Send other player names to get the shortest unique, otherwise we
+        // will always get just the first letter
+        [player.name]
+      )}
     </Avatar>
   );
 }

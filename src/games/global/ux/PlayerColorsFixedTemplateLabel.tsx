@@ -1,6 +1,6 @@
 import { useAppSelector } from "../../../app/hooks";
-import first_name from "../../../common/first_name";
 import PlayerColors from "../../../common/PlayerColors";
+import { shortest_unique_name } from "../../../common/shortest_names";
 import { playersSelectors } from "../../../features/players/playersSlice";
 
 export default function PlayersColorsFixedTemplateLabel({
@@ -14,7 +14,11 @@ export default function PlayersColorsFixedTemplateLabel({
       {Object.entries(value)
         .map(
           ([playerId, color]) =>
-            `${first_name(players[playerId]!.name)}: ${color}`
+            `${shortest_unique_name(
+              players[playerId]!.name,
+              // TODO: Send the other player names to get real shortest name
+              [players[playerId]!.name]
+            )}: ${color}`
         )
         .join(", ")}
     </>

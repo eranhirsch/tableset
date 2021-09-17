@@ -1,6 +1,6 @@
 import { Avatar } from "@material-ui/core";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import short_name from "../../../common/short_name";
+import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import {
   PlayerId,
   playersSelectors,
@@ -18,7 +18,11 @@ export default function Player({
     <Avatar
       {...(inline ? { component: "span", sx: { display: "inline-flex" } } : {})}
     >
-      {short_name(player.name)}
+      {shortest_unique_abbreviation(
+        player.name,
+        // TODO: Send the other player names to get real shortest name
+        [player.name]
+      )}
     </Avatar>
   );
 }

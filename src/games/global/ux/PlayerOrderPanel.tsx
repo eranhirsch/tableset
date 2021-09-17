@@ -9,7 +9,7 @@ import {
 } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import short_name from "../../../common/short_name";
+import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import {
   PlayerId,
   playersSelectors,
@@ -46,7 +46,11 @@ function DraggablePlayer({
           {...provided.dragHandleProps}
           {...provided.draggableProps}
         >
-          {short_name(player.name)}
+          {shortest_unique_abbreviation(
+            player.name,
+            // TODO: Send the other player names to get real shortest name
+            [player.name]
+          )}
         </Avatar>
       )}
     </Draggable>
@@ -63,7 +67,13 @@ function FirstAvatar() {
       overlap="circular"
       badgeContent={<LockIcon color="primary" fontSize="small" />}
     >
-      <Avatar>{short_name(player.name)}</Avatar>
+      <Avatar>
+        {shortest_unique_abbreviation(
+          player.name,
+          // TODO: Send the other player names to get real shortest name
+          [player.name]
+        )}
+      </Avatar>
     </Badge>
   );
 }

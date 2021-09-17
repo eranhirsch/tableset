@@ -1,5 +1,5 @@
 import { useAppSelector } from "../../../app/hooks";
-import first_name from "../../../common/first_name";
+import { shortest_unique_name } from "../../../common/shortest_names";
 import {
   PlayerId,
   playersSelectors,
@@ -19,7 +19,13 @@ export default function PlayOrderFixedTemplateLabel({
     <>
       {[firstPlayerId]
         .concat(value)
-        .map((playerId) => first_name(players[playerId]!.name))
+        .map((playerId) =>
+          shortest_unique_name(
+            players[playerId]!.name,
+            // TODO: Send the other player names to get real shortest name
+            [players[playerId]!.name]
+          )
+        )
         .join(" > ")}
     </>
   );

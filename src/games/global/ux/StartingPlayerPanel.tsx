@@ -2,7 +2,7 @@ import { Avatar, Badge, Stack } from "@material-ui/core";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import short_name from "../../../common/short_name";
+import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import Strategy from "../../../core/Strategy";
 import {
   PlayerId,
@@ -44,7 +44,11 @@ function Player({
             : undefined
         }
       >
-        {short_name(player.name)}
+        {shortest_unique_abbreviation(
+          player.name,
+          // TODO: Send the other player names to get real shortest name
+          [player.name]
+        )}
       </Avatar>
     </Badge>
   );

@@ -2,7 +2,7 @@ import { Box, AvatarGroup, Avatar, Typography } from "@material-ui/core";
 import { useAppSelector } from "../../../app/hooks";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import short_name from "../../../common/short_name";
+import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import {
   firstPlayerSelector,
   PlayerId,
@@ -91,10 +91,20 @@ function InstanceVariableComponent({
       </Typography>
       <Box display="flex" component="figure">
         <AvatarGroup>
-          <Avatar>{short_name(firstPlayer.name)}</Avatar>
+          <Avatar>
+            {shortest_unique_abbreviation(
+              firstPlayer.name,
+              // TODO: Send the other player names to get real shortest name
+              [firstPlayer.name]
+            )}
+          </Avatar>
           {playOrder.map((playerId) => (
             <Avatar key={playerId}>
-              {short_name(nullthrows(players[playerId]).name)}
+              {shortest_unique_abbreviation(
+                nullthrows(players[playerId]).name,
+                // TODO: Send the other player names to get real shortest name
+                [nullthrows(players[playerId]).name]
+              )}
             </Avatar>
           ))}
         </AvatarGroup>
