@@ -5,8 +5,43 @@ export default class PermutationsLazyArray<K extends keyof any> {
   // Factorials are expensive to compute so we precompute them for the whole
   // range of supported numbers for regular JS computations (2**53)
   private static readonly PRECOMP_FACT: ReadonlyArray<number> = [
-    0, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600,
-    6227020800, 87178291200, 1307674368000, 20922789888000, 355687428096000,
+    // 0!
+    0,
+    // 1!
+    1,
+    // 2!
+    2,
+    // 3!
+    6,
+    //4!
+    24,
+    // 5!
+    120,
+    // 6!
+    720,
+    // 7!
+    5_040,
+    // 8!
+    40_320,
+    // 9!
+    362_880,
+    // 10!
+    3_628_800,
+    // 11!
+    39_916_800,
+    // 12!
+    479_001_600,
+    // 13!
+    6_227_020_800,
+    // 14!
+    87_178_291_200,
+    // 15!
+    1_307_674_368_000,
+    // 16!
+    20_922_789_888_000,
+    // 17!
+    355_687_428_096_000,
+    // 18!
     6402373705728000,
   ];
 
