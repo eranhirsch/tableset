@@ -6,7 +6,7 @@ export const PLAYERS_DEPENDENCY_META_STEP_ID = "__players";
 export default function createPlayersDependencyMetaStep({
   min = 1,
   // Unlikely that someone would have more than this number of players
-  max = 99999,
+  max = 9_999_999,
 }: {
   min?: number;
   max?: number;
