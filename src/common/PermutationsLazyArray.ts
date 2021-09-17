@@ -13,7 +13,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
     2,
     // 3!
     6,
-    //4!
+    // 4!
     24,
     // 5!
     120,
