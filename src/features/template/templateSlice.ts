@@ -181,8 +181,8 @@ function markDownstreamElementsStale(
   { gameId, entities }: RootState["template"]
 ): void {
   const { steps } = GameMapper.forId(gameId);
-  const downstreamSteps = steps.filter(
-    (x) => x.dependencies?.find(({ id }) => id === changedElementId) != null
+  const downstreamSteps = steps.filter((x) =>
+    x.dependencies?.some(({ id }) => id === changedElementId)
   );
   const downstreamElements = array_filter_nulls(
     downstreamSteps.map(({ id }) => entities[id])
