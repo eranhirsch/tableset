@@ -42,6 +42,9 @@ export default class PermutationsLazyArray<K extends keyof any> {
     // 17!
     355_687_428_096_000,
     // 18!
+    // TODO: a typescript bug is preventing us from using numeric seperators
+    // here. If that is fixed we can add them here too!
+    // @see https://www.reddit.com/r/typescript/comments/ppvy41/large_numeric_literal_warning_bug/)
     6402373705728000,
   ];
 
