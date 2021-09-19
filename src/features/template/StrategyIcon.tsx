@@ -1,11 +1,10 @@
-import React from "react";
+import CasinoIcon from "@mui/icons-material/Casino";
+import FlashOnIcon from "@mui/icons-material/FlashOn";
+import FunctionsIcon from "@mui/icons-material/Functions";
+import PanToolIcon from "@mui/icons-material/PanTool";
+import PushPinIcon from "@mui/icons-material/PushPin";
+import QuizIcon from "@mui/icons-material/Quiz";
 import Strategy from "../../core/Strategy";
-import PushPinIcon from "@material-ui/icons/PushPin";
-import PanToolIcon from "@material-ui/icons/PanTool";
-import FunctionsIcon from "@material-ui/icons/Functions";
-import CasinoIcon from "@material-ui/icons/Casino";
-import QuizIcon from "@material-ui/icons/Quiz";
-import FlashOnIcon from "@material-ui/icons/FlashOn";
 
 export default function StrategyIcon({
   strategy,

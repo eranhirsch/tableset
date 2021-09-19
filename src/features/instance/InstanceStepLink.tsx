@@ -1,4 +1,4 @@
-import { Link } from "@material-ui/core";
+import { Link } from "@mui/material";
 import { useAppSelector } from "../../app/hooks";
 import { gameSelector } from "../game/gameSlice";
 import IGameStep from "../../games/core/steps/IGameStep";

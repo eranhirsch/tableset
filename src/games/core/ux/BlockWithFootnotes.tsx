@@ -5,7 +5,7 @@ import {
   Typography,
   useTheme,
   Link,
-} from "@material-ui/core";
+} from "@mui/material";
 import React, { useState } from "react";
 
 export function BlockWithFootnotes({

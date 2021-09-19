@@ -1,4 +1,4 @@
-import { Chip, Stack } from "@material-ui/core";
+import { Chip, Stack } from "@mui/material";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";

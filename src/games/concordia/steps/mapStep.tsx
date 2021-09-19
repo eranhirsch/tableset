@@ -1,4 +1,4 @@
-import { styled, Typography } from "@material-ui/core";
+import { styled, Typography } from "@mui/material";
 import React from "react";
 import array_sort_by from "../../../common/lib_utils/array_sort_by";
 import createGenericItemsGameStep from "../../core/steps/createGenericItemsGameStep";

@@ -5,7 +5,7 @@ import {
   StepContent,
   Stepper,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";

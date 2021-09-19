@@ -1,4 +1,4 @@
-import { Avatar, Badge, Stack } from "@material-ui/core";
+import { Avatar, Badge, Stack } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";

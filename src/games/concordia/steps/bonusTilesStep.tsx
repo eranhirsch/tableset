@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Typography } from "@mui/material";
 import React, { useMemo } from "react";
 import array_sort_by from "../../../common/lib_utils/array_sort_by";
 import grammatical_list from "../../../common/lib_utils/grammatical_list";

@@ -1,4 +1,4 @@
-import { Collapse, Stack } from "@material-ui/core";
+import { Collapse, Stack } from "@mui/material";
 import { useMemo } from "react";
 import { templateSelectors } from "./templateSlice";
 import Strategy from "../../core/Strategy";

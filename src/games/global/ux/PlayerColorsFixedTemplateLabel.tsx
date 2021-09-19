@@ -1,4 +1,4 @@
-import { Chip } from "@material-ui/core";
+import { Chip } from "@mui/material";
 import PlayerColors from "../../../common/PlayerColors";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { PlayerShortName } from "./PlayerShortName";

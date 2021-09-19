@@ -1,4 +1,4 @@
-import { Grid, Typography, useTheme } from "@material-ui/core";
+import { Grid, Typography, useTheme } from "@mui/material";
 import React, { useMemo } from "react";
 import nullthrows from "../../../common/err/nullthrows";
 import { useInstanceValue } from "../../../features/instance/useInstanceValue";

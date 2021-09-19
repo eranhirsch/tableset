@@ -4,7 +4,7 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useAppSelector } from "../../app/hooks";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import Strategy from "../../core/Strategy";

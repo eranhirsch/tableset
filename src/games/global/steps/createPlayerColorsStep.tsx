@@ -1,4 +1,4 @@
-import { Badge, Chip, Stack, Typography } from "@material-ui/core";
+import { Badge, Chip, Stack, Typography } from "@mui/material";
 import nullthrows from "../../../common/err/nullthrows";
 import array_map_keys from "../../../common/lib_utils/array_map_keys";
 import array_zip from "../../../common/lib_utils/array_zip";

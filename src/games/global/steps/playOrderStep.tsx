@@ -1,4 +1,4 @@
-import { AvatarGroup, Box, Typography } from "@material-ui/core";
+import { AvatarGroup, Box, Typography } from "@mui/material";
 import { useAppSelector } from "../../../app/hooks";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";

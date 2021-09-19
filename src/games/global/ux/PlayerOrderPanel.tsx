@@ -1,5 +1,5 @@
-import { Avatar, Badge, Stack, Typography } from "@material-ui/core";
-import LockIcon from "@material-ui/icons/Lock";
+import LockIcon from "@mui/icons-material/Lock";
+import { Avatar, Badge, Stack, Typography } from "@mui/material";
 import { useCallback } from "react";
 import {
   DragDropContext,

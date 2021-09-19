@@ -1,4 +1,4 @@
-import { Avatar, Grid, Typography } from "@material-ui/core";
+import { Avatar, Grid, Typography } from "@mui/material";
 import React from "react";
 import array_range from "../../../common/lib_utils/array_range";
 import { numberSuffix } from "../../../common/lib_utils/numberSuffix";

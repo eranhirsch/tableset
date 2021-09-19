@@ -1,4 +1,4 @@
-import { Avatar, Badge, Box, Stack, useTheme } from "@material-ui/core";
+import { Avatar, Badge, Box, Stack, useTheme } from "@mui/material";
 import { useCallback, useMemo } from "react";
 import {
   DragDropContext,

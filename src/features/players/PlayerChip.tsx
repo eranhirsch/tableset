@@ -1,9 +1,9 @@
-import { Chip } from "@material-ui/core";
-import { useAppDispatch } from "../../app/hooks";
-import PersonIcon from "@material-ui/icons/Person";
-import playersSlice, { playersSelectors } from "./playersSlice";
+import PersonIcon from "@mui/icons-material/Person";
+import { Chip } from "@mui/material";
 import { EntityId } from "@reduxjs/toolkit";
+import { useAppDispatch } from "../../app/hooks";
 import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
+import playersSlice, { playersSelectors } from "./playersSlice";
 
 export default function PlayerChip({
   playerId,

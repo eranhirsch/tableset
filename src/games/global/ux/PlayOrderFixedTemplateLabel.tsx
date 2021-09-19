@@ -11,10 +11,9 @@ export default function PlayOrderFixedTemplateLabel({
   const firstPlayerId = useAppSelector(firstPlayerIdSelector);
   return (
     <>
-      {[firstPlayerId]
-        .concat(value)
-        .map((playerId) => <PlayerShortName playerId={playerId} />)
-        .join(" > ")}
+      {[firstPlayerId].concat(value).map((playerId) => (
+        <PlayerShortName playerId={playerId} />
+      ))}
     </>
   );
 }

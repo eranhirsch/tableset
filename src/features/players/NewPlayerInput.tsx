@@ -1,8 +1,8 @@
-import { IconButton, TextField } from "@material-ui/core";
-import { useAppDispatch } from "../../app/hooks";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import ClearIcon from "@mui/icons-material/Clear";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { IconButton, TextField } from "@mui/material";
 import { useState } from "react";
-import ClearIcon from "@material-ui/icons/Clear";
+import { useAppDispatch } from "../../app/hooks";
 import playersSlice from "./playersSlice";
 
 export default function NewPlayerInput(): JSX.Element | null {

@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemText, Typography } from "@material-ui/core";
+import { List, ListItem, ListItemText, Typography } from "@mui/material";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,

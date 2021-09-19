@@ -1,4 +1,4 @@
-import { Avatar } from "@material-ui/core";
+import { Avatar } from "@mui/material";
 import { PlayerId } from "../../../core/model/Player";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 

@@ -1,4 +1,4 @@
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import React from "react";
 import array_filter_nulls from "../../../common/lib_utils/array_filter_nulls";
 import createGameStep from "../../core/steps/createGameStep";

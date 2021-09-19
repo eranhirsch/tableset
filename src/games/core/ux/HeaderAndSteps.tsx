@@ -1,4 +1,4 @@
-import { Stack, Typography, useTheme } from "@material-ui/core";
+import { Stack, Typography, useTheme } from "@mui/material";
 import { ReactNode } from "react";
 
 export default function HeaderAndSteps({

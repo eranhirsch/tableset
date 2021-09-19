@@ -1,4 +1,4 @@
-import { styled } from "@material-ui/core";
+import { styled } from "@mui/material";
 
 export default styled("span")({
   fontVariantCaps: "petite-caps",

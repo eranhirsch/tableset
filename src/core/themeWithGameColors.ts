@@ -1,9 +1,5 @@
-import {
-  createTheme,
-  PaletteColor,
-  PaletteColorOptions,
-} from "@material-ui/core";
-import { grey, blue, green, red, yellow, pink } from "@material-ui/core/colors";
+import { createTheme, PaletteColor, PaletteColorOptions } from "@mui/material";
+import { blue, green, grey, pink, red, yellow } from "@mui/material/colors";
 
 export type GamePiecesColor =
   | "black"
@@ -85,16 +81,16 @@ type PaletteExtras = Record<GamePiecesColor, PaletteColor>;
 type PaletteOptionsExtras = Record<GamePiecesColor, PaletteColorOptions>;
 type ColorOverrides = Record<GamePiecesColor, true>;
 
-declare module "@material-ui/core/styles" {
+declare module "@mui/material/styles" {
   interface Palette extends PaletteExtras {}
   interface PaletteOptions extends PaletteOptionsExtras {}
 }
 
-declare module "@material-ui/core/Badge" {
+declare module "@mui/material/Badge" {
   interface BadgePropsColorOverrides extends ColorOverrides {}
 }
 
-declare module "@material-ui/core/Chip" {
+declare module "@mui/material/Chip" {
   interface ChipPropsColorOverrides extends ColorOverrides {}
 }
 
