@@ -1,6 +1,6 @@
 import { AvatarGroup, Box, Typography } from "@mui/material";
 import { useAppSelector } from "../../../app/hooks";
-import nullthrows from "../../../common/err/nullthrows";
+import { array_pick_random_item } from "../../../common/lib_utils/array_pick_random_item";
 import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
 import { PlayerId } from "../../../core/model/Player";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
@@ -28,12 +28,10 @@ export default createVariableGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  random(playerIds) {
-    const [, ...restOfPlayers] = playerIds;
-    const permutations = PermutationsLazyArray.forPermutation(restOfPlayers);
-    const selectedIdx = Math.floor(Math.random() * permutations.length);
-    return nullthrows(permutations.at(selectedIdx));
-  },
+  random: (playerIds) =>
+    array_pick_random_item(
+      PermutationsLazyArray.forPermutation(playerIds.slice(1))
+    ),
 
   fixed: {
     renderSelector: PlayerOrderPanel,

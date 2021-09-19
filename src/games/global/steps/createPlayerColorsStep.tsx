@@ -1,6 +1,6 @@
 import { Badge, Chip, Stack, Typography } from "@mui/material";
-import nullthrows from "../../../common/err/nullthrows";
 import array_map_keys from "../../../common/lib_utils/array_map_keys";
+import { array_pick_random_item } from "../../../common/lib_utils/array_pick_random_item";
 import array_zip from "../../../common/lib_utils/array_zip";
 import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
 import PlayerColors from "../../../common/PlayerColors";
@@ -28,15 +28,13 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     InstanceVariableComponent,
     InstanceManualComponent: () => InstanceManualComponent({ availableColors }),
 
-    random(playerIds) {
-      const permutations =
-        PermutationsLazyArray.forPermutation(availableColors);
-      const selectedIdx = Math.floor(Math.random() * permutations.length);
-      const permutation = nullthrows(permutations.at(selectedIdx));
-      return Object.fromEntries(
-        playerIds.map((playerId, index) => [playerId, permutation[index]])
-      );
-    },
+    random: (playerIds) =>
+      array_zip(
+        playerIds,
+        array_pick_random_item(
+          PermutationsLazyArray.forPermutation(availableColors)
+        )
+      ),
 
     fixed: {
       renderSelector: ({ current }) => (

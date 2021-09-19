@@ -1,6 +1,6 @@
 import Base32 from "../../../common/Base32";
 import nullthrows from "../../../common/err/nullthrows";
-import { array_pick_random_index } from "../../../common/lib_utils/array_pick_random_item";
+import { random_offset } from "../../../common/lib_utils/array_pick_random_item";
 import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
 import { MapBoard, MapId, MAPS, Zone } from "./Maps";
 
@@ -33,9 +33,7 @@ export default class CityResourcesEncoder {
     return Object.keys(this.map.provinces)
       .map((zone) =>
         Base32.encode(
-          array_pick_random_index(
-            new PermutationsLazyArray(CITY_TILES[zone as Zone])
-          )
+          random_offset(new PermutationsLazyArray(CITY_TILES[zone as Zone]))
         )
       )
       .join(CityResourcesEncoder.HASH_SEPERATOR);

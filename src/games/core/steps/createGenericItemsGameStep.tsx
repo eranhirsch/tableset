@@ -1,3 +1,4 @@
+import { array_pick_random_item } from "../../../common/lib_utils/array_pick_random_item";
 import templateSlice from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
@@ -38,7 +39,7 @@ const createGenericItemsGameStep = <T extends string = string>({
     InstanceManualComponent,
     InstanceVariableComponent,
 
-    random: () => itemIds[Math.floor(Math.random() * itemIds.length)],
+    random: () => array_pick_random_item(itemIds),
 
     recommended,
 

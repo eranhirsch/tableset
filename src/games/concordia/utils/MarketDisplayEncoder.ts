@@ -1,6 +1,6 @@
 import Base32 from "../../../common/Base32";
 import nullthrows from "../../../common/err/nullthrows";
-import { array_pick_random_index } from "../../../common/lib_utils/array_pick_random_item";
+import { random_offset } from "../../../common/lib_utils/array_pick_random_item";
 import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
 
 export const MARKET_DECK_I = [
@@ -17,9 +17,7 @@ export const MARKET_DECK_I = [
 export default abstract class MarketDisplayEncoder {
   public static randomHash(): string {
     return Base32.encode(
-      array_pick_random_index(
-        PermutationsLazyArray.forPermutation(MARKET_DECK_I)
-      )
+      random_offset(PermutationsLazyArray.forPermutation(MARKET_DECK_I))
     );
   }
 
