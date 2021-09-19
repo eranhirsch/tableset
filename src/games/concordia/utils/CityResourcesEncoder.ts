@@ -1,5 +1,6 @@
 import Base32 from "../../../common/Base32";
 import nullthrows from "../../../common/err/nullthrows";
+import { array_pick_random_index } from "../../../common/lib_utils/array_pick_random_item";
 import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
 import { MapBoard, MapId, MAPS, Zone } from "./Maps";
 
@@ -29,13 +30,15 @@ export default class CityResourcesEncoder {
   private constructor(private map: MapBoard) {}
 
   public randomHash(): string {
-    const hashes = Object.keys(this.map.provinces).map((zone) => {
-      const tiles = CITY_TILES[zone as Zone];
-      const permutations = new PermutationsLazyArray(tiles);
-      const selectedIdx = Math.floor(Math.random() * permutations.length);
-      return Base32.encode(selectedIdx);
-    });
-    return hashes.join(CityResourcesEncoder.HASH_SEPERATOR);
+    return Object.keys(this.map.provinces)
+      .map((zone) =>
+        Base32.encode(
+          array_pick_random_index(
+            new PermutationsLazyArray(CITY_TILES[zone as Zone])
+          )
+        )
+      )
+      .join(CityResourcesEncoder.HASH_SEPERATOR);
   }
 
   public decode(hash: string): CityResourceMapping {
