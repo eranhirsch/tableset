@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import React from "react";
-import { array_filter_nulls } from "../../../common/lib_utils/array_filter_nulls";
+import { array_filter_nulls } from "../../../common/lib_utils";
 import createGameStep from "../../core/steps/createGameStep";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { Resource } from "../utils/CityResourcesEncoder";

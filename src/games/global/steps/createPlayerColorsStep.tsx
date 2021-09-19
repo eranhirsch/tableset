@@ -1,7 +1,9 @@
 import { Badge, Chip, Stack, Typography } from "@mui/material";
-import { array_map_keys } from "../../../common/lib_utils/array_map_keys";
-import { array_pick_random_item } from "../../../common/lib_utils/array_pick_random_item";
-import { array_zip } from "../../../common/lib_utils/array_zip";
+import {
+  array_map_keys,
+  array_pick_random_item,
+  array_zip,
+} from "../../../common/lib_utils";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { PlayerId } from "../../../core/model/Player";
 import { colorName, GamePiecesColor } from "../../../core/themeWithGameColors";

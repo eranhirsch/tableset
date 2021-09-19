@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { array_pick_random_item } from "../../../common/lib_utils/array_pick_random_item";
+import { array_pick_random_item } from "../../../common/lib_utils";
 import { PlayerId } from "../../../core/model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep, {

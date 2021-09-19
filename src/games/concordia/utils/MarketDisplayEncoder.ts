@@ -1,6 +1,6 @@
 import Base32 from "../../../common/Base32";
 import { nullthrows } from "../../../common/err/nullthrows";
-import { random_offset } from "../../../common/lib_utils/array_pick_random_item";
+import { random_offset } from "../../../common/lib_utils";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 
 export const MARKET_DECK_I = [

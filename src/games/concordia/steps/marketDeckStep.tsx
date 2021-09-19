@@ -1,5 +1,5 @@
 import React from "react";
-import { range } from "../../../common/lib_utils/range";
+import { range } from "../../../common/lib_utils";
 import { PlayerId } from "../../../core/model/Player";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import createDerivedGameStep, {

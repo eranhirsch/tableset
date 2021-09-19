@@ -1,4 +1,4 @@
-import { array_pick_random_item } from "../../../common/lib_utils/array_pick_random_item";
+import { array_pick_random_item } from "../../../common/lib_utils";
 import templateSlice from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";

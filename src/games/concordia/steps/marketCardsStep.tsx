@@ -1,6 +1,5 @@
 import React from "react";
-import { array_filter_nulls } from "../../../common/lib_utils/array_filter_nulls";
-import { range } from "../../../common/lib_utils/range";
+import { array_filter_nulls, range } from "../../../common/lib_utils";
 import { PlayerId } from "../../../core/model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
