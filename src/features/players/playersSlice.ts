@@ -5,7 +5,7 @@ import {
   nanoid,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { nullthrows } from "../../common/err/nullthrows";
+import { nullthrows } from "../../common/err";
 import { Player, PlayerId } from "../../core/model/Player";
 
 const playersAdapter = createEntityAdapter<Player>({

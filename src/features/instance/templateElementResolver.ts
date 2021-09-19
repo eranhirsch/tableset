@@ -1,4 +1,4 @@
-import { invariant_violation } from "../../common/err/invariant_violation";
+import { invariant_violation } from "../../common/err";
 import Strategy from "../../core/Strategy";
 import IGameStep, { InstanceContext } from "../../games/core/steps/IGameStep";
 import { TemplateElement } from "../template/templateSlice";

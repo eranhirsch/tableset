@@ -1,5 +1,5 @@
 import Base32 from "../../../common/Base32";
-import { nullthrows } from "../../../common/err/nullthrows";
+import { nullthrows } from "../../../common/err";
 import { random_offset } from "../../../common/lib_utils";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 

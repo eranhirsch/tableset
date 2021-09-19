@@ -8,7 +8,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { invariant_violation } from "../../../common/err/invariant_violation";
+import { invariant_violation } from "../../../common/err";
 import { object_flip } from "../../../common/lib_utils";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import { playersSelectors } from "../../../features/players/playersSlice";
