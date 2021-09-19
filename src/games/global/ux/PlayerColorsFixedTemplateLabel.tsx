@@ -1,5 +1,6 @@
+import { Chip } from "@material-ui/core";
 import PlayerColors from "../../../common/PlayerColors";
-import { colorName } from "../../../core/themeWithGameColors";
+import GrammaticalList from "../../core/ux/GrammaticalList";
 import { PlayerShortName } from "./PlayerShortName";
 
 export default function PlayersColorsFixedTemplateLabel({
@@ -8,14 +9,14 @@ export default function PlayersColorsFixedTemplateLabel({
   value: PlayerColors;
 }): JSX.Element {
   return (
-    <>
-      {Object.entries(value)
-        .map(([playerId, color]) => (
-          <>
-            <PlayerShortName playerId={playerId} />: {colorName(color)}
-          </>
-        ))
-        .join(", ")}
-    </>
+    <GrammaticalList>
+      {Object.entries(value).map(([playerId, color]) => (
+        <Chip
+          size="small"
+          color={color}
+          label={<PlayerShortName playerId={playerId} />}
+        />
+      ))}
+    </GrammaticalList>
   );
 }
