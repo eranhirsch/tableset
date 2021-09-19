@@ -1,7 +1,7 @@
 import { Avatar, Grid, Typography } from "@mui/material";
 import React from "react";
-import array_range from "../../../common/lib_utils/array_range";
-import { numberSuffix } from "../../../common/lib_utils/numberSuffix";
+import { range } from "../../../common/lib_utils/range";
+import { numberSuffix } from "../../../common/numberSuffix";
 import { PlayerId } from "../../../core/model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -71,7 +71,7 @@ function InstanceDerivedComponent({
       .concat(fullPlayOrder.slice(0, firstPlayerIdx))
       .map((playerId) => <Player playerId={playerId} inline />);
   } else {
-    order = array_range(1, playerIds.length + 1).map((playerIdx) =>
+    order = Array.from(range(1, playerIds.length + 1)).map((playerIdx) =>
       playerIdx === 1 && firstPlayerId != null ? (
         <Player playerId={firstPlayerId} inline />
       ) : (

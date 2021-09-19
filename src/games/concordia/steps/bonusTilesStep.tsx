@@ -1,13 +1,13 @@
 import { Grid, Typography } from "@mui/material";
 import React, { useMemo } from "react";
-import array_sort_by from "../../../common/lib_utils/array_sort_by";
-import grammatical_list from "../../../common/lib_utils/grammatical_list";
-import object_filter from "../../../common/lib_utils/object_filter";
-import object_map from "../../../common/lib_utils/object_map";
+import { array_sort_by } from "../../../common/lib_utils/array_sort_by";
+import { object_filter } from "../../../common/lib_utils/object_filter";
+import { object_map } from "../../../common/lib_utils/object_map";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
+import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder, { Resource } from "../utils/CityResourcesEncoder";
 import { MapId, MAPS } from "../utils/Maps";
@@ -65,11 +65,16 @@ function IncompleteInstanceDerivedComponent({
       Object.keys(provinceCities).length
     } provinces`;
 
-    provinceCityCountsFootnote = `${grammatical_list(
-      Object.keys(
-        object_filter(provinceCities, (cities) => cities.length === 3)
-      )
-    )} have 3 cities each, the other provinces have 2 cities each.`;
+    provinceCityCountsFootnote = (
+      <>
+        <GrammaticalList>
+          {Object.keys(
+            object_filter(provinceCities, (cities) => cities.length === 3)
+          )}
+        </GrammaticalList>{" "}
+        have 3 cities each, the other provinces have 2 cities each.
+      </>
+    );
 
     tileLocationsStep = (
       <span>
@@ -124,13 +129,13 @@ function IncompleteInstanceDerivedComponent({
         footnotes={[
           <>
             The resources (sorted in descending value) are{" "}
-            {grammatical_list(
-              array_sort_by(
+            <GrammaticalList>
+              {array_sort_by(
                 Object.entries(RESOURCE_PRICES),
                 // We want descending order, so we negate the value
                 ([, value]) => -value
-              ).map(([resource]) => resourceLabel(resource as Resource))
-            )}
+              ).map(([resource]) => resourceLabel(resource as Resource))}
+            </GrammaticalList>
             .
           </>,
           <>

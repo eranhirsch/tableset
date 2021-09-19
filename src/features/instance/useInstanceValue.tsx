@@ -1,5 +1,5 @@
 import { type_invariant } from "../../common/err/invariant";
-import nullthrows from "../../common/err/nullthrows";
+import { nullthrows } from "../../common/err/nullthrows";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { instanceSelectors } from "./instanceSlice";
 import IGameStep from "../../games/core/steps/IGameStep";

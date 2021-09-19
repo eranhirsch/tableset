@@ -1,9 +1,8 @@
 import { Badge, Chip, Stack, Typography } from "@mui/material";
-import array_map_keys from "../../../common/lib_utils/array_map_keys";
+import { array_map_keys } from "../../../common/lib_utils/array_map_keys";
 import { array_pick_random_item } from "../../../common/lib_utils/array_pick_random_item";
-import array_zip from "../../../common/lib_utils/array_zip";
+import { array_zip } from "../../../common/lib_utils/array_zip";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import PlayerColors from "../../../common/PlayerColors";
 import { PlayerId } from "../../../core/model/Player";
 import { colorName, GamePiecesColor } from "../../../core/themeWithGameColors";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
@@ -15,6 +14,10 @@ import GrammaticalList from "../../core/ux/GrammaticalList";
 import Player from "../ux/Player";
 import PlayerColorPanel from "../ux/PlayerColorPanel";
 import PlayersColorsFixedTemplateLabel from "../ux/PlayerColorsFixedTemplateLabel";
+
+export type PlayerColors = Readonly<{
+  [playerId: string]: GamePiecesColor;
+}>;
 
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
   createVariableGameStep<PlayerColors, readonly PlayerId[]>({

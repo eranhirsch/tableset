@@ -4,19 +4,19 @@
  * @param a the array to be used as values
  * @param b the array to be used as keys
  */
-export default function array_zip<T>(
+export function array_zip<T>(
   a: readonly string[],
   b: readonly T[]
 ): { [key: string]: T };
-export default function array_zip<T>(
+export function array_zip<T>(
   a: readonly number[],
   b: readonly T[]
 ): { [key: number]: T };
-export default function array_zip<T>(
+export function array_zip<T>(
   a: readonly symbol[],
   b: readonly T[]
 ): { [key: symbol]: T };
-export default function array_zip<T>(
+export function array_zip<T>(
   a: readonly (string | number | symbol)[],
   b: readonly T[]
 ): { [key: string | number | symbol]: T } {

@@ -1,5 +1,5 @@
 import React from "react";
-import array_range from "../../../common/lib_utils/array_range";
+import { range } from "../../../common/lib_utils/range";
 import { PlayerId } from "../../../core/model/Player";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import createDerivedGameStep, {
@@ -50,7 +50,7 @@ function InstanceDerivedComponent({
         Stack the decks facedown one on top of each other starting from deck{" "}
         <strong>{ROMAN_NUMERALS[playerIds.length]}</strong> then{" "}
         <GrammaticalList>
-          {array_range(playerIds.length - 1, 1).map((deck) => (
+          {Array.from(range(playerIds.length - 1, 1)).map((deck) => (
             <React.Fragment key={`stack_deck_${deck}`}>
               deck <strong>{ROMAN_NUMERALS[deck]}</strong>
             </React.Fragment>
@@ -79,7 +79,7 @@ function InstanceDerivedComponent({
               <>
                 personality cards{" "}
                 <GrammaticalList pluralize="deck">
-                  {array_range(2, playerIds.length + 1).map((deck) => (
+                  {Array.from(range(2, playerIds.length + 1)).map((deck) => (
                     <React.Fragment key={`deck_${deck}`}>
                       <strong>{ROMAN_NUMERALS[deck]}</strong>
                     </React.Fragment>

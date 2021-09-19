@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { numberSuffix } from "../../../common/lib_utils/numberSuffix";
+import { numberSuffix } from "../../../common/numberSuffix";
 import { PlayerId } from "../../../core/model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,

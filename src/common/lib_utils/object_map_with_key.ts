@@ -5,19 +5,19 @@
  * @param mapper A method that takes both the key and the value from the input
  * object and returns the value for the same key in the new object
  */
-export default function object_map_with_keys<Vin, Vout>(
+export function object_map_with_keys<Vin, Vout>(
   input: { [key: string]: Vin },
   mapper: (key: string, value: Vin) => Vout
 ): { [key: string]: Vout };
-export default function object_map_with_keys<Vin, Vout>(
+export function object_map_with_keys<Vin, Vout>(
   input: { [key: number]: Vin },
   mapper: (key: number, value: Vin) => Vout
 ): { [key: number]: Vout };
-export default function object_map_with_keys<Vin, Vout>(
+export function object_map_with_keys<Vin, Vout>(
   input: { [key: symbol]: Vin },
   mapper: (key: symbol, value: Vin) => Vout
 ): { [key: symbol]: Vout };
-export default function object_map_with_keys<Vin, Vout>(
+export function object_map_with_keys<Vin, Vout>(
   input: { [key: string | number | symbol]: Vin },
   mapper: (key: any, value: Vin) => Vout
 ): { [key: string | number | symbol]: Vout } {

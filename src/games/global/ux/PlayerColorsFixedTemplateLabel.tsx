@@ -1,7 +1,7 @@
 import { Chip } from "@mui/material";
 import React from "react";
-import PlayerColors from "../../../common/PlayerColors";
 import GrammaticalList from "../../core/ux/GrammaticalList";
+import { PlayerColors } from "../steps/createPlayerColorsStep";
 import { PlayerShortName } from "./PlayerShortName";
 
 export default function PlayersColorsFixedTemplateLabel({

@@ -5,8 +5,8 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import nullthrows from "../../common/err/nullthrows";
-import array_filter_nulls from "../../common/lib_utils/array_filter_nulls";
+import { nullthrows } from "../../common/err/nullthrows";
+import { array_filter_nulls } from "../../common/lib_utils/array_filter_nulls";
 import { PlayerId } from "../../core/model/Player";
 import Strategy from "../../core/Strategy";
 import GameMapper, { GameId } from "../../games/core/GameMapper";

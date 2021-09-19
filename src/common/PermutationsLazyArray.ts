@@ -1,5 +1,5 @@
-import invariant from "./err/invariant";
-import invariant_violation from "./err/invariant_violation";
+import { invariant } from "./err/invariant";
+import { invariant_violation } from "./err/invariant_violation";
 
 function of<T extends keyof any>(
   definition: Readonly<Record<T, number>>

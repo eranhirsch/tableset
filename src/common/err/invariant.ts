@@ -1,4 +1,4 @@
-import invariant_violation from "./invariant_violation";
+import { invariant_violation } from "./invariant_violation";
 
 /**
  * Throw when the type predicate fails on x. Notice that this doesn't provide
@@ -20,7 +20,7 @@ export function type_invariant<T>(
   return x;
 }
 
-export default function invariant(cond: boolean, msg?: string): void {
+export function invariant(cond: boolean, msg?: string): void {
   if (!cond) {
     invariant_violation(msg ?? `The condition was false`);
   }

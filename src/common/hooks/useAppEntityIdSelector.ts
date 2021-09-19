@@ -1,7 +1,7 @@
 import { EntityId, EntitySelectors } from "@reduxjs/toolkit";
 import { useAppSelector } from "../../app/hooks";
 import { RootState } from "../../app/store";
-import nullthrows from "../err/nullthrows";
+import { nullthrows } from "../err/nullthrows";
 
 export const useAppEntityIdSelectorEnforce = <T>(
   selectors: EntitySelectors<T, RootState>,
@@ -15,4 +15,3 @@ export const useAppEntityIdSelectorNullable = <T>(
   selectors: EntitySelectors<T, RootState>,
   id: EntityId
 ): T | undefined => useAppSelector((state) => selectors.selectById(state, id));
-

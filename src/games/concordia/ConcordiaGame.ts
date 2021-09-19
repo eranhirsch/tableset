@@ -1,4 +1,4 @@
-import nullthrows from "../../common/err/nullthrows";
+import { nullthrows } from "../../common/err/nullthrows";
 import { GamePiecesColor } from "../../core/themeWithGameColors";
 import IGame, { StepId } from "../core/IGame";
 import createGameStep from "../core/steps/createGameStep";

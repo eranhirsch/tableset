@@ -1,7 +1,7 @@
 /**
  * @see https://stackoverflow.com/questions/6213227/fastest-way-to-convert-a-number-to-radix-64-in-javascript
  */
-import invariant from "./err/invariant";
+import { invariant } from "./err/invariant";
 
 const ALPHABET = [
   "A",
@@ -103,6 +103,8 @@ export function decode(x: string): number {
 
   return number;
 }
+
+export default { encode, decode } as const;
 
 let binaryLookupTableMemoized: number[] | undefined;
 function getBinaryLookupTable(): number[] {

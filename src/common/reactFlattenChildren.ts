@@ -13,7 +13,7 @@ import { isFragment } from "react-is";
  * then renamed for more clarity.
  * @see https://www.npmjs.com/package/react-keyed-flatten-children
  */
-export default function reactFlattenChildren(
+export function reactFlattenChildren(
   children: ReactNode,
   depth: number = 0,
   keys: (string | number)[] = []

@@ -1,6 +1,6 @@
 import { Avatar, Badge, Stack } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import invariant_violation from "../../../common/err/invariant_violation";
+import { invariant_violation } from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import { PlayerId } from "../../../core/model/Player";
 import Strategy from "../../../core/Strategy";

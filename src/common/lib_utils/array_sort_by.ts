@@ -1,15 +1,3 @@
-function defaultComparator<K>(a: K, b: K): number {
-  if (typeof a === "string" && typeof b === "string") {
-    return a === b ? 0 : a < b ? -1 : 1;
-  }
-
-  if (typeof a === "number" && typeof b === "number") {
-    return a - b;
-  }
-
-  return defaultComparator(`${a}`, `${b}`);
-}
-
 /**
  * Sort an array by a key pulled from the items via a mapper
  * @param arr an input array, the array would not be mutated, the result is a
@@ -20,7 +8,7 @@ function defaultComparator<K>(a: K, b: K): number {
  * The default impl would sort numbers correctly, unlike `Array.sort`
  * @returns a shallow copy of the array, sorted
  */
-export default function array_sort_by<T, K>(
+export function array_sort_by<T, K>(
   arr: readonly T[],
   extractor: (x: T) => K,
   comparator: (a: K, b: K) => number = defaultComparator
@@ -28,4 +16,16 @@ export default function array_sort_by<T, K>(
   const y = [...arr];
   const x = y.sort((a, b) => comparator(extractor(a), extractor(b)));
   return x;
+}
+
+function defaultComparator<K>(a: K, b: K): number {
+  if (typeof a === "string" && typeof b === "string") {
+    return a === b ? 0 : a < b ? -1 : 1;
+  }
+
+  if (typeof a === "number" && typeof b === "number") {
+    return a - b;
+  }
+
+  return defaultComparator(`${a}`, `${b}`);
 }

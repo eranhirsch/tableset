@@ -1,5 +1,5 @@
 import Base32 from "../../../common/Base32";
-import nullthrows from "../../../common/err/nullthrows";
+import { nullthrows } from "../../../common/err/nullthrows";
 import { random_offset } from "../../../common/lib_utils/array_pick_random_item";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { MapBoard, MapId, MAPS, Zone } from "./Maps";

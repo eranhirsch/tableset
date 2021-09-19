@@ -1,5 +1,5 @@
 import { type_invariant } from "../../../common/err/invariant";
-import nullthrows from "../../../common/err/nullthrows";
+import { nullthrows } from "../../../common/err/nullthrows";
 import { PlayerId } from "../../../core/model/Player";
 import Strategy from "../../../core/Strategy";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
