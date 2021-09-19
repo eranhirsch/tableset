@@ -1,3 +1,4 @@
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { useAppSelector } from "../../../app/hooks";
 import { PlayerId } from "../../../core/model/Player";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
@@ -11,8 +12,16 @@ export default function PlayOrderFixedTemplateLabel({
   const firstPlayerId = useAppSelector(firstPlayerIdSelector);
   return (
     <>
-      {[firstPlayerId].concat(value).map((playerId) => (
-        <PlayerShortName playerId={playerId} />
+      {[firstPlayerId].concat(value).map((playerId, idx) => (
+        <>
+          <PlayerShortName playerId={playerId} />
+          {idx < value.length && (
+            <NavigateNextIcon
+              fontSize="small"
+              sx={{ verticalAlign: "middle" }}
+            />
+          )}
+        </>
       ))}
     </>
   );
