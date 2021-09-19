@@ -68,7 +68,7 @@ function ColorSlot({
             // background color
             player == null ||
             snapshot.isDraggingOver ||
-            snapshot.draggingFromThisWith === player.name
+            snapshot.draggingFromThisWith === player.id
           }
         >
           <Avatar
@@ -91,7 +91,7 @@ function ColorSlot({
               // they don't render and move around, but we don't want to do
               // this to the source slot where our item originated from
               (!snapshot.isDraggingOver ||
-                snapshot.draggingFromThisWith === player.name) && (
+                snapshot.draggingFromThisWith === player.id) && (
                 <DraggablePlayer player={player} />
               )}
             <Box display="none">
