@@ -20,5 +20,7 @@ export default function array_zip<T>(
   a: readonly (string | number | symbol)[],
   b: readonly T[]
 ): { [key: string | number | symbol]: T } {
-  return Object.fromEntries(a.map((x, index) => [x, b[index]]));
+  return Object.fromEntries(
+    a.slice(0, b.length).map((x, index) => [x, b[index]])
+  );
 }

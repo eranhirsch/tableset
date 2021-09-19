@@ -2,7 +2,7 @@ import { Badge, Chip, Stack, Typography } from "@mui/material";
 import array_map_keys from "../../../common/lib_utils/array_map_keys";
 import { array_pick_random_item } from "../../../common/lib_utils/array_pick_random_item";
 import array_zip from "../../../common/lib_utils/array_zip";
-import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
+import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import PlayerColors from "../../../common/PlayerColors";
 import { PlayerId } from "../../../core/model/Player";
 import { colorName, GamePiecesColor } from "../../../core/themeWithGameColors";
@@ -31,9 +31,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     random: (playerIds) =>
       array_zip(
         playerIds,
-        array_pick_random_item(
-          PermutationsLazyArray.forPermutation(availableColors)
-        )
+        array_pick_random_item(PermutationsLazyArray.of(availableColors))
       ),
 
     fixed: {

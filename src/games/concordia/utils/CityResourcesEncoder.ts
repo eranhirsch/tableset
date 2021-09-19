@@ -1,7 +1,7 @@
 import Base32 from "../../../common/Base32";
 import nullthrows from "../../../common/err/nullthrows";
 import { random_offset } from "../../../common/lib_utils/array_pick_random_item";
-import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
+import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { MapBoard, MapId, MAPS, Zone } from "./Maps";
 
 export type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
@@ -33,7 +33,7 @@ export default class CityResourcesEncoder {
     return Object.keys(this.map.provinces)
       .map((zone) =>
         Base32.encode(
-          random_offset(new PermutationsLazyArray(CITY_TILES[zone as Zone]))
+          random_offset(PermutationsLazyArray.of(CITY_TILES[zone as Zone]))
         )
       )
       .join(CityResourcesEncoder.HASH_SEPERATOR);
@@ -46,7 +46,7 @@ export default class CityResourcesEncoder {
         const zoneDef = CITY_TILES[zone as Zone];
         const permutationIdx = Base32.decode(hashParts[index]);
         const resources = [
-          ...nullthrows(new PermutationsLazyArray(zoneDef).at(permutationIdx)),
+          ...nullthrows(PermutationsLazyArray.of(zoneDef).at(permutationIdx)),
         ];
 
         Object.entries(provinces).forEach(([provinceName, cities]) => {

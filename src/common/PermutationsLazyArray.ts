@@ -1,23 +1,29 @@
 import invariant from "./err/invariant";
 import invariant_violation from "./err/invariant_violation";
 
-export class PermutationsLazyArray<K extends keyof any> {
-  private readonly definition: readonly (readonly [K, number])[];
+function of<T extends keyof any>(
+  definition: Readonly<Record<T, number>>
+): PermutationsLazyArray<T>;
+function of<T extends keyof any>(
+  permutation: readonly T[]
+): PermutationsLazyArray<T>;
+function of<T extends keyof any>(
+  permutation_or_definition: readonly T[] | Readonly<Record<T, number>>
+): PermutationsLazyArray<T> {
+  return new PermutationsLazyArray(
+    Array.isArray(permutation_or_definition)
+      ? permutation_or_definition.reduce((definition, item) => {
+          definition[item] = (definition[item] ?? 0) + 1;
+          return definition;
+        }, {} as Record<T, number>)
+      : permutation_or_definition
+  );
+}
 
-  /**
-   * A helper method to build a lazy permutations array based on an existing
-   * permutation
-   */
-  static forPermutation<T extends keyof any>(
-    permutation: readonly T[]
-  ): PermutationsLazyArray<T> {
-    return new PermutationsLazyArray(
-      permutation.reduce((definition, item) => {
-        definition[item] = (definition[item] ?? 0) + 1;
-        return definition;
-      }, {} as Record<T, number>)
-    );
-  }
+export default { of } as const;
+
+class PermutationsLazyArray<K extends keyof any> {
+  private readonly definition: readonly (readonly [K, number])[];
 
   constructor(definition: Readonly<Record<K, number>>) {
     // We normalize the item definition for use in our algorithm

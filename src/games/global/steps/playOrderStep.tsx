@@ -1,7 +1,7 @@
 import { AvatarGroup, Box, Typography } from "@mui/material";
 import { useAppSelector } from "../../../app/hooks";
 import { array_pick_random_item } from "../../../common/lib_utils/array_pick_random_item";
-import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
+import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { PlayerId } from "../../../core/model/Player";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
@@ -29,9 +29,7 @@ export default createVariableGameStep({
   InstanceManualComponent,
 
   random: (playerIds) =>
-    array_pick_random_item(
-      PermutationsLazyArray.forPermutation(playerIds.slice(1))
-    ),
+    array_pick_random_item(PermutationsLazyArray.of(playerIds.slice(1))),
 
   fixed: {
     renderSelector: PlayerOrderPanel,
