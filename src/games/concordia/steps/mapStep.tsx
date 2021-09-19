@@ -1,6 +1,6 @@
 import { styled, Typography } from "@mui/material";
 import React from "react";
-import { array_sort_by } from "../../../common/lib_utils";
+import { array_sort_by } from "../../../common";
 import createGenericItemsGameStep from "../../core/steps/createGenericItemsGameStep";
 import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";

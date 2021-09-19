@@ -1,4 +1,4 @@
-import { nullthrows, type_invariant } from "../../../common/err";
+import { nullthrows, type_invariant } from "../../../common";
 import { PlayerId } from "../../../core/model/Player";
 import Strategy from "../../../core/Strategy";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";

@@ -3,7 +3,7 @@ import {
   array_map_keys,
   array_pick_random_item,
   array_zip,
-} from "../../../common/lib_utils";
+} from "../../../common";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { PlayerId } from "../../../core/model/Player";
 import { colorName, GamePiecesColor } from "../../../core/themeWithGameColors";

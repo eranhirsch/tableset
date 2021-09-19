@@ -2,7 +2,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { Chip } from "@mui/material";
 import { EntityId } from "@reduxjs/toolkit";
 import { useAppDispatch } from "../../app/hooks";
-import { useAppEntityIdSelectorEnforce } from "../../common/hooks/useAppEntityIdSelector";
+import { useAppEntityIdSelectorEnforce } from "../../common";
 import playersSlice, { playersSelectors } from "./playersSlice";
 
 export default function PlayerChip({

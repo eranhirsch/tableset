@@ -8,14 +8,13 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { invariant_violation } from "../../../common/err";
-import { object_flip } from "../../../common/lib_utils";
+import { invariant_violation, object_flip } from "../../../common";
+import { Player } from "../../../core/model/Player";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import { playersSelectors } from "../../../features/players/playersSlice";
-import { Player } from "../../../core/model/Player";
 import templateSlice from "../../../features/template/templateSlice";
-import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 import { PlayerColors } from "../steps/createPlayerColorsStep";
+import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 
 const draggablePlayerRendererFactory =
   (player: Player) => (provided: DraggableProvided) =>

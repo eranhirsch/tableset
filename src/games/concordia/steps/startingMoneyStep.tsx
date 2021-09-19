@@ -1,6 +1,6 @@
 import { Avatar, Grid, Typography } from "@mui/material";
 import React from "react";
-import { range } from "../../../common/lib_utils";
+import { range } from "../../../common";
 import { numberSuffix } from "../../../common/numberSuffix";
 import { PlayerId } from "../../../core/model/Player";
 import createDerivedGameStep, {

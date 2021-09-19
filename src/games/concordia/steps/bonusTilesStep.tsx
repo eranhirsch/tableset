@@ -1,10 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import React, { useMemo } from "react";
-import {
-  array_sort_by,
-  object_filter,
-  object_map,
-} from "../../../common/lib_utils";
+import { array_sort_by, object_filter, object_map } from "../../../common";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";

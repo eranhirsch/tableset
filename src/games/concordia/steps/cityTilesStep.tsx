@@ -1,6 +1,6 @@
 import { Grid, Typography, useTheme } from "@mui/material";
 import React, { useMemo } from "react";
-import { nullthrows } from "../../../common/err";
+import { nullthrows } from "../../../common";
 import { useInstanceValue } from "../../../features/instance/useInstanceValue";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,

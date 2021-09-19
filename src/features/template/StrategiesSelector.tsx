@@ -1,7 +1,7 @@
 import { Chip, Stack } from "@mui/material";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
+import { useAppEntityIdSelectorNullable } from "../../common";
 import { strategyLabel } from "../../core/content";
 import { PlayerId } from "../../core/model/Player";
 import Strategy from "../../core/Strategy";

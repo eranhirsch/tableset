@@ -1,6 +1,6 @@
 import { AvatarGroup, Box, Typography } from "@mui/material";
 import { useAppSelector } from "../../../app/hooks";
-import { array_pick_random_item } from "../../../common/lib_utils";
+import { array_pick_random_item } from "../../../common";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { PlayerId } from "../../../core/model/Player";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
