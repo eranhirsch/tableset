@@ -1,10 +1,7 @@
 import invariant from "./err/invariant";
 import invariant_violation from "./err/invariant_violation";
-import { RandomAccessArrayLike } from "./RandomAccessArrayLike";
 
-export class PermutationsLazyArray<K extends keyof any>
-  implements RandomAccessArrayLike<K[]>
-{
+export class PermutationsLazyArray<K extends keyof any> {
   private readonly definition: readonly (readonly [K, number])[];
 
   /**
