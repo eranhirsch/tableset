@@ -1,19 +1,17 @@
-import { Box, AvatarGroup, Avatar, Typography } from "@material-ui/core";
+import { AvatarGroup, Box, Typography } from "@material-ui/core";
 import { useAppSelector } from "../../../app/hooks";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import {
-  allPlayerNamesSelector,
-  firstPlayerSelector,
+  firstPlayerIdSelector,
   PlayerId,
-  playersSelectors,
 } from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
+import Player from "../ux/Player";
 import PlayerOrderPanel from "../ux/PlayerOrderPanel";
 import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
 
@@ -82,9 +80,7 @@ export default createVariableGameStep({
 function InstanceVariableComponent({
   value: playOrder,
 }: VariableStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
-  const firstPlayer = useAppSelector(firstPlayerSelector);
-  const players = useAppSelector(playersSelectors.selectEntities);
-  const allNames = useAppSelector(allPlayerNamesSelector);
+  const firstPlayerId = useAppSelector(firstPlayerIdSelector);
 
   return (
     <>
@@ -93,16 +89,9 @@ function InstanceVariableComponent({
       </Typography>
       <Box display="flex" component="figure">
         <AvatarGroup>
-          <Avatar>
-            {shortest_unique_abbreviation(firstPlayer.name, allNames)}
-          </Avatar>
+          <Player playerId={firstPlayerId} />
           {playOrder.map((playerId) => (
-            <Avatar key={playerId}>
-              {shortest_unique_abbreviation(
-                nullthrows(players[playerId]).name,
-                allNames
-              )}
-            </Avatar>
+            <Player playerId={playerId} />
           ))}
         </AvatarGroup>
       </Box>

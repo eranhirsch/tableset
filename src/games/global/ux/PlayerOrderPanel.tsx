@@ -8,15 +8,13 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import {
-  allPlayerNamesSelector,
-  firstPlayerSelector,
+  firstPlayerIdSelector,
   PlayerId,
-  playersSelectors,
 } from "../../../features/players/playersSlice";
 import templateSlice from "../../../features/template/templateSlice";
+import Player from "./Player";
+import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 
 function moveItem<T>(
   items: readonly T[],
@@ -37,9 +35,6 @@ function DraggablePlayer({
   index: number;
   badgeContent?: string;
 }) {
-  const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
-  const allNames = useAppSelector(allPlayerNamesSelector);
-
   return (
     <Draggable draggableId={`${playerId}`} index={index}>
       {(provided) => (
@@ -49,7 +44,7 @@ function DraggablePlayer({
           {...provided.dragHandleProps}
           {...provided.draggableProps}
         >
-          {shortest_unique_abbreviation(player.name, allNames)}
+          <PlayerNameShortAbbreviation playerId={playerId} />
         </Avatar>
       )}
     </Draggable>
@@ -57,15 +52,14 @@ function DraggablePlayer({
 }
 
 function FirstAvatar() {
-  const player = useAppSelector(firstPlayerSelector);
-  const allNames = useAppSelector(allPlayerNamesSelector);
+  const playerId = useAppSelector(firstPlayerIdSelector);
   return (
     <Badge
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       overlap="circular"
       badgeContent={<LockIcon color="primary" fontSize="small" />}
     >
-      <Avatar>{shortest_unique_abbreviation(player.name, allNames)}</Avatar>
+      <Player playerId={playerId} />
     </Badge>
   );
 }

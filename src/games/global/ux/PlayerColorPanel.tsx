@@ -11,30 +11,25 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import object_flip from "../../../common/lib_utils/object_flip";
 import PlayerColors from "../../../common/PlayerColors";
-import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
 import {
-  allPlayerNamesSelector,
   Player,
   playersSelectors,
 } from "../../../features/players/playersSlice";
 import templateSlice from "../../../features/template/templateSlice";
+import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 
-function draggablePlayerRendererFactory(player: Player) {
-  return (provided: DraggableProvided) => {
-    const allNames = useAppSelector(allPlayerNamesSelector);
-
-    return (
+const draggablePlayerRendererFactory =
+  (player: Player) => (provided: DraggableProvided) =>
+    (
       <Avatar
         ref={provided.innerRef}
         {...provided.dragHandleProps}
         {...provided.draggableProps}
       >
-        {shortest_unique_abbreviation(player.name, allNames)}
+        <PlayerNameShortAbbreviation playerId={player.id} />
       </Avatar>
     );
-  };
-}
 
 function DraggablePlayer({ player }: { player: Player }) {
   return (

@@ -2,16 +2,15 @@ import { Avatar, Badge, Stack } from "@material-ui/core";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
-import { shortest_unique_abbreviation } from "../../../common/shortest_names";
 import Strategy from "../../../core/Strategy";
 import {
-  allPlayerNamesSelector,
   PlayerId,
   playersSelectors,
 } from "../../../features/players/playersSlice";
 import templateSlice, {
   templateSelectors,
 } from "../../../features/template/templateSlice";
+import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 
 function Player({
   playerId,
@@ -21,9 +20,6 @@ function Player({
   isSelected: boolean;
 }): JSX.Element | null {
   const dispatch = useAppDispatch();
-
-  const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
-  const allNames = useAppSelector(allPlayerNamesSelector);
 
   return (
     <Badge
@@ -46,7 +42,7 @@ function Player({
             : undefined
         }
       >
-        {shortest_unique_abbreviation(player.name, allNames)}
+        <PlayerNameShortAbbreviation playerId={playerId} />
       </Avatar>
     </Badge>
   );

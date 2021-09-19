@@ -36,9 +36,9 @@ export const playersSelectors = playersAdapter.getSelectors<RootState>(
   (state) => state.players
 );
 
-export const firstPlayerSelector = createSelector(
-  playersSelectors.selectAll,
-  (players) => nullthrows(players[0])
+export const firstPlayerIdSelector = createSelector(
+  playersSelectors.selectIds,
+  (playerIds) => nullthrows(playerIds[0]) as PlayerId
 );
 
 export const allPlayerNamesSelector = createSelector(
