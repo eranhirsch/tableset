@@ -1,7 +1,7 @@
 import { createEntityAdapter, createSlice, Dictionary } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
+import { PlayerId } from "../../core/model/Player";
 import IGame, { StepId } from "../../games/core/IGame";
-import { PlayerId } from "../players/playersSlice";
 import { TemplateElement } from "../template/templateSlice";
 import { templateElementResolver } from "./templateElementResolver";
 

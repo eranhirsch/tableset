@@ -6,13 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
-
-export type PlayerId = string;
-
-export interface Player {
-  id: PlayerId;
-  name: string;
-}
+import { Player, PlayerId } from "../../core/model/Player";
 
 const playersAdapter = createEntityAdapter<Player>({
   sortComparer: (a, b) => a.name.localeCompare(b.name),

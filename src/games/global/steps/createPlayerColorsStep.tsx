@@ -4,8 +4,8 @@ import array_map_keys from "../../../common/lib_utils/array_map_keys";
 import array_zip from "../../../common/lib_utils/array_zip";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import PlayerColors from "../../../common/PlayerColors";
+import { PlayerId } from "../../../core/model/Player";
 import { colorName, GamePiecesColor } from "../../../core/themeWithGameColors";
-import { PlayerId } from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,

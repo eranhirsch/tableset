@@ -1,7 +1,7 @@
 import React from "react";
 import array_range from "../../../common/lib_utils/array_range";
+import { PlayerId } from "../../../core/model/Player";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
-import { PlayerId } from "../../../features/players/playersSlice";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";

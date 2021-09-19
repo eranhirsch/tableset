@@ -1,16 +1,16 @@
+import React from "react";
+import array_filter_nulls from "../../../common/lib_utils/array_filter_nulls";
 import array_range from "../../../common/lib_utils/array_range";
-import { PlayerId } from "../../../features/players/playersSlice";
+import { PlayerId } from "../../../core/model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
-import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
-import GrammaticalList from "../../core/ux/GrammaticalList";
-import React from "react";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
+import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
+import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
 import { ROMAN_NUMERALS } from "../utils/ROMAN_NUMERALS";
-import array_filter_nulls from "../../../common/lib_utils/array_filter_nulls";
 
 const CARDS_PER_DECK = [
   // the array is 0-indexed
@@ -138,4 +138,3 @@ function CardSelectionStep({
     </BlockWithFootnotes>
   );
 }
-

@@ -1,5 +1,5 @@
 import { Avatar } from "@material-ui/core";
-import { PlayerId } from "../../../features/players/playersSlice";
+import { PlayerId } from "../../../core/model/Player";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 
 export default function Player({

@@ -2,11 +2,9 @@ import { Avatar, Badge, Stack } from "@material-ui/core";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import invariant_violation from "../../../common/err/invariant_violation";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
+import { PlayerId } from "../../../core/model/Player";
 import Strategy from "../../../core/Strategy";
-import {
-  PlayerId,
-  playersSelectors,
-} from "../../../features/players/playersSlice";
+import { playersSelectors } from "../../../features/players/playersSlice";
 import templateSlice, {
   templateSelectors,
 } from "../../../features/template/templateSlice";

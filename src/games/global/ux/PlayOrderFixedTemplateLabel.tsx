@@ -1,8 +1,6 @@
 import { useAppSelector } from "../../../app/hooks";
-import {
-  firstPlayerIdSelector,
-  PlayerId,
-} from "../../../features/players/playersSlice";
+import { PlayerId } from "../../../core/model/Player";
+import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerShortName } from "./PlayerShortName";
 
 export default function PlayOrderFixedTemplateLabel({

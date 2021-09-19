@@ -1,7 +1,7 @@
 import { Dictionary } from "@reduxjs/toolkit";
+import { PlayerId } from "../../../core/model/Player";
 import Strategy from "../../../core/Strategy";
 import { SetupStep } from "../../../features/instance/instanceSlice";
-import { PlayerId } from "../../../features/players/playersSlice";
 import { TemplateElement } from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 

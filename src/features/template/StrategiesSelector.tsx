@@ -3,11 +3,12 @@ import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useAppEntityIdSelectorNullable } from "../../common/hooks/useAppEntityIdSelector";
 import { strategyLabel } from "../../core/content";
+import { PlayerId } from "../../core/model/Player";
 import Strategy from "../../core/Strategy";
 import GameMapper from "../../games/core/GameMapper";
 import { StepId } from "../../games/core/IGame";
 import { gameIdSelector } from "../game/gameSlice";
-import { PlayerId, playersSelectors } from "../players/playersSlice";
+import { playersSelectors } from "../players/playersSlice";
 import templateSlice, { templateSelectors } from "./templateSlice";
 
 export default function StrategiesSelector({

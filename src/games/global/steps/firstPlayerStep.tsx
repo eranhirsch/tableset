@@ -1,5 +1,5 @@
 import { Typography } from "@material-ui/core";
-import { PlayerId } from "../../../features/players/playersSlice";
+import { PlayerId } from "../../../core/model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,

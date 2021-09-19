@@ -12,10 +12,8 @@ import invariant_violation from "../../../common/err/invariant_violation";
 import object_flip from "../../../common/lib_utils/object_flip";
 import PlayerColors from "../../../common/PlayerColors";
 import { GamePiecesColor } from "../../../core/themeWithGameColors";
-import {
-  Player,
-  playersSelectors,
-} from "../../../features/players/playersSlice";
+import { playersSelectors } from "../../../features/players/playersSlice";
+import { Player } from "../../../core/model/Player";
 import templateSlice from "../../../features/template/templateSlice";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 

@@ -7,11 +7,12 @@ import {
 import { RootState } from "../../app/store";
 import nullthrows from "../../common/err/nullthrows";
 import array_filter_nulls from "../../common/lib_utils/array_filter_nulls";
+import { PlayerId } from "../../core/model/Player";
 import Strategy from "../../core/Strategy";
 import GameMapper, { GameId } from "../../games/core/GameMapper";
 import { StepId } from "../../games/core/IGame";
 import { PLAYERS_DEPENDENCY_META_STEP_ID } from "../../games/core/steps/createPlayersDependencyMetaStep";
-import playersSlice, { PlayerId } from "../players/playersSlice";
+import playersSlice from "../players/playersSlice";
 
 type ConstantTemplateElement = Readonly<{
   strategy: Strategy.FIXED;

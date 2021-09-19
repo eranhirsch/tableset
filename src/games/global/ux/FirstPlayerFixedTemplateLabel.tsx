@@ -1,4 +1,4 @@
-import { PlayerId } from "../../../features/players/playersSlice";
+import { PlayerId } from "../../../core/model/Player";
 import { PlayerShortName } from "./PlayerShortName";
 
 export default function FirstPlayerFixedTemplateLabel({

@@ -1,7 +1,8 @@
 import { Avatar, Grid, Typography } from "@material-ui/core";
 import React from "react";
 import array_range from "../../../common/lib_utils/array_range";
-import { PlayerId } from "../../../features/players/playersSlice";
+import { numberSuffix } from "../../../common/lib_utils/numberSuffix";
+import { PlayerId } from "../../../core/model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
@@ -11,7 +12,6 @@ import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import firstPlayerStep from "../../global/steps/firstPlayerStep";
 import playOrderStep from "../../global/steps/playOrderStep";
 import Player from "../../global/ux/Player";
-import { numberSuffix } from "../../../common/lib_utils/numberSuffix";
 
 export default createDerivedGameStep({
   id: "startingMoney",

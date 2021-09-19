@@ -8,10 +8,8 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import {
-  firstPlayerIdSelector,
-  PlayerId,
-} from "../../../features/players/playersSlice";
+import { PlayerId } from "../../../core/model/Player";
+import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import templateSlice from "../../../features/template/templateSlice";
 import Player from "./Player";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";

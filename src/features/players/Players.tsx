@@ -1,7 +1,7 @@
 import { useAppSelector } from "../../app/hooks";
 import { playersSelectors } from "./playersSlice";
-import Player from "./Player";
 import NewPlayerInput from "./NewPlayerInput";
+import PlayerChip from "./PlayerChip";
 
 export default function Players(): JSX.Element | null {
   const playerIds = useAppSelector(playersSelectors.selectIds);
@@ -9,7 +9,7 @@ export default function Players(): JSX.Element | null {
   return (
     <>
       {playerIds.map((playerId) => (
-        <Player key={playerId} playerId={playerId} />
+        <PlayerChip key={playerId} playerId={playerId} />
       ))}
       <NewPlayerInput />
     </>

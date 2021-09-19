@@ -2,10 +2,8 @@ import { AvatarGroup, Box, Typography } from "@material-ui/core";
 import { useAppSelector } from "../../../app/hooks";
 import nullthrows from "../../../common/err/nullthrows";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import {
-  firstPlayerIdSelector,
-  PlayerId,
-} from "../../../features/players/playersSlice";
+import { PlayerId } from "../../../core/model/Player";
+import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,

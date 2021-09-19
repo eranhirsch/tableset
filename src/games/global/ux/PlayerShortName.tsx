@@ -1,8 +1,8 @@
 import { useAppSelector } from "../../../app/hooks";
 import { useAppEntityIdSelectorEnforce } from "../../../common/hooks/useAppEntityIdSelector";
 import { shortest_unique_name } from "../../../common/shortest_names";
+import { PlayerId } from "../../../core/model/Player";
 import {
-  PlayerId,
   playersSelectors,
   allPlayerNamesSelector,
 } from "../../../features/players/playersSlice";
