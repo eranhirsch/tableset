@@ -1,10 +1,10 @@
-import React from "react";
+import { Children, ReactChild, ReactFragment, ReactPortal } from "react";
 
 export default function GrammaticalList({
   children,
   pluralize,
 }: {
-  children: readonly (JSX.Element | string)[];
+  children: readonly (ReactChild | ReactFragment | ReactPortal | string)[];
   pluralize?: string;
 }): JSX.Element | null {
   if (children.length === 1) {
@@ -29,9 +29,11 @@ export default function GrammaticalList({
   return (
     <>
       {prefix}{" "}
-      {children.slice(0, children.length - 1).map((child, idx) => (
-        <React.Fragment key={`grammatical_${idx}`}>{child}, </React.Fragment>
-      ))}{" "}
+      {Children.toArray(
+        children
+          .slice(0, children.length - 1)
+          .map((child, idx) => <>{child}, </>)
+      )}{" "}
       and {children[children.length - 1]}
     </>
   );
