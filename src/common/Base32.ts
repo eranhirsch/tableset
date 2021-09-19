@@ -22,3 +22,5 @@ export const decode = (x: string): number =>
     REPLACEMENTS.reduce((out, [to, from]) => out.replace(from, to), x),
     32
   );
+
+export default { encode, decode } as const;

@@ -1,7 +1,7 @@
 import { AvatarGroup, Box, Typography } from "@mui/material";
 import { useAppSelector } from "../../../app/hooks";
 import nullthrows from "../../../common/err/nullthrows";
-import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
+import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
 import { PlayerId } from "../../../core/model/Player";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";

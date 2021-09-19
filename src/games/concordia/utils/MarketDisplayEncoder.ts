@@ -1,6 +1,6 @@
 import Base32 from "../../../common/Base32";
 import nullthrows from "../../../common/err/nullthrows";
-import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
+import { PermutationsLazyArray } from "../../../common/PermutationsLazyArray";
 
 export const MARKET_DECK_I = [
   "Architect",

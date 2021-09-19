@@ -1,65 +1,18 @@
 import invariant from "./err/invariant";
 import invariant_violation from "./err/invariant_violation";
+import { RandomAccessArrayLike } from "./RandomAccessArrayLike";
 
-export default class PermutationsLazyArray<K extends keyof any> {
-  // Factorials are expensive to compute so we precompute them for the whole
-  // range of supported numbers for regular JS computations (2**53)
-  private static readonly PRECOMP_FACT: ReadonlyArray<number> = [
-    // 0!
-    0,
-    // 1!
-    1,
-    // 2!
-    2,
-    // 3!
-    6,
-    // 4!
-    24,
-    // 5!
-    120,
-    // 6!
-    720,
-    // 7!
-    5_040,
-    // 8!
-    40_320,
-    // 9!
-    362_880,
-    // 10!
-    3_628_800,
-    // 11!
-    39_916_800,
-    // 12!
-    479_001_600,
-    // 13!
-    6_227_020_800,
-    // 14!
-    87_178_291_200,
-    // 15!
-    1_307_674_368_000,
-    // 16!
-    20_922_789_888_000,
-    // 17!
-    355_687_428_096_000,
-    // 18!
-    // TODO: a typescript bug is preventing us from using numeric seperators
-    // here. If that is fixed we can add them here too!
-    // @see https://www.reddit.com/r/typescript/comments/ppvy41/large_numeric_literal_warning_bug/)
-    6402373705728000,
-  ];
-
-  // See `combinations` below
-  private static memoizedCombinations: Map<[number, number], number> =
-    new Map();
-
-  private readonly definition: ReadonlyArray<readonly [K, number]>;
+export class PermutationsLazyArray<K extends keyof any>
+  implements RandomAccessArrayLike<K[]>
+{
+  private readonly definition: readonly (readonly [K, number])[];
 
   /**
    * A helper method to build a lazy permutations array based on an existing
    * permutation
    */
-  public static forPermutation<T extends keyof any>(
-    permutation: ReadonlyArray<T>
+  static forPermutation<T extends keyof any>(
+    permutation: readonly T[]
   ): PermutationsLazyArray<T> {
     return new PermutationsLazyArray(
       permutation.reduce((definition, item) => {
@@ -69,7 +22,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
     );
   }
 
-  public constructor(definition: Readonly<Record<K, number>>) {
+  constructor(definition: Readonly<Record<K, number>>) {
     // We normalize the item definition for use in our algorithm
     this.definition = Object.entries(definition)
       .map(([a, b]) => [a, b] as [K, number])
@@ -82,17 +35,17 @@ export default class PermutationsLazyArray<K extends keyof any> {
     );
 
     invariant(
-      this.permutationLength < PermutationsLazyArray.PRECOMP_FACT.length,
-      `Too many items in definition ${this} (${this.permutationLength}). MAX: ${PermutationsLazyArray.PRECOMP_FACT.length}`
+      this.permutationLength < PRECOMP_FACT.length,
+      `Too many items in definition ${this} (${this.permutationLength}). MAX: ${PRECOMP_FACT.length}`
     );
   }
 
-  public get length(): number {
+  get length(): number {
     return (
-      PermutationsLazyArray.PRECOMP_FACT[this.permutationLength] /
+      PRECOMP_FACT[this.permutationLength] /
       this.definition.reduce(
         (duplicationFactor, [_, count]) =>
-          duplicationFactor * PermutationsLazyArray.PRECOMP_FACT[count],
+          duplicationFactor * PRECOMP_FACT[count],
         // notice that we multiply, so start with 1, and not 0
         1
       )
@@ -108,7 +61,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
    * array
    * @returns a permutation, or undefined if the index is out of range.
    */
-  public at(index: number): ReadonlyArray<K> | undefined {
+  at(index: number): K[] | undefined {
     invariant(
       Number.isInteger(index),
       `Only integer numbers are supported: ${index}`
@@ -132,10 +85,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
       const availablePositions = permutation.length + 1;
 
       // Then we compute how many different ways we can fill those slots.
-      const totalPlacements = PermutationsLazyArray.combinations(
-        availablePositions,
-        count
-      );
+      const totalPlacements = combinations(availablePositions, count);
 
       // We pick one of those possible combinations as a function of the current
       // index we are encoding. We are effectively finding out what "digit"
@@ -144,11 +94,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
 
       // We "encode" the number as the positions where the item would be in the
       // permutation
-      const positions = PermutationsLazyArray.indexToPositions(
-        comboIdx,
-        count,
-        availablePositions
-      );
+      const positions = indexToPositions(comboIdx, count, availablePositions);
 
       // We are changing the permutation in-place so we need to insert the
       // items from least-significant backwards to that the offsets don't
@@ -167,7 +113,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
    * Checks that the permutation could be built using this definition. This is
    * cheaper than calling `indexOf`.
    */
-  public includes(permutation: ReadonlyArray<K>): boolean {
+  includes(permutation: readonly K[]): boolean {
     return (
       // All permutations are of an expected length
       permutation.length === this.permutationLength &&
@@ -187,7 +133,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
    * @returns integer in the range [0..length] or -1 if the permutation is not
    * buildable by this definition.
    */
-  public indexOf(permutation: ReadonlyArray<K>): number {
+  indexOf(permutation: readonly K[]): number {
     if (!this.includes(permutation)) {
       // By definition of Array.indexOf()
       return -1;
@@ -199,10 +145,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
       this.definition
         .reduce((parts, [item, count]) => {
           // Find all positions of the item.
-          const positions = PermutationsLazyArray.extractItemFromArray(
-            item,
-            remaining
-          );
+          const positions = extractItemFromArray(item, remaining);
           invariant(
             positions.length === count,
             `Permutation ${permutation} didn't have enough copies of ${item}`
@@ -214,19 +157,12 @@ export default class PermutationsLazyArray<K extends keyof any> {
 
           // Convert the positions vector back into an index, this is the "digit"
           // for this item, as encoded by `at()`
-          const index = PermutationsLazyArray.positionsToIndex(
-            positions,
-            count,
-            availablePositions
-          );
+          const index = positionsToIndex(positions, count, availablePositions);
 
           // And we compute the "radix" for the digit so we can reconstruct the
           // complete number with it. This is the total number of possible values
           // that `index` above could have been computed too.
-          const totalPlacements = PermutationsLazyArray.combinations(
-            availablePositions,
-            count
-          );
+          const totalPlacements = combinations(availablePositions, count);
 
           invariant(
             index <= totalPlacements,
@@ -242,7 +178,7 @@ export default class PermutationsLazyArray<K extends keyof any> {
     );
   }
 
-  public toString(): string {
+  toString(): string {
     return `${this.constructor.name}[${this.definition
       .map(([item, count]) => `${item}:${count}`)
       .join(", ")}]`;
@@ -251,154 +187,187 @@ export default class PermutationsLazyArray<K extends keyof any> {
   private get permutationLength(): number {
     return this.definition.reduce((sum, [_, count]) => sum + count, 0);
   }
+}
 
-  /**
-   * The number of ways K (unmarked) balls can be put into N ordered cells.
-   * @param n number of cells/slots/labels
-   * @param k number of copies we have of the item we want to assign to cells
-   * @returns f(n, 1) = n, f(n, k) = sum(f(i, k - 1) for i in [1..n])
-   */
-  private static combinations(n: number, k: number): number {
-    if (k === 1) {
-      return n;
-    }
+// Factorials are expensive to compute so we precompute them for the whole
+// range of supported numbers for regular JS computations (2**53)
+const PRECOMP_FACT = [
+  // 0!
+  0,
+  // 1!
+  1,
+  // 2!
+  2,
+  // 3!
+  6,
+  // 4!
+  24,
+  // 5!
+  120,
+  // 6!
+  720,
+  // 7!
+  5_040,
+  // 8!
+  40_320,
+  // 9!
+  362_880,
+  // 10!
+  3_628_800,
+  // 11!
+  39_916_800,
+  // 12!
+  479_001_600,
+  // 13!
+  6_227_020_800,
+  // 14!
+  87_178_291_200,
+  // 15!
+  1_307_674_368_000,
+  // 16!
+  20_922_789_888_000,
+  // 17!
+  355_687_428_096_000,
+  // 18!
+  // TODO: a typescript bug is preventing us from using numeric seperators
+  // here. If that is fixed we can add them here too!
+  // @see https://www.reddit.com/r/typescript/comments/ppvy41/large_numeric_literal_warning_bug/)
+  6402373705728000,
+] as const;
 
-    if (n === 1) {
-      // Optimization
-      return 1;
-    }
-
-    const memoized = this.memoizedCombinations.get([n, k]);
-    if (memoized != null) {
-      // We use memoization to save on redundant computations
-      return memoized;
-    }
-
-    let sum = 0;
-    for (let i = n; i >= 1; i--) {
-      // The first item in the sum is for the case where we put the item in the
-      // first slot (we can then put the other items in any of the other slots),
-      // then adding the case where we put the item in the next slot (we can
-      // only put the remaining items in that slot and further, but not the
-      // first slot because that would be a duplicate case we already counted).
-      sum += this.combinations(i, k - 1);
-    }
-
-    this.memoizedCombinations.set([n, k], sum);
-
-    return sum;
+const memoizedCombinations: Map<readonly [number, number], number> = new Map();
+/**
+ * The number of ways K (unmarked) balls can be put into N ordered cells.
+ * @param n number of cells/slots/labels
+ * @param k number of copies we have of the item we want to assign to cells
+ * @returns f(n, 1) = n, f(n, k) = sum(f(i, k - 1) for i in [1..n])
+ */
+function combinations(n: number, k: number): number {
+  if (k === 1) {
+    return n;
   }
 
-  private static indexToPositions(
-    x: number,
-    copies: number,
-    digits: number
-  ): number[] {
-    const positions: number[] = [];
-
-    for (let i = 0; i < copies; i += 1) {
-      const lastPos = positions[positions.length - 1] ?? 0;
-      const [msb, total] = PermutationsLazyArray.mostSignificant(
-        x,
-        digits - lastPos,
-        copies - i
-      );
-      positions.push(msb + lastPos);
-      x -= total;
-    }
-
-    return positions;
+  if (n === 1) {
+    // Optimization
+    return 1;
   }
 
-  private static positionsToIndex(
-    positions: number[],
-    copies: number,
-    digits: number
-  ): number {
-    let sum = 0;
-    for (let pos = 0; pos < copies - 1; pos += 1) {
-      const lowestDigit = positions[pos - 1] ?? 0;
-      for (let digit = lowestDigit; digit < positions[pos]; digit += 1) {
-        sum += PermutationsLazyArray.combinations(
-          digits - digit,
-          copies - pos - 1
-        );
-      }
-    }
-    return sum + positions[copies - 1] - (positions[copies - 2] ?? 0);
+  const memoized = memoizedCombinations.get([n, k]);
+  if (memoized != null) {
+    // We use memoization to save on redundant computations
+    return memoized;
   }
 
-  /**
-   * We want to find the most-significant digit first, as it impacts what digits
-   * could follow it. We do this by counting how many combinations are possible
-   * for each value of the digit until we find one where our number `x` falls
-   * in between.
-   * @param x the number we want to represent with our possible digits.
-   * @param digits the number of digits we have available (starting at 0)
-   * @param length the lenght of the number we are building
-   * @returns a tuple [digit, skip] where `digit` is the biggest digit we found
-   * that is still smaller than our `x`, and `skip` is the value of the smallest
-   * number that could be represented using our digit as the mostSignificant
-   * digit where all the rest of the digits are equivalent to `0` (like 400 if
-   * 4 was our digit and length was 3).
-   */
-  private static mostSignificant(
-    x: number,
-    digits: number,
-    length: number
-  ): [number, number] {
-    if (length === 1) {
-      // When the length is 1 we don't need any special logic, our number is
-      // already represented.
+  let sum = 0;
+  for (let i = n; i >= 1; i--) {
+    // The first item in the sum is for the case where we put the item in the
+    // first slot (we can then put the other items in any of the other slots),
+    // then adding the case where we put the item in the next slot (we can
+    // only put the remaining items in that slot and further, but not the
+    // first slot because that would be a duplicate case we already counted).
+    sum += combinations(i, k - 1);
+  }
 
-      invariant(
-        x < digits,
-        `Number ${x} is too big to be presented with ${digits} digits`
-      );
+  memoizedCombinations.set([n, k], sum);
 
-      return [x, 0];
+  return sum;
+}
+
+function indexToPositions(x: number, copies: number, digits: number): number[] {
+  const positions: number[] = [];
+
+  for (let i = 0; i < copies; i += 1) {
+    const lastPos = positions[positions.length - 1] ?? 0;
+    const [msb, total] = mostSignificant(x, digits - lastPos, copies - i);
+    positions.push(msb + lastPos);
+    x -= total;
+  }
+
+  return positions;
+}
+
+function positionsToIndex(
+  positions: readonly number[],
+  copies: number,
+  digits: number
+): number {
+  let sum = 0;
+  for (let pos = 0; pos < copies - 1; pos += 1) {
+    const lowestDigit = positions[pos - 1] ?? 0;
+    for (let digit = lowestDigit; digit < positions[pos]; digit += 1) {
+      sum += combinations(digits - digit, copies - pos - 1);
     }
+  }
+  return sum + positions[copies - 1] - (positions[copies - 2] ?? 0);
+}
 
-    let totalSkip = 0;
-    for (let digit = 0; digit < digits; digit += 1) {
-      const skipForDigit = PermutationsLazyArray.combinations(
-        digits - digit,
-        length - 1
-      );
+/**
+ * We want to find the most-significant digit first, as it impacts what digits
+ * could follow it. We do this by counting how many combinations are possible
+ * for each value of the digit until we find one where our number `x` falls
+ * in between.
+ * @param x the number we want to represent with our possible digits.
+ * @param digits the number of digits we have available (starting at 0)
+ * @param length the lenght of the number we are building
+ * @returns a tuple [digit, skip] where `digit` is the biggest digit we found
+ * that is still smaller than our `x`, and `skip` is the value of the smallest
+ * number that could be represented using our digit as the mostSignificant
+ * digit where all the rest of the digits are equivalent to `0` (like 400 if
+ * 4 was our digit and length was 3).
+ */
+function mostSignificant(
+  x: number,
+  digits: number,
+  length: number
+): readonly [number, number] {
+  if (length === 1) {
+    // When the length is 1 we don't need any special logic, our number is
+    // already represented.
 
-      if (x < totalSkip + skipForDigit) {
-        return [digit, totalSkip];
-      }
-
-      totalSkip += skipForDigit;
-    }
-
-    invariant_violation(
-      `Number ${x} is too big to be represented with ${digits} digits and length ${length}`
+    invariant(
+      x < digits,
+      `Number ${x} is too big to be presented with ${digits} digits`
     );
+
+    return [x, 0];
   }
 
-  /**
-   * Remove all occurrences of the item from the array and return an array of
-   * positions of the array without the item where those items were previously
-   * at. Notice that the result might contain duplicates!
-   * @param item in the item to extract from the list
-   * @param remaining inout the list we are extracting the item from. Changes
-   * are done in-place!
-   * @returns a list of positions where the item was extracted from
-   */
-  private static extractItemFromArray<K>(item: K, remaining: K[]): number[] {
-    const positions: number[] = [];
+  let totalSkip = 0;
+  for (let digit = 0; digit < digits; digit += 1) {
+    const skipForDigit = combinations(digits - digit, length - 1);
 
-    while (remaining.length > 0) {
-      const pos = remaining.indexOf(item);
-      if (pos === -1) {
-        break;
-      }
-      positions.push(pos);
-      remaining.splice(pos, 1);
+    if (x < totalSkip + skipForDigit) {
+      return [digit, totalSkip];
     }
 
-    return positions;
+    totalSkip += skipForDigit;
   }
+
+  invariant_violation(
+    `Number ${x} is too big to be represented with ${digits} digits and length ${length}`
+  );
+}
+
+/**
+ * Remove all occurrences of the item from the array and return an array of
+ * positions of the array without the item where those items were previously
+ * at. Notice that the result might contain duplicates!
+ * @param item in the item to extract from the list
+ * @param remaining inout the list we are extracting the item from. Changes
+ * are done in-place!
+ * @returns a list of positions where the item was extracted from
+ */
+function extractItemFromArray<K>(item: K, remaining: K[]): number[] {
+  const positions: number[] = [];
+
+  while (remaining.length > 0) {
+    const pos = remaining.indexOf(item);
+    if (pos === -1) {
+      break;
+    }
+    positions.push(pos);
+    remaining.splice(pos, 1);
+  }
+
+  return positions;
 }
