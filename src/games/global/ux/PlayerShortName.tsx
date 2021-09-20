@@ -1,7 +1,7 @@
 import { useAppSelector } from "../../../app/hooks";
 import { useAppEntityIdSelectorEnforce } from "../../../common";
 import { shortest_unique_name } from "../../../common/shortest_names";
-import { PlayerId } from "../../../core/model/Player";
+import { PlayerId } from "../../../model/Player";
 import {
   playersSelectors,
   allPlayerNamesSelector,

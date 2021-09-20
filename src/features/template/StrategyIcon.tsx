@@ -1,10 +1,9 @@
 import CasinoIcon from "@mui/icons-material/Casino";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
-import FunctionsIcon from "@mui/icons-material/Functions";
 import PanToolIcon from "@mui/icons-material/PanTool";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import QuizIcon from "@mui/icons-material/Quiz";
-import Strategy from "../../core/Strategy";
+import { Strategy } from "features/template/Strategy";
 
 export default function StrategyIcon({
   strategy,
@@ -16,8 +15,6 @@ export default function StrategyIcon({
       return <PushPinIcon />;
     case Strategy.ASK:
       return <QuizIcon />;
-    case Strategy.COMPUTED:
-      return <FunctionsIcon />;
     case Strategy.RANDOM:
       return <CasinoIcon />;
     case Strategy.OFF:

@@ -1,4 +1,4 @@
-import Strategy from "./Strategy";
+import { Strategy } from "./Strategy";
 
 export function strategyLabel(strategy: Strategy): string {
   switch (strategy) {
@@ -12,7 +12,5 @@ export function strategyLabel(strategy: Strategy): string {
       return "Fixed";
     case Strategy.ASK:
       return "Ask";
-    case Strategy.COMPUTED:
-      return "Computed";
   }
 }

@@ -4,14 +4,14 @@ import {
   createSlice,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { RootState } from "../../app/store";
-import { array_filter_nulls, nullthrows } from "../../common";
-import { PlayerId } from "../../core/model/Player";
-import Strategy from "../../core/Strategy";
-import GameMapper, { GameId } from "../../games/core/GameMapper";
-import { StepId } from "../../games/core/IGame";
-import { PLAYERS_DEPENDENCY_META_STEP_ID } from "../../games/core/steps/createPlayersDependencyMetaStep";
-import playersSlice from "../players/playersSlice";
+import { RootState } from "app/store";
+import { array_filter_nulls, nullthrows } from "common";
+import { PlayerId } from "model/Player";
+import { Strategy } from "features/template/Strategy";
+import { playersActions } from "features/players/playersSlice";
+import GameMapper, { GameId } from "games/core/GameMapper";
+import { StepId } from "games/core/IGame";
+import { PLAYERS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createPlayersDependencyMetaStep";
 
 type ConstantTemplateElement = Readonly<{
   strategy: Strategy.FIXED;
@@ -43,11 +43,7 @@ const templateSlice = createSlice({
       state,
       action: PayloadAction<
         TemplateElement & {
-          strategy:
-            | Strategy.RANDOM
-            | Strategy.DEFAULT
-            | Strategy.ASK
-            | Strategy.COMPUTED;
+          strategy: Strategy.RANDOM | Strategy.DEFAULT | Strategy.ASK;
         }
       >
     ) => {
@@ -157,10 +153,10 @@ const templateSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(playersSlice.actions.added, (state) =>
+      .addCase(playersActions.added, (state) =>
         markDownstreamElementsStale(PLAYERS_DEPENDENCY_META_STEP_ID, state)
       )
-      .addCase(playersSlice.actions.removed, (state) =>
+      .addCase(playersActions.removed, (state) =>
         markDownstreamElementsStale(PLAYERS_DEPENDENCY_META_STEP_ID, state)
       );
   },
@@ -175,6 +171,8 @@ export const templateIsStaleSelector = createSelector(
   templateSelectors.selectAll,
   (elements) => elements.some(({ isStale }) => isStale)
 );
+
+export const templateActions = templateSlice.actions;
 
 function markDownstreamElementsStale(
   changedElementId: StepId,

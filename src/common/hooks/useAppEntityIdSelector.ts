@@ -1,17 +1,16 @@
 import { EntityId, EntitySelectors } from "@reduxjs/toolkit";
-import { useAppSelector } from "../../app/hooks";
-import { RootState } from "../../app/store";
-import { nullthrows } from "../err/nullthrows";
+import { useSelector } from "react-redux";
+import { nullthrows } from "../err";
 
-export const useAppEntityIdSelectorEnforce = <T>(
-  selectors: EntitySelectors<T, RootState>,
+export const useAppEntityIdSelectorEnforce = <T, S>(
+  selectors: EntitySelectors<T, S>,
   id: EntityId
 ): T =>
-  useAppSelector((state) =>
+  useSelector((state: S) =>
     nullthrows(selectors.selectById(state, id), `Entity '${id}' doesn't exist`)
   );
 
-export const useAppEntityIdSelectorNullable = <T>(
-  selectors: EntitySelectors<T, RootState>,
+export const useAppEntityIdSelectorNullable = <T, S>(
+  selectors: EntitySelectors<T, S>,
   id: EntityId
-): T | undefined => useAppSelector((state) => selectors.selectById(state, id));
+): T | undefined => useSelector((state: S) => selectors.selectById(state, id));

@@ -1,8 +1,8 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import gameSlice from "../features/game/gameSlice";
-import { instanceSlice } from "../features/instance/instanceSlice";
-import playersSlice from "../features/players/playersSlice";
-import templateSlice from "../features/template/templateSlice";
+import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
+import gameSlice from "features/game/gameSlice";
+import instanceSlice from "features/instance/instanceSlice";
+import playersSlice from "features/players/playersSlice";
+import templateSlice from "features/template/templateSlice";
 
 export const store = configureStore({
   reducer: {

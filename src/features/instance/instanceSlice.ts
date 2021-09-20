@@ -1,6 +1,6 @@
 import { createEntityAdapter, createSlice, Dictionary } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { PlayerId } from "../../core/model/Player";
+import { PlayerId } from "../../model/Player";
 import IGame, { StepId } from "../../games/core/IGame";
 import { TemplateElement } from "../template/templateSlice";
 import { templateElementResolver } from "./templateElementResolver";
@@ -14,7 +14,7 @@ const instanceAdapter = createEntityAdapter<SetupStep>({
   selectId: (step) => step.id,
 });
 
-export const instanceSlice = createSlice({
+export default createSlice({
   name: "instance",
   initialState: instanceAdapter.getInitialState(),
   reducers: {
@@ -51,7 +51,3 @@ export const instanceSlice = createSlice({
 export const instanceSelectors = instanceAdapter.getSelectors<RootState>(
   (state) => state.instance
 );
-
-export default instanceSlice;
-
-

@@ -5,10 +5,10 @@ import {
   ListItemText,
   Paper,
 } from "@mui/material";
-import { useAppSelector } from "../../app/hooks";
-import { useAppEntityIdSelectorNullable } from "../../common";
-import Strategy from "../../core/Strategy";
-import { StepId } from "../../games/core/IGame";
+import { useAppSelector } from "app/hooks";
+import { useAppEntityIdSelectorNullable } from "common";
+import { Strategy } from "features/template/Strategy";
+import { StepId } from "games/core/IGame";
 import { gameSelector } from "../game/gameSlice";
 import { ItemLabel } from "./ItemLabel";
 import StepDetailsPane from "./StepDetailsPane";

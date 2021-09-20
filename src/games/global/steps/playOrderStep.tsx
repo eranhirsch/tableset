@@ -2,7 +2,7 @@ import { AvatarGroup, Box, Typography } from "@mui/material";
 import { useAppSelector } from "../../../app/hooks";
 import { array_pick_random_item } from "../../../common";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import { PlayerId } from "../../../core/model/Player";
+import { PlayerId } from "../../../model/Player";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep, {

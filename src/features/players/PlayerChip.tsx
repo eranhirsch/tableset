@@ -3,7 +3,7 @@ import { Chip } from "@mui/material";
 import { EntityId } from "@reduxjs/toolkit";
 import { useAppDispatch } from "../../app/hooks";
 import { useAppEntityIdSelectorEnforce } from "../../common";
-import playersSlice, { playersSelectors } from "./playersSlice";
+import { playersActions, playersSelectors } from "./playersSlice";
 
 export default function PlayerChip({
   playerId,
@@ -19,7 +19,7 @@ export default function PlayerChip({
       key={player.id}
       avatar={<PersonIcon />}
       label={player.name}
-      onDelete={() => dispatch(playersSlice.actions.removed(player.id))}
+      onDelete={() => dispatch(playersActions.removed(player.id))}
     />
   );
 }

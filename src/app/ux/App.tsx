@@ -1,13 +1,13 @@
 import { Container, ThemeProvider } from "@mui/material";
+import themeWithGameColors from "app/ux/themeWithGameColors";
+import { gameIdSelector } from "features/game/gameSlice";
+import Instance from "features/instance/Instance";
+import Players from "features/players/Players";
+import playersSlice from "features/players/playersSlice";
+import Template from "features/template/Template";
 import { useEffect, useState } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-import themeWithGameColors from "../core/themeWithGameColors";
-import { gameIdSelector } from "../features/game/gameSlice";
-import Instance from "../features/instance/Instance";
-import Players from "../features/players/Players";
-import playersSlice from "../features/players/playersSlice";
-import Template from "../features/template/Template";
-import { useAppDispatch, useAppSelector } from "./hooks";
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { TableSetAppBar } from "./TableSetAppBar";
 
 function App(): JSX.Element | null {

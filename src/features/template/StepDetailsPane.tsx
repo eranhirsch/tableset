@@ -1,9 +1,9 @@
 import { Collapse, Stack } from "@mui/material";
+import { useAppSelector } from "app/hooks";
+import { nullthrows, useAppEntityIdSelectorNullable } from "common";
+import { Strategy } from "features/template/Strategy";
+import { StepId } from "games/core/IGame";
 import { useMemo } from "react";
-import { useAppSelector } from "../../app/hooks";
-import { nullthrows, useAppEntityIdSelectorNullable } from "../../common";
-import Strategy from "../../core/Strategy";
-import { StepId } from "../../games/core/IGame";
 import { gameSelector } from "../game/gameSlice";
 import StrategiesSelector from "./StrategiesSelector";
 import { templateSelectors } from "./templateSlice";

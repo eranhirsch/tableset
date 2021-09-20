@@ -4,13 +4,14 @@ import { EntityId } from "@reduxjs/toolkit";
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { PlayerId } from "../../core/model/Player";
+import { PlayerId } from "../../model/Player";
 import GameMapper from "../../games/core/GameMapper";
 import { gameIdSelector } from "../game/gameSlice";
 import instanceSlice from "../instance/instanceSlice";
 import { playersSelectors } from "../players/playersSlice";
 import TemplateItem from "./TemplateItem";
-import templateSlice, {
+import {
+  templateActions,
   templateIsStaleSelector,
   templateSelectors,
 } from "./templateSlice";
@@ -39,7 +40,7 @@ export default function Template(): JSX.Element | null {
 
   useEffect(() => {
     if (isStale) {
-      dispatch(templateSlice.actions.refresh(playerIds));
+      dispatch(templateActions.refresh(playerIds));
     }
   }, [dispatch, isStale, playerIds]);
 

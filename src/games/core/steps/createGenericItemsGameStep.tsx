@@ -1,5 +1,5 @@
+import { templateActions } from "features/template/templateSlice";
 import { array_pick_random_item } from "../../../common";
-import templateSlice from "../../../features/template/templateSlice";
 import { StepId } from "../IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "../ux/GenericItemsListPanel";
@@ -58,7 +58,7 @@ const createGenericItemsGameStep = <T extends string = string>({
           selectedId={current}
           onLabelForItem={labelFor}
           onUpdateItem={(itemId) =>
-            templateSlice.actions.constantValueChanged({
+            templateActions.constantValueChanged({
               id,
               value: itemId,
             })

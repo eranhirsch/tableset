@@ -1,6 +1,6 @@
 import React from "react";
 import { range } from "../../../common";
-import { PlayerId } from "../../../core/model/Player";
+import { PlayerId } from "../../../model/Player";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,

@@ -1,4 +1,10 @@
 import { Avatar, Badge, Box, Stack, useTheme } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "app/hooks";
+import { invariant_violation, object_flip } from "common";
+import { playersSelectors } from "features/players/playersSlice";
+import { templateActions } from "features/template/templateSlice";
+import GamePiecesColor from "model/GamePiecesColor";
+import { Player } from "model/Player";
 import { useCallback, useMemo } from "react";
 import {
   DragDropContext,
@@ -7,12 +13,6 @@ import {
   Droppable,
   DropResult,
 } from "react-beautiful-dnd";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { invariant_violation, object_flip } from "../../../common";
-import { Player } from "../../../core/model/Player";
-import { GamePiecesColor } from "../../../core/themeWithGameColors";
-import { playersSelectors } from "../../../features/players/playersSlice";
-import templateSlice from "../../../features/template/templateSlice";
 import { PlayerColors } from "../steps/createPlayerColorsStep";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 
@@ -185,7 +185,7 @@ export default function PlayerColorPanel({
       }
 
       dispatch(
-        templateSlice.actions.constantValueChanged({
+        templateActions.constantValueChanged({
           id: "playerColors",
           value: newColors,
         })

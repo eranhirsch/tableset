@@ -1,5 +1,6 @@
 import LockIcon from "@mui/icons-material/Lock";
 import { Avatar, Badge, Stack, Typography } from "@mui/material";
+import { templateActions } from "features/template/templateSlice";
 import { useCallback } from "react";
 import {
   DragDropContext,
@@ -8,9 +9,8 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { PlayerId } from "../../../core/model/Player";
+import { PlayerId } from "../../../model/Player";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
-import templateSlice from "../../../features/template/templateSlice";
 import Player from "./Player";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 
@@ -81,7 +81,7 @@ export default function PlayerOrderPanel({
       }
 
       dispatch(
-        templateSlice.actions.constantValueChanged({
+        templateActions.constantValueChanged({
           id: "playOrder",
           value: moveItem(order, source.index, destination.index),
         })

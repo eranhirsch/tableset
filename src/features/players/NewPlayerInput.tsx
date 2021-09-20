@@ -3,7 +3,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { IconButton, TextField } from "@mui/material";
 import { useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
-import playersSlice from "./playersSlice";
+import { playersActions } from "./playersSlice";
 
 export default function NewPlayerInput(): JSX.Element | null {
   const dispatch = useAppDispatch();
@@ -14,7 +14,7 @@ export default function NewPlayerInput(): JSX.Element | null {
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        dispatch(playersSlice.actions.added(newPlayerName));
+        dispatch(playersActions.added(newPlayerName));
         setNewPlayerName("");
       }}
     >

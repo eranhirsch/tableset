@@ -1,13 +1,11 @@
 import { Avatar, Badge, Stack } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import {
-  invariant_violation,
-  useAppEntityIdSelectorEnforce,
-} from "../../../common";
-import { PlayerId } from "../../../core/model/Player";
-import Strategy from "../../../core/Strategy";
+import { useAppDispatch, useAppSelector } from "app/hooks";
+import { invariant_violation, useAppEntityIdSelectorEnforce } from "common";
+import { PlayerId } from "model/Player";
+import { Strategy } from "features/template/Strategy";
 import { playersSelectors } from "../../../features/players/playersSlice";
-import templateSlice, {
+import {
+  templateActions,
   templateSelectors,
 } from "../../../features/template/templateSlice";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
@@ -34,7 +32,7 @@ function Player({
           !isSelected
             ? () =>
                 dispatch(
-                  templateSlice.actions.constantValueChanged({
+                  templateActions.constantValueChanged({
                     id: "firstPlayer",
                     value: playerId,
                   })

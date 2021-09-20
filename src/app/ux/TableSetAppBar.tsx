@@ -1,8 +1,8 @@
-import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
-import { Switch, Route, Link } from "react-router-dom";
+import ClearIcon from "@mui/icons-material/Clear";
 import PeopleIcon from "@mui/icons-material/People";
 import TuneIcon from "@mui/icons-material/Tune";
-import ClearIcon from "@mui/icons-material/Clear";
+import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
+import { Link, Route, Switch } from "react-router-dom";
 
 export function TableSetAppBar(): JSX.Element | null {
   return (

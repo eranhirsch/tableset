@@ -1,12 +1,9 @@
 import { Badge, Chip, Stack, Typography } from "@mui/material";
-import {
-  array_map_keys,
-  array_pick_random_item,
-  array_zip,
-} from "../../../common";
-import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import { PlayerId } from "../../../core/model/Player";
-import { colorName, GamePiecesColor } from "../../../core/themeWithGameColors";
+import { colorName } from "app/ux/themeWithGameColors";
+import { array_map_keys, array_pick_random_item, array_zip } from "common";
+import PermutationsLazyArray from "common/PermutationsLazyArray";
+import GamePiecesColor from "model/GamePiecesColor";
+import { PlayerId } from "model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,
@@ -121,7 +118,7 @@ function InstanceManualComponent({
                 variant="filled"
                 color={color}
                 size="small"
-                label={colorName(color)}
+                label={colorName[color]}
               />
             ))}
           </GrammaticalList>

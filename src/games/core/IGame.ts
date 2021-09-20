@@ -1,4 +1,4 @@
-import { GamePiecesColor } from "../../core/themeWithGameColors";
+import GamePiecesColor from "model/GamePiecesColor";
 import IGameStep from "./steps/IGameStep";
 
 export type StepId = string;

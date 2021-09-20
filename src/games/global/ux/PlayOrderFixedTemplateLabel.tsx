@@ -1,7 +1,7 @@
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import React from "react";
 import { useAppSelector } from "../../../app/hooks";
-import { PlayerId } from "../../../core/model/Player";
+import { PlayerId } from "../../../model/Player";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerShortName } from "./PlayerShortName";
 

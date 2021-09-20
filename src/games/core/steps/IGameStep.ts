@@ -1,8 +1,8 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import { PlayerId } from "../../../core/model/Player";
-import Strategy from "../../../core/Strategy";
-import { SetupStep } from "../../../features/instance/instanceSlice";
-import { TemplateElement } from "../../../features/template/templateSlice";
+import { PlayerId } from "model/Player";
+import { Strategy } from "features/template/Strategy";
+import { SetupStep } from "features/instance/instanceSlice";
+import { TemplateElement } from "features/template/templateSlice";
 import { StepId } from "../IGame";
 
 export interface TemplateContext {

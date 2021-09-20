@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import { nullthrows } from "../../common";
-import { Player, PlayerId } from "../../core/model/Player";
+import { Player, PlayerId } from "../../model/Player";
 
 const playersAdapter = createEntityAdapter<Player>({
   sortComparer: (a, b) => a.name.localeCompare(b.name),
@@ -25,6 +25,7 @@ const playersSlice = createSlice({
     removed: playersAdapter.removeOne,
   },
 });
+export default playersSlice;
 
 export const playersSelectors = playersAdapter.getSelectors<RootState>(
   (state) => state.players
@@ -40,4 +41,4 @@ export const allPlayerNamesSelector = createSelector(
   (players) => players.map((player) => player.name)
 );
 
-export default playersSlice;
+export const playersActions = playersSlice.actions;

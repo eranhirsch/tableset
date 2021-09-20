@@ -1,15 +1,15 @@
 import { Chip, Stack } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "app/hooks";
+import { useAppEntityIdSelectorNullable } from "common";
+import { PlayerId } from "model/Player";
+import { Strategy } from "features/template/Strategy";
+import { strategyLabel } from "features/template/strategyLabel";
+import GameMapper from "games/core/GameMapper";
+import { StepId } from "games/core/IGame";
 import { useMemo } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { useAppEntityIdSelectorNullable } from "../../common";
-import { strategyLabel } from "../../core/content";
-import { PlayerId } from "../../core/model/Player";
-import Strategy from "../../core/Strategy";
-import GameMapper from "../../games/core/GameMapper";
-import { StepId } from "../../games/core/IGame";
 import { gameIdSelector } from "../game/gameSlice";
 import { playersSelectors } from "../players/playersSlice";
-import templateSlice, { templateSelectors } from "./templateSlice";
+import { templateActions, templateSelectors } from "./templateSlice";
 
 export default function StrategiesSelector({
   stepId,
@@ -48,13 +48,13 @@ export default function StrategiesSelector({
               ? () =>
                   dispatch(
                     strategy === Strategy.FIXED
-                      ? templateSlice.actions.enabledConstantValue(
+                      ? templateActions.enabledConstantValue(
                           stepId,
                           playerIds as PlayerId[]
                         )
                       : strategy === Strategy.OFF
-                      ? templateSlice.actions.disabled(stepId)
-                      : templateSlice.actions.enabled({
+                      ? templateActions.disabled(stepId)
+                      : templateActions.enabled({
                           id: stepId,
                           strategy,
                         })

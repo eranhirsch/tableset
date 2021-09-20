@@ -1,5 +1,5 @@
 import { nullthrows } from "../../common";
-import { GamePiecesColor } from "../../core/themeWithGameColors";
+import GamePiecesColor from "../../model/GamePiecesColor";
 import IGame, { StepId } from "../core/IGame";
 import createGameStep from "../core/steps/createGameStep";
 import IGameStep from "../core/steps/IGameStep";

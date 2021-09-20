@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { numberSuffix } from "../../../common/numberSuffix";
-import { PlayerId } from "../../../core/model/Player";
+import { PlayerId } from "../../../model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";

@@ -1,7 +1,7 @@
-import { invariant_violation } from "../../common";
-import Strategy from "../../core/Strategy";
-import IGameStep, { InstanceContext } from "../../games/core/steps/IGameStep";
-import { TemplateElement } from "../template/templateSlice";
+import { invariant_violation } from "common";
+import { Strategy } from "features/template/Strategy";
+import { TemplateElement } from "features/template/templateSlice";
+import IGameStep, { InstanceContext } from "games/core/steps/IGameStep";
 
 export function templateElementResolver<T>(
   gameStep: IGameStep<T>,
