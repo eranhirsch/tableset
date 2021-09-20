@@ -6,4 +6,10 @@
     "formatOnSave": true,
     "formatOnSaveMode": "modifications",
   },
+  "cSpell.words": [
+    "Concordia",
+    "Magnus",
+    "nullthrows",
+    "praefectus"
+  ],
 }
