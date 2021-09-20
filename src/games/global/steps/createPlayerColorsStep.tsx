@@ -1,6 +1,6 @@
 import { Badge, Chip, Stack, Typography } from "@mui/material";
 import { colorName } from "app/ux/themeWithGameColors";
-import { array_map_keys, array_pick_random_item, array_zip } from "common";
+import { array_map_keys, array_pick_random_item, Vec } from "common";
 import PermutationsLazyArray from "common/PermutationsLazyArray";
 import GamePiecesColor from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
@@ -31,9 +31,11 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     InstanceManualComponent: () => InstanceManualComponent({ availableColors }),
 
     random: (playerIds) =>
-      array_zip(
-        playerIds,
-        array_pick_random_item(PermutationsLazyArray.of(availableColors))
+      Object.fromEntries(
+        Vec.zip(
+          playerIds,
+          array_pick_random_item(PermutationsLazyArray.of(availableColors))
+        )
       ),
 
     fixed: {
@@ -56,7 +58,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
           return;
         }
 
-        return array_zip(playerIds, availableColors);
+        return Object.fromEntries(Vec.zip(playerIds, availableColors));
       },
 
       refresh(current, playerIds) {
