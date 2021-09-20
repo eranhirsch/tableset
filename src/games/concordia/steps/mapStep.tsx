@@ -1,6 +1,6 @@
 import { styled, Typography } from "@mui/material";
+import { Vec } from "common";
 import React from "react";
-import { array_sort_by } from "../../../common";
 import createGenericItemsGameStep from "../../core/steps/createGenericItemsGameStep";
 import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
@@ -52,7 +52,7 @@ function InstanceManualComponent() {
           provinces; this increases player interaction making them more suited
           for lower player counts):{" "}
           <GrammaticalList>
-            {array_sort_by(
+            {Vec.sort_by(
               Object.entries(MAPS),
               // Put tighterr maps first
               ([, map]) => -map.tightnessScore

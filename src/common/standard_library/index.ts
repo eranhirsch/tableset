@@ -10,11 +10,9 @@
  * This whole module is inspired heavily by Hack Standard Library
  * @see https://docs.hhvm.com/hsl/reference/
  */
-export * from "./vec/array_filter_nulls";
-export * from "./vec/array_map_keys";
-export * from "./vec/array_pick_random_item";
-export * from "./vec/array_sort_by";
-export * from "./vec/zip";
+
+export * from "./Vec";
+export * from "./random_offset";
 export * from "./object_filter";
 export * from "./object_flip";
 export * from "./object_map_with_key";

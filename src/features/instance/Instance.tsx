@@ -6,12 +6,12 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
+import { Vec } from "common";
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { array_filter_nulls } from "../../common";
-import { PlayerId } from "../../model/Player";
 import { StepId } from "../../games/core/IGame";
+import { PlayerId } from "../../model/Player";
 import { gameSelector } from "../game/gameSlice";
 import { playersSelectors } from "../players/playersSlice";
 import { instanceSelectors } from "./instanceSlice";
@@ -42,7 +42,7 @@ function InstanceItemContent({
     return (
       <InstanceDerivedComponent
         context={{
-          instance: array_filter_nulls(Object.values(instance)),
+          instance: Vec.filter_nulls(Object.values(instance)),
           playerIds,
         }}
       />

@@ -1,5 +1,5 @@
 import React from "react";
-import { array_filter_nulls, range } from "../../../common";
+import { range, Vec } from "common";
 import { PlayerId } from "../../../model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -88,7 +88,7 @@ function CardSelectionStep({
 
   return (
     <BlockWithFootnotes
-      footnotes={array_filter_nulls(
+      footnotes={Vec.filter_nulls(
         CARDS_PER_DECK.map(
           (count, index) =>
             count && (

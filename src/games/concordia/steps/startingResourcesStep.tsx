@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
+import { Vec } from "common";
 import React from "react";
-import { array_filter_nulls } from "../../../common";
 import createGameStep from "../../core/steps/createGameStep";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { Resource } from "../utils/CityResourcesEncoder";
@@ -24,7 +24,7 @@ function InstanceManualComponent(): JSX.Element {
     <Typography variant="body1">
       Each player takes{" "}
       <GrammaticalList>
-        {array_filter_nulls(
+        {Vec.filter_nulls(
           Object.entries(STARTING_RESOURCES).map(([resource, count]) =>
             count > 0 ? (
               <React.Fragment key={`starting_resource_${resource}`}>

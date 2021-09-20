@@ -5,13 +5,13 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
-import { array_filter_nulls, nullthrows } from "common";
-import { PlayerId } from "model/Player";
-import { Strategy } from "features/template/Strategy";
+import { nullthrows, Vec } from "common";
 import { playersActions } from "features/players/playersSlice";
+import { Strategy } from "features/template/Strategy";
 import GameMapper, { GameId } from "games/core/GameMapper";
 import { StepId } from "games/core/IGame";
 import { PLAYERS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createPlayersDependencyMetaStep";
+import { PlayerId } from "model/Player";
 
 type ConstantTemplateElement = Readonly<{
   strategy: Strategy.FIXED;
@@ -182,7 +182,7 @@ function markDownstreamElementsStale(
   const downstreamSteps = steps.filter((x) =>
     x.dependencies?.some(({ id }) => id === changedElementId)
   );
-  const downstreamElements = array_filter_nulls(
+  const downstreamElements = Vec.filter_nulls(
     downstreamSteps.map(({ id }) => entities[id])
   );
   downstreamElements.forEach((element) => (element.isStale = true));

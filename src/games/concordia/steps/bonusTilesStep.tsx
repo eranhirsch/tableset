@@ -1,6 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import React, { useMemo } from "react";
-import { array_sort_by, object_filter, object_map } from "../../../common";
+import { object_filter, object_map, Vec } from "common";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
@@ -128,7 +128,7 @@ function IncompleteInstanceDerivedComponent({
           <>
             The resources (sorted in descending value) are{" "}
             <GrammaticalList>
-              {array_sort_by(
+              {Vec.sort_by(
                 Object.entries(RESOURCE_PRICES),
                 // We want descending order, so we negate the value
                 ([, value]) => -value

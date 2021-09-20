@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { array_pick_random_item } from "../../../common";
+import { Vec } from "common";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep, {
@@ -22,7 +22,7 @@ export default createVariableGameStep({
   InstanceVariableComponent,
   InstanceManualComponent: "Choose which player goes first.",
 
-  random: (playerIds) => array_pick_random_item(playerIds),
+  random: (playerIds) => Vec.random_item(playerIds),
 
   fixed: {
     renderSelector: StartingPlayerPanel,
