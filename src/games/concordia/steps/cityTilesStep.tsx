@@ -35,7 +35,7 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
   const theme = useTheme();
 
-  // TODO: Move this to dependancies
+  // TODO: Move this to dependencies
   const mapId = nullthrows(
     useInstanceValue(mapStep),
     `No map value in instance, can't build the city tiles value!`
