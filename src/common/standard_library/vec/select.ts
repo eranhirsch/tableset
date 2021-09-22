@@ -187,7 +187,7 @@ function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[] {
     selectedIndices.add(random_offset(arr));
   }
 
-  return sampleSize < arr.length - sampleSize
+  return sampleSize <= arr.length - sampleSize
     ? [...selectedIndices].sort().map((index) => arr[index])
     : arr.filter((_, index) => !selectedIndices.has(index));
 }
