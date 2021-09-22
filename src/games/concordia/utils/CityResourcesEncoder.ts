@@ -45,7 +45,7 @@ export default class CityResourcesEncoder {
         const zoneDef = CITY_TILES[zone as Zone];
         const permutationIdx = Base32.decode(hashParts[index]);
         const resources = [
-          ...nullthrows(PermutationsLazyArray.of(zoneDef).at(permutationIdx)),
+          ...nullthrows(PermutationsLazyArray.of(zoneDef)[permutationIdx]),
         ];
 
         Object.entries(provinces).forEach(([provinceName, cities]) => {

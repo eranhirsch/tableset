@@ -3,14 +3,14 @@ import { invariant_violation } from "./err/invariant_violation";
 
 function of<T extends keyof any>(
   definition: Readonly<Record<T, number>>
-): PermutationsLazyArray<T>;
+): readonly (readonly T[])[];
 function of<T extends keyof any>(
   permutation: readonly T[]
-): PermutationsLazyArray<T>;
+): readonly (readonly T[])[];
 function of<T extends keyof any>(
   permutation_or_definition: readonly T[] | Readonly<Record<T, number>>
-): PermutationsLazyArray<T> {
-  return new PermutationsLazyArray(
+): readonly (readonly T[])[] {
+  const lazyArray = new PermutationsLazyArray(
     Array.isArray(permutation_or_definition)
       ? permutation_or_definition.reduce((definition, item) => {
           definition[item] = (definition[item] ?? 0) + 1;
@@ -18,6 +18,10 @@ function of<T extends keyof any>(
         }, {} as Record<T, number>)
       : permutation_or_definition
   );
+  const readonlyArrayLike = new Proxy(lazyArray, {
+    get: readonlyArrayGetWrapper,
+  });
+  return readonlyArrayLike as unknown as readonly (readonly T[])[];
 }
 
 export default { of } as const;
@@ -64,7 +68,7 @@ class PermutationsLazyArray<K extends keyof any> {
    * array
    * @returns a permutation, or undefined if the index is out of range.
    */
-  at(index: number): K[] | undefined {
+  at(index: number): readonly K[] | undefined {
     invariant(
       Number.isInteger(index),
       `Only integer numbers are supported: ${index}`
@@ -80,8 +84,8 @@ class PermutationsLazyArray<K extends keyof any> {
 
     // We build the permutation by treating it as a representation of an integer
     // where the radixes change for each "digit" based on the number of
-    // posibilities for that item in our definition.
-    // IMPORTANT: This encoding is sensative to the order of our definition.
+    // possibilities for that item in our definition.
+    // IMPORTANT: This encoding is sensitive to the order of our definition.
     return this.definition.reduceRight((permutation, [item, count]) => {
       // We start by computing how many positions (or slots) are available for
       // us to put the item (and extra copies of it).
@@ -192,7 +196,30 @@ class PermutationsLazyArray<K extends keyof any> {
   }
 }
 
-// Factorials are expensive to compute so we precompute them for the whole
+/**
+ * Based on the response in stackoverflow.
+ * TODO: Extract to it's own utility file.
+ *
+ * @see https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
+ */
+function asInteger(x: any): number | undefined {
+  return typeof x === "string" && !isNaN(x as any) && !isNaN(parseInt(x))
+    ? parseInt(x)
+    : undefined;
+}
+
+function readonlyArrayGetWrapper<T extends keyof any>(
+  target: PermutationsLazyArray<T>,
+  property: string | symbol,
+  receiver: any
+) {
+  const asIndex = asInteger(property);
+  return asIndex != null
+    ? target.at(asIndex)
+    : Reflect.get(target, property, receiver);
+}
+
+// Factorials are expensive to compute so we precomputed them for the whole
 // range of supported numbers for regular JS computations (2**53)
 const PRECOMP_FACT = [
   // 0!
@@ -232,7 +259,7 @@ const PRECOMP_FACT = [
   // 17!
   355_687_428_096_000,
   // 18!
-  // TODO: a typescript bug is preventing us from using numeric seperators
+  // TODO: a typescript bug is preventing us from using numeric separators
   // here. If that is fixed we can add them here too!
   // @see https://www.reddit.com/r/typescript/comments/ppvy41/large_numeric_literal_warning_bug/)
   6402373705728000,
@@ -311,7 +338,7 @@ function positionsToIndex(
  * in between.
  * @param x the number we want to represent with our possible digits.
  * @param digits the number of digits we have available (starting at 0)
- * @param length the lenght of the number we are building
+ * @param length the length of the number we are building
  * @returns a tuple [digit, skip] where `digit` is the biggest digit we found
  * that is still smaller than our `x`, and `skip` is the value of the smallest
  * number that could be represented using our digit as the mostSignificant

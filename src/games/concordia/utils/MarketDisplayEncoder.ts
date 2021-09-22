@@ -23,7 +23,7 @@ export default abstract class MarketDisplayEncoder {
   public static decode(hash: string): readonly string[] {
     const permutationIdx = Base32.decode(hash);
     return nullthrows(
-      PermutationsLazyArray.of(MARKET_DECK_I).at(permutationIdx)
+      PermutationsLazyArray.of(MARKET_DECK_I)[permutationIdx]
     ).slice(0, 7);
   }
 }

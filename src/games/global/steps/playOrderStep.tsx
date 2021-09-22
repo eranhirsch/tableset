@@ -29,7 +29,7 @@ export default createVariableGameStep({
   InstanceManualComponent,
 
   random: (playerIds) =>
-    Vec.random_item(PermutationsLazyArray.of(playerIds.slice(1))),
+    Vec.sample(PermutationsLazyArray.of(playerIds.slice(1)), 1)[0],
 
   fixed: {
     renderSelector: PlayerOrderPanel,

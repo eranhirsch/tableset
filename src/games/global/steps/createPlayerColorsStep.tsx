@@ -35,7 +35,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
       Object.fromEntries(
         Vec.zip(
           playerIds,
-          Vec.random_item(PermutationsLazyArray.of(availableColors))
+          Vec.sample(PermutationsLazyArray.of(availableColors), 1)[0]
         )
       ),
 
