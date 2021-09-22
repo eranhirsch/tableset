@@ -1,8 +1,6 @@
 import { AvatarGroup, Box, Typography } from "@mui/material";
 import { Vec } from "common";
-import { asReadonlyArray } from "common/asReadonlyArray";
 import { useAppSelector } from "../../../app/hooks";
-import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
@@ -29,11 +27,7 @@ export default createVariableGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  random: (playerIds) =>
-    Vec.sample(
-      asReadonlyArray(PermutationsLazyArray.of(playerIds.slice(1))),
-      1
-    )[0],
+  random: (playerIds) => Vec.shuffle(playerIds.slice(1)),
 
   fixed: {
     renderSelector: PlayerOrderPanel,

@@ -169,6 +169,7 @@ function sample<Tv>(
   arr: readonly Tv[],
   sampleSize: 10
 ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
+function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[];
 function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[] {
   if (sampleSize >= arr.length) {
     // Trivial solution
