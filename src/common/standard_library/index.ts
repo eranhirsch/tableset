@@ -11,7 +11,7 @@
  * @see https://docs.hhvm.com/hsl/reference/
  */
 
-export * from "./Vec";
+export * from "./vec";
 export * from "./random_offset";
 export * from "./object_filter";
 export * from "./object_flip";

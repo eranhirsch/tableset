@@ -2,7 +2,7 @@ import { Badge, Chip, Stack, Typography } from "@mui/material";
 import { colorName } from "app/ux/themeWithGameColors";
 import { Vec } from "common";
 import PermutationsLazyArray from "common/PermutationsLazyArray";
-import { array_map_keys } from "common/standard_library/vec/array_map_keys";
+import { array_map_keys } from "common/standard_library/array_map_keys";
 import GamePiecesColor from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
