@@ -17,7 +17,10 @@
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.zip/
  */
-const zip = <Tv, Tu>(first: readonly Tv[], second: readonly Tu[]): [Tv, Tu][] =>
+const zip = <Tv, Tu>(
+  first: readonly Tv[],
+  second: readonly Tu[]
+): readonly (readonly [Tv, Tu])[] =>
   // The output length it limited to the shorter array. We can use slice for
   // this because if `first` is shorter slice wouldn't do anything here and
   // the output array length would be limited by the actual mapping method.

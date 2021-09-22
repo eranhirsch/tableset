@@ -16,7 +16,10 @@
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.chunk/
  */
-const chunk = <Tv>(arr: readonly Tv[], size: number): Tv[][] =>
+const chunk = <Tv>(
+  arr: readonly Tv[],
+  size: number
+): readonly (readonly Tv[])[] =>
   arr.reduce(
     (out, item) => {
       let lastChunk = out[out.length - 1];
@@ -35,7 +38,8 @@ const chunk = <Tv>(arr: readonly Tv[], size: number): Tv[][] =>
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.fill/
  */
-const fill = <Tv>(size: number, value: Tv): Tv[] => new Array(size).fill(value);
+const fill = <Tv>(size: number, value: Tv): readonly Tv[] =>
+  new Array(size).fill(value);
 
 /**
  * @returns a new array where each value is the result of calling the given
@@ -46,23 +50,23 @@ const fill = <Tv>(size: number, value: Tv): Tv[] => new Array(size).fill(value);
 function map_with_key<Tk extends keyof any, Tv1, Tv2>(
   dict: Readonly<Partial<Record<Tk, Tv1>>>,
   valueFunc: (key: Tk, value: Tv1) => Tv2
-): Tv2[];
+): readonly Tv2[];
 function map_with_key<Tv1, Tv2>(
   dict: Readonly<{ [key: string]: Tv1 }>,
   valueFunc: (key: string, value: Tv1) => Tv2
-): Tv2[];
+): readonly Tv2[];
 function map_with_key<Tv1, Tv2>(
   dict: Readonly<{ [key: number]: Tv1 }>,
   valueFunc: (key: number, value: Tv1) => Tv2
-): Tv2[];
+): readonly Tv2[];
 function map_with_key<Tv1, Tv2>(
   dict: Readonly<{ [key: symbol]: Tv1 }>,
   valueFunc: (key: symbol, value: Tv1) => Tv2
-): Tv2[];
+): readonly Tv2[];
 function map_with_key<Tv1, Tv2>(
   dict: Readonly<{ [key: keyof any]: Tv1 }>,
   valueFunc: (key: any, value: Tv1) => Tv2
-): Tv2[] {
+): readonly Tv2[] {
   return Object.entries(dict).map(([key, value]) => valueFunc(key, value));
 }
 

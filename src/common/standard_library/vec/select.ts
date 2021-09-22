@@ -20,9 +20,9 @@ import { random_offset } from "common";
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.diff/
  */
 function diff<Tv>(
-  first: Tv[],
-  ...rest: [readonly Tv[], ...(readonly Tv[])[]]
-): Tv[] {
+  first: readonly Tv[],
+  ...rest: readonly [readonly Tv[], ...(readonly Tv[])[]]
+): readonly Tv[] {
   const filtered = first.filter(
     (item) => !rest.some((otherArray) => otherArray.includes(item))
   );
@@ -38,10 +38,10 @@ function diff<Tv>(
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.diff_by/
  */
 function diff_by<Tv, Ts>(
-  first: Tv[],
+  first: readonly Tv[],
   second: readonly Tv[],
   scalarFunc: (value: Tv) => Ts
-): Tv[] {
+): readonly Tv[] {
   const secondScalars = second.map((item) => scalarFunc(item));
   const filtered = first.filter(
     (item) => !secondScalars.includes(scalarFunc(item))
@@ -52,7 +52,9 @@ function diff_by<Tv, Ts>(
 /**
  * @returns an array containing only non-null values of the given array.
  */
-function filter_nulls<Tv>(arr: (Tv | null | undefined)[]): Tv[] {
+function filter_nulls<Tv>(
+  arr: readonly (Tv | null | undefined)[]
+): readonly Tv[] {
   // The best way to filter nulls in TS? (August 2021)
   const filtered = arr.flatMap((x) => (x == null ? [] : [x]));
   return filtered.length < arr.length ? filtered : (arr as Tv[]);
@@ -70,23 +72,23 @@ function filter_nulls<Tv>(arr: (Tv | null | undefined)[]): Tv[] {
 function filter_with_key<Tk extends keyof any, Tv>(
   dict: Readonly<Partial<Record<Tk, Tv>>>,
   predicate: (key: Tk, value: Tv) => boolean
-): Tv[];
+): readonly Tv[];
 function filter_with_key<Tv>(
   dict: Readonly<{ [key: string]: Tv }>,
   predicate: (key: string, value: Tv) => boolean
-): Tv[];
+): readonly Tv[];
 function filter_with_key<Tv>(
   dict: Readonly<{ [key: number]: Tv }>,
   predicate: (key: number, value: Tv) => boolean
-): Tv[];
+): readonly Tv[];
 function filter_with_key<Tv>(
   dict: Readonly<{ [key: symbol]: Tv }>,
   predicate: (key: symbol, value: Tv) => boolean
-): Tv[];
+): readonly Tv[];
 function filter_with_key<Tv>(
   dict: Readonly<{ [key: keyof any]: Tv }>,
   predicate: (key: any, value: Tv) => boolean
-): Tv[] {
+): readonly Tv[] {
   return Object.entries(dict)
     .filter(([key, value]) => predicate(key, value))
     .map(([, value]) => value);
@@ -101,9 +103,9 @@ function filter_with_key<Tv>(
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.intersect/
  */
 function intersect<Tv>(
-  arr: Tv[],
-  ...rest: [readonly Tv[], ...(readonly Tv[])[]]
-): Tv[] {
+  arr: readonly Tv[],
+  ...rest: readonly [readonly Tv[], ...(readonly Tv[])[]]
+): readonly Tv[] {
   const intersection = arr.filter((item) =>
     rest.every((otherArray) => otherArray.includes(item))
   );
@@ -118,11 +120,13 @@ function intersect<Tv>(
  */
 function keys<Tk extends keyof any>(
   dict: Readonly<Partial<Record<Tk, unknown>>>
-): Tk[];
-function keys(dict: Readonly<{ [key: string]: unknown }>): string[];
-function keys(dict: Readonly<{ [key: number]: unknown }>): number[];
-function keys(dict: Readonly<{ [key: symbol]: unknown }>): symbol[];
-function keys(dict: Readonly<{ [key: keyof any]: unknown }>): unknown[] {
+): readonly Tk[];
+function keys(dict: Readonly<{ [key: string]: unknown }>): readonly string[];
+function keys(dict: Readonly<{ [key: number]: unknown }>): readonly number[];
+function keys(dict: Readonly<{ [key: symbol]: unknown }>): readonly symbol[];
+function keys(
+  dict: Readonly<{ [key: keyof any]: unknown }>
+): readonly unknown[] {
   return Object.keys(dict);
 }
 
@@ -134,7 +138,7 @@ function keys(dict: Readonly<{ [key: keyof any]: unknown }>): unknown[] {
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.sample/
  */
-function sample<Tv>(arr: Tv[], sampleSize: number): Tv[] {
+function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[] {
   if (sampleSize >= arr.length) {
     // Trivial solution
     return arr;
@@ -162,7 +166,7 @@ function sample<Tv>(arr: Tv[], sampleSize: number): Tv[] {
  *
  * @see `Array.slice` for a more general way to create sub-arrays
  */
-const take = <Tv>(arr: Tv[], n: number): Tv[] =>
+const take = <Tv>(arr: readonly Tv[], n: number): readonly Tv[] =>
   // We don't need to create a new array (which slice does implicitly) when
   // the number of elements we want to take is larger than the array itself.
   n < arr.length
@@ -178,7 +182,7 @@ const take = <Tv>(arr: Tv[], n: number): Tv[] =>
  * @see `Vec.unique_by`
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.unique/
  */
-function unique<Tv>(arr: Tv[]): Tv[] {
+function unique<Tv>(arr: readonly Tv[]): readonly Tv[] {
   // We create the de-dupped result aside, so we can compare length and return
   // a new object only if the value changed, this makes it safe for use with
   // React state.
@@ -197,7 +201,10 @@ function unique<Tv>(arr: Tv[]): Tv[] {
  * @see `Vec.unique`
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.unique_by/
  */
-function unique_by<Tv>(arr: Tv[], scalar_func: (item: Tv) => unknown): Tv[] {
+function unique_by<Tv>(
+  arr: readonly Tv[],
+  scalar_func: (item: Tv) => unknown
+): readonly Tv[] {
   const newArr = [
     ...arr
       .reduce(

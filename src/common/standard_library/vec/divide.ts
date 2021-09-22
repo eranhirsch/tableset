@@ -14,9 +14,9 @@
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.partition/
  */
 function partition<Tv>(
-  arr: Tv[],
+  arr: readonly Tv[],
   valuePredicate: (item: Tv) => boolean
-): [Tv[], Tv[]] {
+): readonly [readonly Tv[], readonly Tv[]] {
   const results = arr.map((item) => valuePredicate(item));
 
   // React optimizations to return the input array for trivial results:

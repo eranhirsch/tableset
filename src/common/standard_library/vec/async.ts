@@ -15,9 +15,9 @@
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.filter_async/
  */
 async function filter_async<Tv>(
-  arr: Tv[],
+  arr: readonly Tv[],
   predicate: (item: Tv) => Promise<boolean>
-): Promise<Tv[]> {
+): Promise<readonly Tv[]> {
   const resolved = await Promise.all(arr.map((item) => predicate(item)));
   if (resolved.every((isEnabled) => isEnabled)) {
     return arr;
@@ -35,7 +35,7 @@ async function filter_async<Tv>(
 const map_async = async <Tv1, Tv2>(
   arr: readonly Tv1[],
   asyncFunc: (item: Tv1) => Promise<Tv2>
-): Promise<Tv2[]> => Promise.all(arr.map((item) => asyncFunc(item)));
+): Promise<readonly Tv2[]> => Promise.all(arr.map((item) => asyncFunc(item)));
 
 /**
  * @returns a 2-tuple containing arrays for which the given async predicate
@@ -47,9 +47,9 @@ const map_async = async <Tv1, Tv2>(
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.partition_async/
  */
 async function partition_async<Tv>(
-  arr: Tv[],
+  arr: readonly Tv[],
   valuePredicate: (item: Tv) => Promise<boolean>
-): Promise<[Tv[], Tv[]]> {
+): Promise<readonly [readonly Tv[], readonly Tv[]]> {
   const resolved = await Promise.all(arr.map((item) => valuePredicate(item)));
 
   // React optimizations to return the input array for trivial results:

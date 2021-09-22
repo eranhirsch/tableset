@@ -21,8 +21,11 @@ import { range as rangeIter } from "common";
  * @see `Vec.fill`
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.range/
  */
-const range = (start: number, end: number, step: number = 1): number[] =>
-  Array.from(rangeIter(start, end + 1, step));
+const range = (
+  start: number,
+  end: number,
+  step: number = 1
+): readonly number[] => Array.from(rangeIter(start, end + 1, step));
 
 /**
  * @returns a new array with the values of the given array in a random order.
@@ -33,7 +36,7 @@ const range = (start: number, end: number, step: number = 1): number[] =>
  * @see https://stackoverflow.com/a/2450976
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.shuffle/
  */
-function shuffle<Tv>(arr: readonly Tv[]): Tv[] {
+function shuffle<Tv>(arr: readonly Tv[]): readonly Tv[] {
   const out = [...arr];
   for (const currentIndex of range(arr.length, 0)) {
     const randomIndex = Math.floor(Math.random() * currentIndex);
@@ -57,9 +60,9 @@ function shuffle<Tv>(arr: readonly Tv[]): Tv[] {
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.sort/
  */
 const sort = <Tv>(
-  arr: Tv[],
+  arr: readonly Tv[],
   comparator: (a: Tv, b: Tv) => number = defaultComparator
-) => sort_by(arr, (x) => x, comparator);
+): readonly Tv[] => sort_by(arr, (x) => x, comparator);
 
 /**
  * @returns an array sorted by some scalar property of each value of the given
@@ -74,10 +77,10 @@ const sort = <Tv>(
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.sort_by/
  */
 function sort_by<Tv, Ts>(
-  arr: Tv[],
+  arr: readonly Tv[],
   scalar_func: (x: Tv) => Ts,
   comparator: (a: Ts, b: Ts) => number = defaultComparator
-): Tv[] {
+): readonly Tv[] {
   const sorted = [...arr].sort((a, b) =>
     comparator(scalar_func(a), scalar_func(b))
   );
