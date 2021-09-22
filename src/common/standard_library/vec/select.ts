@@ -138,6 +138,37 @@ function keys(
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.sample/
  */
+function sample<Tv>(arr: readonly Tv[], sampleSize: 1): readonly [Tv];
+function sample<Tv>(arr: readonly Tv[], sampleSize: 2): readonly [Tv, Tv];
+function sample<Tv>(arr: readonly Tv[], sampleSize: 3): readonly [Tv, Tv, Tv];
+function sample<Tv>(
+  arr: readonly Tv[],
+  sampleSize: 4
+): readonly [Tv, Tv, Tv, Tv];
+function sample<Tv>(
+  arr: readonly Tv[],
+  sampleSize: 5
+): readonly [Tv, Tv, Tv, Tv, Tv];
+function sample<Tv>(
+  arr: readonly Tv[],
+  sampleSize: 6
+): readonly [Tv, Tv, Tv, Tv, Tv, Tv];
+function sample<Tv>(
+  arr: readonly Tv[],
+  sampleSize: 7
+): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv];
+function sample<Tv>(
+  arr: readonly Tv[],
+  sampleSize: 8
+): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
+function sample<Tv>(
+  arr: readonly Tv[],
+  sampleSize: 9
+): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
+function sample<Tv>(
+  arr: readonly Tv[],
+  sampleSize: 10
+): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
 function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[] {
   if (sampleSize >= arr.length) {
     // Trivial solution
