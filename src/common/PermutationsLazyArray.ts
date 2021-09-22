@@ -1,17 +1,16 @@
-import { asInteger } from "./asInteger";
 import { invariant } from "./err/invariant";
 import { invariant_violation } from "./err/invariant_violation";
 
 function of<T extends keyof any>(
   definition: Readonly<Record<T, number>>
-): readonly (readonly T[])[];
+): PermutationsLazyArray<T>;
 function of<T extends keyof any>(
   permutation: readonly T[]
-): readonly (readonly T[])[];
+): PermutationsLazyArray<T>;
 function of<T extends keyof any>(
   permutation_or_definition: readonly T[] | Readonly<Record<T, number>>
-): readonly (readonly T[])[] {
-  const lazyArray = new PermutationsLazyArray(
+): PermutationsLazyArray<T> {
+  return new PermutationsLazyArray(
     Array.isArray(permutation_or_definition)
       ? permutation_or_definition.reduce((definition, item) => {
           definition[item] = (definition[item] ?? 0) + 1;
@@ -19,10 +18,6 @@ function of<T extends keyof any>(
         }, {} as Record<T, number>)
       : permutation_or_definition
   );
-  const readonlyArrayLike = new Proxy(lazyArray, {
-    get: readonlyArrayGetWrapper,
-  });
-  return readonlyArrayLike as unknown as readonly (readonly T[])[];
 }
 
 export default { of } as const;
@@ -195,17 +190,6 @@ class PermutationsLazyArray<K extends keyof any> {
   private get permutationLength(): number {
     return this.definition.reduce((sum, [_, count]) => sum + count, 0);
   }
-}
-
-function readonlyArrayGetWrapper<T extends keyof any>(
-  target: PermutationsLazyArray<T>,
-  property: string | symbol,
-  receiver: any
-) {
-  const asIndex = asInteger(property);
-  return asIndex != null
-    ? target.at(asIndex)
-    : Reflect.get(target, property, receiver);
 }
 
 // Factorials are expensive to compute so we precomputed them for the whole

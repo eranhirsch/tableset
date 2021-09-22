@@ -1,3 +1,4 @@
+import { asReadonlyArray } from "common/asReadonlyArray";
 import { nullthrows, random_offset } from "../../../common";
 import Base32 from "../../../common/Base32";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
@@ -45,7 +46,9 @@ export default class CityResourcesEncoder {
         const zoneDef = CITY_TILES[zone as Zone];
         const permutationIdx = Base32.decode(hashParts[index]);
         const resources = [
-          ...nullthrows(PermutationsLazyArray.of(zoneDef)[permutationIdx]),
+          ...nullthrows(
+            asReadonlyArray(PermutationsLazyArray.of(zoneDef))[permutationIdx]
+          ),
         ];
 
         Object.entries(provinces).forEach(([provinceName, cities]) => {

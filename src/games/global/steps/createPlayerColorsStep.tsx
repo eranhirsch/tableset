@@ -1,6 +1,7 @@
 import { Badge, Chip, Stack, Typography } from "@mui/material";
 import { colorName } from "app/ux/themeWithGameColors";
 import { Vec } from "common";
+import { asReadonlyArray } from "common/asReadonlyArray";
 import PermutationsLazyArray from "common/PermutationsLazyArray";
 import { array_map_keys } from "common/standard_library/array_map_keys";
 import GamePiecesColor from "model/GamePiecesColor";
@@ -35,7 +36,10 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
       Object.fromEntries(
         Vec.zip(
           playerIds,
-          Vec.sample(PermutationsLazyArray.of(availableColors), 1)[0]
+          Vec.sample(
+            asReadonlyArray(PermutationsLazyArray.of(availableColors)),
+            1
+          )[0]
         )
       ),
 

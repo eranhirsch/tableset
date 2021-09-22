@@ -1,3 +1,4 @@
+import { asReadonlyArray } from "common/asReadonlyArray";
 import { nullthrows, random_offset } from "../../../common";
 import Base32 from "../../../common/Base32";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
@@ -23,7 +24,7 @@ export default abstract class MarketDisplayEncoder {
   public static decode(hash: string): readonly string[] {
     const permutationIdx = Base32.decode(hash);
     return nullthrows(
-      PermutationsLazyArray.of(MARKET_DECK_I)[permutationIdx]
+      asReadonlyArray(PermutationsLazyArray.of(MARKET_DECK_I))[permutationIdx]
     ).slice(0, 7);
   }
 }
