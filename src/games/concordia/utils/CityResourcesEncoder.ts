@@ -2,7 +2,9 @@ import { asReadonlyArray } from "common/asReadonlyArray";
 import { nullthrows, random_offset } from "../../../common";
 import Base32 from "../../../common/Base32";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
-import { MapBoard, MapId, MAPS, Zone } from "./Maps";
+import { MapId, MAPS, Zone } from "./Maps";
+
+const HASH_SEPARATOR = "-";
 
 export type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
 
@@ -20,31 +22,21 @@ export type CityResourceMapping = Readonly<{
   [provinceName: string]: Readonly<{ [cityName: string]: Resource }>;
 }>;
 
-export default class CityResourcesEncoder {
-  private static readonly HASH_SEPERATOR = "-";
-
-  public static forMapId(mapId: MapId) {
-    return new CityResourcesEncoder(MAPS[mapId]);
-  }
-
-  private constructor(private map: MapBoard) {}
-
-  public randomHash(): string {
-    return Object.keys(this.map.provinces)
+export default {
+  randomHash: (mapId: MapId): string =>
+    Object.keys(MAPS[mapId].provinces)
       .map((zone) =>
         Base32.encode(
           random_offset(PermutationsLazyArray.of(CITY_TILES[zone as Zone]))
         )
       )
-      .join(CityResourcesEncoder.HASH_SEPERATOR);
-  }
+      .join(HASH_SEPARATOR),
 
-  public decode(hash: string): CityResourceMapping {
-    const hashParts = hash.split(CityResourcesEncoder.HASH_SEPERATOR);
-    const x = Object.entries(this.map.provinces).reduce(
+  decode: (mapId: MapId, hash: string): CityResourceMapping =>
+    Object.entries(MAPS[mapId].provinces).reduce(
       (result, [zone, provinces], index) => {
         const zoneDef = CITY_TILES[zone as Zone];
-        const permutationIdx = Base32.decode(hashParts[index]);
+        const permutationIdx = Base32.decode(hash.split(HASH_SEPARATOR)[index]);
         const resources = [
           ...nullthrows(
             asReadonlyArray(PermutationsLazyArray.of(zoneDef))[permutationIdx]
@@ -65,7 +57,5 @@ export default class CityResourcesEncoder {
         return result;
       },
       {} as { [provinceName: string]: { [cityName: string]: Resource } }
-    );
-    return x;
-  }
-}
+    ),
+} as const;

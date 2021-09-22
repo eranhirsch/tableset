@@ -27,7 +27,7 @@ export default createVariableGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  random: (mapId) => CityResourcesEncoder.forMapId(mapId).randomHash(),
+  random: (mapId) => CityResourcesEncoder.randomHash(mapId),
 });
 
 function InstanceVariableComponent({
@@ -42,7 +42,7 @@ function InstanceVariableComponent({
   );
 
   const provinces = useMemo(
-    () => CityResourcesEncoder.forMapId(mapId).decode(hash),
+    () => CityResourcesEncoder.decode(mapId, hash),
     [hash, mapId]
   );
 

@@ -166,8 +166,7 @@ function ComputedInstaneComponent({
   hash: string;
 }): JSX.Element | null {
   const provinceResource = useMemo(() => {
-    const provinceCityResources =
-      CityResourcesEncoder.forMapId(mapId).decode(hash);
+    const provinceCityResources = CityResourcesEncoder.decode(mapId, hash);
     return object_map(provinceCityResources, (cityResources) =>
       Object.values(cityResources).reduce((mostValuableResource, resource) =>
         RESOURCE_PRICES[mostValuableResource] < RESOURCE_PRICES[resource]
