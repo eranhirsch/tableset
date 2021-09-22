@@ -39,7 +39,7 @@ const createGenericItemsGameStep = <T extends string = string>({
     InstanceManualComponent,
     InstanceVariableComponent,
 
-    random: () => Vec.random_item(itemIds),
+    random: () => Vec.sample(itemIds, 1)[0],
 
     recommended,
 

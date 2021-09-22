@@ -22,7 +22,7 @@ export default createVariableGameStep({
   InstanceVariableComponent,
   InstanceManualComponent: "Choose which player goes first.",
 
-  random: (playerIds) => Vec.random_item(playerIds),
+  random: (playerIds) => Vec.sample(playerIds, 1)[0],
 
   fixed: {
     renderSelector: StartingPlayerPanel,
