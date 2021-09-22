@@ -85,5 +85,16 @@ function readonlyArrayGetWrapper<T>(
     };
   }
 
+  if (property === "forEach" && target.forEach == null) {
+    return (
+      callbackfn: (value: T, index: number, array: readonly T[]) => void,
+      thisArg?: any
+    ): void => {
+      for (let i = 0; i < target.length; i++) {
+        callbackfn(target.at(i)!, i, receiver);
+      }
+    };
+  }
+
   Reflect.get(target, property, receiver);
 }
