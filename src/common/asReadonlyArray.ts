@@ -1,6 +1,7 @@
 import { asInteger } from "./asInteger";
 
-type Indexable<T> = Partial<ReadonlyArray<T>> & {
+type Indexable<T> = {
+  readonly length: number;
   at(index: number): T | undefined;
 };
 
@@ -19,7 +20,7 @@ function readonlyArrayGetWrapper<T>(
     return target.at(asIndex);
   }
 
-  if (property === "indexOf" && target.indexOf == null) {
+  if (property === "indexOf") {
     return (searchElement: T, fromIndex: number = 0) => {
       for (let i = fromIndex; i < target.length; i++) {
         if (target.at(i) === searchElement) {
@@ -30,7 +31,7 @@ function readonlyArrayGetWrapper<T>(
     };
   }
 
-  if (property === "findIndex" && target.findIndex == null) {
+  if (property === "findIndex") {
     return (
       predicate: (element: T, index: number, array: readonly T[]) => boolean
     ) => {
@@ -43,7 +44,7 @@ function readonlyArrayGetWrapper<T>(
     };
   }
 
-  if (property === "find" && target.find == null) {
+  if (property === "find") {
     return (
       predicate: (element: T, index: number, array: readonly T[]) => boolean
     ) => {
@@ -57,7 +58,7 @@ function readonlyArrayGetWrapper<T>(
     };
   }
 
-  if (property === "filter" && target.filter == null) {
+  if (property === "filter") {
     return (
       predicate: (value: T, index: number, array: readonly T[]) => unknown,
       thisArg?: any
@@ -73,7 +74,7 @@ function readonlyArrayGetWrapper<T>(
     };
   }
 
-  if (property === "map" && target.map == null) {
+  if (property === "map") {
     return (
       callbackfn: (value: T, index: number, array: T[]) => unknown
     ): unknown[] => {
@@ -85,7 +86,7 @@ function readonlyArrayGetWrapper<T>(
     };
   }
 
-  if (property === "forEach" && target.forEach == null) {
+  if (property === "forEach") {
     return (
       callbackfn: (value: T, index: number, array: readonly T[]) => void,
       thisArg?: any
