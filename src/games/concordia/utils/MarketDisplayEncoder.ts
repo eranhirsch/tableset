@@ -14,17 +14,14 @@ export const MARKET_DECK_I = [
   "Smith",
 ] as const;
 
-export default abstract class MarketDisplayEncoder {
-  public static randomHash(): string {
-    return Base32.encode(
-      random_offset(PermutationsLazyArray.of(MARKET_DECK_I))
-    );
-  }
+export default {
+  randomHash: (): string =>
+    Base32.encode(random_offset(PermutationsLazyArray.of(MARKET_DECK_I))),
 
-  public static decode(hash: string): readonly string[] {
-    const permutationIdx = Base32.decode(hash);
-    return nullthrows(
-      asReadonlyArray(PermutationsLazyArray.of(MARKET_DECK_I))[permutationIdx]
-    ).slice(0, 7);
-  }
-}
+  decode: (hash: string): readonly string[] =>
+    nullthrows(
+      asReadonlyArray(PermutationsLazyArray.of(MARKET_DECK_I))[
+        Base32.decode(hash)
+      ]
+    ).slice(0, 7),
+} as const;
