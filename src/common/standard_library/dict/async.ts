@@ -1,47 +1,24 @@
 /**
  * Ported (manually) from HSL.
  *
-//  * Methods not needed in JS:
-//  * * `from_async` === `Promise.all`
-//  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/async.php
  */
+import { Vec } from "common";
+import { Dict as transformDict } from "./transform";
 
 /**
  * @returns a new mapper-object with each value `await`ed in parallel.
  */
-async function from_async<Tk extends keyof any, Tv>(
+const from_async = async <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Promise<Tv>>>
-): Promise<Readonly<Record<Tk, Tv>>>;
-async function from_async<Tv>(
-  dict: Readonly<{
-    [key: string]: Promise<Tv>;
-  }>
-): Promise<{ [key: string]: Tv }>;
-async function from_async<Tv>(
-  dict: Readonly<{
-    [key: number]: Promise<Tv>;
-  }>
-): Promise<{ [key: number]: Tv }>;
-async function from_async<Tv>(
-  dict: Readonly<{
-    [key: symbol]: Promise<Tv>;
-  }>
-): Promise<{ [key: symbol]: Tv }>;
-async function from_async<Tv>(
-  dict: Readonly<{
-    [key: string | number | symbol]: Promise<Tv>;
-  }>
-): Promise<{ [key: string | number | symbol]: Tv }> {
-  return Object.fromEntries(
+): Promise<Readonly<Record<Tk, Tv>>> =>
+  transformDict.from_entries(
     await Promise.all(
-      Object.entries(dict).map(async ([key, valueAsync]) => [
-        key,
-        await valueAsync,
-      ])
+      Object.entries(dict).map(
+        async ([key, valuePromise]) => [key, await valuePromise] as [Tk, Tv]
+      )
     )
   );
-}
 
 /**
  * @returns a new mapper-obj where each value is the result of calling the given
@@ -49,72 +26,98 @@ async function from_async<Tv>(
  *
  * @see `Dict.from_keys` for non-async functions
  */
-async function from_keys_async<Tk extends keyof any, Tv>(
-  arr: readonly Tk[],
-  asyncFunc: (key: Tk) => Promise<Tv>
-): Promise<Readonly<Record<Tk, Tv>>>;
-async function from_keys_async<Tv>(
-  arr: readonly string[],
-  asyncFunc: (key: string) => Promise<Tv>
-): Promise<Readonly<{ [key: string]: Tv }>>;
-async function from_keys_async<Tv>(
-  arr: readonly number[],
-  asyncFunc: (key: number) => Promise<Tv>
-): Promise<Readonly<{ [key: number]: Tv }>>;
-async function from_keys_async<Tv>(
-  arr: readonly symbol[],
-  asyncFunc: (key: symbol) => Promise<Tv>
-): Promise<Readonly<{ [key: symbol]: Tv }>>;
-async function from_keys_async<Tv>(
-  arr: readonly (string | number | symbol)[],
-  asyncFunc: (key: any) => Promise<Tv>
-): Promise<Readonly<{ [key: string | number | symbol]: Tv }>> {
-  return Object.fromEntries(
-    await Promise.all(arr.map(async (key) => [key, await asyncFunc(key)]))
+const from_keys_async = async <Tk extends keyof any, Tv>(
+  keys: readonly Tk[],
+  valueFunc: (key: Tk) => Promise<Tv>
+): Promise<Readonly<Record<Tk, Tv>>> =>
+  transformDict.from_entries(
+    await Vec.map_async(
+      keys,
+      async (key) => [key, await valueFunc(key)] as [Tk, Tv]
+    )
   );
-}
 
 /**
  * @returns a new mapper-obj containing only the values for which the given
  * async predicate returns `true`.
  *
- * @see `Dict\filter()` for non-async predicates.
+ * @see `Dict.filter()` for non-async predicates
  */
-async function filter_async<Tk extends keyof any, Tv>(
+const filter_async = async <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
-  valuePredicate: (key: Tk) => Promise<boolean>
+  valuePredicate: (value: Tv) => Promise<boolean>
+): Promise<Readonly<Record<Tk, Tv>>> =>
+  filter_with_key_async(dict, (_, value) => valuePredicate(value));
+
+/**
+ * Like `filter_async`, but lets you utilize the keys of your dict too.
+ *
+ * @see `Dict.filter_with_key()` for non-async filters with key.
+ */
+async function filter_with_key_async<Tk extends keyof any, Tv>(
+  dict: Readonly<Record<Tk, Tv>>,
+  predicate: (key: Tk, value: Tv) => Promise<boolean>
 ): Promise<Readonly<Record<Tk, Tv>>>;
-async function filter_async<Tv>(
+async function filter_with_key_async<Tv>(
   dict: Readonly<{ [key: string]: Tv }>,
-  valuePredicate: (key: string) => Promise<boolean>
+  predicate: (key: string, value: Tv) => Promise<boolean>
 ): Promise<Readonly<{ [key: string]: Tv }>>;
-async function filter_async<Tv>(
+async function filter_with_key_async<Tv>(
   dict: Readonly<{ [key: number]: Tv }>,
-  valuePredicate: (key: number) => Promise<boolean>
+  predicate: (key: number, value: Tv) => Promise<boolean>
 ): Promise<Readonly<{ [key: number]: Tv }>>;
-async function filter_async<Tv>(
+async function filter_with_key_async<Tv>(
   dict: Readonly<{ [key: symbol]: Tv }>,
-  valuePredicate: (key: symbol) => Promise<boolean>
+  predicate: (key: symbol, value: Tv) => Promise<boolean>
 ): Promise<Readonly<{ [key: symbol]: Tv }>>;
-async function filter_async<Tv>(
-  dict: Readonly<{ [key: string | number | symbol]: Tv }>,
-  valuePredicate: (key: any) => Promise<boolean>
-): Promise<Readonly<{ [key: string | number | symbol]: Tv }>> {
+async function filter_with_key_async<Tv>(
+  dict: Readonly<{ [key: keyof any]: Tv }>,
+  predicate: (key: any, value: Tv) => Promise<boolean>
+): Promise<Readonly<{ [key: keyof any]: Tv }>> {
   return Object.fromEntries(
     (
       await Promise.all(
         Object.entries(dict).map(async ([key, value]) => [
           key,
           value,
-          await valuePredicate(value),
+          await predicate(key, value),
         ])
       )
     ).filter(([, , isEnabled]) => isEnabled)
   );
 }
 
+/**
+ * @returns a new mapper-obj where each value is the result of calling the given
+ * async function on the original value.
+ *
+ * @see `Dict.map` for non-async functions.
+ */
+const map_async = async <Tk extends keyof any, Tv1, Tv2>(
+  dict: Readonly<Record<Tk, Tv1>>,
+  valueFunc: (value: Tv1) => Promise<Tv2>
+): Promise<Readonly<Record<Tk, Tv2>>> =>
+  map_with_key_async(dict, (_, value) => valueFunc(value));
+
+/**
+ * @returns a new mapper-obj where each value is the result of calling the given
+ * async function on the original key and value.
+ *
+ * @see `Dict.map` for non-async functions
+ */
+const map_with_key_async = async <Tk extends keyof any, Tv1, Tv2>(
+  dict: Readonly<Record<Tk, Tv1>>,
+  valueFunc: (key: Tk, value: Tv1) => Promise<Tv2>
+): Promise<Readonly<Record<Tk, Tv2>>> =>
+  from_async(
+    transformDict.map_with_key(dict, (key, value) => valueFunc(key, value))
+  );
+
 export const Dict = {
+  filter_async,
+  filter_with_key_async,
   from_async,
   from_keys_async,
-  filter_async,
+  map_async,
+  map_with_key_async,
 } as const;
