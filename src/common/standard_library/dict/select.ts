@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/select.php
  */
-import { C, Dict as d, Vec } from "common";
+import { C, Dict as D, Vec } from "common";
 
 /**
  * @returns a mapper-obj containing only the entries of the first mapper-obj
@@ -29,7 +29,7 @@ const drop = <Tk extends keyof any, Tv>(
   n: number
 ): Readonly<Record<Tk, Tv>> =>
   // Optimize for react by returning the same object for a trivial `n` value
-  n === 0 ? dict : d.from_entries(d.entries(dict).slice(n));
+  n === 0 ? dict : D.from_entries(D.entries(dict).slice(n));
 
 /**
  * @returns a mapper-obj containing only the values for which the given
@@ -56,10 +56,10 @@ function filter_with_keys<Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   predicate: (key: Tk, value: Tv) => boolean
 ): Readonly<Record<Tk, Tv>> {
-  const filtered = d.from_entries(
-    d.entries(dict).filter(([key, value]) => predicate(key, value))
+  const filtered = D.from_entries(
+    D.entries(dict).filter(([key, value]) => predicate(key, value))
   );
-  // Optimize for react by returning the same object if nothing got filtered.
+  // Optimize for react by returning the same object if nothing got filtereD.
   return C.count(filtered) === C.count(dict) ? dict : filtered;
 }
 
@@ -74,18 +74,18 @@ const filter_keys = <Tk extends keyof any, Tv>(
 
 /**
  * Given a mapper-obj with nullable values, returns a mapper-obj with null
- * values removed.
+ * values removeD.
  */
 function filter_nulls<Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv | null | undefined>>
 ): Readonly<Record<Tk, Tv>> {
-  const filtered = d.entries(dict).reduce((noNulls, [key, value]) => {
+  const filtered = D.entries(dict).reduce((noNulls, [key, value]) => {
     if (value != null) {
       noNulls[key] = value;
     }
     return noNulls;
   }, {} as Record<Tk, Tv>);
-  // Optimize for react by returning the same object if nothing got filtered.
+  // Optimize for react by returning the same object if nothing got filtereD.
   return C.count(dict) === C.count(filtered)
     ? (dict as Record<Tk, Tv>)
     : filtered;
@@ -106,7 +106,7 @@ function select_keys<Tk extends keyof any, Tv>(
     }
     return selected;
   }, {} as Record<Tk, Tv>);
-  // Optimize for react by returning the same object if everything got selected.
+  // Optimize for react by returning the same object if everything got selecteD.
   return C.count(selected) === C.count(dict) ? dict : selected;
 }
 
@@ -121,7 +121,7 @@ const take = <Tk extends keyof any, Tv>(
   n: number
 ): Readonly<Record<Tk, Tv>> =>
   // If we need to take more entries than the dict has just return the dict.
-  n >= C.count(dict) ? dict : d.from_entries(Vec.take(d.entries(dict), n));
+  n >= C.count(dict) ? dict : D.from_entries(Vec.take(D.entries(dict), n));
 
 /**
  * @returns a mapper-obj in which each value appears exactly once. In case of
@@ -132,10 +132,10 @@ const take = <Tk extends keyof any, Tv>(
 function unique<Tk extends keyof any, Tv extends keyof any>(
   dict: Readonly<Record<Tk, Tv>>
 ) {
-  const dedupped = d.flip(dict);
+  const dedupped = D.flip(dict);
   // If after flipping the object has the same number of entries then it had
   // no non-unique values and we can return the same object back.
-  return C.count(dedupped) === C.count(dict) ? dict : d.flip(dedupped);
+  return C.count(dedupped) === C.count(dict) ? dict : D.flip(dedupped);
 }
 
 /**
@@ -158,7 +158,7 @@ const unique_by = <Tk extends keyof any, Tv>(
     // keys which when selected from the original dict would create a mapper-obj
     // where the values map to unique values via the scalarFunc.
     ...new Map(
-      d.entries(dict).map(([key, value]) => [scalarFunc(value), key])
+      D.entries(dict).map(([key, value]) => [scalarFunc(value), key])
     ).values(),
   ]);
 

@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/combine.php
  */
-import { Dict as d, Vec } from "common";
+import { Dict as D, Vec } from "common";
 
 /**
  * @returns a new mapper-obj where each element in `keys` maps to the
@@ -12,7 +12,7 @@ import { Dict as d, Vec } from "common";
 const associate = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   values: readonly Tv[]
-): Readonly<Record<Tk, Tv>> => d.from_entries(Vec.zip(keys, values));
+): Readonly<Record<Tk, Tv>> => D.from_entries(Vec.zip(keys, values));
 
 /**
  * @returns a new mapper-obj formed by merging the mapper-obj elements of the

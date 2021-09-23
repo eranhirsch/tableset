@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/transform.php
  */
 
-import { Vec, Dict as d } from "common";
+import { Vec, Dict as D } from "common";
 
 /**
  * @returns an array containing the original dict split into chunks of the given
@@ -17,7 +17,7 @@ const chunk = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   size: number
 ): readonly Readonly<Record<Tk, Tv>>[] =>
-  Vec.chunk(d.entries(dict), size).map((chunk) => from_entries(chunk));
+  Vec.chunk(D.entries(dict), size).map((chunk) => from_entries(chunk));
 
 /**
  * @returns a new mapper-obj mapping each value to the number of times it
@@ -196,7 +196,7 @@ const pull_with_key = <Tk1 extends keyof any, Tk2 extends keyof any, Tv1, Tv2>(
   keyFunc: (key: Tk1, value: Tv1) => Tk2
 ): Readonly<Record<Tk2, Tv2>> =>
   pull(
-    d.entries(dict),
+    D.entries(dict),
     ([key, value]) => valueFunc(key, value),
     ([key, value]) => keyFunc(key, value)
   );

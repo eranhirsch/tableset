@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/divide.php
  */
-import { C, Dict as d, tuple } from "common";
+import { C, Dict as D, tuple } from "common";
 
 /**
  * @returns a 2-tuple containing mapper-objs for which the given predicate
@@ -28,7 +28,7 @@ function partition_with_key<Tk extends keyof any, Tv>(
   Readonly<Partial<Record<Tk, Tv>>>,
   Readonly<Partial<Record<Tk, Tv>>>
 ] {
-  const enabled = d.filter_with_keys(dict, (key, value) =>
+  const enabled = D.filter_with_keys(dict, (key, value) =>
     predicate(key, value)
   );
 
@@ -46,7 +46,7 @@ function partition_with_key<Tk extends keyof any, Tv>(
 
   return tuple(
     enabled,
-    d.filter_keys(dict, (key) => !(key in enabled))
+    D.filter_keys(dict, (key) => !(key in enabled))
   );
 }
 
