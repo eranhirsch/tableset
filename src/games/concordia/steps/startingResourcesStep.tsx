@@ -25,7 +25,7 @@ function InstanceManualComponent(): JSX.Element {
       Each player takes{" "}
       <GrammaticalList>
         {Vec.filter_nulls(
-          Object.entries(STARTING_RESOURCES).map(([resource, count]) =>
+          Vec.map_with_key(STARTING_RESOURCES, (resource, count) =>
             count > 0 ? (
               <React.Fragment key={`starting_resource_${resource}`}>
                 {count} <strong>{resourceLabel(resource as Resource)}</strong>
