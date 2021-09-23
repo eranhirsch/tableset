@@ -4,9 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/introspect.php
  */
 
-type Traversable<T> = readonly T[] | Readonly<Record<keyof any, T>>;
-const asArray = <T>(traversable: Traversable<T>): readonly T[] =>
-  Array.isArray(traversable) ? traversable : Object.values(traversable);
+import { asArray, Traversable } from "../internal/Traversable";
 
 /**
  * @returns true if the given predicate returns true for any element of the

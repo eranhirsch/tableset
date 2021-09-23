@@ -7,6 +7,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/order.php
  */
 import { range as rangeIter } from "common";
+import { defaultComparator } from "../internal/defaultComparator";
 
 /**
  * @returns a new array containing the range of numbers from start to end
@@ -88,18 +89,6 @@ function sort_by<Tv, Ts>(
   // the input array, and in that case return the same object instead of a new
   // copy of it.
   return sorted.some((item, idx) => item !== arr[idx]) ? sorted : arr;
-}
-
-function defaultComparator<K>(a: K, b: K): number {
-  if (typeof a === "string" && typeof b === "string") {
-    return a === b ? 0 : a < b ? -1 : 1;
-  }
-
-  if (typeof a === "number" && typeof b === "number") {
-    return a - b;
-  }
-
-  return defaultComparator(`${a}`, `${b}`);
 }
 
 export const Vec = {
