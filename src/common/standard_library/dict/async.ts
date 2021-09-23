@@ -32,8 +32,8 @@ const from_keys_async = async <Tk extends keyof any, Tv>(
   );
 
 /**
- * @returns a new mapper-obj containing only the values for which the given
- * async predicate returns `true`.
+ * @returns a mapper-obj containing only the values for which the given async
+ * predicate returns `true`.
  *
  * @see `Dict.filter()` for non-async predicates
  */
