@@ -3,7 +3,6 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/introspect.php
  */
-
 import { asArray, Traversable } from "../internal/Traversable";
 
 /**
