@@ -48,38 +48,19 @@ const filter_async = async <Tk extends keyof any, Tv>(
  *
  * @see `Dict.filter_with_key()` for non-async filters with key.
  */
-async function filter_with_key_async<Tk extends keyof any, Tv>(
+const filter_with_key_async = async <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   predicate: (key: Tk, value: Tv) => Promise<boolean>
-): Promise<Readonly<Record<Tk, Tv>>>;
-async function filter_with_key_async<Tv>(
-  dict: Readonly<{ [key: string]: Tv }>,
-  predicate: (key: string, value: Tv) => Promise<boolean>
-): Promise<Readonly<{ [key: string]: Tv }>>;
-async function filter_with_key_async<Tv>(
-  dict: Readonly<{ [key: number]: Tv }>,
-  predicate: (key: number, value: Tv) => Promise<boolean>
-): Promise<Readonly<{ [key: number]: Tv }>>;
-async function filter_with_key_async<Tv>(
-  dict: Readonly<{ [key: symbol]: Tv }>,
-  predicate: (key: symbol, value: Tv) => Promise<boolean>
-): Promise<Readonly<{ [key: symbol]: Tv }>>;
-async function filter_with_key_async<Tv>(
-  dict: Readonly<{ [key: keyof any]: Tv }>,
-  predicate: (key: any, value: Tv) => Promise<boolean>
-): Promise<Readonly<{ [key: keyof any]: Tv }>> {
-  return Object.fromEntries(
-    (
-      await Promise.all(
-        Object.entries(dict).map(async ([key, value]) => [
-          key,
-          value,
-          await predicate(key, value),
-        ])
-      )
-    ).filter(([, , isEnabled]) => isEnabled)
+): Promise<Readonly<Record<Tk, Tv>>> =>
+  d.map(
+    d.filter(
+      await d.map_with_key_async(dict, async (key, value) =>
+        tuple(value, await predicate(key, value))
+      ),
+      ([, isEnabled]) => isEnabled
+    ),
+    ([value]) => value
   );
-}
 
 /**
  * @returns a new mapper-obj where each value is the result of calling the given
