@@ -11,7 +11,8 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/select.php
  */
-import { random_offset } from "common";
+
+import { Random } from "common";
 
 /**
  * @returns an array containing only the elements of the first array that do
@@ -185,7 +186,7 @@ function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[] {
   // We use a set so that we can ignore duplicates
   const selectedIndices: Set<number> = new Set();
   while (selectedIndices.size < Math.min(sampleSize, arr.length - sampleSize)) {
-    selectedIndices.add(random_offset(arr));
+    selectedIndices.add(Random.index(arr));
   }
 
   return sampleSize <= arr.length - sampleSize

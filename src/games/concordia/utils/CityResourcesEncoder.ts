@@ -1,6 +1,6 @@
 import { asReadonlyArray } from "common/asReadonlyArray";
-import { nullthrows, random_offset } from "../../../common";
-import Base32 from "../../../common/Base32";
+import { nullthrows, Random } from "common";
+import Base32 from "common/Base32";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { MapId, MAPS, Zone } from "./Maps";
 
@@ -27,7 +27,7 @@ export default {
     Object.keys(MAPS[mapId].provinces)
       .map((zone) =>
         Base32.encode(
-          random_offset(PermutationsLazyArray.of(CITY_TILES[zone as Zone]))
+          Random.index(PermutationsLazyArray.of(CITY_TILES[zone as Zone]))
         )
       )
       .join(HASH_SEPARATOR),

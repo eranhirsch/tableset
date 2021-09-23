@@ -15,5 +15,5 @@ export * from "./c";
 export * from "./vec";
 export * from "./dict";
 export * from "./tuple";
-export * from "./random_offset";
+export * from "./random";
 export * from "./range";
