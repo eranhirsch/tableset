@@ -1,7 +1,7 @@
 import { Grid, Typography, useTheme } from "@mui/material";
+import { C, Dict, MathUtils, nullthrows, Vec } from "common";
+import { useInstanceValue } from "features/instance/useInstanceValue";
 import React, { useMemo } from "react";
-import { nullthrows } from "../../../common";
-import { useInstanceValue } from "../../../features/instance/useInstanceValue";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
@@ -52,29 +52,26 @@ function InstanceVariableComponent({
         Place the matching city resource tile for each city on the map:
       </Typography>
       <Grid container component="figure" sx={{ margin: 0 }}>
-        {Object.entries(provinces).map(([provinceName, cities]) => {
-          const mapping = Object.entries(cities);
-          return (
-            <React.Fragment key={provinceName}>
-              <Grid item key={provinceName} xs={3} alignSelf="center">
-                <Typography variant="subtitle2">
-                  <RomanTitle>{provinceName}</RomanTitle>
+        {Vec.map_with_key(provinces, (provinceName, cities) => (
+          <React.Fragment key={provinceName}>
+            <Grid item key={provinceName} xs={3} alignSelf="center">
+              <Typography variant="subtitle2">
+                <RomanTitle>{provinceName}</RomanTitle>
+              </Typography>
+            </Grid>
+            {Vec.map_with_key(cities, (cityName, resource) => (
+              <Grid item key={cityName} xs={3} textAlign="center">
+                <Typography variant="caption">
+                  {resourceLabel(resource)}
+                </Typography>
+                <Typography variant="body2">
+                  <RomanTitle>{cityName}</RomanTitle>
                 </Typography>
               </Grid>
-              {mapping.map(([cityName, resource]) => (
-                <Grid item key={cityName} xs={3} textAlign="center">
-                  <Typography variant="caption">
-                    {resourceLabel(resource)}
-                  </Typography>
-                  <Typography variant="body2">
-                    <RomanTitle>{cityName}</RomanTitle>
-                  </Typography>
-                </Grid>
-              ))}
-              {mapping.length === 2 && <Grid item xs={3} />}
-            </React.Fragment>
-          );
-        })}
+            ))}
+            {C.count(cities) === 2 && <Grid item xs={3} />}
+          </React.Fragment>
+        ))}
         <Typography
           component="figcaption"
           variant="caption"
@@ -90,7 +87,7 @@ function InstanceVariableComponent({
 function InstanceManualComponent() {
   const mapId = useInstanceValue(mapStep);
 
-  const allZones = Object.keys(CITY_TILES) as Zone[];
+  const allZones = Vec.keys(CITY_TILES);
 
   let lettersStep = null;
   let gatheringStep;
@@ -99,9 +96,7 @@ function InstanceManualComponent() {
     // We don't even know what map is used, we need to explain everything!
     lettersStep = (
       <BlockWithFootnotes
-        footnotes={[
-          <GrammaticalList>{Object.keys(CITY_TILES)}</GrammaticalList>,
-        ]}
+        footnotes={[<GrammaticalList>{Vec.keys(CITY_TILES)}</GrammaticalList>]}
       >
         {(Footnote) => (
           <>
@@ -124,7 +119,7 @@ function InstanceManualComponent() {
       </BlockWithFootnotes>
     );
   } else {
-    const usedZones = Object.keys(MAPS[mapId].provinces) as Zone[];
+    const usedZones = Vec.keys(MAPS[mapId].provinces);
     if (usedZones.length === allZones.length) {
       gatheringStep = (
         <BlockWithFootnotes
@@ -179,16 +174,17 @@ function InstanceManualComponent() {
   );
 }
 
-function TilesCountFootnote({ zones }: { zones: Zone[] }) {
+function TilesCountFootnote({ zones }: { zones: readonly Zone[] }) {
   return (
     <GrammaticalList>
-      {Object.entries(CITY_TILES)
-        .filter(([zone]) => zones.includes(zone as Zone))
-        .map(([zone, tiles]) => (
+      {Vec.map_with_key(
+        Dict.filter_keys(CITY_TILES, (zone) => zones.includes(zone)),
+        (zone, tiles) => (
           <React.Fragment key={`zone_${zone}`}>
-            {zone}: {Object.values(tiles).reduce((sum, x) => sum + x)} tiles
+            {zone}: {MathUtils.sum(tiles)} tiles
           </React.Fragment>
-        ))}
+        )
+      )}
     </GrammaticalList>
   );
 }
