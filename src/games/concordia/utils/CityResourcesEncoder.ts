@@ -1,6 +1,4 @@
-import { asReadonlyArray } from "common/asReadonlyArray";
-import { nullthrows, Random } from "common";
-import { Num, MathUtils } from "common";
+import { C, Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
 import { MapId, MAPS, Zone } from "./Maps";
 
 const HASH_SEPARATOR = "-";
@@ -17,50 +15,50 @@ export const CITY_TILES: Readonly<Record<Zone, ZoneResourceTiles>> =
     D: Object.freeze({ bricks: 1, food: 1, tools: 1, wine: 1, cloth: 1 }),
   });
 
-export type CityResourceMapping = Readonly<{
-  [provinceName: string]: Readonly<{ [cityName: string]: Resource }>;
+type CityResources = Readonly<{ [cityName: string]: Resource }>;
+type ProvinceCityResources = Readonly<{
+  [provinceName: string]: CityResources;
 }>;
 
 export default {
   randomHash: (mapId: MapId): string =>
-    Object.keys(MAPS[mapId].provinces)
-      .map((zone) =>
-        Num.encode_base32(
-          Random.index(
-            MathUtils.permutations_lazy_array(CITY_TILES[zone as Zone])
-          )
-        )
+    Vec.map_with_key(MAPS[mapId].provinces, (zone) =>
+      Num.encode_base32(
+        Random.index(MathUtils.permutations_lazy_array(CITY_TILES[zone]))
       )
-      .join(HASH_SEPARATOR),
+    ).join(HASH_SEPARATOR),
 
-  decode: (mapId: MapId, hash: string): CityResourceMapping =>
-    Object.entries(MAPS[mapId].provinces).reduce(
-      (result, [zone, provinces], index) => {
-        const zoneDef = CITY_TILES[zone as Zone];
+  decode: (mapId: MapId, hash: string): ProvinceCityResources =>
+    C.reduce_with_key(
+      Dict.filter_nulls(MAPS[mapId].provinces),
+      (result, zone, provinces, index) => {
+        const zoneDef = CITY_TILES[zone];
         const permutationIdx = Num.decode_base32(
           hash.split(HASH_SEPARATOR)[index]
         );
-        const resources = [
-          ...nullthrows(
-            asReadonlyArray(MathUtils.permutations_lazy_array(zoneDef))[
-              permutationIdx
-            ]
-          ),
-        ];
+        const permutations = MathUtils.permutations_lazy_array(zoneDef);
+        const resources = nullthrows(
+          permutations.at(permutationIdx),
+          `Index ${permutationIdx} is out of bounds for permutations ${permutations}`
+        );
 
-        Object.entries(provinces).forEach(([provinceName, cities]) => {
+        let resourceIdx = 0;
+        Vec.map_with_key(provinces, (provinceName, cities) => {
           const mappedResources: { [cityName: string]: Resource } = {};
           cities.forEach((cityName) => {
             mappedResources[cityName] = nullthrows(
-              resources.pop(),
+              resources[resourceIdx++],
               `Not enough items in the resources permutation!`
             );
           });
-          result[provinceName] = mappedResources;
+          result = {
+            ...result,
+            [provinceName]: mappedResources,
+          };
         });
 
         return result;
       },
-      {} as { [provinceName: string]: { [cityName: string]: Resource } }
+      {} as ProvinceCityResources
     ),
 } as const;

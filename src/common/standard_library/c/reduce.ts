@@ -23,11 +23,12 @@ const reduce = <Tv, Ta>(
  */
 const reduce_with_key = <Tk extends keyof any, Tv, Ta>(
   keyedTraversable: Readonly<Record<Tk, Tv>>,
-  reducer: (accumulator: Ta, key: Tk, value: Tv) => Ta,
+  reducer: (accumulator: Ta, key: Tk, value: Tv, index: number) => Ta,
   initial: Ta
 ): Ta =>
   Dict.entries(keyedTraversable).reduce(
-    (accumulator, [key, value]) => reducer(accumulator, key, value),
+    (accumulator, [key, value], index) =>
+      reducer(accumulator, key, value, index),
     initial
   );
 

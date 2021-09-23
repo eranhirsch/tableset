@@ -7,6 +7,10 @@ export interface StartingColonistLocation {
 
 export type Zone = "A" | "B" | "C" | "D";
 
+type CityNames = readonly string[];
+
+export type Provinces = Readonly<{ [provinceName: string]: CityNames }>;
+
 // We can't use `Map` as that's already a thing in js
 export type MapBoard = Readonly<{
   name: string;
@@ -27,11 +31,7 @@ export type MapBoard = Readonly<{
    */
   hasMinimap: boolean;
 
-  provinces: Readonly<
-    Partial<
-      Record<Zone, Readonly<{ [provinceName: string]: readonly string[] }>>
-    >
-  >;
+  provinces: Readonly<Record<Zone, Provinces | null>>;
 }>;
 
 export const MAPS: Record<MapId, MapBoard> = Object.freeze({
@@ -61,6 +61,7 @@ export const MAPS: Record<MapId, MapBoard> = Object.freeze({
         Lucania: ["Potentia", "Croton"],
         Sicilia: ["Messana", "Syracvsae", "Panormvs"],
       },
+      D: null,
     },
   },
 

@@ -38,7 +38,7 @@ function InstanceDerivedComponent({
     return <IncompleteInstanceDerivedComponent mapId={mapId} />;
   }
 
-  return <ComputedInstaneComponent mapId={mapId} hash={hash} />;
+  return <ComputedInstanceComponent mapId={mapId} hash={hash} />;
 }
 
 function IncompleteInstanceDerivedComponent({
@@ -54,7 +54,7 @@ function IncompleteInstanceDerivedComponent({
     // We dont care about zones here, so we create a merged object out of all of
     // them
     const { provinces, hasMinimap } = MAPS[mapId];
-    const provinceCities = Dict.flatten(provinces);
+    const provinceCities = Dict.flatten(Dict.filter_nulls(provinces));
 
     mapSpecificCount = ` of the ${C.count(provinceCities)} provinces`;
 
@@ -156,7 +156,7 @@ function IncompleteInstanceDerivedComponent({
   );
 }
 
-function ComputedInstaneComponent({
+function ComputedInstanceComponent({
   mapId,
   hash,
 }: {
