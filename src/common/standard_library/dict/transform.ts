@@ -5,6 +5,7 @@
  */
 
 import { Vec, Dict as D } from "common";
+import { asArray, Traversable } from "../_private/Traversable";
 
 /**
  * @returns an array containing the original dict split into chunks of the given
@@ -38,6 +39,19 @@ const fill_keys = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   value: Tv
 ): Readonly<Record<Tk, Tv>> => from_entries(keys.map((key) => [key, value]));
+
+/**
+ * @returns a new dict formed by merging the mapper-obj elements of the
+ * given Traversable.
+ *
+ * In the case of duplicate keys, later values will overwrite
+ * the previous ones.
+ *
+ * @see `Dict\merge()` for a fixed number of mapper-objects.
+ */
+const flatten = <Tk extends keyof any, Tv>(
+  dicts: Traversable<Readonly<Record<Tk, Tv>>>
+): Readonly<Record<Tk, Tv>> => D.merge(...asArray(dicts));
 
 /**
  * @returns a new mapper-obj keyed by the values of the given mapper-obj
@@ -205,14 +219,15 @@ export const Dict = {
   chunk,
   count_values,
   fill_keys,
+  flatten,
   flip,
-  from_keys,
   from_entries,
+  from_keys,
   from_values,
   group_by,
-  map,
   map_keys,
   map_with_key,
-  pull,
+  map,
   pull_with_key,
+  pull,
 } as const;
