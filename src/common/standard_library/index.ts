@@ -18,5 +18,6 @@ export * from "./num";
 export * from "./str";
 export * from "./vec";
 
+export * from "./vec";
 export * from "./random";
 export * from "./tuple";

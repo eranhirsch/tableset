@@ -10,7 +10,7 @@ import RomanTitle from "../ux/RomanTitle";
 
 export default createGenericItemsGameStep({
   id: "map",
-  itemIds: Object.keys(MAPS) as MapId[],
+  itemIds: Vec.keys(MAPS),
 
   labelFor: (id: MapId) => MAPS[id].name,
   InstanceVariableComponent,

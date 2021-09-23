@@ -4,6 +4,7 @@ import { Vec as divideVec } from "./divide";
 import { Vec as orderVec } from "./order";
 import { Vec as selectVec } from "./select";
 import { Vec as transformVec } from "./transform";
+export * from "./vec";
 
 export const Vec = {
   ...asyncVec,

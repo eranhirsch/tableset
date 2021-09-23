@@ -13,6 +13,7 @@
  */
 
 import { Random } from "common";
+import { asArray, Traversable } from "../_private/Traversable";
 
 /**
  * @returns an array containing only the elements of the first array that do
@@ -54,8 +55,9 @@ function diff_by<Tv, Ts>(
  * @returns an array containing only non-null values of the given array.
  */
 function filter_nulls<Tv>(
-  arr: readonly (Tv | null | undefined)[]
+  traversable: Traversable<Tv | null | undefined>
 ): readonly Tv[] {
+  const arr = asArray(traversable);
   // The best way to filter nulls in TS? (August 2021)
   const filtered = arr.flatMap((x) => (x == null ? [] : [x]));
   return filtered.length < arr.length ? filtered : (arr as Tv[]);

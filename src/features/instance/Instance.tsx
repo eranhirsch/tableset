@@ -14,7 +14,7 @@ import { StepId } from "../../games/core/IGame";
 import { PlayerId } from "../../model/Player";
 import { gameSelector } from "../game/gameSlice";
 import { playersSelectors } from "../players/playersSlice";
-import { instanceSelectors } from "./instanceSlice";
+import { instanceSelectors, SetupStep } from "./instanceSlice";
 
 function InstanceItemContent({
   stepId,
@@ -42,7 +42,12 @@ function InstanceItemContent({
     return (
       <InstanceDerivedComponent
         context={{
-          instance: Vec.filter_nulls(Object.values(instance)),
+          instance: Vec.filter_nulls(
+            // redux dictionaries are really weird because they support ID types
+            // which aren't used, and have undefined as part of the value.
+            // We cast here to work around it...
+            instance as Record<string, SetupStep | undefined>
+          ),
           playerIds,
         }}
       />
