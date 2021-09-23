@@ -1,6 +1,6 @@
 import { asReadonlyArray } from "common/asReadonlyArray";
 import { nullthrows, Random } from "common";
-import Base32 from "common/Base32";
+import { Num } from "common";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 import { MapId, MAPS, Zone } from "./Maps";
 
@@ -26,7 +26,7 @@ export default {
   randomHash: (mapId: MapId): string =>
     Object.keys(MAPS[mapId].provinces)
       .map((zone) =>
-        Base32.encode(
+        Num.encode_base32(
           Random.index(PermutationsLazyArray.of(CITY_TILES[zone as Zone]))
         )
       )
@@ -36,7 +36,9 @@ export default {
     Object.entries(MAPS[mapId].provinces).reduce(
       (result, [zone, provinces], index) => {
         const zoneDef = CITY_TILES[zone as Zone];
-        const permutationIdx = Base32.decode(hash.split(HASH_SEPARATOR)[index]);
+        const permutationIdx = Num.decode_base32(
+          hash.split(HASH_SEPARATOR)[index]
+        );
         const resources = [
           ...nullthrows(
             asReadonlyArray(PermutationsLazyArray.of(zoneDef))[permutationIdx]

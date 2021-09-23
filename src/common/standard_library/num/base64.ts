@@ -1,7 +1,7 @@
 /**
  * @see https://stackoverflow.com/questions/6213227/fastest-way-to-convert-a-number-to-radix-64-in-javascript
  */
-import { invariant } from "./err/invariant";
+import { invariant } from "common";
 
 const ALPHABET = [
   "A",
@@ -70,7 +70,7 @@ const ALPHABET = [
   "/",
 ] as const;
 
-export function encode(x: number): string {
+function encode_base64(x: number): string {
   invariant(x >= 0, `Can't encode negative value ${x}`);
 
   let lo = x >>> 0;
@@ -93,7 +93,7 @@ export function encode(x: number): string {
   return left + right;
 }
 
-export function decode(x: string): number {
+export function decode_base64(x: string): number {
   const lookupTable = getBinaryLookupTable();
 
   let number = 0;
@@ -103,8 +103,6 @@ export function decode(x: string): number {
 
   return number;
 }
-
-export default { encode, decode } as const;
 
 let binaryLookupTableMemoized: number[] | undefined;
 function getBinaryLookupTable(): number[] {
@@ -118,3 +116,8 @@ function getBinaryLookupTable(): number[] {
   }
   return binaryLookupTableMemoized;
 }
+
+export const Num = {
+  encode_base64,
+  decode_base64,
+} as const;

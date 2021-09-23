@@ -11,16 +11,19 @@ const REPLACEMENTS = [
   ["I", "Z"],
 ] as const;
 
-export const encode = (x: number): string =>
+const encode_base32 = (x: number): string =>
   REPLACEMENTS.reduce(
     (out, [from, to]) => out.replace(from, to),
     x.toString(32).toUpperCase()
   );
 
-export const decode = (x: string): number =>
+const decode_base32 = (x: string): number =>
   Number.parseInt(
     REPLACEMENTS.reduce((out, [to, from]) => out.replace(from, to), x),
     32
   );
 
-export default { encode, decode } as const;
+export const Num = {
+  encode_base32,
+  decode_base32,
+} as const;

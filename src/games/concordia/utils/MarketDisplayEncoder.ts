@@ -1,6 +1,5 @@
 import { asReadonlyArray } from "common/asReadonlyArray";
-import { nullthrows, Random } from "common";
-import Base32 from "common/Base32";
+import { nullthrows, Random, Num } from "common";
 import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
 
 export const MARKET_DECK_I = [
@@ -16,12 +15,12 @@ export const MARKET_DECK_I = [
 
 export default {
   randomHash: (): string =>
-    Base32.encode(Random.index(PermutationsLazyArray.of(MARKET_DECK_I))),
+    Num.encode_base32(Random.index(PermutationsLazyArray.of(MARKET_DECK_I))),
 
   decode: (hash: string): readonly string[] =>
     nullthrows(
       asReadonlyArray(PermutationsLazyArray.of(MARKET_DECK_I))[
-        Base32.decode(hash)
+        Num.decode_base32(hash)
       ]
     ).slice(0, 7),
 } as const;
