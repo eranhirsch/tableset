@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/introspect.php
  */
-import { asArray, Traversable } from "../private/Traversable";
+import { asArray, Traversable } from "../_private/Traversable";
 
 /**
  * @returns true if the given predicate returns true for any element of the

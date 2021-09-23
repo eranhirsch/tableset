@@ -5,7 +5,7 @@
  */
 
 import { Dict } from "common";
-import { asArray, Traversable } from "../private/Traversable";
+import { asArray, Traversable } from "../_private/Traversable";
 
 /**
  * Reduces the given Traversable into a single value by applying an accumulator

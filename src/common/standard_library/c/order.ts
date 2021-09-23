@@ -3,8 +3,8 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/introspect.php
  */
-import { defaultComparator } from "../private/defaultComparator";
-import { asArray, Traversable } from "../private/Traversable";
+import { defaultComparator } from "../_private/defaultComparator";
+import { asArray, Traversable } from "../_private/Traversable";
 
 /**
  * @returns true if the given Traversable<Tv> is sorted in ascending order.
