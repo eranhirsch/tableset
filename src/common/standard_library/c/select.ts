@@ -8,7 +8,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/select.php
  */
 import { Dict, invariant, invariant_violation, nullthrows } from "common";
-import { asArray, Traversable } from "../internal/Traversable";
+import { asArray, Traversable } from "../private/Traversable";
 
 /**
  * @returns the first value of the given Traversable for which the predicate

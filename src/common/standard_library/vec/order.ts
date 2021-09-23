@@ -7,7 +7,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/order.php
  */
 import { range as rangeIter } from "common";
-import { defaultComparator } from "../internal/defaultComparator";
+import { defaultComparator } from "../private/defaultComparator";
 
 /**
  * @returns a new array containing the range of numbers from start to end
