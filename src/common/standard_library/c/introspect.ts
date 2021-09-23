@@ -28,7 +28,7 @@ const contains = <T>(traversable: Traversable<T>, value: T): boolean =>
  * @returns true if the given object-mapper contains the key.
  */
 const contains_key = <Tk1 extends keyof any, Tk2 extends Tk1 = Tk1>(
-  keyedTraversable: Record<Tk1, unknown>,
+  keyedTraversable: Readonly<Record<Tk1, unknown>>,
   key: Tk2
 ): boolean => key in keyedTraversable;
 
