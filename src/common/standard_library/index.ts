@@ -12,6 +12,8 @@
  */
 
 export * from "./vec";
+export * from "./dict";
+export * from "./tuple";
 export * from "./random_offset";
 export * from "./object_filter";
 export * from "./object_flip";

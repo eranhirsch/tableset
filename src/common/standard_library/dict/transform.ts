@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/transform.php
  */
 
-import { Vec } from "common";
+import { Vec, Dict as d } from "common";
 
 /**
  * @returns an array containing the original dict split into chunks of the given
@@ -13,29 +13,22 @@ import { Vec } from "common";
  * If the original dict doesn't divide evenly, the final chunk will be
  * smaller.
  */
-function chunk<Tk extends keyof any, Tv>(
+const chunk = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   size: number
-): readonly Readonly<Record<Tk, Tv>>[];
-function chunk<Tv>(
-  dict: Readonly<{ [key: keyof any]: Tv }>,
-  size: number
-): readonly Readonly<{ [key: keyof any]: Tv }>[] {
-  return Vec.chunk(Object.entries(dict), size).map((chunk) =>
-    from_entries(chunk)
-  );
-}
+): readonly Readonly<Record<Tk, Tv>>[] =>
+  Vec.chunk(d.entries(dict), size).map((chunk) => from_entries(chunk));
 
 /**
  * @returns a new mapper-obj mapping each value to the number of times it
  * appears in the given array.
  */
 const count_values = <Tk extends keyof any>(
-  arr: readonly Tk[]
+  items: readonly Tk[]
 ): Readonly<Record<Tk, number>> =>
-  arr.reduce((out, item) => {
-    out[item] = (out[item] ?? 0) + 1;
-    return out;
+  items.reduce((counters, item) => {
+    counters[item] = (counters[item] ?? 0) + 1;
+    return counters;
   }, {} as Record<Tk, number>);
 
 /**
@@ -49,7 +42,10 @@ const count_values = <Tk extends keyof any>(
  */
 const flatten = <Tk extends keyof any, Tv>(
   dicts: readonly Readonly<Record<Tk, Tv>>[]
-): Readonly<Record<Tk, Tv>> => Object.assign({}, ...dicts);
+): Readonly<Record<Tk, Tv>> =>
+  // When we only have one dict to flatten we return the same object to optimize
+  // for react.
+  dicts.length === 1 ? dicts[0] : Object.assign({}, ...dicts);
 
 /**
  * @returns a new mapper-obj where all the given keys map to the given value.
@@ -98,20 +94,18 @@ const from_keys = <Tk extends keyof any, Tv>(
  * In the case of duplicate keys, later values will overwrite the
  * previous ones.
  *
- * @see `Dict\from_keys()` To create a dict from keys.
- * @see `Dict\from_values()` To create a dict from values
+ * @see `Dict.from_keys()` to create a dict from keys.
+ * @see `Dict.from_values()` to create a dict from values
+ * @see `Object.from_entries()` for the native JS impl without proper typing
  *
  * Also known as `unzip` or `fromItems` in other implementations.
- *
- * NOTE: This simply wraps the native Object.fromEntries to provide better
- * typing!
  */
 function from_entries<Tk extends keyof any, Tv>(
-  entries: readonly [Tk, Tv][]
+  entries: Iterable<[Tk, Tv]>
 ): Readonly<Record<Tk, Tv>>;
 function from_entries<Tv>(
-  entries: readonly [keyof any, Tv][]
-): Readonly<{ [key: keyof any]: Tv }> {
+  entries: Iterable<[keyof any, Tv]>
+): Readonly<Record<keyof any, Tv>> {
   return Object.fromEntries(entries);
 }
 
@@ -122,9 +116,9 @@ function from_entries<Tv>(
  * In the case of duplicate keys, later values will
  * overwrite the previous ones.
  *
- * @see `Dict\from_keys()` To create a dict from keys.
- * @see `Dict\from_entries()` To create a dict from key/value tuples.
- * @see `Dict\group_by()` To create a dict containing all values with the same
+ * @see `Dict.from_keys()` to create a dict from keys.
+ * @see `Dict.from_entries()` to create a dict from key/value tuples.
+ * @see `Dict.group_by()` to create a dict containing all values with the same
  * keys
  */
 const from_values = <Tk extends keyof any, Tv>(
@@ -158,7 +152,7 @@ const group_by = <Tk extends keyof any, Tv>(
  * @returns a new mapper-obj where each value is the result of calling the given
  * function on the original value.
  *
- * @see `Dict\map_async()` To use an async function.
+ * @see `Dict.map_async()` To use an async function.
  */
 const map = <Tk extends keyof any, Tv1, Tv2>(
   dict: Readonly<Record<Tk, Tv1>>,
@@ -199,11 +193,11 @@ const map_with_key = <Tk extends keyof any, Tv1, Tv2>(
  * In the case of duplicate keys, later values will overwrite the previous ones.
  */
 const pull = <Tk extends keyof any, Tv1, Tv2>(
-  arr: readonly Tv1[],
+  items: readonly Tv1[],
   valueFunc: (value: Tv1) => Tv2,
   keyFunc: (value: Tv1) => Tk
 ): Readonly<Record<Tk, Tv2>> =>
-  from_entries(arr.map((value) => [keyFunc(value), valueFunc(value)]));
+  from_entries(items.map((item) => [keyFunc(item), valueFunc(item)]));
 
 /**
  * @returns a new mapper-obj with mapped keys and values.
@@ -212,22 +206,16 @@ const pull = <Tk extends keyof any, Tv1, Tv2>(
  *  - keys are the result of calling `keyFunc` on the original value/key.
  * In the case of duplicate keys, later values will overwrite the previous ones.
  */
-function pull_with_key<Tk1 extends keyof any, Tk2 extends keyof any, Tv1, Tv2>(
+const pull_with_key = <Tk1 extends keyof any, Tk2 extends keyof any, Tv1, Tv2>(
   dict: Readonly<Record<Tk1, Tv1>>,
   valueFunc: (key: Tk1, value: Tv1) => Tv2,
   keyFunc: (key: Tk1, value: Tv1) => Tk2
-): Readonly<Record<Tk2, Tv2>>;
-function pull_with_key<Tv1, Tv2>(
-  dict: Readonly<{ [key: keyof any]: Tv1 }>,
-  valueFunc: (key: keyof any, value: Tv1) => Tv2,
-  keyFunc: (key: keyof any, value: Tv1) => keyof any
-): Readonly<{ [key: keyof any]: Tv2 }> {
-  return pull(
-    Object.entries(dict),
+): Readonly<Record<Tk2, Tv2>> =>
+  pull(
+    d.entries(dict),
     ([key, value]) => valueFunc(key, value),
     ([key, value]) => keyFunc(key, value)
   );
-}
 
 export const Dict = {
   chunk,

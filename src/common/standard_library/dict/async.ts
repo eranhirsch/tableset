@@ -3,8 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/async.php
  */
-import { Vec } from "common";
-import { Dict as transformDict } from "./transform";
+import { Vec, Dict as d, tuple } from "common";
 
 /**
  * @returns a new mapper-object with each value `await`ed in parallel.
@@ -12,11 +11,9 @@ import { Dict as transformDict } from "./transform";
 const from_async = async <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Promise<Tv>>>
 ): Promise<Readonly<Record<Tk, Tv>>> =>
-  transformDict.from_entries(
-    await Promise.all(
-      Object.entries(dict).map(
-        async ([key, valuePromise]) => [key, await valuePromise] as [Tk, Tv]
-      )
+  d.from_entries(
+    await Vec.map_async(d.entries(dict), async ([key, valuePromise]) =>
+      tuple(key, await valuePromise)
     )
   );
 
@@ -30,11 +27,8 @@ const from_keys_async = async <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   valueFunc: (key: Tk) => Promise<Tv>
 ): Promise<Readonly<Record<Tk, Tv>>> =>
-  transformDict.from_entries(
-    await Vec.map_async(
-      keys,
-      async (key) => [key, await valueFunc(key)] as [Tk, Tv]
-    )
+  d.from_entries(
+    await Vec.map_async(keys, async (key) => tuple(key, await valueFunc(key)))
   );
 
 /**
@@ -109,9 +103,7 @@ const map_with_key_async = async <Tk extends keyof any, Tv1, Tv2>(
   dict: Readonly<Record<Tk, Tv1>>,
   valueFunc: (key: Tk, value: Tv1) => Promise<Tv2>
 ): Promise<Readonly<Record<Tk, Tv2>>> =>
-  from_async(
-    transformDict.map_with_key(dict, (key, value) => valueFunc(key, value))
-  );
+  from_async(d.map_with_key(dict, (key, value) => valueFunc(key, value)));
 
 export const Dict = {
   filter_async,
