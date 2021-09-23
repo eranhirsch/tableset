@@ -1,5 +1,9 @@
 /**
  * Ported (manually) from HSL.
+ * 
+ * The `pop_(front|back)x?` methods were omitted from this port as they require
+ * non-trivial workarounds in order to support mapper-objects. They are also the
+ * only HSL methods that take `inout` params and mutate the input.
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/select.php
  */
