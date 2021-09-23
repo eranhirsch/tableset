@@ -1,7 +1,7 @@
+import { Vec } from "common";
+import { InstanceStepLink } from "features/instance/InstanceStepLink";
+import { PlayerId } from "model/Player";
 import React from "react";
-import { Num } from "../../../common";
-import { PlayerId } from "../../../model/Player";
-import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
@@ -50,7 +50,7 @@ function InstanceDerivedComponent({
         Stack the decks facedown one on top of each other starting from deck{" "}
         <strong>{ROMAN_NUMERALS[playerIds.length]}</strong> then{" "}
         <GrammaticalList>
-          {Array.from(Num.range(playerIds.length - 1, 1)).map((deck) => (
+          {[...Vec.range(2, playerIds.length - 1)].reverse().map((deck) => (
             <React.Fragment key={`stack_deck_${deck}`}>
               deck <strong>{ROMAN_NUMERALS[deck]}</strong>
             </React.Fragment>
@@ -79,13 +79,11 @@ function InstanceDerivedComponent({
               <>
                 personality cards{" "}
                 <GrammaticalList pluralize="deck">
-                  {Array.from(Num.range(2, playerIds.length + 1)).map(
-                    (deck) => (
-                      <React.Fragment key={`deck_${deck}`}>
-                        <strong>{ROMAN_NUMERALS[deck]}</strong>
-                      </React.Fragment>
-                    )
-                  )}
+                  {Vec.range(2, playerIds.length).map((deck) => (
+                    <React.Fragment key={`deck_${deck}`}>
+                      <strong>{ROMAN_NUMERALS[deck]}</strong>
+                    </React.Fragment>
+                  ))}
                 </GrammaticalList>
               </>
             )}
