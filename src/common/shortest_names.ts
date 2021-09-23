@@ -1,7 +1,11 @@
-const name_parts = (fullName: string): string[] => fullName.trim().split(" ");
+import { Str, tuple } from "common";
 
-const capitalize = (word: string): string =>
-  `${word[0].toLocaleUpperCase()}${word.slice(1).toLocaleLowerCase()}`;
+function name_parts(fullName: string): readonly [string, string | undefined] {
+  const [first, last] = Str.capitalize_words(
+    fullName.trim().toLocaleLowerCase()
+  ).split(" ", 2);
+  return tuple(first, last);
+}
 
 export function shortest_unique_abbreviation(
   fullName: string,
@@ -43,38 +47,24 @@ function as_unique(
   return null;
 }
 
-function first_letter(fullName: string): string {
-  const [first] = name_parts(fullName);
-  return first[0];
-}
+const first_letter = (fullName: string): string => name_parts(fullName)[0][0];
 
 function abbreviated(fullName: string): string {
   const [first, last] = name_parts(fullName);
-  return (
-    last != null ? `${first[0]}${last[0]}` : first[0]
-  ).toLocaleUpperCase();
+  return first[0] + (last != null ? last[0] : "?");
 }
 
-function first_name(fullName: string): string {
-  const [first] = name_parts(fullName);
-  return capitalize(first);
-}
+const first_name = (fullName: string): string => name_parts(fullName)[0];
 
-function last_name(fullName: string): string | undefined {
-  const [, last] = name_parts(fullName);
-  return last != null ? capitalize(last) : undefined;
-}
+const last_name = (fullName: string): string | undefined =>
+  name_parts(fullName)[1];
 
 function first_name_with_last_letter(fullName: string): string | undefined {
   const [first, last] = name_parts(fullName);
-  return last != null
-    ? `${capitalize(first)} ${last[0].toLocaleUpperCase()}`
-    : undefined;
+  return last != null ? first + last[0] : undefined;
 }
 
 function first_letter_with_last_name(fullName: string): string | undefined {
   const [first, last] = name_parts(fullName);
-  return last != null
-    ? `${first[0].toLocaleUpperCase()} ${capitalize(last)}`
-    : undefined;
+  return last != null ? first[0] + last : undefined;
 }

@@ -12,8 +12,9 @@
  */
 
 export * from "./c";
-export * from "./vec";
 export * from "./dict";
-export * from "./tuple";
+export * from "./str";
+export * from "./vec";
 export * from "./random";
 export * from "./range";
+export * from "./tuple";
