@@ -1,6 +1,6 @@
 import { Avatar, Badge, Stack } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { invariant_violation, useAppEntityIdSelectorEnforce } from "common";
+import { invariant_violation, ReactUtils } from "common";
 import { PlayerId } from "model/Player";
 import { Strategy } from "features/template/Strategy";
 import { playersSelectors } from "../../../features/players/playersSlice";
@@ -49,7 +49,10 @@ function Player({
 export default function StartingPlayerPanel() {
   const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 
-  const step = useAppEntityIdSelectorEnforce(templateSelectors, "firstPlayer");
+  const step = ReactUtils.useAppEntityIdSelectorEnforce(
+    templateSelectors,
+    "firstPlayer"
+  );
   if (step.id !== "firstPlayer" || step.strategy !== Strategy.FIXED) {
     invariant_violation(`Step ${step} is misconfigured for this panel`);
   }

@@ -1,5 +1,5 @@
 import { useAppSelector } from "../../../app/hooks";
-import { useAppEntityIdSelectorEnforce } from "../../../common";
+import { ReactUtils } from "../../../common";
 import { shortest_unique_name } from "../../../common/shortest_names";
 import { PlayerId } from "../../../model/Player";
 import {
@@ -12,7 +12,10 @@ export function PlayerShortName({
 }: {
   playerId: PlayerId;
 }): JSX.Element {
-  const player = useAppEntityIdSelectorEnforce(playersSelectors, playerId);
+  const player = ReactUtils.useAppEntityIdSelectorEnforce(
+    playersSelectors,
+    playerId
+  );
   const allNames = useAppSelector(allPlayerNamesSelector);
   return <>{shortest_unique_name(player.name, allNames)}</>;
 }
