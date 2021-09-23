@@ -1,6 +1,6 @@
+import { Vec } from "common";
+import { PlayerId } from "model/Player";
 import React from "react";
-import { Num, Vec } from "common";
-import { PlayerId } from "../../../model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
@@ -104,10 +104,10 @@ function CardSelectionStep({
         <>
           Take all cards with{" "}
           <GrammaticalList pluralize="numeral">
-            {Array.from(Num.range(playerCount)).map((i) => (
-              <React.Fragment key={`deck_${i + 1}`}>
-                <strong>{ROMAN_NUMERALS[i + 1]}</strong>
-                <Footnote index={i + 1} />
+            {Vec.range(1, playerCount).map((i) => (
+              <React.Fragment key={`deck_${i}`}>
+                <strong>{ROMAN_NUMERALS[i]}</strong>
+                <Footnote index={i} />
               </React.Fragment>
             ))}
           </GrammaticalList>{" "}
@@ -118,14 +118,14 @@ function CardSelectionStep({
               <em>
                 leaving cards with{" "}
                 <GrammaticalList pluralize="numeral">
-                  {Array.from(
-                    Num.range(playerCount + 1, CARDS_PER_DECK.length)
-                  ).map((x) => (
-                    <React.Fragment key={`leave_in_box_deck_${x}`}>
-                      <strong>{ROMAN_NUMERALS[x]!}</strong>
-                      <Footnote index={x} />
-                    </React.Fragment>
-                  ))}
+                  {Vec.range(playerCount + 1, CARDS_PER_DECK.length - 1).map(
+                    (x) => (
+                      <React.Fragment key={`leave_in_box_deck_${x}`}>
+                        <strong>{ROMAN_NUMERALS[x]!}</strong>
+                        <Footnote index={x} />
+                      </React.Fragment>
+                    )
+                  )}
                 </GrammaticalList>{" "}
                 on their back in the box (they won't be needed)
               </em>
