@@ -1,5 +1,5 @@
 import React from "react";
-import { range } from "../../../common";
+import { Num } from "../../../common";
 import { PlayerId } from "../../../model/Player";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import createDerivedGameStep, {
@@ -50,7 +50,7 @@ function InstanceDerivedComponent({
         Stack the decks facedown one on top of each other starting from deck{" "}
         <strong>{ROMAN_NUMERALS[playerIds.length]}</strong> then{" "}
         <GrammaticalList>
-          {Array.from(range(playerIds.length - 1, 1)).map((deck) => (
+          {Array.from(Num.range(playerIds.length - 1, 1)).map((deck) => (
             <React.Fragment key={`stack_deck_${deck}`}>
               deck <strong>{ROMAN_NUMERALS[deck]}</strong>
             </React.Fragment>
@@ -79,16 +79,18 @@ function InstanceDerivedComponent({
               <>
                 personality cards{" "}
                 <GrammaticalList pluralize="deck">
-                  {Array.from(range(2, playerIds.length + 1)).map((deck) => (
-                    <React.Fragment key={`deck_${deck}`}>
-                      <strong>{ROMAN_NUMERALS[deck]}</strong>
-                    </React.Fragment>
-                  ))}
+                  {Array.from(Num.range(2, playerIds.length + 1)).map(
+                    (deck) => (
+                      <React.Fragment key={`deck_${deck}`}>
+                        <strong>{ROMAN_NUMERALS[deck]}</strong>
+                      </React.Fragment>
+                    )
+                  )}
                 </GrammaticalList>
               </>
             )}
             <Footnote index={1} />
-            {playerIds == null || playerIds.length > 2 ? " seperatly" : ""}.
+            {playerIds == null || playerIds.length > 2 ? " separately" : ""}.
           </>
         )}
       </BlockWithFootnotes>
