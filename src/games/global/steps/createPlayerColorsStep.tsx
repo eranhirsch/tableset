@@ -1,6 +1,6 @@
 import { Badge, Chip, Stack, Typography } from "@mui/material";
 import { colorName } from "app/ux/themeWithGameColors";
-import { Dict, Vec } from "common";
+import { C, Dict, Vec } from "common";
 import GamePiecesColor from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
@@ -30,12 +30,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     InstanceManualComponent: () => InstanceManualComponent({ availableColors }),
 
     random: (playerIds) =>
-      Object.fromEntries(
-        Vec.zip(
-          playerIds,
-          Vec.shuffle(Vec.sample(availableColors, playerIds.length))
-        )
-      ),
+      Dict.associate(playerIds, Vec.shuffle(availableColors)),
 
     fixed: {
       renderSelector: ({ current }) => (
@@ -57,13 +52,18 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
           return;
         }
 
-        return Object.fromEntries(Vec.zip(playerIds, availableColors));
+        return Dict.associate(playerIds, availableColors);
       },
 
       refresh(current, playerIds) {
-        const remainingColors = Object.entries(current).reduce(
-          (remainingColors, [playerId, color]) =>
-            playerIds.includes(playerId)
+        const remainingColors = C.reduce_with_key(
+          current,
+          (remainingColors, playerId, color) =>
+            // TODO: Something about the typing of C.reduce_with_key isn't
+            // inferring the keys of the Record properly, sending a number type
+            // here. We need to fix the typing there and then remove the `as`
+            // here
+            playerIds.includes(playerId as PlayerId)
               ? remainingColors.filter((c) => color !== c)
               : remainingColors,
           availableColors as GamePiecesColor[]
@@ -86,7 +86,7 @@ function InstanceVariableComponent({
         Each player is assigned the following colors:
       </Typography>
       <Stack direction="row" spacing={1} component="figure">
-        {Object.entries(playerColor).map(([playerId, color]) => (
+        {Vec.map_with_key(playerColor, (playerId, color) => (
           <Badge
             key={playerId}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
@@ -94,7 +94,11 @@ function InstanceVariableComponent({
             invisible={false}
             color={color}
           >
-            <Player playerId={playerId} />
+            {/* TODO: Something about the typing of Vec.map_with_key isn't 
+            inferring the keys of the Record properly, sending a number type 
+            here. We need to fix the typing there and then remove the `as` here 
+            */}
+            <Player playerId={playerId as PlayerId} />
           </Badge>
         ))}
       </Stack>
