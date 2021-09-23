@@ -1,6 +1,5 @@
 import { asReadonlyArray } from "common/asReadonlyArray";
-import { nullthrows, Random, Num } from "common";
-import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
+import { nullthrows, Random, Num, MathUtils } from "common";
 
 export const MARKET_DECK_I = [
   "Architect",
@@ -15,11 +14,13 @@ export const MARKET_DECK_I = [
 
 export default {
   randomHash: (): string =>
-    Num.encode_base32(Random.index(PermutationsLazyArray.of(MARKET_DECK_I))),
+    Num.encode_base32(
+      Random.index(MathUtils.permutations_lazy_array(MARKET_DECK_I))
+    ),
 
   decode: (hash: string): readonly string[] =>
     nullthrows(
-      asReadonlyArray(PermutationsLazyArray.of(MARKET_DECK_I))[
+      asReadonlyArray(MathUtils.permutations_lazy_array(MARKET_DECK_I))[
         Num.decode_base32(hash)
       ]
     ).slice(0, 7),

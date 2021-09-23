@@ -1,13 +1,12 @@
-import { invariant } from "./err/invariant";
-import { invariant_violation } from "./err/invariant_violation";
+import { invariant, invariant_violation } from "common";
 
-function of<T extends keyof any>(
+function permutations_lazy_array<T extends keyof any>(
   definition: Readonly<Record<T, number>>
 ): PermutationsLazyArray<T>;
-function of<T extends keyof any>(
+function permutations_lazy_array<T extends keyof any>(
   permutation: readonly T[]
 ): PermutationsLazyArray<T>;
-function of<T extends keyof any>(
+function permutations_lazy_array<T extends keyof any>(
   permutation_or_definition: readonly T[] | Readonly<Record<T, number>>
 ): PermutationsLazyArray<T> {
   return new PermutationsLazyArray(
@@ -19,8 +18,6 @@ function of<T extends keyof any>(
       : permutation_or_definition
   );
 }
-
-export default { of } as const;
 
 class PermutationsLazyArray<K extends keyof any> {
   private readonly definition: readonly (readonly [K, number])[];
@@ -374,3 +371,7 @@ function extractItemFromArray<K>(item: K, remaining: K[]): number[] {
 
   return positions;
 }
+
+export const MathUtils = {
+  permutations_lazy_array,
+} as const;

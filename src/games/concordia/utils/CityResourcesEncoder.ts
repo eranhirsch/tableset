@@ -1,7 +1,6 @@
 import { asReadonlyArray } from "common/asReadonlyArray";
 import { nullthrows, Random } from "common";
-import { Num } from "common";
-import PermutationsLazyArray from "../../../common/PermutationsLazyArray";
+import { Num, MathUtils } from "common";
 import { MapId, MAPS, Zone } from "./Maps";
 
 const HASH_SEPARATOR = "-";
@@ -27,7 +26,9 @@ export default {
     Object.keys(MAPS[mapId].provinces)
       .map((zone) =>
         Num.encode_base32(
-          Random.index(PermutationsLazyArray.of(CITY_TILES[zone as Zone]))
+          Random.index(
+            MathUtils.permutations_lazy_array(CITY_TILES[zone as Zone])
+          )
         )
       )
       .join(HASH_SEPARATOR),
@@ -41,7 +42,9 @@ export default {
         );
         const resources = [
           ...nullthrows(
-            asReadonlyArray(PermutationsLazyArray.of(zoneDef))[permutationIdx]
+            asReadonlyArray(MathUtils.permutations_lazy_array(zoneDef))[
+              permutationIdx
+            ]
           ),
         ];
 
