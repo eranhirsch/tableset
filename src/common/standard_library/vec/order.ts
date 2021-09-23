@@ -6,7 +6,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/order.php
  */
-import { range as rangeIter } from "common";
+import { Num } from "common";
 import { defaultComparator } from "../private/defaultComparator";
 
 /**
@@ -26,7 +26,7 @@ const range = (
   start: number,
   end: number,
   step: number = 1
-): readonly number[] => Array.from(rangeIter(start, end + 1, step));
+): readonly number[] => Array.from(Num.range(start, end + 1, step));
 
 /**
  * @returns a new array with the values of the given array in a random order.

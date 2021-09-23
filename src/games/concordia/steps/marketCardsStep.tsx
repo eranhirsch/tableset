@@ -1,5 +1,5 @@
 import React from "react";
-import { range, Vec } from "common";
+import { Num, Vec } from "common";
 import { PlayerId } from "../../../model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -104,7 +104,7 @@ function CardSelectionStep({
         <>
           Take all cards with{" "}
           <GrammaticalList pluralize="numeral">
-            {Array.from(range(playerCount)).map((i) => (
+            {Array.from(Num.range(playerCount)).map((i) => (
               <React.Fragment key={`deck_${i + 1}`}>
                 <strong>{ROMAN_NUMERALS[i + 1]}</strong>
                 <Footnote index={i + 1} />
@@ -119,7 +119,7 @@ function CardSelectionStep({
                 leaving cards with{" "}
                 <GrammaticalList pluralize="numeral">
                   {Array.from(
-                    range(playerCount + 1, CARDS_PER_DECK.length)
+                    Num.range(playerCount + 1, CARDS_PER_DECK.length)
                   ).map((x) => (
                     <React.Fragment key={`leave_in_box_deck_${x}`}>
                       <strong>{ROMAN_NUMERALS[x]!}</strong>
