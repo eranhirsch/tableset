@@ -13,9 +13,9 @@
 
 export * from "./c";
 export * from "./dict";
+export * from "./num";
 export * from "./str";
 export * from "./vec";
 
-export * from "./num";
 export * from "./random";
 export * from "./tuple";
