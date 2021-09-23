@@ -7,6 +7,8 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/combine.php
  */
 
+import { tuple } from "common";
+
 /**
  * @returns an array where each element is a tuple (pair) that combines,
  * pairwise, the elements of the two given arrays.
@@ -21,10 +23,9 @@ const zip = <Tv, Tu>(
   first: readonly Tv[],
   second: readonly Tu[]
 ): readonly (readonly [Tv, Tu])[] =>
-  // The output length it limited to the shorter array. We can use slice for
-  // this because if `first` is shorter slice wouldn't do anything here and
-  // the output array length would be limited by the actual mapping method.
-  first.slice(0, second.length).map((x, index) => [x, second[index]]);
+  first.length <= second.length
+    ? first.map((value, index) => tuple(value, second[index]))
+    : second.map((value, index) => tuple(first[index], value));
 
 export const Vec = {
   zip,

@@ -32,22 +32,6 @@ const count_values = <Tk extends keyof any>(
   }, {} as Record<Tk, number>);
 
 /**
- * @returns a new mapper-obj formed by merging the mapper-obj elements of the
- * given array.
- *
- * In the case of duplicate keys, later values will overwrite
- * the previous ones.
- *
- * @see `Dict.merge()` For a fixed number of mapper-objs.
- */
-const flatten = <Tk extends keyof any, Tv>(
-  dicts: readonly Readonly<Record<Tk, Tv>>[]
-): Readonly<Record<Tk, Tv>> =>
-  // When we only have one dict to flatten we return the same object to optimize
-  // for react.
-  dicts.length === 1 ? dicts[0] : Object.assign({}, ...dicts);
-
-/**
  * @returns a new mapper-obj where all the given keys map to the given value.
  */
 const fill_keys = <Tk extends keyof any, Tv>(
@@ -101,10 +85,10 @@ const from_keys = <Tk extends keyof any, Tv>(
  * Also known as `unzip` or `fromItems` in other implementations.
  */
 function from_entries<Tk extends keyof any, Tv>(
-  entries: Iterable<[Tk, Tv]>
+  entries: Iterable<readonly [Tk, Tv]>
 ): Readonly<Record<Tk, Tv>>;
 function from_entries<Tv>(
-  entries: Iterable<[keyof any, Tv]>
+  entries: Iterable<readonly [keyof any, Tv]>
 ): Readonly<Record<keyof any, Tv>> {
   return Object.fromEntries(entries);
 }
@@ -220,7 +204,6 @@ const pull_with_key = <Tk1 extends keyof any, Tk2 extends keyof any, Tv1, Tv2>(
 export const Dict = {
   chunk,
   count_values,
-  flatten,
   fill_keys,
   flip,
   from_keys,
