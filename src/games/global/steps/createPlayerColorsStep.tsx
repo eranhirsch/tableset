@@ -1,7 +1,6 @@
 import { Badge, Chip, Stack, Typography } from "@mui/material";
 import { colorName } from "app/ux/themeWithGameColors";
-import { Vec } from "common";
-import { array_map_keys } from "common/standard_library/array_map_keys";
+import { Dict, Vec } from "common";
 import GamePiecesColor from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
@@ -69,7 +68,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
               : remainingColors,
           availableColors as GamePiecesColor[]
         );
-        return array_map_keys(
+        return Dict.from_keys(
           playerIds,
           (playerId) => current[playerId] ?? remainingColors.shift()
         );

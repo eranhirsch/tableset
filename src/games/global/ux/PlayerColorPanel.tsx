@@ -1,6 +1,6 @@
 import { Avatar, Badge, Box, Stack, useTheme } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { invariant_violation, object_flip } from "common";
+import { Dict, invariant_violation } from "common";
 import { playersSelectors } from "features/players/playersSlice";
 import { templateActions } from "features/template/templateSlice";
 import GamePiecesColor from "model/GamePiecesColor";
@@ -121,7 +121,7 @@ export default function PlayerColorPanel({
 
   // We need the data indexed by color too
   const colorPlayers = useMemo(
-    () => Object.freeze(object_flip(playerColors)),
+    () => Object.freeze(Dict.flip(playerColors)),
     [playerColors]
   );
 

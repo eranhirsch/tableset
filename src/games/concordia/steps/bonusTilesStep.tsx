@@ -1,6 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import React, { useMemo } from "react";
-import { object_filter, object_map, Vec } from "common";
+import { Dict, Vec } from "common";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
@@ -67,7 +67,7 @@ function IncompleteInstanceDerivedComponent({
       <>
         <GrammaticalList>
           {Object.keys(
-            object_filter(provinceCities, (cities) => cities.length === 3)
+            Dict.filter(provinceCities, (cities) => cities.length === 3)
           )}
         </GrammaticalList>{" "}
         have 3 cities each, the other provinces have 2 cities each.
@@ -167,7 +167,7 @@ function ComputedInstaneComponent({
 }): JSX.Element | null {
   const provinceResource = useMemo(() => {
     const provinceCityResources = CityResourcesEncoder.decode(mapId, hash);
-    return object_map(provinceCityResources, (cityResources) =>
+    return Dict.map(provinceCityResources, (cityResources) =>
       Object.values(cityResources).reduce((mostValuableResource, resource) =>
         RESOURCE_PRICES[mostValuableResource] < RESOURCE_PRICES[resource]
           ? resource
