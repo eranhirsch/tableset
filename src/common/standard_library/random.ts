@@ -6,6 +6,9 @@
  * @see `Dict.shuffle` for a random reordering of an object-mapper's entries
  */
 
+const ALPHA_NUMERIC =
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
 /**
  * @returns a random number between 0 (inclusive) and `a` (exclusive), or
  * between `a` (inclusive) and `b` (exclusive) as a floating-point number.
@@ -28,8 +31,12 @@ const int = (a: number, b?: number) => Math.floor(float(a, b));
  */
 const index = ({ length }: { length: number }): number => int(length);
 
+const string = (length: number, alphabet: string = ALPHA_NUMERIC): string =>
+  new Array(length).map(() => alphabet[index(alphabet)]).join("");
+
 export const Random = {
   float,
   index,
   int,
+  string,
 } as const;
