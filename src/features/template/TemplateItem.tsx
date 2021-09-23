@@ -6,7 +6,7 @@ import {
   Paper,
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { useAppEntityIdSelectorNullable } from "common";
+import { ReactUtils } from "common";
 import { Strategy } from "features/template/Strategy";
 import { StepId } from "games/core/IGame";
 import { gameSelector } from "../game/gameSlice";
@@ -24,7 +24,10 @@ export default function TemplateItem({
   expanded: boolean;
   onClick: (isExpanded: boolean) => void;
 }): JSX.Element | null {
-  const element = useAppEntityIdSelectorNullable(templateSelectors, stepId);
+  const element = ReactUtils.useAppEntityIdSelectorNullable(
+    templateSelectors,
+    stepId
+  );
   const game = useAppSelector(gameSelector);
 
   if (element?.isStale) {

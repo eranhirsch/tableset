@@ -13,7 +13,7 @@ import { isFragment } from "react-is";
  * then renamed for more clarity.
  * @see https://www.npmjs.com/package/react-keyed-flatten-children
  */
-export function reactFlattenChildren(
+function flattenChildren(
   children: ReactNode,
   depth: number = 0,
   keys: (string | number)[] = []
@@ -23,7 +23,7 @@ export function reactFlattenChildren(
       if (isFragment(node)) {
         acc.push.apply(
           acc,
-          reactFlattenChildren(
+          flattenChildren(
             node.props.children,
             depth + 1,
             keys.concat(node.key || nodeIndex)
@@ -45,3 +45,7 @@ export function reactFlattenChildren(
     []
   );
 }
+
+export const ReactUtils = {
+  flattenChildren,
+} as const;

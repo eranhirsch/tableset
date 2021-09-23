@@ -1,6 +1,6 @@
 import { Chip, Stack } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { useAppEntityIdSelectorNullable } from "common";
+import { ReactUtils } from "common";
 import { PlayerId } from "model/Player";
 import { Strategy } from "features/template/Strategy";
 import { strategyLabel } from "features/template/strategyLabel";
@@ -19,7 +19,10 @@ export default function StrategiesSelector({
   const dispatch = useAppDispatch();
 
   const gameId = useAppSelector(gameIdSelector);
-  const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
+  const step = ReactUtils.useAppEntityIdSelectorNullable(
+    templateSelectors,
+    stepId
+  );
   const template = useAppSelector(templateSelectors.selectEntities);
   const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 

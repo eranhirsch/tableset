@@ -1,13 +1,9 @@
-import {
-  nullthrows,
-  type_invariant,
-  useAppEntityIdSelectorNullable,
-} from "../../common";
+import { nullthrows, type_invariant, ReactUtils } from "common";
 import IGameStep from "../../games/core/steps/IGameStep";
 import { instanceSelectors } from "./instanceSlice";
 
 export function useInstanceValue<T>(step: IGameStep<T>): T | null {
-  const instanceEntry = useAppEntityIdSelectorNullable(
+  const instanceEntry = ReactUtils.useAppEntityIdSelectorNullable(
     instanceSelectors,
     step.id
   );

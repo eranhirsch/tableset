@@ -1,6 +1,6 @@
 import { Collapse, Stack } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { nullthrows, useAppEntityIdSelectorNullable } from "common";
+import { nullthrows, ReactUtils } from "common";
 import { Strategy } from "features/template/Strategy";
 import { StepId } from "games/core/IGame";
 import { useMemo } from "react";
@@ -14,7 +14,10 @@ export default function StepDetailsPane({
   stepId: StepId;
 }): JSX.Element | null {
   const game = useAppSelector(gameSelector);
-  const step = useAppEntityIdSelectorNullable(templateSelectors, stepId);
+  const step = ReactUtils.useAppEntityIdSelectorNullable(
+    templateSelectors,
+    stepId
+  );
 
   const strategyControls = useMemo(() => {
     if (step != null && step.strategy === Strategy.FIXED) {
