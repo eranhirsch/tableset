@@ -1,6 +1,6 @@
 import { Grid, Typography } from "@mui/material";
+import { C, Dict, nullthrows, vec, Vec } from "common";
 import React, { useMemo } from "react";
-import { C, Dict, vec, Vec } from "common";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
@@ -61,7 +61,7 @@ function IncompleteInstanceDerivedComponent({
     provinceCityCountsFootnote = (
       <>
         <GrammaticalList>
-          {Object.keys(
+          {Vec.keys(
             Dict.filter(provinceCities, (cities) => cities.length === 3)
           )}
         </GrammaticalList>{" "}
@@ -123,11 +123,14 @@ function IncompleteInstanceDerivedComponent({
           <>
             The resources (sorted in descending value) are{" "}
             <GrammaticalList>
-              {Vec.sort_by(
-                Object.entries(RESOURCE_PRICES),
-                // We want descending order, so we negate the value
-                ([, value]) => -value
-              ).map(([resource]) => resourceLabel(resource as Resource))}
+              {Vec.map_with_key(
+                Dict.sort_by(
+                  RESOURCE_PRICES,
+                  // We want descending order, so we negate the value
+                  (value) => -value
+                ),
+                (resource) => resourceLabel(resource as Resource)
+              )}
             </GrammaticalList>
             .
           </>,
@@ -163,10 +166,17 @@ function ComputedInstaneComponent({
   const provinceResource = useMemo(() => {
     const provinceCityResources = CityResourcesEncoder.decode(mapId, hash);
     return Dict.map(provinceCityResources, (cityResources) =>
-      Object.values(cityResources).reduce((mostValuableResource, resource) =>
-        RESOURCE_PRICES[mostValuableResource] < RESOURCE_PRICES[resource]
-          ? resource
-          : mostValuableResource
+      nullthrows(
+        C.reduce(
+          cityResources,
+          (mostValuableResource, resource) =>
+            mostValuableResource == null ||
+            RESOURCE_PRICES[mostValuableResource] < RESOURCE_PRICES[resource]
+              ? resource
+              : mostValuableResource,
+          undefined as Resource | undefined
+        ),
+        "Empty cityResources object encountered!"
       )
     );
   }, [hash, mapId]);
@@ -177,7 +187,7 @@ function ComputedInstaneComponent({
         Place the matching city resource tile for each city on the map:
       </Typography>
       <Grid container component="figure" spacing={1}>
-        {Object.entries(provinceResource).map(([provinceName, resource]) => (
+        {Vec.map_with_key(provinceResource, (provinceName, resource) => (
           <React.Fragment key={provinceName}>
             <Grid item xs={4} textAlign="right">
               <Typography variant="subtitle1">
