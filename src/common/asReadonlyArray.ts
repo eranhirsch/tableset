@@ -1,4 +1,4 @@
-import { asInteger } from "./asInteger";
+import { Num } from "common";
 
 type Indexable<T> = {
   readonly length: number;
@@ -15,7 +15,7 @@ function readonlyArrayGetWrapper<T>(
   property: string | symbol,
   receiver: any
 ) {
-  const asIndex = asInteger(property);
+  const asIndex = Num.int(property);
   if (asIndex != null) {
     return target.at(asIndex);
   }
