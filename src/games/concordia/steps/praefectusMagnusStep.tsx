@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { numberSuffix } from "../../../common/numberSuffix";
+import { Str } from "common";
 import { PlayerId } from "../../../model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -38,7 +38,7 @@ function InstanceDerivedComponent({
     return (
       <Typography variant="body1">
         Give the {playerIds.length}
-        {numberSuffix(playerIds.length)} player the{" "}
+        {Str.number_suffix(playerIds.length)} player the{" "}
         <strong>Praefectus Magnus</strong> card.
       </Typography>
     );

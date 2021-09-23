@@ -1,7 +1,7 @@
 import { Avatar, Grid, Typography } from "@mui/material";
 import React from "react";
 import { Num } from "common";
-import { numberSuffix } from "../../../common/numberSuffix";
+import { Str } from "common";
 import { PlayerId } from "../../../model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -77,7 +77,7 @@ function InstanceDerivedComponent({
       ) : (
         <Avatar sx={{ display: "inline-flex" }}>
           {playerIdx}
-          {numberSuffix(playerIdx)}
+          {Str.number_suffix(playerIdx)}
         </Avatar>
       )
     );

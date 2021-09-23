@@ -15,7 +15,21 @@ const capitalize_words = (s: string, delimiter: string = " "): string =>
     .map((word) => capitalize(word))
     .join(delimiter);
 
+function number_suffix(x: number): string {
+  switch (x) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
+}
+
 export const Str = {
   capitalize,
   capitalize_words,
+  number_suffix,
 } as const;
