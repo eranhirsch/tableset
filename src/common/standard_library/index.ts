@@ -11,6 +11,7 @@
  * @see https://docs.hhvm.com/hsl/reference/
  */
 
+export * from "./c";
 export * from "./vec";
 export * from "./dict";
 export * from "./tuple";
