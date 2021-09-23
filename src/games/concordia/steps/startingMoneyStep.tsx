@@ -1,8 +1,7 @@
 import { Avatar, Grid, Typography } from "@mui/material";
+import { Str, Vec } from "common";
+import { PlayerId } from "model/Player";
 import React from "react";
-import { Num } from "common";
-import { Str } from "common";
-import { PlayerId } from "../../../model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
@@ -71,7 +70,7 @@ function InstanceDerivedComponent({
       .concat(fullPlayOrder.slice(0, firstPlayerIdx))
       .map((playerId) => <Player playerId={playerId} inline />);
   } else {
-    order = Array.from(Num.range(1, playerIds.length + 1)).map((playerIdx) =>
+    order = Vec.range(1, playerIds.length).map((playerIdx) =>
       playerIdx === 1 && firstPlayerId != null ? (
         <Player playerId={firstPlayerId} inline />
       ) : (
