@@ -1,6 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import React, { useMemo } from "react";
-import { Dict, Vec } from "common";
+import { C, Dict, vec, Vec } from "common";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
@@ -54,14 +54,9 @@ function IncompleteInstanceDerivedComponent({
     // We dont care about zones here, so we create a merged object out of all of
     // them
     const { provinces, hasMinimap } = MAPS[mapId];
-    const provinceCities = Object.values(provinces).reduce((merged, zone) => ({
-      ...merged,
-      ...zone,
-    }));
+    const provinceCities = Dict.merge(...vec(provinces));
 
-    mapSpecificCount = ` of the ${
-      Object.keys(provinceCities).length
-    } provinces`;
+    mapSpecificCount = ` of the ${C.count(provinceCities)} provinces`;
 
     provinceCityCountsFootnote = (
       <>
