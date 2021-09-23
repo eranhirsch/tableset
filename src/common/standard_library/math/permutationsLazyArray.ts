@@ -1,23 +1,13 @@
-import { invariant, invariant_violation } from "common";
+import { Dict, invariant, invariant_violation } from "common";
 
-function permutations_lazy_array<T extends keyof any>(
-  definition: Readonly<Record<T, number>>
-): PermutationsLazyArray<T>;
-function permutations_lazy_array<T extends keyof any>(
-  permutation: readonly T[]
-): PermutationsLazyArray<T>;
-function permutations_lazy_array<T extends keyof any>(
+const permutations_lazy_array = <T extends keyof any>(
   permutation_or_definition: readonly T[] | Readonly<Record<T, number>>
-): PermutationsLazyArray<T> {
-  return new PermutationsLazyArray(
+): PermutationsLazyArray<T> =>
+  new PermutationsLazyArray(
     Array.isArray(permutation_or_definition)
-      ? permutation_or_definition.reduce((definition, item) => {
-          definition[item] = (definition[item] ?? 0) + 1;
-          return definition;
-        }, {} as Record<T, number>)
-      : permutation_or_definition
+      ? Dict.count_values(permutation_or_definition)
+      : (permutation_or_definition as Record<T, number>)
   );
-}
 
 class PermutationsLazyArray<K extends keyof any> {
   private readonly definition: readonly (readonly [K, number])[];

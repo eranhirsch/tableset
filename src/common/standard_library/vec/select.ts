@@ -12,7 +12,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/select.php
  */
 
-import { Random } from "common";
+import { Dict, Random, vec } from "common";
 import { asArray, Traversable } from "../_private/Traversable";
 
 /**
@@ -72,30 +72,10 @@ function filter_nulls<Tv>(
  * @see `Array.filter`
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.filter_with_key/
  */
-function filter_with_key<Tk extends keyof any, Tv>(
-  dict: Readonly<Partial<Record<Tk, Tv>>>,
+const filter_with_key = <Tk extends keyof any, Tv>(
+  dict: Readonly<Record<Tk, Tv>>,
   predicate: (key: Tk, value: Tv) => boolean
-): readonly Tv[];
-function filter_with_key<Tv>(
-  dict: Readonly<{ [key: string]: Tv }>,
-  predicate: (key: string, value: Tv) => boolean
-): readonly Tv[];
-function filter_with_key<Tv>(
-  dict: Readonly<{ [key: number]: Tv }>,
-  predicate: (key: number, value: Tv) => boolean
-): readonly Tv[];
-function filter_with_key<Tv>(
-  dict: Readonly<{ [key: symbol]: Tv }>,
-  predicate: (key: symbol, value: Tv) => boolean
-): readonly Tv[];
-function filter_with_key<Tv>(
-  dict: Readonly<{ [key: keyof any]: Tv }>,
-  predicate: (key: any, value: Tv) => boolean
-): readonly Tv[] {
-  return Object.entries(dict)
-    .filter(([key, value]) => predicate(key, value))
-    .map(([, value]) => value);
-}
+): readonly Tv[] => vec(Dict.filter_with_keys(dict, predicate));
 
 /**
  * @returns an array containing only the elements of the first array that
@@ -122,14 +102,9 @@ function intersect<Tv>(
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.keys/
  */
 function keys<Tk extends keyof any>(
-  dict: Readonly<Partial<Record<Tk, unknown>>>
+  dict: Readonly<Record<Tk, unknown>>
 ): readonly Tk[];
-function keys(dict: Readonly<{ [key: string]: unknown }>): readonly string[];
-function keys(dict: Readonly<{ [key: number]: unknown }>): readonly number[];
-function keys(dict: Readonly<{ [key: symbol]: unknown }>): readonly symbol[];
-function keys(
-  dict: Readonly<{ [key: keyof any]: unknown }>
-): readonly unknown[] {
+function keys(dict: Readonly<Record<keyof any, unknown>>): readonly any[] {
   return Object.keys(dict);
 }
 
