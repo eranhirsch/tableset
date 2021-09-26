@@ -29,6 +29,11 @@ const range = (
 ): readonly number[] => Array.from(Num.range(start, end + 1, step));
 
 /**
+ * @returns a new vec with the values of the given vec in reversed order.
+ */
+const reverse = <Tv>(arr: readonly Tv[]): readonly Tv[] => [...arr].reverse();
+
+/**
  * @returns a new array with the values of the given array in a random order.
  *
  * Based on an answer in stackoverflow implementing the Fisher-Yates shuffle.
@@ -93,6 +98,7 @@ function sort_by<Tv, Ts>(
 
 export const Vec = {
   range,
+  reverse,
   shuffle,
   sort_by,
   sort,
