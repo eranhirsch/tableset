@@ -13,7 +13,7 @@ import CityResourcesEncoder, {
   CITY_TILES,
 } from "../utils/CityResourcesEncoder";
 import { MAPS, Zone } from "../utils/Maps";
-import resourceLabel from "../utils/resourceLabel";
+import { resourceName } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 
@@ -63,7 +63,7 @@ function InstanceVariableComponent({
             {Vec.map_with_key(cities, (cityName, resource) => (
               <Grid item key={cityName} xs={3} textAlign="center">
                 <Typography variant="caption">
-                  {resourceLabel(resource)}
+                  {resourceName(resource)}
                 </Typography>
                 <Typography variant="body2">
                   <RomanTitle>{cityName}</RomanTitle>

@@ -1,13 +1,13 @@
 import { Typography } from "@mui/material";
 import { Vec } from "common";
+import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import React from "react";
 import GrammaticalList from "../../core/ux/GrammaticalList";
-import { Resource } from "../utils/CityResourcesEncoder";
-import resourceLabel from "../utils/resourceLabel";
+import { Resource, resourceName } from "../utils/resource";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
 
 const STARTING_RESOURCES: Record<Resource, number> = Object.freeze({
@@ -32,16 +32,15 @@ function InstanceDerivedComponent({
       <BlockWithFootnotes
         footnotes={[
           <>
-            When playing the "No Starting Resources" variant players don't take
-            any resources during setup; they will buy resources at the start of
-            the their first turn instead.
+            Due to playing with{" "}
+            <InstanceStepLink step={noStartingResourcesVariant} />.
           </>,
         ]}
       >
         {(Footnote) => (
           <>
-            Skip this step
-            <Footnote index={1} />.
+            Nothing to do
+            <Footnote index={1} />! Skip this step.
           </>
         )}
       </BlockWithFootnotes>
@@ -56,7 +55,7 @@ function InstanceDerivedComponent({
           Vec.map_with_key(STARTING_RESOURCES, (resource, count) =>
             count > 0 ? (
               <React.Fragment key={`starting_resource_${resource}`}>
-                {count} <strong>{resourceLabel(resource as Resource)}</strong>
+                {count} <strong>{resourceName(resource)}</strong>
               </React.Fragment>
             ) : null
           )

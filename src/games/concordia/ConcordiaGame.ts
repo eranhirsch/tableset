@@ -20,7 +20,7 @@ import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
 
 export default class ConcordiaGame implements IGame {
-  public readonly steps: readonly IGameStep<unknown>[];
+  public readonly steps: readonly Readonly<IGameStep<unknown>>[];
 
   public constructor() {
     this.steps = [
@@ -56,18 +56,18 @@ export default class ConcordiaGame implements IGame {
     ];
   }
 
-  public atNullable(id: StepId): IGameStep<unknown> | undefined {
+  public atNullable(id: StepId): Readonly<IGameStep<unknown>> | undefined {
     return this.steps.find((step) => step.id === id);
   }
 
-  public atEnforce(id: StepId): IGameStep<unknown> {
+  public atEnforce(id: StepId): Readonly<IGameStep<unknown>> {
     return nullthrows(
       this.atNullable(id),
       `${this.constructor.name} does not define step ${id}`
     );
   }
 
-  public get playerColors(): GamePiecesColor[] {
+  public get playerColors(): readonly GamePiecesColor[] {
     return ["black", "blue", "green", "red", "yellow"];
   }
 }

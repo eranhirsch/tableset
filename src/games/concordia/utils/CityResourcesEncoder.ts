@@ -1,9 +1,8 @@
 import { C, Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
 import { MapId, MAPS, Zone } from "./Maps";
+import { Resource } from "./resource";
 
 const HASH_SEPARATOR = "-";
-
-export type Resource = "bricks" | "food" | "tools" | "wine" | "cloth";
 
 type ZoneResourceTiles = Readonly<Record<Resource, number>>;
 

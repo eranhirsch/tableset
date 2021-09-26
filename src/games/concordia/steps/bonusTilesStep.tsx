@@ -7,20 +7,12 @@ import createDerivedGameStep, {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
-import CityResourcesEncoder, { Resource } from "../utils/CityResourcesEncoder";
+import CityResourcesEncoder from "../utils/CityResourcesEncoder";
 import { MapId, MAPS } from "../utils/Maps";
-import resourceLabel from "../utils/resourceLabel";
+import { Resource, resourceName, RESOURCE_COST } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
-
-const RESOURCE_PRICES: Readonly<Record<Resource, number>> = Object.freeze({
-  bricks: 3,
-  food: 4,
-  tools: 5,
-  wine: 6,
-  cloth: 7,
-});
 
 export default createDerivedGameStep({
   id: "bonusTiles",
@@ -127,20 +119,20 @@ function IncompleteInstanceDerivedComponent({
             <GrammaticalList>
               {Vec.map_with_key(
                 Dict.sort_by(
-                  RESOURCE_PRICES,
+                  RESOURCE_COST,
                   // We want descending order, so we negate the value
                   (value) => -value
                 ),
-                (resource) => resourceLabel(resource as Resource)
+                (resource) => resourceName(resource)
               )}
             </GrammaticalList>
             .
           </>,
           <>
-            e.g. if {resourceLabel("cloth")} is produced in one of the cities
-            then the most valuable resource is {resourceLabel("cloth")}, if it
-            isn't then if {resourceLabel("wine")} is produced in one of the
-            cities then the most valuable resource is {resourceLabel("wine")},
+            e.g. if {resourceName("cloth")} is produced in one of the cities
+            then the most valuable resource is {resourceName("cloth")}, if it
+            isn't then if {resourceName("wine")} is produced in one of the
+            cities then the most valuable resource is {resourceName("wine")},
             etc...
           </>,
         ]}
@@ -172,7 +164,7 @@ function ComputedInstanceComponent({
         Vec.values(cityResources).reduce(
           (mostValuableResource, resource) =>
             mostValuableResource == null ||
-            RESOURCE_PRICES[mostValuableResource] < RESOURCE_PRICES[resource]
+            RESOURCE_COST[mostValuableResource] < RESOURCE_COST[resource]
               ? resource
               : mostValuableResource,
           undefined as Resource | undefined
@@ -197,7 +189,7 @@ function ComputedInstanceComponent({
             </Grid>
             <Grid item xs={8}>
               <Typography variant="caption">
-                {resourceLabel(resource)}
+                {resourceName(resource)}
               </Typography>
             </Grid>
           </React.Fragment>

@@ -73,26 +73,24 @@ export default function Instance(): JSX.Element | null {
 
   const game = useAppSelector(gameSelector);
   const instance = useAppSelector(instanceSelectors.selectEntities);
+  const activeGameSteps = useMemo(
+    () =>
+      game.steps.filter(
+        ({ id, isOptional }) => !isOptional || instance[id] != null
+      ),
+    [game.steps, instance]
+  );
 
   const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
 
   const groups = useMemo(
     () =>
-      game.steps
+      activeGameSteps
         .reduce(
           (
             groups: StepId[][],
-            {
-              id,
-              isOptional,
-              InstanceDerivedComponent,
-              InstanceVariableComponent,
-            }
+            { id, InstanceDerivedComponent, InstanceVariableComponent }
           ) => {
-            if (isOptional && !(id in instance)) {
-              return groups;
-            }
-
             if (
               InstanceDerivedComponent == null &&
               InstanceVariableComponent == null
@@ -112,11 +110,11 @@ export default function Instance(): JSX.Element | null {
           [[]]
         )
         .filter((group) => group.length > 0),
-    [game.steps, instance]
+    [activeGameSteps]
   );
 
   const activeStepId = location.hash.substring(1) as StepId;
-  const activeStepIdx = game.steps.findIndex(
+  const activeStepIdx = activeGameSteps.findIndex(
     (step) => step.id === activeStepId
   );
 
@@ -186,7 +184,7 @@ export default function Instance(): JSX.Element | null {
                   setCompletedSteps((steps) =>
                     steps.includes(stepId) ? steps : [...steps, stepId]
                   );
-                  const nextStepId = game.steps.find(
+                  const nextStepId = activeGameSteps.find(
                     (x) => !completedSteps.includes(x.id) && x.id !== stepId
                   )?.id;
                   setActiveStepId(nextStepId);
