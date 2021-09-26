@@ -1,5 +1,6 @@
 import { Avatar, Grid, Typography } from "@mui/material";
 import { Str, Vec } from "common";
+import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "games/global/ux/PlayerAvatar";
 import { PlayerId } from "model/Player";
 import React from "react";
@@ -11,6 +12,10 @@ import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import firstPlayerStep from "../../global/steps/firstPlayerStep";
 import playOrderStep from "../../global/steps/playOrderStep";
+import noStartingResourcesVariant from "./noStartingResourcesVariant";
+
+const STARTING_MONEY_BASE = 5;
+const NO_RESOURCES_VARIANT_EXTRA = 20;
 
 export default createDerivedGameStep({
   id: "startingMoney",
@@ -18,30 +23,39 @@ export default createDerivedGameStep({
     createPlayersDependencyMetaStep(),
     playOrderStep,
     firstPlayerStep,
+    noStartingResourcesVariant,
   ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, playOrder, firstPlayerId],
+  dependencies: [
+    playerIds,
+    playOrder,
+    firstPlayerId,
+    isNoStartingResourcesVariantEnabled,
+  ],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly PlayerId[],
-  PlayerId
+  PlayerId,
+  true
 >): JSX.Element | null {
   if (playerIds == null) {
     return (
       <HeaderAndSteps synopsis="Provide each player money from the bank:">
         <>
-          Give the starting player <strong>5</strong> sestertii.
+          Give the starting player <strong>{STARTING_MONEY_BASE}</strong>{" "}
+          sestertii.
         </>
         <BlockWithFootnotes
           footnotes={[
             <>
               e.g. in a 3 player game, the first player would get{" "}
-              <strong>5</strong> sestertii, the second player would get{" "}
-              <strong>6</strong> sestertii, and the last player would get{" "}
-              <strong>7</strong> sestertii.
+              <strong>{STARTING_MONEY_BASE}</strong> sestertii, the second
+              player would get <strong>{STARTING_MONEY_BASE + 1}</strong>{" "}
+              sestertii, and the last player would get{" "}
+              <strong>{STARTING_MONEY_BASE + 2}</strong> sestertii.
             </>,
           ]}
         >
@@ -54,6 +68,24 @@ function InstanceDerivedComponent({
             </>
           )}
         </BlockWithFootnotes>
+        {isNoStartingResourcesVariantEnabled != null && (
+          <BlockWithFootnotes
+            footnotes={[
+              <>
+                Due to playing with{" "}
+                <InstanceStepLink step={noStartingResourcesVariant} />.
+              </>,
+            ]}
+          >
+            {(Footnote) => (
+              <>
+                Give each player an additional {NO_RESOURCES_VARIANT_EXTRA}{" "}
+                sestertii
+                <Footnote index={1} />.
+              </>
+            )}
+          </BlockWithFootnotes>
+        )}
       </HeaderAndSteps>
     );
   }
@@ -95,7 +127,10 @@ function InstanceDerivedComponent({
               {player}
             </Grid>
             <Grid item xs={10}>
-              <Typography variant="body2">{5 + index} Sestertii</Typography>
+              <Typography variant="body2">
+                {STARTING_MONEY_BASE + NO_RESOURCES_VARIANT_EXTRA + index}{" "}
+                Sestertii
+              </Typography>
             </Grid>
           </React.Fragment>
         ))}
