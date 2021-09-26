@@ -5,6 +5,8 @@ export default createVariableGameStep({
   id: "variant_noStartingResources",
   labelOverride: "Variant: No Starting Resources",
 
+  isType: (value): value is true => value === true,
+
   isOptional: true,
 
   random: () => (Random.coin_flip(0.5) ? true : null),

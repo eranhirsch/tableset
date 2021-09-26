@@ -1,10 +1,14 @@
 import { Typography } from "@mui/material";
 import { Vec } from "common";
+import createDerivedGameStep, {
+  DerivedStepInstanceComponentProps,
+} from "games/core/steps/createDerivedGameStep";
+import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import React from "react";
-import createGameStep from "../../core/steps/createGameStep";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { Resource } from "../utils/CityResourcesEncoder";
 import resourceLabel from "../utils/resourceLabel";
+import noStartingResourcesVariant from "./noStartingResourcesVariant";
 
 const STARTING_RESOURCES: Record<Resource, number> = Object.freeze({
   cloth: 1,
@@ -14,12 +18,36 @@ const STARTING_RESOURCES: Record<Resource, number> = Object.freeze({
   bricks: 1,
 });
 
-export default createGameStep({
+export default createDerivedGameStep({
   id: "startingResources",
-  InstanceManualComponent,
+  dependencies: [noStartingResourcesVariant],
+  InstanceDerivedComponent,
 });
 
-function InstanceManualComponent(): JSX.Element {
+function InstanceDerivedComponent({
+  dependencies: [isNoStartingResourcesVariantEnabled],
+}: DerivedStepInstanceComponentProps<true>): JSX.Element {
+  if (isNoStartingResourcesVariantEnabled != null) {
+    return (
+      <BlockWithFootnotes
+        footnotes={[
+          <>
+            When playing the "No Starting Resources" variant players don't take
+            any resources during setup; they will buy resources at the start of
+            the their first turn instead.
+          </>,
+        ]}
+      >
+        {(Footnote) => (
+          <>
+            Skip this step
+            <Footnote index={1} />.
+          </>
+        )}
+      </BlockWithFootnotes>
+    );
+  }
+
   return (
     <Typography variant="body1">
       Each player takes{" "}
