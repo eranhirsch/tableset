@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/select.php
  */
-import { C, Dict as D, Vec } from "common";
+import { Dict as D, Vec } from "common";
 
 /**
  * @returns a mapper-obj containing only the entries of the first mapper-obj
@@ -60,7 +60,7 @@ function filter_with_keys<Tk extends keyof any, Tv>(
     D.entries(dict).filter(([key, value]) => predicate(key, value))
   );
   // Optimize for react by returning the same object if nothing got filtereD.
-  return C.count(filtered) === C.count(dict) ? dict : filtered;
+  return D.countValues(filtered) === D.countValues(dict) ? dict : filtered;
 }
 
 /**
@@ -86,7 +86,7 @@ function filter_nulls<Tk extends keyof any, Tv>(
     return noNulls;
   }, {} as Record<Tk, Tv>);
   // Optimize for react by returning the same object if nothing got filtereD.
-  return C.count(dict) === C.count(filtered)
+  return D.countValues(filtered) === D.countValues(dict)
     ? (dict as Record<Tk, Tv>)
     : filtered;
 }
@@ -107,7 +107,7 @@ function select_keys<Tk extends keyof any, Tv>(
     return selected;
   }, {} as Record<Tk, Tv>);
   // Optimize for react by returning the same object if everything got selecteD.
-  return C.count(selected) === C.count(dict) ? dict : selected;
+  return D.countValues(selected) === D.countValues(dict) ? dict : selected;
 }
 
 /**
@@ -121,7 +121,9 @@ const take = <Tk extends keyof any, Tv>(
   n: number
 ): Readonly<Record<Tk, Tv>> =>
   // If we need to take more entries than the dict has just return the dict.
-  n >= C.count(dict) ? dict : D.from_entries(Vec.take(D.entries(dict), n));
+  n >= D.countValues(dict)
+    ? dict
+    : D.from_entries(Vec.take(D.entries(dict), n));
 
 /**
  * @returns a mapper-obj in which each value appears exactly once. In case of
@@ -135,7 +137,9 @@ function unique<Tk extends keyof any, Tv extends keyof any>(
   const dedupped = D.flip(dict);
   // If after flipping the object has the same number of entries then it had
   // no non-unique values and we can return the same object back.
-  return C.count(dedupped) === C.count(dict) ? dict : D.flip(dedupped);
+  return D.countValues(dedupped) === D.countValues(dict)
+    ? dict
+    : D.flip(dedupped);
 }
 
 /**

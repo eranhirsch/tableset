@@ -50,7 +50,7 @@ function InstanceDerivedComponent({
         Stack the decks facedown one on top of each other starting from deck{" "}
         <strong>{ROMAN_NUMERALS[playerIds.length]}</strong> then{" "}
         <GrammaticalList>
-          {[...Vec.range(2, playerIds.length - 1)].reverse().map((deck) => (
+          {Vec.reverse(Vec.range(2, playerIds.length - 1)).map((deck) => (
             <React.Fragment key={`stack_deck_${deck}`}>
               deck <strong>{ROMAN_NUMERALS[deck]}</strong>
             </React.Fragment>

@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/divide.php
  */
-import { C, Dict as D, tuple } from "common";
+import { Dict as D, tuple, Vec } from "common";
 
 /**
  * @returns a 2-tuple containing mapper-objs for which the given predicate
@@ -31,14 +31,15 @@ function partition_with_key<Tk extends keyof any, Tv>(
   const enabled = D.filter_with_keys(dict, (key, value) =>
     predicate(key, value)
   );
+  const enabledValues = Vec.values(enabled);
 
-  if (C.count(enabled) === 0) {
+  if (Vec.is_empty(enabledValues)) {
     // Optimize for react by returning the original object if the partition is
     // trivially one-sided
     return tuple({} as Partial<Record<Tk, Tv>>, dict);
   }
 
-  if (C.count(enabled) === C.count(dict)) {
+  if (enabledValues.length === D.countValues(dict)) {
     // Optimize for react by returning the original object if the partition is
     // trivially one-sided
     return tuple(dict, {} as Partial<Record<Tk, Tv>>);

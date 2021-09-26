@@ -1,6 +1,6 @@
 /**
  * Ported (manually) from HSL.
- * 
+ *
  * The `pop_(front|back)x?` methods were omitted from this port as they require
  * non-trivial workarounds in order to support mapper-objects. They are also the
  * only HSL methods that take `inout` params and mutate the input.
@@ -8,18 +8,6 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/select.php
  */
 import { Dict, invariant, invariant_violation, nullthrows } from "common";
-import { asArray, Traversable } from "../_private/Traversable";
-
-/**
- * @returns the first value of the given Traversable for which the predicate
- * returns true, or undefined if no such value is found.
- *
- * @see `C.findx` when a value is required
- */
-const find = <Tv>(
-  traversable: Traversable<Tv>,
-  valuePredicate: (element: Tv) => boolean
-): Tv | undefined => asArray(traversable).find(valuePredicate);
 
 /**
  * @returns the first value of the given Traversable for which the predicate
@@ -28,11 +16,9 @@ const find = <Tv>(
  * @see `C.find()` if you would prefer undefined if not found.
  */
 function findx<Tv>(
-  traversable: Traversable<Tv>,
+  arr: readonly Tv[],
   valuePredicate: (element: Tv) => boolean
 ): Tv {
-  const arr = asArray(traversable);
-
   // Notice that we don't use the native `find` method and `nullthrows` here
   // because Tv could contain `null` and `undefined`, and the valuePredicate
   // could return true for them and in that case we should return them and not
@@ -68,10 +54,7 @@ function find_key<Tk extends keyof any, Tv>(
  * @see `C.onlyx` for single-element Traversables.
  * @see `C.first_async` for Promises that yield Traversables.
  */
-function first<Tv>(traversable: Traversable<Tv>): Tv | undefined {
-  const [first] = asArray(traversable);
-  return first;
-}
+const first = <Tv>(arr: readonly Tv[]): Tv | undefined => arr[0];
 
 /**
  * @returns the first element of the given Traversable, or throws if the
@@ -82,8 +65,7 @@ function first<Tv>(traversable: Traversable<Tv>): Tv | undefined {
  * @see `C.onlyx` for single-element Traversables.
  * @see `C\firstx_async` for Promises that yield Traversables.
  */
-function firstx<Tv>(traversable: Traversable<Tv>): Tv {
-  const arr = asArray(traversable);
+function firstx<Tv>(arr: readonly Tv[]): Tv {
   invariant(arr.length > 0, "firstx: Expected at least one element.");
   return arr[0];
 }
@@ -124,10 +106,8 @@ const first_keyx = <Tk extends keyof any>(
  * @see `C.lastx` for non-empty Traversables.
  * @see `C.onlyx` for single-element Traversables.
  */
-function last<Tv>(traversable: Traversable<Tv>): Tv | undefined {
-  const arr = asArray(traversable);
-  return arr.length > 0 ? arr[arr.length - 1] : undefined;
-}
+const last = <Tv>(arr: readonly Tv[]): Tv | undefined =>
+  arr.length > 0 ? arr[arr.length - 1] : undefined;
 
 /**
  * @returns the last element of the given Traversable, or throws if the
@@ -136,8 +116,7 @@ function last<Tv>(traversable: Traversable<Tv>): Tv | undefined {
  * @see `C.last` for possibly empty Traversables.
  * @see `C.onlyx` for single-element Traversables.
  */
-function lastx<Tv>(traversable: Traversable<Tv>): Tv {
-  const arr = asArray(traversable);
+function lastx<Tv>(arr: readonly Tv[]): Tv {
   invariant(arr.length > 0, "lastx: Expected at least one element.");
   return arr[arr.length - 1];
 }
@@ -181,8 +160,9 @@ const last_keyx = <Tk extends keyof any>(
  * @see `C.firstx` for non-empty Traversables.
  * @see `C.onlyx` for single-element Traversables.
  */
-const nfirst = <Tv>(traversable?: Traversable<Tv> | null): Tv | undefined =>
-  traversable != null ? first(traversable) : undefined;
+const nfirst = <Tv>(
+  traversable?: readonly Tv[] | null | undefined
+): Tv | undefined => (traversable != null ? first(traversable) : undefined);
 
 /**
  * @returns the first and only element of the given Traversable, or throws if
@@ -192,14 +172,12 @@ const nfirst = <Tv>(traversable?: Traversable<Tv> | null): Tv | undefined =>
  *
  * @see `C.firstx` for Traversables with more than one element.
  */
-function onlyx<Tv>(traversable: Traversable<Tv>, msg?: string): Tv {
-  const arr = asArray(traversable);
+function onlyx<Tv>(arr: readonly Tv[], msg?: string): Tv {
   invariant(arr.length === 1, msg ?? `onlyx: Expected exactly one element`);
   return arr[0];
 }
 
 export const C = {
-  find,
   findx,
   find_key,
   first,

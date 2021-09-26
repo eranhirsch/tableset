@@ -5,7 +5,6 @@
  */
 
 import { Vec, Dict as D } from "common";
-import { asArray, Traversable } from "../_private/Traversable";
 
 /**
  * @returns an array containing the original dict split into chunks of the given
@@ -50,8 +49,8 @@ const fill_keys = <Tk extends keyof any, Tv>(
  * @see `Dict\merge()` for a fixed number of mapper-objects.
  */
 const flatten = <Tk extends keyof any, Tv>(
-  dicts: Traversable<Readonly<Record<Tk, Tv>>>
-): Readonly<Record<Tk, Tv>> => D.merge(...asArray(dicts));
+  dicts: readonly Readonly<Record<Tk, Tv>>[]
+): Readonly<Record<Tk, Tv>> => D.merge(...dicts);
 
 /**
  * @returns a new mapper-obj keyed by the values of the given mapper-obj

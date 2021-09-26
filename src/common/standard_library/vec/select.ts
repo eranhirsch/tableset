@@ -12,8 +12,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/select.php
  */
 
-import { Dict, Random, vec } from "common";
-import { asArray, Traversable } from "../_private/Traversable";
+import { Dict, Random } from "common";
 
 /**
  * @returns an array containing only the elements of the first array that do
@@ -55,9 +54,8 @@ function diff_by<Tv, Ts>(
  * @returns an array containing only non-null values of the given array.
  */
 function filter_nulls<Tv>(
-  traversable: Traversable<Tv | null | undefined>
+  arr: readonly (Tv | null | undefined)[]
 ): readonly Tv[] {
-  const arr = asArray(traversable);
   // The best way to filter nulls in TS? (August 2021)
   const filtered = arr.flatMap((x) => (x == null ? [] : [x]));
   return filtered.length < arr.length ? filtered : (arr as Tv[]);
@@ -75,7 +73,7 @@ function filter_nulls<Tv>(
 const filter_with_key = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   predicate: (key: Tk, value: Tv) => boolean
-): readonly Tv[] => vec(Dict.filter_with_keys(dict, predicate));
+): readonly Tv[] => values(Dict.filter_with_keys(dict, predicate));
 
 /**
  * @returns an array containing only the elements of the first array that
@@ -226,6 +224,16 @@ function unique_by<Tv>(
   return arr.length === newArr.length ? arr : newArr;
 }
 
+/**
+ * @returns the values of the mapper-obj as a vec.
+ *
+ * Not originally part of the HSL because Hack PHP `dict` types implement the
+ * iterator method returning the values, making it usable in any API which takes
+ * a Traversable.
+ */
+const values = <Tv>(dict: Readonly<Record<keyof any, Tv>>): readonly Tv[] =>
+  Object.values(dict);
+
 export const Vec = {
   diff_by,
   diff,
@@ -237,4 +245,5 @@ export const Vec = {
   take,
   unique_by,
   unique,
+  values,
 } as const;

@@ -1,5 +1,5 @@
 import { Grid, Typography } from "@mui/material";
-import { C, Dict, nullthrows, Vec } from "common";
+import { Dict, nullthrows, Vec } from "common";
 import React, { useMemo } from "react";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -54,9 +54,11 @@ function IncompleteInstanceDerivedComponent({
     // We dont care about zones here, so we create a merged object out of all of
     // them
     const { provinces, hasMinimap } = MAPS[mapId];
-    const provinceCities = Dict.flatten(Dict.filter_nulls(provinces));
+    const provinceCities = Dict.flatten(
+      Vec.filter_nulls(Vec.values(provinces))
+    );
 
-    mapSpecificCount = ` of the ${C.count(provinceCities)} provinces`;
+    mapSpecificCount = ` of the ${Dict.countValues(provinceCities)} provinces`;
 
     provinceCityCountsFootnote = (
       <>
@@ -167,8 +169,7 @@ function ComputedInstanceComponent({
     const provinceCityResources = CityResourcesEncoder.decode(mapId, hash);
     return Dict.map(provinceCityResources, (cityResources) =>
       nullthrows(
-        C.reduce(
-          cityResources,
+        Vec.values(cityResources).reduce(
           (mostValuableResource, resource) =>
             mostValuableResource == null ||
             RESOURCE_PRICES[mostValuableResource] < RESOURCE_PRICES[resource]

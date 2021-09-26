@@ -1,5 +1,5 @@
 import { Grid, Typography, useTheme } from "@mui/material";
-import { C, Dict, MathUtils, nullthrows, Vec } from "common";
+import { Dict, MathUtils, nullthrows, Vec } from "common";
 import { useInstanceValue } from "features/instance/useInstanceValue";
 import React, { useMemo } from "react";
 import createVariableGameStep, {
@@ -69,7 +69,7 @@ function InstanceVariableComponent({
                 </Typography>
               </Grid>
             ))}
-            {C.count(cities) === 2 && <Grid item xs={3} />}
+            {Dict.countValues(cities) === 2 && <Grid item xs={3} />}
           </React.Fragment>
         ))}
         <Typography
@@ -181,7 +181,7 @@ function TilesCountFootnote({ zones }: { zones: readonly Zone[] }) {
         Dict.filter_keys(CITY_TILES, (zone) => zones.includes(zone)),
         (zone, tiles) => (
           <React.Fragment key={`zone_${zone}`}>
-            {zone}: {MathUtils.sum(tiles)} tiles
+            {zone}: {MathUtils.sum(Vec.values(tiles))} tiles
           </React.Fragment>
         )
       )}

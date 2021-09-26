@@ -46,7 +46,7 @@ function InstanceItemContent({
             // redux dictionaries are really weird because they support ID types
             // which aren't used, and have undefined as part of the value.
             // We cast here to work around it...
-            instance as Record<string, SetupStep | undefined>
+            Vec.values(instance as Record<string, SetupStep | undefined>)
           ),
           playerIds,
         }}

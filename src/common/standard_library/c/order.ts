@@ -4,7 +4,6 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/introspect.php
  */
 import { defaultComparator } from "../_private/defaultComparator";
-import { asArray, Traversable } from "../_private/Traversable";
 
 /**
  * @returns true if the given Traversable<Tv> is sorted in ascending order.
@@ -17,9 +16,9 @@ import { asArray, Traversable } from "../_private/Traversable";
  * aforementioned types.
  */
 const is_sorted = <Tv>(
-  traversable: Traversable<Tv>,
+  arr: readonly Tv[],
   comparator?: (a: Tv, b: Tv) => number
-): boolean => is_sorted_by(traversable, (element) => element, comparator);
+): boolean => is_sorted_by(arr, (element) => element, comparator);
 
 /**
  * @returns true if the given Traversable<Tv> would be sorted in ascending order
@@ -32,11 +31,11 @@ const is_sorted = <Tv>(
  * @see `C.is_sorted` to check the order without a mapping function.
  */
 function is_sorted_by<Tv, Ts>(
-  traversable: Traversable<Tv>,
+  arr: readonly Tv[],
   scalarFunc: (item: Tv) => Ts,
   comparator: (a: Ts, b: Ts) => number = defaultComparator
 ): boolean {
-  const [first, ...rest] = asArray(traversable);
+  const [first, ...rest] = arr;
   if (first == null) {
     // Trivially sorted
     return true;
