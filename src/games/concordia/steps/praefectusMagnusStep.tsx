@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import { Str } from "common";
+import { PlayerAvatar } from "games/global/ux/PlayerAvatar";
 import { PlayerId } from "../../../model/Player";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -7,7 +8,6 @@ import createDerivedGameStep, {
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import firstPlayerStep from "../../global/steps/firstPlayerStep";
 import playOrderStep from "../../global/steps/playOrderStep";
-import Player from "../../global/ux/Player";
 
 export default createDerivedGameStep({
   id: "praefectusMagnus",
@@ -48,7 +48,7 @@ function InstanceDerivedComponent({
     return (
       <Typography variant="body1">
         Give the player sitting to the left of{" "}
-        <Player playerId={firstPlayerId} inline /> the{" "}
+        <PlayerAvatar playerId={firstPlayerId} inline /> the{" "}
         <strong>Praefectus Magnus</strong> card.
       </Typography>
     );
@@ -65,7 +65,7 @@ function InstanceDerivedComponent({
 
   return (
     <Typography variant="body1">
-      Give <Player playerId={lastPlayer} inline /> the{" "}
+      Give <PlayerAvatar playerId={lastPlayer} inline /> the{" "}
       <strong>Praefectus Magnus</strong> card.
     </Typography>
   );

@@ -2,7 +2,7 @@ import { Avatar } from "@mui/material";
 import { PlayerId } from "../../../model/Player";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 
-export default function Player({
+export function PlayerAvatar({
   playerId,
   inline = false,
 }: {

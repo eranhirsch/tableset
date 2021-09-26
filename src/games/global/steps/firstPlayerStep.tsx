@@ -12,7 +12,7 @@ import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDepen
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
-import Player from "../ux/Player";
+import { PlayerAvatar } from "../ux/PlayerAvatar";
 import { PlayerNameShortAbbreviation } from "../ux/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "../ux/PlayerShortName";
 
@@ -53,7 +53,7 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<PlayerId>): JSX.Element {
   return (
     <Typography variant="body1">
-      <Player playerId={playerId} inline /> will play first.
+      <PlayerAvatar playerId={playerId} inline /> will play first.
     </Typography>
   );
 }

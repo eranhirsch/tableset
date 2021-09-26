@@ -1,5 +1,6 @@
 import { Avatar, Grid, Typography } from "@mui/material";
 import { Str, Vec } from "common";
+import { PlayerAvatar } from "games/global/ux/PlayerAvatar";
 import { PlayerId } from "model/Player";
 import React from "react";
 import createDerivedGameStep, {
@@ -10,7 +11,6 @@ import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import firstPlayerStep from "../../global/steps/firstPlayerStep";
 import playOrderStep from "../../global/steps/playOrderStep";
-import Player from "../../global/ux/Player";
 
 export default createDerivedGameStep({
   id: "startingMoney",
@@ -68,11 +68,11 @@ function InstanceDerivedComponent({
     order = fullPlayOrder
       .slice(firstPlayerIdx)
       .concat(fullPlayOrder.slice(0, firstPlayerIdx))
-      .map((playerId) => <Player playerId={playerId} inline />);
+      .map((playerId) => <PlayerAvatar playerId={playerId} inline />);
   } else {
     order = Vec.range(1, playerIds.length).map((playerIdx) =>
       playerIdx === 1 && firstPlayerId != null ? (
-        <Player playerId={firstPlayerId} inline />
+        <PlayerAvatar playerId={firstPlayerId} inline />
       ) : (
         <Avatar sx={{ display: "inline-flex" }}>
           {playerIdx}

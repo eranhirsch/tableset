@@ -1,6 +1,23 @@
-import { AvatarGroup, Box, Typography } from "@mui/material";
+import LockIcon from "@mui/icons-material/Lock";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import {
+  Avatar,
+  AvatarGroup,
+  Badge,
+  Box,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Vec } from "common";
-import { useAppSelector } from "../../../app/hooks";
+import { templateActions } from "features/template/templateSlice";
+import React, { useCallback } from "react";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+} from "react-beautiful-dnd";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
@@ -8,9 +25,9 @@ import createVariableGameStep, {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
-import Player from "../ux/Player";
-import PlayerOrderPanel from "../ux/PlayerOrderPanel";
-import PlayOrderFixedTemplateLabel from "../ux/PlayOrderFixedTemplateLabel";
+import { PlayerAvatar } from "../ux/PlayerAvatar";
+import { PlayerNameShortAbbreviation } from "../ux/PlayerNameShortAbbreviation";
+import { PlayerShortName } from "../ux/PlayerShortName";
 
 export default createVariableGameStep({
   id: "playOrder",
@@ -30,8 +47,8 @@ export default createVariableGameStep({
   random: (playerIds) => Vec.shuffle(playerIds.slice(1)),
 
   fixed: {
-    renderSelector: PlayerOrderPanel,
-    renderTemplateLabel: PlayOrderFixedTemplateLabel,
+    renderSelector: Selector,
+    renderTemplateLabel: TemplateLabel,
 
     initializer(playerIds) {
       if (playerIds.length < 3) {
@@ -54,7 +71,7 @@ export default createVariableGameStep({
       const newPivotIdx = currentRefreshed.indexOf(newPivot);
       if (newPivotIdx > -1) {
         // the current value can contain the pivot only if the previous pivot
-        // was removed so we need to repivot the current array
+        // was removed so we need to re-pivot the current array
 
         currentRefreshed = currentRefreshed
           // First take all players after the new pivot
@@ -81,9 +98,9 @@ function InstanceVariableComponent({
       </Typography>
       <Box display="flex" component="figure">
         <AvatarGroup>
-          <Player playerId={firstPlayerId} />
+          <PlayerAvatar playerId={firstPlayerId} />
           {playOrder.map((playerId) => (
-            <Player playerId={playerId} />
+            <PlayerAvatar playerId={playerId} />
           ))}
         </AvatarGroup>
       </Box>
@@ -108,5 +125,135 @@ function InstanceManualComponent(): JSX.Element {
         </>
       )}
     </BlockWithFootnotes>
+  );
+}
+
+function TemplateLabel({ value }: { value: readonly PlayerId[] }): JSX.Element {
+  const firstPlayerId = useAppSelector(firstPlayerIdSelector);
+  return (
+    <>
+      {React.Children.toArray(
+        [firstPlayerId].concat(value).map((playerId, idx) => (
+          <>
+            <PlayerShortName playerId={playerId} />
+            {idx < value.length && (
+              <NavigateNextIcon
+                fontSize="small"
+                sx={{ verticalAlign: "middle" }}
+              />
+            )}
+          </>
+        ))
+      )}
+    </>
+  );
+}
+
+function Selector({
+  current: order,
+}: {
+  current: readonly PlayerId[];
+}): JSX.Element {
+  const dispatch = useAppDispatch();
+
+  const onDragEnd = useCallback(
+    ({ reason, source, destination }: DropResult) => {
+      if (reason === "CANCEL") {
+        return;
+      }
+
+      if (destination == null) {
+        // Dropped out of the droppable
+        return;
+      }
+
+      dispatch(
+        templateActions.constantValueChanged({
+          id: "playOrder",
+          value: moveItem(order, source.index, destination.index),
+        })
+      );
+    },
+    [dispatch, order]
+  );
+
+  return (
+    <Stack alignItems="center" direction="column" spacing={1}>
+      <Stack direction="row" spacing={1}>
+        <FirstAvatar />
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="order" direction="horizontal">
+            {(provided) => (
+              <Stack
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                component="ol"
+                direction="row"
+                sx={{ padding: 0 }}
+                spacing={1}
+              >
+                {order.map((playerId, idx) => (
+                  <DraggablePlayer
+                    key={playerId}
+                    playerId={playerId}
+                    index={idx}
+                  />
+                ))}
+                {provided.placeholder}
+              </Stack>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </Stack>
+      <Typography variant="caption">{"In clockwise order"}</Typography>
+    </Stack>
+  );
+}
+
+function moveItem<T>(
+  items: readonly T[],
+  itemIdx: number,
+  targetIdx: number
+): T[] {
+  const clone = items.slice();
+  const [item] = clone.splice(itemIdx, 1);
+  clone.splice(targetIdx, 0, item);
+  return clone;
+}
+
+function DraggablePlayer({
+  playerId,
+  index,
+}: {
+  playerId: PlayerId;
+  index: number;
+  badgeContent?: string;
+}) {
+  return (
+    <Draggable draggableId={`${playerId}`} index={index}>
+      {(provided) => (
+        <Avatar
+          component="li"
+          ref={provided.innerRef}
+          {...provided.dragHandleProps}
+          {...provided.draggableProps}
+        >
+          <PlayerNameShortAbbreviation playerId={playerId} />
+        </Avatar>
+      )}
+    </Draggable>
+  );
+}
+
+function FirstAvatar() {
+  const playerId = useAppSelector(firstPlayerIdSelector);
+  return (
+    <Badge
+      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      overlap="circular"
+      badgeContent={<LockIcon color="primary" fontSize="small" />}
+    >
+      <PlayerAvatar playerId={playerId} />
+    </Badge>
   );
 }
