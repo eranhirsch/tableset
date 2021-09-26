@@ -21,7 +21,8 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
-import createVariableGameStep, {
+import {
+  createVariableGameStep,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";

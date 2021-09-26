@@ -18,7 +18,7 @@ const CARDS_PER_DECK = [
   MARKET_DECK_I.length,
   // II: Architect, Prefect, Mercator, Colonist, Consul, Vintner, Weaver
   7,
-  // III: Arhcitect, Prefect, Mercator, Colonist, Diplomat, Consul
+  // III: Architect, Prefect, Mercator, Colonist, Diplomat, Consul
   6,
   // IV: Architect, Prefect, Colonist, Diplomat, Consul
   5,
@@ -40,7 +40,7 @@ function InstanceDerivedComponent({
   return (
     <HeaderAndSteps synopsis="Prepare the personality cards decks:">
       <CardSelectionStep playerIds={playerIds} />
-      <>Create a seperate deck for each numeral.</>
+      <>Create a separate deck for each numeral.</>
     </HeaderAndSteps>
   );
 }

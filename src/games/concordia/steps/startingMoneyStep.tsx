@@ -39,7 +39,7 @@ function InstanceDerivedComponent({
           footnotes={[
             <>
               e.g. in a 3 player game, the first player would get{" "}
-              <strong>5</strong> setertii, the second player would get{" "}
+              <strong>5</strong> sestertii, the second player would get{" "}
               <strong>6</strong> sestertii, and the last player would get{" "}
               <strong>7</strong> sestertii.
             </>,

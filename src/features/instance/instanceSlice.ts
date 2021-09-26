@@ -24,23 +24,25 @@ export default createSlice({
         template: Dictionary<TemplateElement>,
         playerIds: readonly PlayerId[]
       ) => ({
-        payload: game.steps.reduce((ongoing, step) => {
-          const element = template[step.id];
+        payload: game.steps.reduce((ongoing, { id }) => {
+          const element = template[id];
           if (element == null) {
             return ongoing;
           }
 
-          const gameStep = game.atEnforce(element.id);
+          const value = templateElementResolver(game.atEnforce(id), element, {
+            instance: ongoing,
+            playerIds,
+          });
 
-          const setupStep = {
-            id: step.id,
-            value: templateElementResolver(gameStep, element, {
-              instance: ongoing,
-              playerIds,
-            }),
-          };
-          return ongoing.concat(setupStep);
-        }, [] as readonly SetupStep[]),
+          if (value != null) {
+            // Null means ignore the step, it is a valid response in some cases
+            // (like variants, modules, and expansions)
+            ongoing.push({ id, value });
+          }
+
+          return ongoing;
+        }, [] as SetupStep[]),
       }),
 
       reducer: instanceAdapter.setAll,

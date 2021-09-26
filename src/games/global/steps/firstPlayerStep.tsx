@@ -9,7 +9,8 @@ import {
 } from "features/template/templateSlice";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
-import createVariableGameStep, {
+import {
+  createVariableGameStep,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
 import { PlayerAvatar } from "../ux/PlayerAvatar";

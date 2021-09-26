@@ -12,6 +12,7 @@ import mapStep from "./steps/mapStep";
 import marketCardsStep from "./steps/marketCardsStep";
 import marketDeckStep from "./steps/marketDeckStep";
 import marketDisplayStep from "./steps/marketDisplayStep";
+import noStartingResourcesVariant from "./steps/noStartingResourcesVariant";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
 import startingColonistsStep from "./steps/startingColonistsStep";
@@ -36,7 +37,7 @@ export default class ConcordiaGame implements IGame {
       createGameStep({
         id: "resourcePiles",
         InstanceManualComponent:
-          "Seperate the resources into piles near the board.",
+          "Separate the resources into piles near the board.",
       }),
       createGameStep({
         id: "bank",
@@ -47,6 +48,7 @@ export default class ConcordiaGame implements IGame {
       createPlayerColorsStep(this.playerColors),
       playerComponentsStep,
       startingColonistsStep,
+      noStartingResourcesVariant,
       startingResourcesStep,
       firstPlayerStep,
       startingMoneyStep,

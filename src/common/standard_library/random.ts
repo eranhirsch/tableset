@@ -21,6 +21,13 @@ function float(a: number, b?: number) {
 }
 
 /**
+ * @returns true with a probability of `ratio`, so for example `coin_flip(0.5)`
+ * would return true half of the times, and `coin_flip(0.1)` would return true
+ * 1 tenth of the times.
+ */
+const coin_flip = (ratio: number) => Math.random() < ratio;
+
+/**
  * @returns a random number between 0 (inclusive) and `a` (exclusive), or
  * between `a` (inclusive) and `b` (exclusive) as an integer.
  */
@@ -45,4 +52,5 @@ export const Random = {
   index,
   int,
   string,
+  coin_flip,
 } as const;

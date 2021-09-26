@@ -72,6 +72,7 @@ export default function Instance(): JSX.Element | null {
   const history = useHistory();
 
   const game = useAppSelector(gameSelector);
+  const instance = useAppSelector(instanceSelectors.selectEntities);
 
   const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
 
@@ -81,9 +82,17 @@ export default function Instance(): JSX.Element | null {
         .reduce(
           (
             groups: StepId[][],
-            { id, InstanceDerivedComponent, InstanceVariableComponent },
-            index
+            {
+              id,
+              isOptional,
+              InstanceDerivedComponent,
+              InstanceVariableComponent,
+            }
           ) => {
+            if (isOptional && !(id in instance)) {
+              return groups;
+            }
+
             if (
               InstanceDerivedComponent == null &&
               InstanceVariableComponent == null
@@ -97,13 +106,13 @@ export default function Instance(): JSX.Element | null {
 
             // We need to create a new group for each non-manual step and
             // push an additional group after the step so that the next
-            // iterations' doesnt add anything to this group.
+            // iterations' doesn't add anything to this group.
             return groups.concat([[id], []]);
           },
           [[]]
         )
         .filter((group) => group.length > 0),
-    [game.steps]
+    [game.steps, instance]
   );
 
   const activeStepId = location.hash.substring(1) as StepId;

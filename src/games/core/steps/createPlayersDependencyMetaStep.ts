@@ -19,6 +19,8 @@ export default function createPlayersDependencyMetaStep({
       playerIds.length >= min && playerIds.length <= max,
 
     extractInstanceValue: ({ playerIds }) => playerIds,
+
+    isOptional: false,
   };
   return playersMetaStep;
 }

@@ -6,6 +6,8 @@ export interface CreateGameStepOptions {
   // camelCase!
   id: StepId;
 
+  isOptional?: true;
+
   // Optional: We convert the camelCase id into a label automatically. Only use
   // this if you want a different label for your step
   labelOverride?: string;
@@ -16,6 +18,7 @@ export interface CreateGameStepOptions {
 export default function createGameStep({
   id,
   labelOverride,
+  isOptional,
   InstanceManualComponent,
 }: CreateGameStepOptions): IGameStep<never> {
   return {
@@ -23,6 +26,7 @@ export default function createGameStep({
     label:
       labelOverride ??
       id[0].toUpperCase() + id.replaceAll(/[A-Z]/g, " $&").slice(1),
+    isOptional: isOptional ?? false,
     InstanceManualComponent,
   };
 }

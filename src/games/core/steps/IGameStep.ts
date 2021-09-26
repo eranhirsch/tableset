@@ -18,6 +18,7 @@ export interface InstanceContext {
 export default interface IGameStep<T = never> {
   readonly id: StepId;
   readonly label: string;
+  readonly isOptional: boolean;
 
   dependencies?: [...IGameStep<unknown>[]];
 

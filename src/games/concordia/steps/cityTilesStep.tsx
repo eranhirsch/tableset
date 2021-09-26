@@ -2,7 +2,8 @@ import { Grid, Typography, useTheme } from "@mui/material";
 import { Dict, MathUtils, nullthrows, Vec } from "common";
 import { useInstanceValue } from "features/instance/useInstanceValue";
 import React, { useMemo } from "react";
-import createVariableGameStep, {
+import {
+  createVariableGameStep,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";

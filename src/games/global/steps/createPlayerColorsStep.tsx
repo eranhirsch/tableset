@@ -23,7 +23,8 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
-import createVariableGameStep, {
+import {
+  createVariableGameStep,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";

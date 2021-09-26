@@ -3,7 +3,8 @@ import { templateActions } from "features/template/templateSlice";
 import { StepId } from "../IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "../ux/GenericItemsListPanel";
-import createVariableGameStep, {
+import {
+  createVariableGameStep,
   VariableStepInstanceComponentProps,
 } from "./createVariableGameStep";
 import { InstanceContext } from "./IGameStep";
