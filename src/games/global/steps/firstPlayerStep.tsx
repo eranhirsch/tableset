@@ -1,13 +1,20 @@
-import { Typography } from "@mui/material";
-import { Vec } from "common";
+import { Avatar, Badge, Stack, Typography } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "app/hooks";
+import { invariant_violation, ReactUtils, Vec } from "common";
+import { playersSelectors } from "features/players/playersSlice";
+import { Strategy } from "features/template/Strategy";
+import {
+  templateActions,
+  templateSelectors,
+} from "features/template/templateSlice";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import createVariableGameStep, {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
-import FirstPlayerFixedTemplateLabel from "../ux/FirstPlayerFixedTemplateLabel";
 import Player from "../ux/Player";
-import StartingPlayerPanel from "../ux/StartingPlayerPanel";
+import { PlayerNameShortAbbreviation } from "../ux/PlayerNameShortAbbreviation";
+import { PlayerShortName } from "../ux/PlayerShortName";
 
 export default createVariableGameStep({
   id: "firstPlayer",
@@ -25,8 +32,8 @@ export default createVariableGameStep({
   random: (playerIds) => Vec.sample(playerIds, 1)[0],
 
   fixed: {
-    renderSelector: StartingPlayerPanel,
-    renderTemplateLabel: FirstPlayerFixedTemplateLabel,
+    renderSelector: Selector,
+    renderTemplateLabel: TemplateLabel,
     initializer(playerIds) {
       if (playerIds.length < 2) {
         // meaningless
@@ -48,5 +55,70 @@ function InstanceVariableComponent({
     <Typography variant="body1">
       <Player playerId={playerId} inline /> will play first.
     </Typography>
+  );
+}
+
+function TemplateLabel({ value }: { value: PlayerId }): JSX.Element {
+  return <PlayerShortName playerId={value} />;
+}
+
+function Selector() {
+  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
+
+  const step = ReactUtils.useAppEntityIdSelectorEnforce(
+    templateSelectors,
+    "firstPlayer"
+  );
+  if (step.id !== "firstPlayer" || step.strategy !== Strategy.FIXED) {
+    invariant_violation(`Step ${step} is misconfigured for this panel`);
+  }
+  const selectedPlayerId = step.value;
+
+  return (
+    <Stack component="ul" direction="row" pl={0} sx={{ listStyle: "none" }}>
+      {playerIds.map((playerId) => (
+        <SelectorPlayer
+          key={playerId}
+          playerId={playerId}
+          isSelected={playerId === selectedPlayerId}
+        />
+      ))}
+    </Stack>
+  );
+}
+
+function SelectorPlayer({
+  playerId,
+  isSelected,
+}: {
+  playerId: PlayerId;
+  isSelected: boolean;
+}): JSX.Element | null {
+  const dispatch = useAppDispatch();
+
+  return (
+    <Badge
+      color="primary"
+      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      overlap="circular"
+      badgeContent={isSelected ? "1" : undefined}
+    >
+      <Avatar
+        sx={{ margin: 0.5 }}
+        onClick={
+          !isSelected
+            ? () =>
+                dispatch(
+                  templateActions.constantValueChanged({
+                    id: "firstPlayer",
+                    value: playerId,
+                  })
+                )
+            : undefined
+        }
+      >
+        <PlayerNameShortAbbreviation playerId={playerId} />
+      </Avatar>
+    </Badge>
   );
 }
