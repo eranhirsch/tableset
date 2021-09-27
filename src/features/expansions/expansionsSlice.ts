@@ -1,26 +1,33 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { GameId } from "games/core/GameMapper";
+import { RootState } from "app/store";
+import { ProductId } from "model/IGame";
 
 interface State {
-  gameId: GameId;
   expansions: readonly string[];
 }
 
-const initialState: State = { gameId: "concordia", expansions: [] };
+const initialState: State = { expansions: [] };
 
-export default createSlice({
+const expansionsSlice = createSlice({
   name: "expansions",
   initialState,
   reducers: {
-    added: (
-      { expansions },
-      { payload: expansionId }: PayloadAction<string>
-    ) => {
-      expansions.push(expansionId);
+    toggled(state, { payload: productId }: PayloadAction<ProductId>) {
+      if (state.expansions.includes(productId)) {
+        return {
+          ...state,
+          expansions: state.expansions.filter((id) => productId !== id),
+        };
+      }
+
+      state.expansions.push(productId);
     },
-    removed: (state, { payload: expansionId }: PayloadAction<string>) => ({
-      ...state,
-      expansions: state.expansions.filter((id) => expansionId !== id),
-    }),
   },
 });
+export default expansionsSlice;
+
+export const expansionsActions = expansionsSlice.actions;
+
+export const hasExpansionSelector =
+  (productId: ProductId) => (state: RootState) =>
+    state.expansions.expansions.includes(productId);
