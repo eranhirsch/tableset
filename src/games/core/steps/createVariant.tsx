@@ -1,17 +1,18 @@
 import { Random } from "common";
 import { createVariableGameStep } from "games/core/steps/createVariableGameStep";
-import IGameStep from "games/core/steps/IGameStep";
 
-export function createVariant({
+interface VariantOptions {
+  id: string;
+  name: String;
+  InstanceVariableComponent(): JSX.Element;
+}
+
+export const createVariant = ({
   id,
   name,
   InstanceVariableComponent,
-}: {
-  id: string;
-  name: String;
-  InstanceVariableComponent: () => JSX.Element;
-}): IGameStep<true | null> {
-  return createVariableGameStep({
+}: VariantOptions) =>
+  createVariableGameStep({
     id: `variant_${id}`,
     labelOverride: `Variant: ${name}`,
 
@@ -27,4 +28,3 @@ export function createVariant({
       renderTemplateLabel: "Enabled",
     },
   });
-}

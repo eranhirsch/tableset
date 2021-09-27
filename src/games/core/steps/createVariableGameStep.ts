@@ -159,7 +159,7 @@ export function createVariableGameStep<
     D9,
     D10
   >
-): IGameStep<T>;
+): Readonly<IGameStep<T>>;
 export function createVariableGameStep<T>({
   dependencies,
   isType,
@@ -168,7 +168,7 @@ export function createVariableGameStep<T>({
   recommended,
   fixed,
   ...baseOptions
-}: CreateVariableGameStepOptionsAny<T>): IGameStep<T> {
+}: CreateVariableGameStepOptionsAny<T>): Readonly<IGameStep<T>> {
   const gameStep: IGameStep<T> = createGameStep(baseOptions);
 
   gameStep.dependencies = dependencies;

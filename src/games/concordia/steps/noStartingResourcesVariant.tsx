@@ -4,8 +4,8 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import GrammaticalList from "games/core/ux/GrammaticalList";
 import { createVariant } from "../../core/steps/createVariant";
 import { resourceName, RESOURCE_COST } from "../utils/resource";
-import startingMoneyStep from "./startingMoneyStep";
-import startingResourcesStep from "./startingResourcesStep";
+import { STEP_ID as startingMoneyStepId } from "./startingMoneyStep";
+import { STEP_ID as startingResourcesStepId } from "./startingResourcesStep";
 
 export default createVariant({
   id: "noStartingResources",
@@ -17,8 +17,8 @@ function InstanceVariableComponent(): JSX.Element {
   return (
     <BlockWithFootnotes
       footnotes={[
-        <InstanceStepLink step={startingResourcesStep} />,
-        <InstanceStepLink step={startingMoneyStep} />,
+        <InstanceStepLink step={startingResourcesStepId} />,
+        <InstanceStepLink step={startingMoneyStepId} />,
         <>
           At their regular prices:{" "}
           <GrammaticalList>

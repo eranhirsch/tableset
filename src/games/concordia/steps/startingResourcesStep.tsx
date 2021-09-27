@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
 import { Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
+import { StepId } from "games/core/IGame";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
@@ -9,6 +10,8 @@ import React from "react";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { Resource, resourceName } from "../utils/resource";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
+
+export const STEP_ID: StepId = "startingResources";
 
 const STARTING_RESOURCES: Record<Resource, number> = Object.freeze({
   cloth: 1,
@@ -19,7 +22,7 @@ const STARTING_RESOURCES: Record<Resource, number> = Object.freeze({
 });
 
 export default createDerivedGameStep({
-  id: "startingResources",
+  id: STEP_ID,
   dependencies: [noStartingResourcesVariant],
   InstanceDerivedComponent,
 });

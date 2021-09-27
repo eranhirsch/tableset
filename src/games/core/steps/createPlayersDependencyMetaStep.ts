@@ -11,7 +11,7 @@ export default function createPlayersDependencyMetaStep({
   min?: number;
   max?: number;
 } = {}) {
-  const playersMetaStep: IGameStep<readonly PlayerId[]> = {
+  const playersMetaStep: Readonly<IGameStep<readonly PlayerId[]>> = {
     id: PLAYERS_DEPENDENCY_META_STEP_ID,
     label: "<Players>",
 

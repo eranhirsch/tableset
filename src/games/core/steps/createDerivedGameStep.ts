@@ -1,3 +1,4 @@
+import { nullthrows } from "common";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
 import IGameStep, { InstanceContext } from "./IGameStep";
 
@@ -144,7 +145,7 @@ export default function createDerivedGameStep<
   D8,
   D9,
   D10
->): IGameStep<never> {
+>): Readonly<IGameStep<never>> {
   const gameStep = createGameStep(baseOptions);
 
   gameStep.InstanceDerivedComponent = ({ context }) =>
@@ -170,9 +171,15 @@ function maybeFulfillDependency<T>(
   context: InstanceContext,
   dependency: IGameStep<T> | undefined
 ): T | null | undefined {
-  return dependency == null
-    ? undefined
-    : dependency.hasValue!(context)
-    ? dependency.extractInstanceValue!(context)
-    : null;
+  if (dependency == null) {
+    return;
+  }
+
+  const { hasValue, extractInstanceValue } = dependency;
+
+  if (!nullthrows(hasValue)(context)) {
+    return null;
+  }
+
+  return nullthrows(extractInstanceValue)(context);
 }
