@@ -1,71 +1,99 @@
 import { Chip, Stack } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { ReactUtils } from "common";
-import { PlayerId } from "model/Player";
+import { nullthrows, ReactUtils } from "common";
+import { useGameStep } from "features/game/useGameStep";
 import { Strategy } from "features/template/Strategy";
 import { strategyLabel } from "features/template/strategyLabel";
-import GameMapper from "games/core/GameMapper";
 import { StepId } from "games/core/IGame";
-import { useMemo } from "react";
-import { gameIdSelector } from "../game/gameSlice";
+import { PlayerId } from "model/Player";
+import React, { useCallback, useMemo } from "react";
 import { playersSelectors } from "../players/playersSlice";
 import { templateActions, templateSelectors } from "./templateSlice";
 
-export default function StrategiesSelector({
+export function StrategiesSelector({
   stepId,
 }: {
   stepId: StepId;
-}): JSX.Element | null {
-  const dispatch = useAppDispatch();
+}): JSX.Element {
+  const gameStep = useGameStep(stepId);
+  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
+  const template = useAppSelector(templateSelectors.selectEntities);
+  const strategies = useMemo(
+    () =>
+      nullthrows(
+        gameStep.strategies,
+        `Missing strategies method for step ${stepId}`
+      )({ template, playerIds }),
+    [gameStep, playerIds, stepId, template]
+  );
 
-  const gameId = useAppSelector(gameIdSelector);
-  const step = ReactUtils.useAppEntityIdSelectorNullable(
+  const templateElement = ReactUtils.useAppEntityIdSelectorNullable(
     templateSelectors,
     stepId
   );
-  const template = useAppSelector(templateSelectors.selectEntities);
-  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
-
-  const strategies = useMemo(
-    () =>
-      GameMapper.forId(gameId).atEnforce(stepId).strategies!({
-        template,
-        playerIds,
-      }),
-    [gameId, playerIds, stepId, template]
-  );
-
-  const stepStrategy = step?.strategy ?? Strategy.OFF;
 
   return (
     <Stack direction="row" spacing={0.5}>
-      {strategies.map((strategy) => (
-        <Chip
-          key={strategy}
-          size="small"
-          color="primary"
-          variant={stepStrategy === strategy ? "filled" : "outlined"}
-          label={strategyLabel(strategy)}
-          onClick={
-            strategy !== stepStrategy
-              ? () =>
-                  dispatch(
-                    strategy === Strategy.FIXED
-                      ? templateActions.enabledConstantValue(
-                          stepId,
-                          playerIds as PlayerId[]
-                        )
-                      : strategy === Strategy.OFF
-                      ? templateActions.disabled(stepId)
-                      : templateActions.enabled({
-                          id: stepId,
-                          strategy,
-                        })
-                  )
-              : undefined
-          }
-        />
-      ))}
+      {React.Children.toArray(
+        strategies.map((strategy) => (
+          <StrategyChip
+            strategy={strategy}
+            isSelected={
+              (templateElement?.strategy ?? Strategy.OFF) === strategy
+            }
+            stepId={stepId}
+          />
+        ))
+      )}
     </Stack>
+  );
+}
+
+function StrategyChip({
+  stepId,
+  isSelected,
+  strategy,
+}: {
+  stepId: StepId;
+  isSelected: boolean;
+  strategy: Strategy;
+}): JSX.Element {
+  const dispatch = useAppDispatch();
+
+  const gameStep = useGameStep(stepId);
+
+  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
+
+  const onClick = useCallback(
+    () =>
+      dispatch(
+        strategy === Strategy.FIXED
+          ? templateActions.enabledConstantValue(
+              stepId,
+              playerIds as PlayerId[]
+            )
+          : strategy === Strategy.OFF
+          ? templateActions.disabled(stepId)
+          : templateActions.enabled({
+              id: stepId,
+              strategy,
+            })
+      ),
+    [dispatch, playerIds, stepId, strategy]
+  );
+
+  const label =
+    strategy === Strategy.FIXED && gameStep.TemplateFixedValueSelector == null
+      ? "Enabled"
+      : strategyLabel(strategy);
+
+  return (
+    <Chip
+      size="small"
+      color="primary"
+      variant={isSelected ? "filled" : "outlined"}
+      label={label}
+      onClick={!isSelected ? onClick : undefined}
+    />
   );
 }

@@ -17,6 +17,11 @@ export default createVariableGameStep({
 
   random: () => (Random.coin_flip(0.5) ? true : null),
   InstanceVariableComponent,
+
+  fixed: {
+    initializer: (_) => true as true,
+    renderTemplateLabel: "Enabled",
+  },
 });
 
 function InstanceVariableComponent(): JSX.Element {

@@ -25,8 +25,8 @@ interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
     initializer(playerIds: readonly PlayerId[]): T | undefined;
     refresh?(current: T, playerIds: readonly string[]): T | undefined;
 
-    renderTemplateLabel(props: { value: T }): JSX.Element;
-    renderSelector(props: { current: T }): JSX.Element;
+    renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
+    renderSelector?(props: { current: T }): JSX.Element;
   };
 }
 
@@ -128,8 +128,8 @@ interface CreateVariableGameStepOptions<
   fixed?: {
     initializer(playerIds: readonly PlayerId[]): T | undefined;
     refresh?(current: T, playerIds: readonly string[]): T | undefined;
-    renderTemplateLabel(props: { value: T }): JSX.Element;
-    renderSelector(props: { current: T }): JSX.Element;
+    renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
+    renderSelector?(props: { current: T }): JSX.Element;
   };
 }
 

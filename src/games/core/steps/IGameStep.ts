@@ -35,7 +35,7 @@ export default interface IGameStep<T = never> {
     context: InstanceContext;
   }): JSX.Element | null;
 
-  TemplateFixedValueLabel?(props: { value: any }): JSX.Element;
+  TemplateFixedValueLabel?: ((props: { value: any }) => JSX.Element) | string;
   TemplateFixedValueSelector?(props: { current: any }): JSX.Element;
 
   strategies?(context: TemplateContext): readonly Strategy[];

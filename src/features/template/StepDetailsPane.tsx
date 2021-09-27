@@ -1,18 +1,18 @@
 import { Collapse, Stack } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { nullthrows, ReactUtils } from "common";
+import { ReactUtils } from "common";
 import { Strategy } from "features/template/Strategy";
 import { StepId } from "games/core/IGame";
 import { useMemo } from "react";
 import { gameSelector } from "../game/gameSlice";
-import StrategiesSelector from "./StrategiesSelector";
+import { StrategiesSelector } from "./StrategiesSelector";
 import { templateSelectors } from "./templateSlice";
 
 export default function StepDetailsPane({
   stepId,
 }: {
   stepId: StepId;
-}): JSX.Element | null {
+}): JSX.Element {
   const game = useAppSelector(gameSelector);
   const step = ReactUtils.useAppEntityIdSelectorNullable(
     templateSelectors,
@@ -20,14 +20,20 @@ export default function StepDetailsPane({
   );
 
   const strategyControls = useMemo(() => {
-    if (step != null && step.strategy === Strategy.FIXED) {
-      const TemplateFixedValueSelector = nullthrows(
-        game.atEnforce(stepId).TemplateFixedValueSelector,
-        `No selector component defined for step ${stepId}`
-      );
-      return <TemplateFixedValueSelector current={step.value} />;
+    if (step == null) {
+      return null;
     }
-    return null;
+
+    if (step.strategy !== Strategy.FIXED) {
+      return null;
+    }
+
+    const { TemplateFixedValueSelector } = game.atEnforce(stepId);
+    if (TemplateFixedValueSelector == null) {
+      return null;
+    }
+
+    return <TemplateFixedValueSelector current={step.value} />;
   }, [game, step, stepId]);
 
   return (
