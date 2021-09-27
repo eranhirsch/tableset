@@ -40,77 +40,12 @@ function InstanceDerivedComponent({
   readonly PlayerId[],
   PlayerId,
   true
->): JSX.Element | null {
+>): JSX.Element {
   if (playerIds == null) {
     return (
-      <HeaderAndSteps synopsis="Provide each player money from the bank:">
-        <>
-          Give the starting player <strong>{STARTING_MONEY_BASE}</strong>{" "}
-          sestertii.
-        </>
-        <BlockWithFootnotes
-          footnotes={[
-            <>
-              e.g. in a 3 player game, the first player would get{" "}
-              <strong>{STARTING_MONEY_BASE}</strong> sestertii, the second
-              player would get <strong>{STARTING_MONEY_BASE + 1}</strong>{" "}
-              sestertii, and the last player would get{" "}
-              <strong>{STARTING_MONEY_BASE + 2}</strong> sestertii.
-            </>,
-          ]}
-        >
-          {(Footnote) => (
-            <>
-              Go around the table giving each player 1 sestertii{" "}
-              <strong>more</strong> than the amount given to the the player
-              before them
-              <Footnote index={1} />.
-            </>
-          )}
-        </BlockWithFootnotes>
-        {isNoStartingResourcesVariantEnabled != null && (
-          <BlockWithFootnotes
-            footnotes={[
-              <>
-                Due to playing with{" "}
-                <InstanceStepLink step={noStartingResourcesVariant} />.
-              </>,
-            ]}
-          >
-            {(Footnote) => (
-              <>
-                Give each player an additional {NO_RESOURCES_VARIANT_EXTRA}{" "}
-                sestertii
-                <Footnote index={1} />.
-              </>
-            )}
-          </BlockWithFootnotes>
-        )}
-      </HeaderAndSteps>
-    );
-  }
-
-  const hasDefinedOrder = firstPlayerId != null && playOrder != null;
-  let order: readonly JSX.Element[];
-  if (hasDefinedOrder) {
-    const fullPlayOrder = [playerIds[0], ...playOrder];
-    const firstPlayerIdx = fullPlayOrder.findIndex(
-      (playerId) => playerId === firstPlayerId
-    );
-    order = fullPlayOrder
-      .slice(firstPlayerIdx)
-      .concat(fullPlayOrder.slice(0, firstPlayerIdx))
-      .map((playerId) => <PlayerAvatar playerId={playerId} inline />);
-  } else {
-    order = Vec.range(1, playerIds.length).map((playerIdx) =>
-      playerIdx === 1 && firstPlayerId != null ? (
-        <PlayerAvatar playerId={firstPlayerId} inline />
-      ) : (
-        <Avatar sx={{ display: "inline-flex" }}>
-          {playerIdx}
-          {Str.number_suffix(playerIdx)}
-        </Avatar>
-      )
+      <NoPlayers
+        withExtraSestertii={isNoStartingResourcesVariantEnabled != null}
+      />
     );
   }
 
@@ -118,23 +53,115 @@ function InstanceDerivedComponent({
     <>
       <Typography variant="body1">
         Players receive sestertii from the bank in the following denominations
-        {!hasDefinedOrder && <em> (by play order)</em>}:
+        {(firstPlayerId == null || playOrder == null) && (
+          <em> (by play order)</em>
+        )}
+        :
       </Typography>
       <Grid container component="figure" spacing={1} alignItems="center">
-        {order.map((player, index) => (
-          <React.Fragment key={`starting_money_pos_${index}`}>
-            <Grid item xs={2}>
-              {player}
-            </Grid>
-            <Grid item xs={10}>
-              <Typography variant="body2">
-                {STARTING_MONEY_BASE + NO_RESOURCES_VARIANT_EXTRA + index}{" "}
-                Sestertii
-              </Typography>
-            </Grid>
-          </React.Fragment>
-        ))}
+        {React.Children.toArray(
+          playerAvatars(playerIds, playOrder, firstPlayerId).map(
+            (player, index) => (
+              <>
+                <Grid item xs={2}>
+                  {player}
+                </Grid>
+                <Grid item xs={10}>
+                  <Typography variant="body2">
+                    {STARTING_MONEY_BASE +
+                      (isNoStartingResourcesVariantEnabled
+                        ? NO_RESOURCES_VARIANT_EXTRA
+                        : 0) +
+                      index}{" "}
+                    Sestertii
+                  </Typography>
+                </Grid>
+              </>
+            )
+          )
+        )}
       </Grid>
     </>
+  );
+}
+
+function NoPlayers({
+  withExtraSestertii,
+}: {
+  withExtraSestertii: boolean;
+}): JSX.Element {
+  return (
+    <HeaderAndSteps synopsis="Provide each player money from the bank:">
+      <>
+        Give the starting player <strong>{STARTING_MONEY_BASE}</strong>{" "}
+        sestertii.
+      </>
+      <BlockWithFootnotes
+        footnotes={[
+          <>
+            e.g. in a 3 player game, the first player would get{" "}
+            <strong>{STARTING_MONEY_BASE}</strong> sestertii, the second player
+            would get <strong>{STARTING_MONEY_BASE + 1}</strong> sestertii, and
+            the last player would get <strong>{STARTING_MONEY_BASE + 2}</strong>{" "}
+            sestertii.
+          </>,
+        ]}
+      >
+        {(Footnote) => (
+          <>
+            Go around the table giving each player 1 sestertii{" "}
+            <strong>more</strong> than the amount given to the the player before
+            them
+            <Footnote index={1} />.
+          </>
+        )}
+      </BlockWithFootnotes>
+      {withExtraSestertii && (
+        <BlockWithFootnotes
+          footnotes={[
+            <>
+              Due to playing with{" "}
+              <InstanceStepLink step={noStartingResourcesVariant} />.
+            </>,
+          ]}
+        >
+          {(Footnote) => (
+            <>
+              Give each player an additional {NO_RESOURCES_VARIANT_EXTRA}{" "}
+              sestertii
+              <Footnote index={1} />.
+            </>
+          )}
+        </BlockWithFootnotes>
+      )}
+    </HeaderAndSteps>
+  );
+}
+
+function playerAvatars(
+  playerIds: readonly PlayerId[],
+  playOrder: readonly PlayerId[] | null | undefined,
+  firstPlayerId: PlayerId | null | undefined
+): readonly JSX.Element[] {
+  if (firstPlayerId != null && playOrder != null) {
+    const fullPlayOrder = [playerIds[0], ...playOrder];
+    const firstPlayerIdx = fullPlayOrder.findIndex(
+      (playerId) => playerId === firstPlayerId
+    );
+    return fullPlayOrder
+      .slice(firstPlayerIdx)
+      .concat(fullPlayOrder.slice(0, firstPlayerIdx))
+      .map((playerId) => <PlayerAvatar playerId={playerId} inline />);
+  }
+
+  return Vec.range(1, playerIds.length).map((playerIdx) =>
+    playerIdx === 1 && firstPlayerId != null ? (
+      <PlayerAvatar playerId={firstPlayerId} inline />
+    ) : (
+      <Avatar sx={{ display: "inline-flex" }}>
+        {playerIdx}
+        {Str.number_suffix(playerIdx)}
+      </Avatar>
+    )
   );
 }
