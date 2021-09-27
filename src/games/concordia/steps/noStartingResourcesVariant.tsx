@@ -1,27 +1,16 @@
-import { Random, Vec } from "common";
+import { Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
-import { createVariableGameStep } from "games/core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import GrammaticalList from "games/core/ux/GrammaticalList";
-import { RESOURCE_COST, resourceName } from "../utils/resource";
+import { createVariant } from "../../core/steps/createVariant";
+import { resourceName, RESOURCE_COST } from "../utils/resource";
 import startingMoneyStep from "./startingMoneyStep";
 import startingResourcesStep from "./startingResourcesStep";
 
-export default createVariableGameStep({
-  id: "variant_noStartingResources",
-  labelOverride: "Variant: No Starting Resources",
-
-  isType: (value): value is true => value === true,
-
-  isOptional: true,
-
-  random: () => (Random.coin_flip(0.5) ? true : null),
+export default createVariant({
+  id: "noStartingResources",
+  name: "No Starting Resources",
   InstanceVariableComponent,
-
-  fixed: {
-    initializer: (_) => true as true,
-    renderTemplateLabel: "Enabled",
-  },
 });
 
 function InstanceVariableComponent(): JSX.Element {
