@@ -1,11 +1,8 @@
-import { useAppSelector } from "../../../app/hooks";
+import { useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
-import { shortest_unique_abbreviation } from "../../../features/players/shortest_names";
-import { PlayerId } from "../../../model/Player";
-import {
-  allPlayerNamesSelector,
-  playersSelectors,
-} from "../../../features/players/playersSlice";
+import { PlayerId } from "model/Player";
+import { allPlayerNamesSelector, playersSelectors } from "./playersSlice";
+import { shortest_unique_abbreviation } from "./shortest_names";
 
 export function PlayerNameShortAbbreviation({
   playerId,

@@ -5,16 +5,12 @@ import {
   ListItemAvatar,
   ListItemText,
 } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "app/hooks";
+import { useAppDispatch } from "app/hooks";
 import { ReactUtils } from "common";
 import { PlayerId } from "model/Player";
 import { PlayerAvatar } from "./PlayerAvatar";
-import {
-  allPlayerNamesSelector,
-  playersActions,
-  playersSelectors,
-} from "./playersSlice";
-import { shortest_unique_name } from "./shortest_names";
+import { PlayerShortName } from "./PlayerShortName";
+import { playersActions, playersSelectors } from "./playersSlice";
 
 export function PlayerListItem({
   playerId,
@@ -27,8 +23,6 @@ export function PlayerListItem({
     playersSelectors,
     playerId
   );
-
-  const allNames = useAppSelector(allPlayerNamesSelector);
 
   return (
     <ListItem
@@ -43,7 +37,7 @@ export function PlayerListItem({
         <PlayerAvatar playerId={playerId} />
       </ListItemAvatar>
       <ListItemText
-        primary={shortest_unique_name(player.name, allNames)}
+        primary={<PlayerShortName playerId={playerId} />}
         secondary={player.name}
       />
     </ListItem>
