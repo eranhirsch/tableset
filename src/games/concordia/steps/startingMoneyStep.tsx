@@ -1,7 +1,7 @@
 import { Avatar, Grid, Typography } from "@mui/material";
 import { Str, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
-import { PlayerAvatar } from "games/global/ux/PlayerAvatar";
+import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerId } from "model/Player";
 import React from "react";
 import createDerivedGameStep, {

@@ -1,6 +1,6 @@
 import { Avatar } from "@mui/material";
-import { PlayerId } from "../../../model/Player";
-import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
+import { PlayerId } from "../../model/Player";
+import { PlayerNameShortAbbreviation } from "../../games/global/ux/PlayerNameShortAbbreviation";
 
 export function PlayerAvatar({
   playerId,

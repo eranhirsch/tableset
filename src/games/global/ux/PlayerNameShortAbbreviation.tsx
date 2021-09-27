@@ -1,6 +1,6 @@
 import { useAppSelector } from "../../../app/hooks";
 import { ReactUtils } from "common";
-import { shortest_unique_abbreviation } from "./shortest_names";
+import { shortest_unique_abbreviation } from "../../../features/players/shortest_names";
 import { PlayerId } from "../../../model/Player";
 import {
   allPlayerNamesSelector,

@@ -26,7 +26,7 @@ import {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
-import { PlayerAvatar } from "../ux/PlayerAvatar";
+import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerNameShortAbbreviation } from "../ux/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "../ux/PlayerShortName";
 

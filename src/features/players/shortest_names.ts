@@ -61,10 +61,10 @@ const last_name = (fullName: string): string | undefined =>
 
 function first_name_with_last_letter(fullName: string): string | undefined {
   const [first, last] = name_parts(fullName);
-  return last != null ? first + last[0] : undefined;
+  return last != null ? `${first} ${last[0]}` : undefined;
 }
 
 function first_letter_with_last_name(fullName: string): string | undefined {
   const [first, last] = name_parts(fullName);
-  return last != null ? first[0] + last : undefined;
+  return last != null ? `${first[0]} ${last}` : undefined;
 }
