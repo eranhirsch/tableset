@@ -1,5 +1,6 @@
 import { Container, ThemeProvider } from "@mui/material";
 import themeWithGameColors from "app/ux/themeWithGameColors";
+import { Expansions } from "features/expansions/Expansions";
 import { gameIdSelector } from "features/game/gameSlice";
 import Instance from "features/instance/Instance";
 import Players from "features/players/Players";
@@ -40,6 +41,9 @@ function App(): JSX.Element | null {
           </Route>
           <Route path="/players">
             <Players />
+          </Route>
+          <Route path="/expansions">
+            <Expansions />
           </Route>
           <Route path="/instance">
             <Instance />
