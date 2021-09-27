@@ -1,9 +1,9 @@
 import { Link } from "@mui/material";
 import { useAppSelector } from "../../app/hooks";
 import { gameSelector } from "../game/gameSlice";
-import IGameStep from "../../games/core/steps/IGameStep";
+import IGameStep from "../../model/IGameStep";
 import { Link as RouterLink } from "react-router-dom";
-import { StepId } from "games/core/IGame";
+import { StepId } from "model/IGame";
 
 export function InstanceStepLink({
   step,

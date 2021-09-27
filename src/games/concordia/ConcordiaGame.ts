@@ -1,8 +1,8 @@
 import { nullthrows } from "../../common";
 import GamePiecesColor from "../../model/GamePiecesColor";
-import IGame, { StepId } from "../core/IGame";
+import IGame, { ProductId, StepId } from "../../model/IGame";
 import createGameStep from "../core/steps/createGameStep";
-import IGameStep from "../core/steps/IGameStep";
+import IGameStep from "../../model/IGameStep";
 import createPlayerColorsStep from "../global/steps/createPlayerColorsStep";
 import firstPlayerStep from "../global/steps/firstPlayerStep";
 import playOrderStep from "../global/steps/playOrderStep";
@@ -18,11 +18,20 @@ import praefectusMagnusStep from "./steps/praefectusMagnusStep";
 import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
+import { Product } from "model/IExpansion";
 
 export default class ConcordiaGame implements IGame {
-  public readonly steps: readonly Readonly<IGameStep<unknown>>[];
+  readonly steps: readonly Readonly<IGameStep<unknown>>[];
+  readonly products = Object.freeze({
+    base: { isBase: true, name: "Concordia", bggId: 124361, year: 2013 },
+    britanniaGermania: {
+      name: "Britannia / Germania",
+      bggId: 165023,
+      year: 2014,
+    },
+  } as Record<ProductId, Product>);
 
-  public constructor() {
+  constructor() {
     this.steps = [
       mapStep,
       cityTilesStep,

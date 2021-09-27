@@ -2,7 +2,7 @@ import { Collapse, Stack } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
 import { Strategy } from "features/template/Strategy";
-import { StepId } from "games/core/IGame";
+import { StepId } from "model/IGame";
 import { useMemo } from "react";
 import { gameSelector } from "../game/gameSlice";
 import { StrategiesSelector } from "./StrategiesSelector";

@@ -10,7 +10,7 @@ import { Vec } from "common";
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { StepId } from "../../games/core/IGame";
+import { StepId } from "../../model/IGame";
 import { PlayerId } from "../../model/Player";
 import { gameSelector } from "../game/gameSlice";
 import { playersSelectors } from "../players/playersSlice";

@@ -1,6 +1,6 @@
 import { nullthrows } from "common";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
-import IGameStep, { InstanceContext } from "./IGameStep";
+import IGameStep, { InstanceContext } from "../../../model/IGameStep";
 
 export interface DerivedStepInstanceComponentProps<
   D0 = never,

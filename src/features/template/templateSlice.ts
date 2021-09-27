@@ -9,7 +9,7 @@ import { nullthrows, Vec } from "common";
 import { playersActions } from "features/players/playersSlice";
 import { Strategy } from "features/template/Strategy";
 import GameMapper, { GameId } from "games/core/GameMapper";
-import { StepId } from "games/core/IGame";
+import { StepId } from "model/IGame";
 import { PLAYERS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createPlayersDependencyMetaStep";
 import { PlayerId } from "model/Player";
 

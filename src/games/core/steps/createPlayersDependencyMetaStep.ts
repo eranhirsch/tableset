@@ -1,5 +1,5 @@
 import { PlayerId } from "../../../model/Player";
-import IGameStep from "./IGameStep";
+import IGameStep from "../../../model/IGameStep";
 
 export const PLAYERS_DEPENDENCY_META_STEP_ID = "__players";
 

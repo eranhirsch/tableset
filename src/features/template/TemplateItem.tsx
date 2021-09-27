@@ -8,7 +8,7 @@ import {
 import { useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
 import { Strategy } from "features/template/Strategy";
-import { StepId } from "games/core/IGame";
+import { StepId } from "model/IGame";
 import { gameSelector } from "../game/gameSlice";
 import { ItemLabel } from "./ItemLabel";
 import StepDetailsPane from "./StepDetailsPane";

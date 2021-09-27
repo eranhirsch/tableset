@@ -1,5 +1,5 @@
 import { nullthrows, type_invariant, ReactUtils } from "common";
-import IGameStep from "../../games/core/steps/IGameStep";
+import IGameStep from "../../model/IGameStep";
 import { instanceSelectors } from "./instanceSlice";
 
 export function useInstanceValue<T>(step: IGameStep<T>): T | null {

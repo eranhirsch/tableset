@@ -4,7 +4,7 @@ import { nullthrows, ReactUtils } from "common";
 import { useGameStep } from "features/game/useGameStep";
 import { Strategy } from "features/template/Strategy";
 import { strategyLabel } from "features/template/strategyLabel";
-import { StepId } from "games/core/IGame";
+import { StepId } from "model/IGame";
 import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import { playersSelectors } from "../players/playersSlice";

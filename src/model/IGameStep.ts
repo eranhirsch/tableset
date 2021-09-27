@@ -3,7 +3,7 @@ import { PlayerId } from "model/Player";
 import { Strategy } from "features/template/Strategy";
 import { SetupStep } from "features/instance/instanceSlice";
 import { TemplateElement } from "features/template/templateSlice";
-import { StepId } from "../IGame";
+import { StepId } from "./IGame";
 
 export interface TemplateContext {
   template: Readonly<Dictionary<Readonly<TemplateElement>>>;

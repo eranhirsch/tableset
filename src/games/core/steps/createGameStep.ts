@@ -1,5 +1,5 @@
-import { StepId } from "../IGame";
-import IGameStep from "./IGameStep";
+import { StepId } from "../../../model/IGame";
+import IGameStep from "../../../model/IGameStep";
 
 export interface CreateGameStepOptions {
   // Used to identify, validate, and find the game step inside the game. Use

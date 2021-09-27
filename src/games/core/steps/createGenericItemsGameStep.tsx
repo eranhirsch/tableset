@@ -1,13 +1,13 @@
 import { Vec } from "common";
 import { templateActions } from "features/template/templateSlice";
-import { StepId } from "../IGame";
+import { StepId } from "../../../model/IGame";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "../ux/GenericItemsListPanel";
 import {
   createVariableGameStep,
   VariableStepInstanceComponentProps,
 } from "./createVariableGameStep";
-import { InstanceContext } from "./IGameStep";
+import { InstanceContext } from "../../../model/IGameStep";
 
 interface CreateGenericItemsGameStepOptions<T extends string = string> {
   id: StepId;

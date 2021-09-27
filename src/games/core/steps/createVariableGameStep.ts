@@ -2,7 +2,7 @@ import { nullthrows, type_invariant } from "common";
 import { PlayerId } from "model/Player";
 import { Strategy } from "features/template/Strategy";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
-import IGameStep, { InstanceContext } from "./IGameStep";
+import IGameStep, { InstanceContext } from "../../../model/IGameStep";
 
 export interface VariableStepInstanceComponentProps<T> {
   value: T;
