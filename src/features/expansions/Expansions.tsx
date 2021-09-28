@@ -23,7 +23,7 @@ export function ExpansionListItem({
       <ListItemText primary={product.name} />
       <Switch
         edge="end"
-        checked={product.isBase ?? isEnabled}
+        checked={isEnabled}
         disabled={product.isBase}
         onChange={() => dispatch(expansionsActions.toggled(productId))}
       />

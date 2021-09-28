@@ -1,10 +1,11 @@
 import { Container, ThemeProvider } from "@mui/material";
 import themeWithGameColors from "app/ux/themeWithGameColors";
 import { Expansions } from "features/expansions/Expansions";
+import { expansionsActions } from "features/expansions/expansionsSlice";
 import { gameIdSelector } from "features/game/gameSlice";
 import Instance from "features/instance/Instance";
 import Players from "features/players/Players";
-import playersSlice from "features/players/playersSlice";
+import { playersActions } from "features/players/playersSlice";
 import Template from "features/template/Template";
 import { useEffect, useState } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
@@ -21,8 +22,9 @@ function App(): JSX.Element | null {
     if (!isInitialized) {
       // TODO: Remove this when we can load the previous players from somewhere
       ["Eran Hirsch", "Adam Maoz", "Amit Cwajghaft"].forEach((name) =>
-        dispatch(playersSlice.actions.added(name))
+        dispatch(playersActions.added(name))
       );
+      dispatch(expansionsActions.toggled("base"));
       setIsInitialized(true);
     }
   }, [dispatch, gameId, isInitialized]);
