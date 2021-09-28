@@ -120,7 +120,7 @@ function InstanceManualComponent() {
       </BlockWithFootnotes>
     );
   } else {
-    const usedZones = Vec.keys(MAPS[mapId].provinces);
+    const usedZones = Vec.keys(Dict.filter_nulls(MAPS[mapId].provinces));
     if (usedZones.length === allZones.length) {
       gatheringStep = (
         <BlockWithFootnotes
