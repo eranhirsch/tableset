@@ -1,18 +1,100 @@
-export type MapId = "italia" | "imperium";
+type MapBoards = Record<string, MapBoard>;
+export const MAPS = Object.freeze({
+  italia: {
+    name: "Italia",
+    tightnessScore: 1.1,
+    hasLegacyProvincesSection: true,
+    startingColonists: [
+      { locationName: "Roma", type: "land" },
+      { locationName: "Roma", type: "sea" },
+    ],
+    provinces: {
+      A: {
+        Liguria: ["Genva", "Nicaea"],
+        Transpadana: ["Comvm", "Segvsio"],
+        Venetia: ["Aqvileia", "Bavsanvm", "Verona"],
+      },
+      B: {
+        Aemilia: ["Mvtina", "Ravenna"],
+        Campania: ["Casinvm", "Neapolis"],
+        Corsica: ["Aleria", "Olbia"],
+        Etruria: ["Cosa", "Florentia"],
+      },
+      C: {
+        Apulia: ["Brvndisivm", "Lvcria"],
+        Lucania: ["Croton", "Potentia"],
+        Sicilia: ["Messana", "Panormvs", "Syracvsae"],
+        Umbria: ["Ancona", "Hadria", "Spoletvm"],
+      },
+      D: null,
+    },
+  },
 
-export interface StartingColonistLocation {
-  locationName: string;
-  type: "land" | "sea";
-}
+  imperium: {
+    name: "Imperium",
+    tightnessScore: 0.8,
+    hasLegacyProvincesSection: true,
+    startingColonists: [
+      { locationName: "Roma", type: "land" },
+      { locationName: "Roma", type: "sea" },
+    ],
+    provinces: {
+      A: {
+        Britannia: ["Isca D.", "Londinivm"],
+        Dacia: ["Napoca", "Sirmivm", "Tomis"],
+        Germania: ["Colonia A.", "Vindobona"],
+      },
+      B: {
+        Galia: ["Bvrdigala", "Lvtetia", "Massilia"],
+        Hispania: ["Brigantivm", "Olisipo", "Valentia"],
+        Mauretania: ["Carthago", "Rvsadir"],
+      },
+      C: {
+        Aegyptus: ["Alexandria", "Memphis", "Petra"],
+        Asia: ["Attalia", "Bycantivm", "Sinope"],
+        Lybia: ["Cyrene", "Leptis Magna"],
+        Syria: ["Antiochia", "Tyros"],
+      },
+      D: {
+        Hellas: ["Athenae", "Dirrhachivm"],
+        Italia: ["Aqvileia", "Novaria", "Syracvsae"],
+      },
+    },
+  },
 
-export type Zone = "A" | "B" | "C" | "D";
+  britannia: {
+    name: "Britannia",
+    tightnessScore: 1.4,
+    startingColonists: [
+      { locationName: "Londinivm", type: "land" },
+      { locationName: "Portvs Itivs", type: "sea" },
+    ],
+    provinces: {
+      A: null,
+      B: {
+        Brigantia: ["Deva", "Mancvnivm", "Monapia"],
+        Caledonia: ["Lvgvvalivm", "Pons Aelii", "Trimontivm"],
+        Isvria: ["Cataractonivm", "Ebvracvm"],
+      },
+      C: {
+        Cambria: ["Maridvnvm", "Segontivm"],
+        Dobvni: ["Glevvm", "Venonis"],
+        Icenivm: ["Branodvnvm", "Lindvm"],
+        Trinovantivm: ["Camvlodvnvm", "Dvrolipnos"],
+      },
+      D: {
+        Cantivm: ["Dvbris", "Noviomagvs"],
+        Dvmnonia: ["Isca Dvmnon", "Mvsidvnvm"],
+        Dvrotrigvm: ["Aqvae Svlis", "Dvrnovaria", "Venta"],
+      },
+    },
+  },
+} as MapBoards);
 
-type CityNames = readonly string[];
-
-export type Provinces = Readonly<{ [provinceName: string]: CityNames }>;
+export type MapId = keyof typeof MAPS;
 
 // We can't use `Map` as that's already a thing in js
-export type MapBoard = Readonly<{
+interface MapBoard {
   name: string;
 
   /**
@@ -29,71 +111,17 @@ export type MapBoard = Readonly<{
    * first editions came with maps with a dedicated area on the board for it
    * instead.
    */
-  hasMinimap: boolean;
+  hasLegacyProvincesSection?: true;
 
   provinces: Readonly<Record<Zone, Provinces | null>>;
-}>;
+}
 
-export const MAPS: Record<MapId, MapBoard> = Object.freeze({
-  italia: {
-    name: "Italia",
-    tightnessScore: 1.1,
-    hasMinimap: false,
-    startingColonists: [
-      { locationName: "Roma", type: "land" },
-      { locationName: "Roma", type: "sea" },
-    ],
-    provinces: {
-      A: {
-        Venetia: ["Bavsanvm", "Aqvileia", "Verona"],
-        Transpadana: ["Comvm", "Segvsio"],
-        Liguria: ["Nicaea", "Genva"],
-      },
-      B: {
-        Aemilia: ["Mvtina", "Ravenna"],
-        Etruria: ["Florentia", "Cosa"],
-        Corsica: ["Aleria", "Olbia"],
-        Campania: ["Casinvm", "Neapolis"],
-      },
-      C: {
-        Umbria: ["Ancona", "Spoletvm", "Hadria"],
-        Apulia: ["Lvcria", "Brvndisivm"],
-        Lucania: ["Potentia", "Croton"],
-        Sicilia: ["Messana", "Syracvsae", "Panormvs"],
-      },
-      D: null,
-    },
-  },
+export interface StartingColonistLocation {
+  locationName: string;
+  type: "land" | "sea";
+}
 
-  imperium: {
-    name: "Imperium",
-    tightnessScore: 0.8,
-    hasMinimap: false,
-    startingColonists: [
-      { locationName: "Roma", type: "land" },
-      { locationName: "Roma", type: "sea" },
-    ],
-    provinces: {
-      A: {
-        Britannia: ["Isca D.", "Londonivm"],
-        Germania: ["Colonia A.", "Vindobona"],
-        Dacia: ["Sirmivm", "Napoca", "Tomis"],
-      },
-      B: {
-        Galia: ["Lvtetia", "Bvrdigala", "Massilia"],
-        Hispania: ["Brigantivm", "Olisipo", "Valentia"],
-        Mauretania: ["Rvsadir", "Carthago"],
-      },
-      C: {
-        Lybia: ["Leptis Magna", "Cyrene"],
-        Asia: ["Bycantivm", "Sinope", "Attalia"],
-        Syria: ["Antiochia", "Tyros"],
-        Aegyptus: ["Alexandria", "Memphis", "Petra"],
-      },
-      D: {
-        Italia: ["Novaria", "Aqvileia", "Syracvsae"],
-        Hellas: ["Dirrhachivm", "Athenae"],
-      },
-    },
-  },
-});
+export type Zone = "A" | "B" | "C" | "D";
+
+type CityNames = readonly string[];
+export type Provinces = Readonly<{ [provinceName: string]: CityNames }>;

@@ -45,7 +45,7 @@ function IncompleteInstanceDerivedComponent({
   if (mapId != null) {
     // We dont care about zones here, so we create a merged object out of all of
     // them
-    const { provinces, hasMinimap } = MAPS[mapId];
+    const { provinces, hasLegacyProvincesSection } = MAPS[mapId];
     const provinceCities = Dict.flatten(
       Vec.filter_nulls(Vec.values(provinces))
     );
@@ -66,9 +66,9 @@ function IncompleteInstanceDerivedComponent({
     tileLocationsStep = (
       <span>
         Put a matching bonus tile, resource side up, on the{" "}
-        {hasMinimap
-          ? "minimap area on the board, on the square pointing to the province"
-          : "area of the board with the province names and thumbnails, covering the numbered province flag"}
+        {hasLegacyProvincesSection
+          ? "area of the board with the province names and thumbnails, covering the numbered province flag"
+          : "minimap area on the board, on the square pointing to the province"}
         .
       </span>
     );
