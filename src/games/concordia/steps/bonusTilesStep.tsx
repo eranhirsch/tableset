@@ -55,11 +55,14 @@ function IncompleteInstanceDerivedComponent({
     provinceCityCountsFootnote = (
       <>
         <GrammaticalList>
-          {Vec.keys(
-            Dict.filter(provinceCities, (cities) => cities.length === 3)
+          {React.Children.toArray(
+            Vec.map_with_key(
+              Dict.filter(provinceCities, (cities) => cities.length === 3),
+              (provinceName) => <RomanTitle>{provinceName}</RomanTitle>
+            )
           )}
         </GrammaticalList>{" "}
-        have 3 cities each, the other provinces have 2 cities each.
+        have 3 cities each; and the other provinces have 2 cities each.
       </>
     );
 
