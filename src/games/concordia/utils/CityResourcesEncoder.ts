@@ -21,7 +21,7 @@ type ProvinceCityResources = Readonly<{
 
 export default {
   randomHash: (mapId: MapId): string =>
-    Vec.map_with_key(MAPS[mapId].provinces, (zone) =>
+    Vec.map_with_key(Dict.filter_nulls(MAPS[mapId].provinces), (zone) =>
       Num.encode_base32(
         Random.index(MathUtils.permutations_lazy_array(CITY_TILES[zone]))
       )

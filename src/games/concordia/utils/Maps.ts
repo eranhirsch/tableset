@@ -79,12 +79,12 @@ export const MAPS = Object.freeze({
       C: {
         Cambria: ["Maridvnvm", "Segontivm"],
         Dobvni: ["Glevvm", "Venonis"],
+        Dvmnonia: ["Isca Dvmnon", "Mvsidvnvm"],
         Icenivm: ["Branodvnvm", "Lindvm"],
         Trinovantivm: ["Camvlodvnvm", "Dvrolipnos"],
       },
       D: {
         Cantivm: ["Dvbris", "Noviomagvs"],
-        Dvmnonia: ["Isca Dvmnon", "Mvsidvnvm"],
         Dvrotrigvm: ["Aqvae Svlis", "Dvrnovaria", "Venta"],
       },
     },
