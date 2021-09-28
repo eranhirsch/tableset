@@ -6,6 +6,7 @@ import createDerivedGameStep, {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { MapId, MAPS } from "../utils/Maps";
+import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 
 export default createDerivedGameStep({
@@ -46,7 +47,7 @@ function InstanceDerivedComponent({
 
   if (startingColonists[0].locationName !== startingColonists[1].locationName) {
     return (
-      <Typography variant="body2">
+      <Typography variant="body1">
         Each player takes{" "}
         <GrammaticalList>
           {React.Children.toArray(
@@ -54,11 +55,14 @@ function InstanceDerivedComponent({
               <>
                 1 <strong>{colonist.type}</strong> colonist from their
                 storehouse and places them in{" "}
-                <strong>{colonist.locationName}</strong>
+                <strong>
+                  <RomanTitle>{colonist.locationName}</RomanTitle>
+                </strong>
               </>
             ))
           )}
         </GrammaticalList>
+        .
       </Typography>
     );
   }
@@ -70,10 +74,13 @@ function InstanceDerivedComponent({
   ));
 
   return (
-    <Typography variant="body2">
+    <Typography variant="body1">
       Each player takes <GrammaticalList>{phrases}</GrammaticalList> from their
       storehouse and places them in{" "}
-      <strong>{startingColonists[0].locationName}</strong>.
+      <strong>
+        <RomanTitle>{startingColonists[0].locationName}</RomanTitle>
+      </strong>
+      .
     </Typography>
   );
 }
