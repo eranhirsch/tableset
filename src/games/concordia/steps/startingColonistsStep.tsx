@@ -45,17 +45,20 @@ function InstanceDerivedComponent({
   const { startingColonists } = MAPS[mapId];
 
   if (startingColonists[0].locationName !== startingColonists[1].locationName) {
-    const phrases = startingColonists.map((colonist, idx) => (
-      <React.Fragment key={`colonist_${idx}`}>
-        1 <strong>{colonist.type}</strong> colonist from their storehouse and
-        places them in
-        <strong>{colonist.locationName}</strong>.
-      </React.Fragment>
-    ));
-
     return (
       <Typography variant="body2">
-        Each player takes <GrammaticalList>{phrases}</GrammaticalList>
+        Each player takes{" "}
+        <GrammaticalList>
+          {React.Children.toArray(
+            startingColonists.map((colonist, idx) => (
+              <>
+                1 <strong>{colonist.type}</strong> colonist from their
+                storehouse and places them in{" "}
+                <strong>{colonist.locationName}</strong>
+              </>
+            ))
+          )}
+        </GrammaticalList>
       </Typography>
     );
   }
