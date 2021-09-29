@@ -100,9 +100,9 @@ function InstanceVariableComponent({
       <Box display="flex" component="figure">
         <AvatarGroup>
           <PlayerAvatar playerId={firstPlayerId} />
-          {playOrder.map((playerId) => (
-            <PlayerAvatar playerId={playerId} />
-          ))}
+          {React.Children.toArray(
+            playOrder.map((playerId) => <PlayerAvatar playerId={playerId} />)
+          )}
         </AvatarGroup>
       </Box>
     </>
