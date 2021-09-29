@@ -33,9 +33,7 @@ import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "../../../features/players/PlayerShortName";
 
-export type PlayerColors = Readonly<{
-  [playerId: string]: GamePiecesColor;
-}>;
+export type PlayerColors = Record<PlayerId, GamePiecesColor>;
 
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
   createVariableGameStep<PlayerColors, readonly PlayerId[]>({
@@ -43,7 +41,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     labelOverride: "Colors",
 
     dependencies: [
-      createPlayersDependencyMetaStep({ min: 1, max: availableColors.length }),
+      createPlayersDependencyMetaStep({ max: availableColors.length }),
     ],
 
     InstanceVariableComponent,
@@ -88,7 +86,11 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
         return Dict.from_keys(
           playerIds,
           (playerId) => current[playerId] ?? remainingColors.shift()
-        );
+          // TODO: We need this cast because I couldn't find a way to tell
+          // typescript that when the key is a regular key (string | number |
+          // symbol) and not a derived type (like "a" | "b") then the result
+          // is not partial.
+        ) as PlayerColors;
       },
     },
   });
@@ -190,10 +192,7 @@ function Selector({
   const players = useAppSelector(playersSelectors.selectEntities);
 
   // We need the data indexed by color too
-  const colorPlayers = useMemo(
-    () => Object.freeze(Dict.flip(playerColors)),
-    [playerColors]
-  );
+  const colorPlayerIds = useMemo(() => Dict.flip(playerColors), [playerColors]);
 
   const closestAvailableColor = useCallback(
     (
@@ -205,7 +204,7 @@ function Selector({
         return (
           colorAtSlot != null &&
           (colorAtSlot === treatAsAvailable ||
-            colorPlayers[colorAtSlot] == null)
+            colorPlayerIds[colorAtSlot] == null)
         );
       };
 
@@ -223,7 +222,7 @@ function Selector({
 
       invariant_violation("Couldn't find an available color!");
     },
-    [availableColors, colorPlayers]
+    [availableColors, colorPlayerIds]
   );
 
   const onDragEnd = useCallback(
@@ -243,7 +242,7 @@ function Selector({
         [draggableId]: destinationColor,
       };
 
-      const destinationPlayer = colorPlayers[destinationColor];
+      const destinationPlayer = colorPlayerIds[destinationColor];
       if (destinationPlayer != null && destinationPlayer !== draggableId) {
         // In case the drag caused us to assign a color that is already used by
         // a different player we need to update that player to use a different
@@ -261,9 +260,10 @@ function Selector({
         })
       );
     },
-    [closestAvailableColor, colorPlayers, dispatch, playerColors]
+    [closestAvailableColor, colorPlayerIds, dispatch, playerColors]
   );
 
+  const colorPlayers = Dict.compose(colorPlayerIds, players);
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Stack
@@ -274,13 +274,12 @@ function Selector({
         spacing={1}
         height={48}
       >
-        {availableColors.map((color) => (
-          <ColorSlot
-            key={color}
-            color={color}
-            player={players[colorPlayers[color]]}
-          />
-        ))}
+        {Vec.map_with_key(
+          Dict.from_keys(availableColors, (color) => colorPlayers[color]),
+          (color, player) => (
+            <ColorSlot key={color} color={color} player={player} />
+          )
+        )}
       </Stack>
     </DragDropContext>
   );

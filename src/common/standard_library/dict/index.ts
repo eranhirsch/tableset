@@ -5,7 +5,6 @@ import { Dict as introspectDict } from "./introspect";
 import { Dict as orderDict } from "./order";
 import { Dict as selectDict } from "./select";
 import { Dict as transformDict } from "./transform";
-import { Dict as xDict } from "./x";
 
 export const Dict = {
   ...asyncDict,
@@ -15,5 +14,4 @@ export const Dict = {
   ...orderDict,
   ...selectDict,
   ...transformDict,
-  ...xDict,
 } as const;

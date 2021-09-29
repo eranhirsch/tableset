@@ -3,15 +3,15 @@ import IGameStep from "../../../model/IGameStep";
 
 export const PLAYERS_DEPENDENCY_META_STEP_ID = "__players";
 
-export default function createPlayersDependencyMetaStep({
+const createPlayersDependencyMetaStep = ({
   min = 1,
   // Unlikely that someone would have more than this number of players
   max = 9_999_999,
 }: {
   min?: number;
   max?: number;
-} = {}) {
-  const playersMetaStep: Readonly<IGameStep<readonly PlayerId[]>> = {
+} = {}): Readonly<IGameStep<readonly PlayerId[]>> =>
+  Object.freeze({
     id: PLAYERS_DEPENDENCY_META_STEP_ID,
     label: "<Players>",
 
@@ -21,6 +21,6 @@ export default function createPlayersDependencyMetaStep({
     extractInstanceValue: ({ playerIds }) => playerIds,
 
     isOptional: false,
-  };
-  return playersMetaStep;
-}
+  });
+
+export default createPlayersDependencyMetaStep;

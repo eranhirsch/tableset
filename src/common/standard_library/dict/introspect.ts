@@ -17,7 +17,7 @@ function equal<Tk extends keyof any, Tv>(
   dict1: Readonly<Record<Tk, Tv>>,
   dict2: Readonly<Record<Tk, Tv>>
 ): boolean {
-  const entries = D.entries(dict1);
+  const entries = Vec.entries(dict1);
   return (
     entries.length === D.size(dict2) &&
     !entries.some(([key, value]) => !(key in dict2) || value !== dict2[key])

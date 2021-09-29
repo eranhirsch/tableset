@@ -12,7 +12,7 @@ const from_async = async <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Promise<Tv>>>
 ): Promise<Readonly<Record<Tk, Tv>>> =>
   D.from_entries(
-    await Vec.map_async(D.entries(dict), async ([key, valuePromise]) =>
+    await Vec.map_async(Vec.entries(dict), async ([key, valuePromise]) =>
       tuple(key, await valuePromise)
     )
   );
@@ -26,8 +26,8 @@ const from_async = async <Tk extends keyof any, Tv>(
 const from_keys_async = async <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   valueFunc: (key: Tk) => Promise<Tv>
-): Promise<Readonly<Record<Tk, Tv>>> =>
-  D.from_entries(
+): Promise<Readonly<Partial<Record<Tk, Tv>>>> =>
+  D.from_partial_entries(
     await Vec.map_async(keys, async (key) => tuple(key, await valueFunc(key)))
   );
 

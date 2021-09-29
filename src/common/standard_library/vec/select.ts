@@ -229,6 +229,10 @@ function unique_by<Tv>(
   return arr.length === newArr.length ? arr : newArr;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////// NOT PART OF THE ORIGINAL HSL ////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * @returns the values of the mapper-obj as a vec.
  *
@@ -238,6 +242,21 @@ function unique_by<Tv>(
  */
 const values = <Tv>(dict: Readonly<Record<keyof any, Tv>>): readonly Tv[] =>
   Object.values(dict);
+
+  /**
+ * @returns an array of 2-tuples of the key/value pairs of the input mapper-obj.
+ *
+ * @see `Object.entries` for the native version of the same method, with more
+ * correct typing, but more restrictive too.
+ */
+function entries<Tk extends keyof any, Tv>(
+  dict: Readonly<Record<Tk, Tv> | Partial<Record<Tk, Tv>>>
+): readonly [key: Tk, value: Tv][];
+function entries<Tv>(
+  dict: Readonly<{ [key: keyof any]: Tv }>
+): readonly [key: keyof any, value: Tv][] {
+  return Object.entries(dict);
+}
 
 export const Vec = {
   diff_by,
@@ -250,5 +269,6 @@ export const Vec = {
   take,
   unique_by,
   unique,
+  entries,
   values,
 } as const;

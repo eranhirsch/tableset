@@ -78,9 +78,9 @@ function diff_by_key<Tk extends keyof any, Tv>(
 const drop = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   n: number
-): Readonly<Record<Tk, Tv>> =>
+): Readonly<Partial<Record<Tk, Tv>>> =>
   // Optimize for react by returning the same object for a trivial `n` value
-  n === 0 ? dict : D.from_entries(D.entries(dict).slice(n));
+  n === 0 ? dict : D.from_partial_entries(Vec.entries(dict).slice(n));
 
 /**
  * @returns a mapper-obj containing only the values for which the given
@@ -107,10 +107,9 @@ function filter_with_keys<Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   predicate: (key: Tk, value: Tv) => boolean
 ): Readonly<Partial<Record<Tk, Tv>>> {
-  const filteredEntries = D.entries(dict).filter((entry) =>
-    predicate(...entry)
+  const filtered = D.from_partial_entries(
+    Vec.entries(dict).filter(([key, value]) => predicate(key, value))
   );
-  const filtered = D.from_entries(filteredEntries);
   // Optimize for react by returning the same object if nothing got filtereD.
   return D.size(filtered) === D.size(dict) ? dict : filtered;
 }
@@ -132,7 +131,7 @@ const filter_keys = <Tk extends keyof any, Tv>(
 function filter_nulls<Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv | null | undefined>>
 ): Readonly<Record<Tk, Tv>> {
-  const filtered = D.entries(dict).reduce((noNulls, [key, value]) => {
+  const filtered = Vec.entries(dict).reduce((noNulls, [key, value]) => {
     if (value != null) {
       noNulls[key] = value;
     }
@@ -172,9 +171,11 @@ function select_keys<Tk extends keyof any, Tv>(
 const take = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   n: number
-): Readonly<Record<Tk, Tv>> =>
+): Readonly<Partial<Record<Tk, Tv>>> =>
   // If we need to take more entries than the dict has just return the dict.
-  n >= D.size(dict) ? dict : D.from_entries(Vec.take(D.entries(dict), n));
+  n >= D.size(dict)
+    ? dict
+    : D.from_partial_entries(Vec.take(Vec.entries(dict), n));
 
 /**
  * @returns a mapper-obj in which each value appears exactly once. In case of
@@ -184,11 +185,17 @@ const take = <Tk extends keyof any, Tv>(
  */
 function unique<Tk extends keyof any, Tv extends keyof any>(
   dict: Readonly<Record<Tk, Tv>>
-) {
+): Readonly<Partial<Record<Tk, Tv>>> {
   const dedupped = D.flip(dict);
   // If after flipping the object has the same number of entries then it had
   // no non-unique values and we can return the same object back.
-  return D.size(dedupped) === D.size(dict) ? dict : D.flip(dedupped);
+  return D.size(dedupped) === D.size(dict)
+    ? dict
+    : // We need the first cast because typescript can't duck-type the partial
+      // record from the first flip invocation as a Record itself. We need the
+      // second cast because typescript at this point lost the typing for the
+      // values of the output dict.
+      (D.flip(dedupped as Record<keyof any, Tk>) as Partial<Record<Tk, Tv>>);
 }
 
 /**
@@ -211,7 +218,7 @@ const unique_by = <Tk extends keyof any, Tv>(
     // keys which when selected from the original dict would create a mapper-obj
     // where the values map to unique values via the scalarFunc.
     ...new Map(
-      D.entries(dict).map(([key, value]) => [scalarFunc(value), key])
+      Vec.entries(dict).map(([key, value]) => [scalarFunc(value), key])
     ).values(),
   ]);
 

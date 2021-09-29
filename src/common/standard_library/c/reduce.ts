@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/reduce.php
  */
 
-import { Dict } from "common";
+import { Vec } from "common";
 
 /**
  * Reduces the given object-mapper into a single value by applying an
@@ -15,7 +15,7 @@ const reduce_with_key = <Tk extends keyof any, Tv, Ta>(
   reducer: (accumulator: Ta, key: Tk, value: Tv, index: number) => Ta,
   initial: Ta
 ): Ta =>
-  Dict.entries(keyedTraversable).reduce(
+  Vec.entries(keyedTraversable).reduce(
     (accumulator, [key, value], index) =>
       reducer(accumulator, key, value, index),
     initial

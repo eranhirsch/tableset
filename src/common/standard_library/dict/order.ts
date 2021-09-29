@@ -12,7 +12,7 @@ import { Dict as D, Vec } from "common";
 const reverse = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>
 ): Readonly<Record<Tk, Tv>> =>
-  D.entries(dict).reduceRight((out, [key, value]) => {
+  Vec.entries(dict).reduceRight((out, [key, value]) => {
     out[key] = value;
     return out;
   }, {} as Record<Tk, Tv>);
@@ -25,7 +25,7 @@ const reverse = <Tk extends keyof any, Tv>(
  */
 const shuffle = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>
-): Readonly<Record<Tk, Tv>> => D.from_entries(Vec.shuffle(D.entries(dict)));
+): Readonly<Record<Tk, Tv>> => D.from_entries(Vec.shuffle(Vec.entries(dict)));
 
 /**
  * @returns a mapper-obj sorted by the values of the given mapper-obj. If
@@ -86,7 +86,7 @@ function sort_by_with_key<Tk extends keyof any, Tv, Ts>(
   scalarFunc: (key: Tk, value: Tv) => Ts,
   scalarComparator?: (a: Ts, b: Ts) => number
 ): Readonly<Record<Tk, Tv>> {
-  const entries = D.entries(dict);
+  const entries = Vec.entries(dict);
   const sorted = Vec.sort_by(
     entries,
     ([key, value]) => scalarFunc(key, value),

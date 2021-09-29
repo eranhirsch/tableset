@@ -7,7 +7,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/select.php
  */
-import { Dict, invariant, invariant_violation, nullthrows } from "common";
+import { invariant, invariant_violation, nullthrows, Vec } from "common";
 
 /**
  * @returns the first value of the given Traversable for which the predicate
@@ -39,7 +39,7 @@ function find_key<Tk extends keyof any, Tv>(
   keyedTraversable: Readonly<Record<Tk, Tv>>,
   valuePredicate: (value: Tv) => boolean
 ): Tk | undefined {
-  const entry = Dict.entries(keyedTraversable).find(([key, value]) =>
+  const entry = Vec.entries(keyedTraversable).find(([key, value]) =>
     valuePredicate(value)
   );
   return entry != null ? entry[0] : undefined;
@@ -79,7 +79,7 @@ function firstx<Tv>(arr: readonly Tv[]): Tv {
 function first_key<Tk extends keyof any>(
   keyedTraversable: Readonly<Record<Tk, unknown>>
 ): Tk | undefined {
-  const [[key]] = Dict.entries(keyedTraversable);
+  const [[key]] = Vec.entries(keyedTraversable);
   return key;
 }
 
@@ -130,7 +130,7 @@ function lastx<Tv>(arr: readonly Tv[]): Tv {
 function last_key<Tk extends keyof any>(
   keyedTraversable: Readonly<Record<Tk, unknown>>
 ): Tk | undefined {
-  const lastEntry = last(Dict.entries(keyedTraversable));
+  const lastEntry = last(Vec.entries(keyedTraversable));
   if (lastEntry == null) {
     return;
   }
