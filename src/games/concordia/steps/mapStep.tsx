@@ -16,7 +16,7 @@ export default createGenericItemsGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  isType: (x: string): x is MapId => MAPS[x as MapId] != null,
+  isType: (x: string): x is MapId => x in MAPS,
   recommended: ({ playerIds }) =>
     playerIds.length <= 1
       ? undefined

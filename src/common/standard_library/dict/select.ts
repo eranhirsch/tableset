@@ -9,14 +9,65 @@ import { Dict as D, Vec } from "common";
  * @returns a mapper-obj containing only the entries of the first mapper-obj
  * whose keys do not appear in any of the other ones.
  */
-const diff_by_key = <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>,
+function diff_by_key<Tk1 extends keyof any, Tk2 extends keyof any, Tv>(
+  base: Readonly<Record<Tk1, Tv>>,
+  dict: Readonly<Record<Tk2, unknown>>
+): Readonly<Omit<Record<Tk1, Tv>, Tk2>>;
+function diff_by_key<
+  Tk1 extends keyof any,
+  Tk2 extends keyof any,
+  Tk3 extends keyof any,
+  Tv
+>(
+  base: Readonly<Record<Tk1, Tv>>,
+  dict1: Readonly<Record<Tk2, unknown>>,
+  dict2: Readonly<Record<Tk3, unknown>>
+): Readonly<Omit<Record<Tk1, Tv>, Tk2 | Tk3>>;
+function diff_by_key<
+  Tk1 extends keyof any,
+  Tk2 extends keyof any,
+  Tk3 extends keyof any,
+  Tk4 extends keyof any,
+  Tv
+>(
+  base: Readonly<Record<Tk1, Tv>>,
+  dict1: Readonly<Record<Tk2, unknown>>,
+  dict2: Readonly<Record<Tk3, unknown>>,
+  dict3: Readonly<Record<Tk4, unknown>>
+): Readonly<Omit<Record<Tk1, Tv>, Tk2 | Tk3 | Tk4>>;
+function diff_by_key<
+  Tk1 extends keyof any,
+  Tk2 extends keyof any,
+  Tk3 extends keyof any,
+  Tk4 extends keyof any,
+  Tk5 extends keyof any,
+  Tv
+>(
+  base: Readonly<Record<Tk1, Tv>>,
+  dict1: Readonly<Record<Tk2, unknown>>,
+  dict2: Readonly<Record<Tk3, unknown>>,
+  dict3: Readonly<Record<Tk4, unknown>>,
+  dict4: Readonly<Record<Tk4, unknown>>
+): Readonly<Omit<Record<Tk1, Tv>, Tk2 | Tk3 | Tk4 | Tk5>>;
+function diff_by_key<Tk extends keyof any, Tv>(
+  base: Readonly<Record<Tk, Tv>>,
   ...rest: [
     Readonly<Record<keyof any, unknown>>,
-    ...(readonly Readonly<Record<keyof any, unknown>>[])
+    ...Readonly<Record<keyof any, unknown>>[]
   ]
-): Readonly<Record<Tk, Tv>> =>
-  filter_keys(dict, (key) => !rest.some((otherDict) => key in otherDict));
+): Readonly<Omit<Record<Tk, Tv>, keyof any>>;
+function diff_by_key<Tk extends keyof any, Tv>(
+  base: Readonly<Record<Tk, Tv>>,
+  ...rest: readonly [
+    Readonly<Record<keyof any, unknown>>,
+    ...Readonly<Record<keyof any, unknown>>[]
+  ]
+): Readonly<Partial<Record<Tk, Tv>>> {
+  return filter_keys(
+    base,
+    (key) => !rest.some((otherDict) => key in otherDict)
+  );
+}
 
 /**
  * @returns a mapper-obj containing all except the first `n` entries of the
@@ -43,7 +94,7 @@ const drop = <Tk extends keyof any, Tv>(
 const filter = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   predicate: (value: Tv) => boolean = Boolean
-): Readonly<Record<Tk, Tv>> =>
+): Readonly<Partial<Record<Tk, Tv>>> =>
   filter_with_keys(dict, (_, value) => predicate(value));
 
 /**
@@ -55,12 +106,13 @@ const filter = <Tk extends keyof any, Tv>(
 function filter_with_keys<Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   predicate: (key: Tk, value: Tv) => boolean
-): Readonly<Record<Tk, Tv>> {
-  const filtered = D.from_entries(
-    D.entries(dict).filter(([key, value]) => predicate(key, value))
+): Readonly<Partial<Record<Tk, Tv>>> {
+  const filteredEntries = D.entries(dict).filter((entry) =>
+    predicate(...entry)
   );
+  const filtered = D.from_entries(filteredEntries);
   // Optimize for react by returning the same object if nothing got filtereD.
-  return D.countValues(filtered) === D.countValues(dict) ? dict : filtered;
+  return D.size(filtered) === D.size(dict) ? dict : filtered;
 }
 
 /**
@@ -70,7 +122,8 @@ function filter_with_keys<Tk extends keyof any, Tv>(
 const filter_keys = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   predicate: (key: Tk) => boolean = Boolean
-): Readonly<Record<Tk, Tv>> => filter_with_keys(dict, (key) => predicate(key));
+): Readonly<Partial<Record<Tk, Tv>>> =>
+  filter_with_keys(dict, (key) => predicate(key));
 
 /**
  * Given a mapper-obj with nullable values, returns a mapper-obj with null
@@ -86,7 +139,7 @@ function filter_nulls<Tk extends keyof any, Tv>(
     return noNulls;
   }, {} as Record<Tk, Tv>);
   // Optimize for react by returning the same object if nothing got filtereD.
-  return D.countValues(filtered) === D.countValues(dict)
+  return D.size(filtered) === D.size(dict)
     ? (dict as Record<Tk, Tv>)
     : filtered;
 }
@@ -107,7 +160,7 @@ function select_keys<Tk extends keyof any, Tv>(
     return selected;
   }, {} as Record<Tk, Tv>);
   // Optimize for react by returning the same object if everything got selecteD.
-  return D.countValues(selected) === D.countValues(dict) ? dict : selected;
+  return D.size(selected) === D.size(dict) ? dict : selected;
 }
 
 /**
@@ -121,9 +174,7 @@ const take = <Tk extends keyof any, Tv>(
   n: number
 ): Readonly<Record<Tk, Tv>> =>
   // If we need to take more entries than the dict has just return the dict.
-  n >= D.countValues(dict)
-    ? dict
-    : D.from_entries(Vec.take(D.entries(dict), n));
+  n >= D.size(dict) ? dict : D.from_entries(Vec.take(D.entries(dict), n));
 
 /**
  * @returns a mapper-obj in which each value appears exactly once. In case of
@@ -137,9 +188,7 @@ function unique<Tk extends keyof any, Tv extends keyof any>(
   const dedupped = D.flip(dict);
   // If after flipping the object has the same number of entries then it had
   // no non-unique values and we can return the same object back.
-  return D.countValues(dedupped) === D.countValues(dict)
-    ? dict
-    : D.flip(dedupped);
+  return D.size(dedupped) === D.size(dict) ? dict : D.flip(dedupped);
 }
 
 /**

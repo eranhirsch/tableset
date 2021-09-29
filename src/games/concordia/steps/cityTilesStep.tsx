@@ -1,6 +1,9 @@
 import { Grid, Typography, useTheme } from "@mui/material";
-import { Dict, MathUtils, nullthrows, Vec } from "common";
-import { useInstanceValue } from "features/instance/useInstanceValue";
+import { Dict, MathUtils, Vec } from "common";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import React, { useMemo } from "react";
 import {
   createVariableGameStep,
@@ -13,7 +16,7 @@ import CityResourcesEncoder, {
   CITY_TILES,
 } from "../utils/CityResourcesEncoder";
 import { MAPS, Zone } from "../utils/Maps";
-import { resourceName } from "../utils/resource";
+import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 
@@ -37,13 +40,10 @@ function InstanceVariableComponent({
   const theme = useTheme();
 
   // TODO: Move this to dependencies
-  const mapId = nullthrows(
-    useInstanceValue(mapStep),
-    `No map value in instance, can't build the city tiles value!`
-  );
+  const mapId = useRequiredInstanceValue(mapStep);
 
   const provinces = useMemo(
-    () => CityResourcesEncoder.decode(mapId, hash),
+    () => CityResourcesEncoder.decodeCityResources(mapId, hash),
     [hash, mapId]
   );
 
@@ -63,14 +63,14 @@ function InstanceVariableComponent({
             {Vec.map_with_key(cities, (cityName, resource) => (
               <Grid item key={cityName} xs={3} textAlign="center">
                 <Typography variant="caption">
-                  {resourceName(resource)}
+                  {RESOURCE_NAME[resource]}
                 </Typography>
                 <Typography variant="body2">
                   <RomanTitle>{cityName}</RomanTitle>
                 </Typography>
               </Grid>
             ))}
-            {Dict.countValues(cities) === 2 && <Grid item xs={3} />}
+            {Dict.size(cities) === 2 && <Grid item xs={3} />}
           </React.Fragment>
         ))}
         <Typography
@@ -86,7 +86,7 @@ function InstanceVariableComponent({
 }
 
 function InstanceManualComponent() {
-  const mapId = useInstanceValue(mapStep);
+  const mapId = useOptionalInstanceValue(mapStep);
 
   const allZones = Vec.keys(CITY_TILES);
 

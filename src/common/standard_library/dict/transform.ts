@@ -25,7 +25,7 @@ const chunk = <Tk extends keyof any, Tv>(
  */
 const count_values = <Tk extends keyof any>(
   items: readonly Tk[]
-): Readonly<Record<Tk, number>> =>
+): Readonly<Partial<Record<Tk, number>>> =>
   items.reduce((counters, item) => {
     counters[item] = (counters[item] ?? 0) + 1;
     return counters;
@@ -98,10 +98,10 @@ const from_keys = <Tk extends keyof any, Tv>(
  * Also known as `unzip` or `fromItems` in other implementations.
  */
 function from_entries<Tk extends keyof any, Tv>(
-  entries: Iterable<readonly [Tk, Tv]>
+  entries: Iterable<readonly [key: Tk, value: Tv]>
 ): Readonly<Record<Tk, Tv>>;
 function from_entries<Tv>(
-  entries: Iterable<readonly [keyof any, Tv]>
+  entries: Iterable<readonly [key: keyof any, value: Tv]>
 ): Readonly<Record<keyof any, Tv>> {
   return Object.fromEntries(entries);
 }

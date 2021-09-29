@@ -3,7 +3,7 @@ import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import GrammaticalList from "games/core/ux/GrammaticalList";
 import { createVariant } from "../../core/steps/createVariant";
-import { resourceName, RESOURCE_COST } from "../utils/resource";
+import { RESOURCE_NAME, RESOURCE_COST } from "../utils/resource";
 
 const noStartingResourcesVariant = createVariant({
   id: "noStartingResources",
@@ -25,7 +25,7 @@ function InstanceVariableComponent(): JSX.Element {
           <GrammaticalList>
             {Vec.map_with_key(
               RESOURCE_COST,
-              (resource, cost) => `${resourceName(resource)}-${cost}`
+              (resource, cost) => `${RESOURCE_NAME[resource]}-${cost}`
             )}
           </GrammaticalList>
         </>,

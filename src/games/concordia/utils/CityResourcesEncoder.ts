@@ -1,6 +1,6 @@
 import { C, Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
 import { MapId, MAPS, Zone } from "./Maps";
-import { Resource } from "./resource";
+import { Resource, RESOURCE_COST } from "./resource";
 
 const HASH_SEPARATOR = "-";
 
@@ -18,6 +18,9 @@ type CityResources = Readonly<{ [cityName: string]: Resource }>;
 type ProvinceCityResources = Readonly<{
   [provinceName: string]: CityResources;
 }>;
+type ProvinceBonusResource = Readonly<{
+  [provinceName: string]: Resource;
+}>;
 
 export default {
   randomHash: (mapId: MapId): string =>
@@ -27,37 +30,56 @@ export default {
       )
     ).join(HASH_SEPARATOR),
 
-  decode: (mapId: MapId, hash: string): ProvinceCityResources =>
-    C.reduce_with_key(
-      Dict.filter_nulls(MAPS[mapId].provinces),
-      (result, zone, provinces, index) => {
-        const zoneDef = CITY_TILES[zone];
-        const permutationIdx = Num.decode_base32(
-          hash.split(HASH_SEPARATOR)[index]
-        );
-        const permutations = MathUtils.permutations_lazy_array(zoneDef);
-        const resources = nullthrows(
-          permutations.at(permutationIdx),
-          `Index ${permutationIdx} is out of bounds for permutations ${permutations}`
-        );
+  decodeCityResources,
 
-        let resourceIdx = 0;
-        Vec.map_with_key(provinces, (provinceName, cities) => {
-          const mappedResources: { [cityName: string]: Resource } = {};
-          cities.forEach((cityName) => {
-            mappedResources[cityName] = nullthrows(
-              resources[resourceIdx++],
-              `Not enough items in the resources permutation!`
-            );
-          });
-          result = {
-            ...result,
-            [provinceName]: mappedResources,
-          };
-        });
-
-        return result;
-      },
-      {} as ProvinceCityResources
+  decodeProvinceBonuses: (mapId: MapId, hash: string): ProvinceBonusResource =>
+    Dict.map_with_key(
+      decodeCityResources(mapId, hash),
+      (provinceName, cityResources) =>
+        nullthrows(
+          MathUtils.max_by(
+            Vec.values(cityResources),
+            (resource) => RESOURCE_COST[resource]
+          ),
+          `Province ${provinceName} had no city resources`
+        )
     ),
 } as const;
+
+function decodeCityResources(
+  mapId: MapId,
+  hash: string
+): ProvinceCityResources {
+  return C.reduce_with_key(
+    Dict.filter_nulls(MAPS[mapId].provinces),
+    (result, zone, provinces, index) => {
+      const zoneDef = CITY_TILES[zone];
+      const permutationIdx = Num.decode_base32(
+        hash.split(HASH_SEPARATOR)[index]
+      );
+      const permutations = MathUtils.permutations_lazy_array(zoneDef);
+      const resources = nullthrows(
+        permutations.at(permutationIdx),
+        `Index ${permutationIdx} is out of bounds for permutations ${permutations}`
+      );
+
+      let resourceIdx = 0;
+      Vec.map_with_key(provinces, (provinceName, cities) => {
+        const mappedResources: { [cityName: string]: Resource } = {};
+        cities.forEach((cityName) => {
+          mappedResources[cityName] = nullthrows(
+            resources[resourceIdx++],
+            `Not enough items in the resources permutation!`
+          );
+        });
+        result = {
+          ...result,
+          [provinceName]: mappedResources,
+        };
+      });
+
+      return result;
+    },
+    {} as ProvinceCityResources
+  );
+}

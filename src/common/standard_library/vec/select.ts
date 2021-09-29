@@ -73,7 +73,12 @@ function filter_nulls<Tv>(
 const filter_with_key = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   predicate: (key: Tk, value: Tv) => boolean
-): readonly Tv[] => values(Dict.filter_with_keys(dict, predicate));
+): readonly Tv[] =>
+  // TODO: Typing here is hard and I couldn't get it to work. Obviously we
+  // want to type `map` so that is returns a Record with the same keys as
+  // the input, and we want to handle Partial Records as any other Record
+  // when sent to `map`. For now we just cast it and hope it doesn't break.
+  values(Dict.filter_with_keys(dict, predicate) as Record<keyof any, Tv>);
 
 /**
  * @returns an array containing only the elements of the first array that

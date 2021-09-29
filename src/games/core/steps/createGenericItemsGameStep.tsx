@@ -24,7 +24,7 @@ interface CreateGenericItemsGameStepOptions<T extends string = string> {
   recommended?(context: InstanceContext): T | undefined;
 }
 
-const createGenericItemsGameStep = <T extends string = string>({
+const createGenericItemsGameStep = <T extends string>({
   id,
   itemIds,
   labelFor,

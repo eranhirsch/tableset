@@ -40,7 +40,7 @@ const from_keys_async = async <Tk extends keyof any, Tv>(
 const filter_async = async <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   valuePredicate: (value: Tv) => Promise<boolean>
-): Promise<Readonly<Record<Tk, Tv>>> =>
+): Promise<Readonly<Partial<Record<Tk, Tv>>>> =>
   filter_with_key_async(dict, (_, value) => valuePredicate(value));
 
 /**
@@ -51,15 +51,20 @@ const filter_async = async <Tk extends keyof any, Tv>(
 const filter_with_key_async = async <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   predicate: (key: Tk, value: Tv) => Promise<boolean>
-): Promise<Readonly<Record<Tk, Tv>>> =>
+): Promise<Partial<Readonly<Record<Tk, Tv>>>> =>
   D.map(
     D.filter(
-      await D.map_with_key_async(dict, async (key, value) =>
-        tuple(value, await predicate(key, value))
-      ),
-      ([, isEnabled]) => isEnabled
-    ),
-    ([value]) => value
+      await D.map_with_key_async(dict, async (key, value) => ({
+        value,
+        isEnabled: await predicate(key, value),
+      })),
+      ({ isEnabled }) => isEnabled
+      // TODO: Typing here is hard and I couldn't get it to work. Obviously we
+      // want to type `map` so that is returns a Record with the same keys as
+      // the input, and we want to handle Partial Records as any other Record
+      // when sent to `map`. For now we just cast it and hope it doesn't break.
+    ) as Record<keyof any, { value: Tv }>,
+    ({ value }) => value
   );
 
 /**

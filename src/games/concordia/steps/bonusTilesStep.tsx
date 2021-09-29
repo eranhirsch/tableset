@@ -1,5 +1,5 @@
 import { Grid, Typography } from "@mui/material";
-import { Dict, nullthrows, Vec } from "common";
+import { Dict, Vec } from "common";
 import React, { useMemo } from "react";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -9,7 +9,7 @@ import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder from "../utils/CityResourcesEncoder";
 import { MapId, MAPS } from "../utils/Maps";
-import { Resource, resourceName, RESOURCE_COST } from "../utils/resource";
+import { RESOURCE_NAME, RESOURCE_COST } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
@@ -25,12 +25,12 @@ export default createDerivedGameStep({
 
 function InstanceDerivedComponent({
   dependencies: [mapId, hash],
-}: DerivedStepInstanceComponentProps<MapId, string>): JSX.Element | null {
-  if (mapId == null || hash == null) {
-    return <IncompleteInstanceDerivedComponent mapId={mapId} />;
-  }
-
-  return <ComputedInstanceComponent mapId={mapId} hash={hash} />;
+}: DerivedStepInstanceComponentProps<MapId, string>): JSX.Element {
+  return mapId != null && hash != null ? (
+    <ComputedInstanceComponent mapId={mapId} hash={hash} />
+  ) : (
+    <IncompleteInstanceDerivedComponent mapId={mapId} />
+  );
 }
 
 function IncompleteInstanceDerivedComponent({
@@ -50,7 +50,7 @@ function IncompleteInstanceDerivedComponent({
       Vec.filter_nulls(Vec.values(provinces))
     );
 
-    mapSpecificCount = ` of the ${Dict.countValues(provinceCities)} provinces`;
+    mapSpecificCount = ` of the ${Dict.size(provinceCities)} provinces`;
 
     provinceCityCountsFootnote = (
       <>
@@ -120,23 +120,21 @@ function IncompleteInstanceDerivedComponent({
           <>
             The resources (sorted in descending value) are{" "}
             <GrammaticalList>
-              {Vec.map_with_key(
-                Dict.sort_by(
-                  RESOURCE_COST,
+              {Vec.values(
+                Dict.sort_by_key(
+                  RESOURCE_NAME,
                   // We want descending order, so we negate the value
-                  (value) => -value
-                ),
-                (resource) => resourceName(resource)
+                  (value) => -RESOURCE_COST[value]
+                )
               )}
             </GrammaticalList>
             .
           </>,
           <>
-            e.g. if {resourceName("cloth")} is produced in one of the cities
-            then the most valuable resource is {resourceName("cloth")}, if it
-            isn't then if {resourceName("wine")} is produced in one of the
-            cities then the most valuable resource is {resourceName("wine")},
-            etc...
+            e.g. if {RESOURCE_NAME.cloth} is produced in one of the cities then
+            the most valuable resource is {RESOURCE_NAME.cloth}, if it isn't
+            then if {RESOURCE_NAME.wine} is produced in one of the cities then
+            the most valuable resource is {RESOURCE_NAME.wine}, etc...
           </>,
         ]}
       >
@@ -160,22 +158,10 @@ function ComputedInstanceComponent({
   mapId: MapId;
   hash: string;
 }): JSX.Element | null {
-  const provinceResource = useMemo(() => {
-    const provinceCityResources = CityResourcesEncoder.decode(mapId, hash);
-    return Dict.map(provinceCityResources, (cityResources) =>
-      nullthrows(
-        Vec.values(cityResources).reduce(
-          (mostValuableResource, resource) =>
-            mostValuableResource == null ||
-            RESOURCE_COST[mostValuableResource] < RESOURCE_COST[resource]
-              ? resource
-              : mostValuableResource,
-          undefined as Resource | undefined
-        ),
-        "Empty cityResources object encountered!"
-      )
-    );
-  }, [hash, mapId]);
+  const provinceResource = useMemo(
+    () => CityResourcesEncoder.decodeProvinceBonuses(mapId, hash),
+    [hash, mapId]
+  );
 
   return (
     <>
@@ -192,7 +178,7 @@ function ComputedInstanceComponent({
             </Grid>
             <Grid item xs={8}>
               <Typography variant="caption">
-                {resourceName(resource)}
+                {RESOURCE_NAME[resource]}
               </Typography>
             </Grid>
           </React.Fragment>

@@ -19,6 +19,7 @@ import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
 import { Product } from "model/IExpansion";
+import germaniaRomanCastlesStep from "./steps/germaniaRomanCastlesStep";
 
 export default class ConcordiaGame implements IGame {
   readonly steps: readonly Readonly<IGameStep<unknown>>[];
@@ -36,6 +37,7 @@ export default class ConcordiaGame implements IGame {
       mapStep,
       cityTilesStep,
       bonusTilesStep,
+      germaniaRomanCastlesStep,
       marketCardsStep,
       marketDisplayStep,
       marketDeckStep,

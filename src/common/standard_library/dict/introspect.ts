@@ -6,7 +6,7 @@
 
 import { Dict as D, Vec } from "common";
 
-const countValues = (dict: Readonly<Record<keyof any, unknown>>): number =>
+const size = (dict: Readonly<Record<keyof any, unknown>>): number =>
   Vec.values(dict).length;
 
 /**
@@ -19,16 +19,16 @@ function equal<Tk extends keyof any, Tv>(
 ): boolean {
   const entries = D.entries(dict1);
   return (
-    entries.length === D.countValues(dict2) &&
+    entries.length === D.size(dict2) &&
     !entries.some(([key, value]) => !(key in dict2) || value !== dict2[key])
   );
 }
 
 const is_empty = (dict: Readonly<Record<keyof any, unknown>>): boolean =>
-  countValues(dict) === 0;
+  size(dict) === 0;
 
 export const Dict = {
-  countValues,
+  size,
   equal,
   is_empty,
 } as const;

@@ -39,7 +39,7 @@ function partition_with_key<Tk extends keyof any, Tv>(
     return tuple({} as Partial<Record<Tk, Tv>>, dict);
   }
 
-  if (enabledValues.length === D.countValues(dict)) {
+  if (enabledValues.length === D.size(dict)) {
     // Optimize for react by returning the original object if the partition is
     // trivially one-sided
     return tuple(dict, {} as Partial<Record<Tk, Tv>>);

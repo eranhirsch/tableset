@@ -7,7 +7,7 @@ import createDerivedGameStep, {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import React from "react";
 import GrammaticalList from "../../core/ux/GrammaticalList";
-import { Resource, resourceName } from "../utils/resource";
+import { Resource, RESOURCE_NAME } from "../utils/resource";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
 
 const STARTING_RESOURCES: Record<Resource, number> = Object.freeze({
@@ -55,7 +55,7 @@ function InstanceDerivedComponent({
           Vec.map_with_key(STARTING_RESOURCES, (resource, count) =>
             count > 0 ? (
               <React.Fragment key={`starting_resource_${resource}`}>
-                {count} <strong>{resourceName(resource)}</strong>
+                {count} <strong>{RESOURCE_NAME[resource]}</strong>
               </React.Fragment>
             ) : null
           )

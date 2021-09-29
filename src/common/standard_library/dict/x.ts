@@ -9,11 +9,11 @@
  * method.
  */
 function entries<Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>
-): readonly [Tk, Tv][];
+  dict: Readonly<Record<Tk, Tv> | Partial<Record<Tk, Tv>>>
+): readonly [key: Tk, value: Tv][];
 function entries<Tv>(
   dict: Readonly<{ [key: keyof any]: Tv }>
-): readonly [keyof any, Tv][] {
+): readonly [key: keyof any, value: Tv][] {
   return Object.entries(dict);
 }
 

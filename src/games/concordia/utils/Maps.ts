@@ -1,3 +1,4 @@
+export type MapId = "britannia" | "germania" | "imperium" | "italia";
 export const MAPS = Object.freeze({
   italia: {
     name: "Italia",
@@ -119,9 +120,7 @@ export const MAPS = Object.freeze({
       },
     },
   },
-} as Record<string, MapBoard>);
-
-export type MapId = keyof typeof MAPS;
+} as Record<MapId, MapBoard>);
 
 // We can't use `Map` as that's already a thing in js
 interface MapBoard {

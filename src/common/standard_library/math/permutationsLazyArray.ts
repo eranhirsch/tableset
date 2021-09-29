@@ -1,7 +1,7 @@
 import { Dict, invariant, invariant_violation } from "common";
 
 const permutations_lazy_array = <T extends keyof any>(
-  permutation_or_definition: readonly T[] | Readonly<Record<T, number>>
+  permutation_or_definition: readonly T[] | Readonly<Partial<Record<T, number>>>
 ): PermutationsLazyArray<T> =>
   new PermutationsLazyArray(
     Array.isArray(permutation_or_definition)
@@ -12,7 +12,7 @@ const permutations_lazy_array = <T extends keyof any>(
 class PermutationsLazyArray<K extends keyof any> {
   private readonly definition: readonly (readonly [K, number])[];
 
-  constructor(definition: Readonly<Record<K, number>>) {
+  constructor(definition: Readonly<Partial<Record<K, number>>>) {
     // We normalize the item definition for use in our algorithm
     this.definition = Object.entries(definition)
       .map(([a, b]) => [a, b] as [K, number])
