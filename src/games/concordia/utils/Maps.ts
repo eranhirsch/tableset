@@ -1,4 +1,3 @@
-type MapBoards = Record<string, MapBoard>;
 export const MAPS = Object.freeze({
   italia: {
     name: "Italia",
@@ -64,7 +63,7 @@ export const MAPS = Object.freeze({
 
   britannia: {
     name: "Britannia",
-    tightnessScore: 1.4,
+    tightnessScore: 1.45,
     startingColonists: [
       { locationName: "Londinivm", type: "land" },
       { locationName: "Portvs Itivs", type: "sea" },
@@ -89,7 +88,38 @@ export const MAPS = Object.freeze({
       },
     },
   },
-} as MapBoards);
+
+  germania: {
+    name: "Germania",
+    tightnessScore: 0.5, // TODO: The site was down, this isn't the correct value
+    startingColonists: [
+      { locationName: "Basilia", type: "land" },
+      { locationName: "Colonia Agr.", type: "sea" },
+    ],
+    provinces: {
+      A: {
+        Batavia: ["Traiectvm", "Villa Optima", "Vlpia Noviomagvs"],
+        Brvcteri: ["Aliso", "Vlpia Traiana"],
+        Vbii: ["Bonna", "Novaesivm"],
+      },
+      B: {
+        Belgica: ["Avg. Treverorvm", "Divodvrvm", "Icorigivm"],
+        Francia: ["Conflventes", "Mogonatiacvm", "Nida"],
+        Nemetes: ["Noviomagvs", "Segodvnvm"],
+      },
+      C: {
+        AgriDecvmates: ["Arae Flaviae", "Constantia", "Grinario"],
+        Alamannia: ["Argentorate", "Brisiacvs"],
+        Gallia: ["Vesontio", "Condate", "Tvllvm"],
+        Raetia: ["Avg. Vindelicvm", "Biriciana"],
+      },
+      D: {
+        Alpes: ["Brigantivm", "Cambodvnvm", "Parthanvm"],
+        Helvetia: ["Salodvrvm", "Tvricvm"],
+      },
+    },
+  },
+} as Record<string, MapBoard>);
 
 export type MapId = keyof typeof MAPS;
 
