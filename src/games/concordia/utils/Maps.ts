@@ -108,7 +108,7 @@ export const MAPS = Object.freeze({
         Nemetes: ["Noviomagvs", "Segodvnvm"],
       },
       C: {
-        AgriDecvmates: ["Arae Flaviae", "Constantia", "Grinario"],
+        "Agri Decvmates": ["Arae Flaviae", "Constantia", "Grinario"],
         Alamannia: ["Argentorate", "Brisiacvs"],
         Gallia: ["Vesontio", "Condate", "Tvllvm"],
         Raetia: ["Avg. Vindelicvm", "Biriciana"],
