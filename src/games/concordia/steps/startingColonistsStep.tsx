@@ -54,7 +54,7 @@ function InstanceDerivedComponent({
             startingColonists.map((colonist, idx) => (
               <>
                 1 <strong>{colonist.type}</strong> colonist from their
-                storehouse and places them in{" "}
+                storehouse and places it in{" "}
                 <strong>
                   <RomanTitle>{colonist.locationName}</RomanTitle>
                 </strong>
