@@ -16,8 +16,8 @@ const BONUS_TILES = Object.freeze({
 const LOCATIONS = [
   "Vbii",
   "Belgica",
-  "Francia (Mogonatiacvm)",
-  "Francia (Nida)",
+  "Francia (near Mogonatiacvm)",
+  "Francia (near Nida)",
   "Nemetes",
   "Agri Decvmates",
   "Alamannia",

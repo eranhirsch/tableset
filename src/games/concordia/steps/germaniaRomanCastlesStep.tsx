@@ -1,9 +1,15 @@
+import { Typography, Grid } from "@mui/material";
+import { Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   createVariableGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createVariableGameStep";
+import React from "react";
+import { useMemo } from "react";
 import GermaniaCastlesEncoder from "../utils/GermaniaCastlesEncoder";
+import { RESOURCE_NAME } from "../utils/resource";
+import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
 
@@ -29,11 +35,35 @@ function InstanceVariableComponent({
   const mapId = useRequiredInstanceValue(mapStep);
   const cityTilesHash = useRequiredInstanceValue(cityTilesStep);
 
+  const resourceLocations = useMemo(
+    () => GermaniaCastlesEncoder.decode(mapId, cityTilesHash, value),
+    [cityTilesHash, mapId, value]
+  );
+
   return (
-    <div>
-      {JSON.stringify(
-        GermaniaCastlesEncoder.decode(mapId, cityTilesHash, value)
-      )}
-    </div>
+    <>
+      <Typography variant="body1">
+        Place the matching bonus resource tiles, resource side up, on the Roman
+        Castle place in the following locations:
+      </Typography>
+      <Grid container component="figure" spacing={1}>
+        {React.Children.toArray(
+          Vec.map_with_key(resourceLocations, (location, resource) => (
+            <>
+              <Grid item xs={4} textAlign="right">
+                <Typography variant="subtitle1">
+                  <RomanTitle>{location}</RomanTitle>
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography variant="caption">
+                  {RESOURCE_NAME[resource]}
+                </Typography>
+              </Grid>
+            </>
+          ))
+        )}
+      </Grid>
+    </>
   );
 }

@@ -166,7 +166,12 @@ function ComputedInstanceComponent({
   return (
     <>
       <Typography variant="body1">
-        Place the matching city resource tile for each city on the map:
+        Place the matching bonus resource tile, resource side up, for each
+        province{" "}
+        {MAPS[mapId].hasLegacyProvincesSection
+          ? "at the provinces section of the board"
+          : "on the provinces mini-map"}
+        :
       </Typography>
       <Grid container component="figure" spacing={1}>
         {Vec.map_with_key(provinceResource, (provinceName, resource) => (
