@@ -6,6 +6,10 @@
 import { Dict as D, Vec } from "common";
 import { ValueOf } from "../_private/typeUtils";
 
+// Just a simple helper function that takes a value and returns it, for use in
+// places where we need a method but don't need it to do anything.
+const asIs = <T>(x: T): T => x;
+
 /**
  * @returns a new mapper-obj with the original entries in reversed iteration
  * order.
@@ -36,7 +40,7 @@ const shuffle = <T extends Record<keyof any, any>>(
 const sort = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   valueComparator?: (a: ValueOf<T>, b: ValueOf<T>) => number
-): Readonly<T> => sort_by(dict, (value) => value, valueComparator);
+): Readonly<T> => sort_by(dict, asIs, valueComparator);
 
 /**
  * @returns a mapper-obj sorted by some scalar property of each value of the
@@ -67,7 +71,7 @@ const sort_by = <T extends Record<keyof any, any>, Ts>(
 const sort_by_key = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   keyComparator?: (a: keyof T, b: keyof T) => number
-): Readonly<T> => sort_by_with_key(dict, (key) => key, keyComparator);
+): Readonly<T> => sort_by_with_key(dict, asIs, keyComparator);
 
 /**
  * This method is not part of the HSL, but it made sense to abstract the impl
@@ -91,7 +95,7 @@ function sort_by_with_key<T extends Record<keyof any, any>, Ts>(
   // Optimize for react by returning the same object in case it was already
   // sorted (Notice that we rely on `Vec.sort_by` itself being optimized to
   // return the same object when the input is sorted too!)
-  return entries === sorted ? dict : D.from_entries(sorted);
+  return Vec.equal(entries, sorted) ? dict : D.from_entries(sorted);
 }
 
 export const Dict = {
