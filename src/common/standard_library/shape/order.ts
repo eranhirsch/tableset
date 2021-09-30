@@ -3,19 +3,20 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/order.php
  */
-import { Dict, Shape as S, Vec } from "common";
+import { Shape as S, Vec } from "common";
+import { ValueOf } from "../_private/typeUtils";
+
+// Just a simple helper function that takes a value and returns it, for use in
+// places where we need a method but don't need it to do anything.
+const asIs = <T>(x: T): T => x;
 
 /**
  * @returns a new mapper-obj with the original entries in reversed iteration
  * order.
  */
-const reverse = <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>
-): Readonly<Record<Tk, Tv>> =>
-  Vec.entries(dict).reduceRight((out, [key, value]) => {
-    out[key] = value;
-    return out;
-  }, {} as Record<Tk, Tv>);
+const reverse = <T extends Record<keyof any, any>>(
+  dict: Readonly<T>
+): Readonly<T> => S.from_entries(Vec.reverse(Vec.entries(dict)));
 
 /**
  * @returns a new mapper-obj with the key value pairs of the given input
@@ -23,9 +24,9 @@ const reverse = <Tk extends keyof any, Tv>(
  *
  * `shuffle` is not using cryptographically secure randomness.
  */
-const shuffle = <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>
-): Readonly<Record<Tk, Tv>> => S.from_entries(Vec.shuffle(Vec.entries(dict)));
+const shuffle = <T extends Record<keyof any, any>>(
+  dict: Readonly<T>
+): Readonly<T> => S.from_entries(Vec.shuffle(Vec.entries(dict)));
 
 /**
  * @returns a mapper-obj sorted by the values of the given mapper-obj. If
@@ -36,10 +37,10 @@ const shuffle = <Tk extends keyof any, Tv>(
  * @see `Dict.sort_by()` to sort by some computable property of each value.
  * @see `Dict.sort_by_key()` to sort by the keys of the mapper-obj.
  */
-const sort = <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>,
-  valueComparator?: (a: Tv, b: Tv) => number
-): Readonly<Record<Tk, Tv>> => sort_by(dict, (value) => value, valueComparator);
+const sort = <T extends Record<keyof any, any>>(
+  dict: Readonly<T>,
+  valueComparator?: (a: ValueOf<T>, b: ValueOf<T>) => number
+): Readonly<T> => sort_by(dict, asIs, valueComparator);
 
 /**
  * @returns a mapper-obj sorted by some scalar property of each value of the
@@ -51,23 +52,12 @@ const sort = <Tk extends keyof any, Tv>(
  * @see `Dict.sort()` to sort by the values of the mapper-obj.
  * @see `Dict.sort_by_key()` to sort by the keys of the mapper-obj.
  */
-function sort_by<Tk extends keyof any, Tv, Ts>(
-  dict: Readonly<Record<Tk, Tv>>,
-  scalarFunc: (value: Tv) => Ts,
+const sort_by = <T extends Record<keyof any, any>, Ts>(
+  dict: Readonly<T>,
+  scalarFunc: (value: ValueOf<T>) => Ts,
   scalarComparator?: (a: Ts, b: Ts) => number
-): Readonly<Record<Tk, Tv>>;
-function sort_by<Tk extends keyof any, Tv, Ts>(
-  dict: Readonly<Partial<Record<Tk, Tv>>>,
-  scalarFunc: (value: Tv) => Ts,
-  scalarComparator?: (a: Ts, b: Ts) => number
-): Readonly<Partial<Record<Tk, Tv>>>;
-function sort_by<Tk extends keyof any, Tv, Ts>(
-  dict: Readonly<Record<Tk, Tv>>,
-  scalarFunc: (value: Tv) => Ts,
-  scalarComparator?: (a: Ts, b: Ts) => number
-): Readonly<Record<Tk, Tv>> {
-  return Dict.sort_by(dict, scalarFunc, scalarComparator);
-}
+): Readonly<T> =>
+  sort_by_with_key(dict, (_, value) => scalarFunc(value), scalarComparator);
 
 /**
  * @returns a mapper-obj sorted by the keys of the given mapper-obj. If the
@@ -78,11 +68,10 @@ function sort_by<Tk extends keyof any, Tv, Ts>(
  * @see `Dict\sort()` to sort by the values of the mapper_obj.
  * @see `Dict\sort_by()` to sort by some computable property of each value.
  */
-const sort_by_key = <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>,
-  keyComparator?: (a: Tk, b: Tk) => number
-): Readonly<Record<Tk, Tv>> =>
-  sort_by_with_key(dict, (key) => key, keyComparator);
+const sort_by_key = <T extends Record<keyof any, any>>(
+  dict: Readonly<T>,
+  keyComparator?: (a: keyof T, b: keyof T) => number
+): Readonly<T> => sort_by_with_key(dict, asIs, keyComparator);
 
 /**
  * This method is not part of the HSL, but it made sense to abstract the impl
@@ -92,11 +81,11 @@ const sort_by_key = <Tk extends keyof any, Tv>(
  * with too many similar methods. If you feel you need it simply add it and
  * remove this note.
  */
-function sort_by_with_key<Tk extends keyof any, Tv, Ts>(
-  dict: Readonly<Record<Tk, Tv>>,
-  scalarFunc: (key: Tk, value: Tv) => Ts,
+function sort_by_with_key<T extends Record<keyof any, any>, Ts>(
+  dict: Readonly<T>,
+  scalarFunc: (key: keyof T, value: ValueOf<T>) => Ts,
   scalarComparator?: (a: Ts, b: Ts) => number
-): Readonly<Record<Tk, Tv>> {
+): Readonly<T> {
   const entries = Vec.entries(dict);
   const sorted = Vec.sort_by(
     entries,
@@ -106,7 +95,7 @@ function sort_by_with_key<Tk extends keyof any, Tv, Ts>(
   // Optimize for react by returning the same object in case it was already
   // sorted (Notice that we rely on `Vec.sort_by` itself being optimized to
   // return the same object when the input is sorted too!)
-  return entries === sorted ? dict : S.from_entries(sorted);
+  return Vec.equal(entries, sorted) ? dict : S.from_entries(sorted);
 }
 
 export const Shape = {

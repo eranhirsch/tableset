@@ -4,22 +4,8 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/transform.php
  */
 
-import { Shape as S, Vec } from "common";
-
-/**
- * @returns an array containing the original dict split into chunks of the given
- * size.
- *
- * If the original dict doesn't divide evenly, the final chunk will be
- * smaller.
- */
-const chunk = <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>,
-  size: number
-): readonly Readonly<Partial<Record<Tk, Tv>>>[] =>
-  Vec.chunk(Vec.entries(dict), size).map((chunk) =>
-    from_partial_entries(chunk)
-  );
+import { Shape as S, tuple, Vec } from "common";
+import { Entry, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj mapping each value to the number of times it
@@ -27,7 +13,7 @@ const chunk = <Tk extends keyof any, Tv>(
  */
 const count_values = <Tk extends keyof any>(
   items: readonly Tk[]
-): Readonly<Partial<Record<Tk, number>>> =>
+): Readonly<Record<Tk, number>> =>
   items.reduce((counters, item) => {
     counters[item] = (counters[item] ?? 0) + 1;
     return counters;
@@ -39,7 +25,8 @@ const count_values = <Tk extends keyof any>(
 const fill_keys = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   value: Tv
-): Readonly<Record<Tk, Tv>> => from_entries(keys.map((key) => [key, value]));
+): Readonly<Record<Tk, Tv>> =>
+  from_entries(keys.map((key) => tuple(key, value)));
 
 /**
  * @returns a new dict formed by merging the mapper-obj elements of the
@@ -50,9 +37,9 @@ const fill_keys = <Tk extends keyof any, Tv>(
  *
  * @see `Dict\merge()` for a fixed number of mapper-objects.
  */
-const flatten = <Tk extends keyof any, Tv>(
-  dicts: readonly Readonly<Record<Tk, Tv>>[]
-): Readonly<Record<Tk, Tv>> => S.merge(...dicts);
+const flatten = <T extends Record<keyof any, unknown>>(
+  dicts: readonly Readonly<T>[]
+): Readonly<T> => S.merge(...dicts);
 
 /**
  * @returns a new mapper-obj keyed by the values of the given mapper-obj
@@ -61,9 +48,9 @@ const flatten = <Tk extends keyof any, Tv>(
  * In case of duplicate values, later keys overwrite the
  * previous ones.
  */
-const flip = <Tk extends keyof any, Tv extends keyof any>(
-  dict: Readonly<Record<Tk, Tv>>
-): Readonly<Partial<Record<Tv, Tk>>> =>
+const flip = <T extends Record<keyof any, keyof any>>(
+  dict: Readonly<T>
+): Readonly<Record<ValueOf<T>, keyof T>> =>
   pull_with_key(
     dict,
     // Notice that we swap the key and value here, the valueFunc returns the key
@@ -83,8 +70,7 @@ const flip = <Tk extends keyof any, Tv extends keyof any>(
 const from_keys = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   valueFunc: (key: Tk) => Tv
-): Readonly<Partial<Record<Tk, Tv>>> =>
-  from_partial_entries(keys.map((key) => [key, valueFunc(key)]));
+): Readonly<Record<Tk, Tv>> => pull(keys, valueFunc, (key) => key);
 
 /**
  * @returns a new mapper-obj where each mapping is defined by the given
@@ -99,30 +85,14 @@ const from_keys = <Tk extends keyof any, Tv>(
  *
  * Also known as `unzip` or `fromItems` in other implementations.
  */
-function from_entries<Tk extends keyof any, Tv>(
-  entries: Iterable<readonly [key: Tk, value: Tv]>
-): Readonly<Record<Tk, Tv>>;
-function from_entries<Tv>(
-  entries: Iterable<readonly [key: keyof any, value: Tv]>
-): Readonly<Record<keyof any, Tv>> {
-  return Object.freeze(Object.fromEntries(entries));
-}
-
-/**
- * @returns a new mapper-obj where each mapping is defined by the given
- * key/value tuples, but defines the result as partial on the keys (meaning
- * everything is optional).
- *
- * NOTE: This is not part of the original HSL as our concept of `dict` is more
- * strict than the Hack concept. Because in JS objects can be used as both an
- * associative array and a shape we sometimes need to make a distinction on what
- * the entries we are building the object from mean.
- * This should be used mainly internally to implement reducing-style functions
- * like `Dict.filter`.
- */
-const from_partial_entries = <Tk extends keyof any, Tv>(
-  entries: Iterable<readonly [key: Tk, value: Tv]>
-): Readonly<Partial<Record<Tk, Tv>>> => from_entries(entries);
+const from_entries = <T extends Record<keyof any, any>>(
+  entries: Iterable<Entry<T>>
+): Readonly<T> =>
+  // We need this cast because the native JS version of `fromEntries` returns an
+  // object mapped on strings no matter what the types of the input array is.
+  // This cast should be safe because indexers are always cast to string (e.g.
+  // `x[number] === x[`${number}`])
+  Object.freeze(Object.fromEntries(entries) as T);
 
 /**
  * @returns a new mapper-obj keyed by the result of calling the given function on
@@ -139,8 +109,7 @@ const from_partial_entries = <Tk extends keyof any, Tv>(
 const from_values = <Tk extends keyof any, Tv>(
   values: readonly Tv[],
   keyFunc: (value: Tv) => Tk
-): Readonly<Partial<Record<Tk, Tv>>> =>
-  from_partial_entries(values.map((value) => [keyFunc(value), value]));
+): Readonly<Record<Tk, Tv>> => pull(values, (value) => value, keyFunc);
 
 /**
  * @return a mapper-obj keyed by the result of calling the giving function,
@@ -169,10 +138,10 @@ const group_by = <Tk extends keyof any, Tv>(
  *
  * @see `Dict.map_async()` To use an async function.
  */
-const map = <Tk extends keyof any, Tv1, Tv2>(
-  dict: Readonly<Record<Tk, Tv1>>,
-  valueFunc: (value: Tv1) => Tv2
-): Readonly<Record<Tk, Tv2>> =>
+const map = <T extends Record<keyof any, any>, Tv>(
+  dict: Readonly<T>,
+  valueFunc: (value: ValueOf<T>) => Tv
+): Readonly<Record<keyof T, Tv>> =>
   map_with_key(dict, (_, value) => valueFunc(value));
 
 /**
@@ -180,27 +149,21 @@ const map = <Tk extends keyof any, Tv1, Tv2>(
  * function on the original key. In the case of duplicate keys, later values
  * will overwrite the previous ones.
  */
-const map_keys = <Tk1 extends keyof any, Tk2 extends keyof any, Tv>(
-  dict: Readonly<Record<Tk1, Tv>>,
-  keyFunc: (key: Tk1) => Tk2
-): Readonly<Partial<Record<Tk2, Tv>>> =>
+const map_keys = <T extends Record<keyof any, any>, Tk extends keyof any>(
+  dict: Readonly<T>,
+  keyFunc: (key: keyof T) => Tk
+): Readonly<Record<Tk, ValueOf<T>>> =>
   pull_with_key(
     dict,
     (_, value) => value,
     (key) => keyFunc(key)
   );
 
-const map_with_key = <Tk extends keyof any, Tv1, Tv2>(
-  dict: Readonly<Record<Tk, Tv1>>,
-  valueFunc: (key: Tk, value: Tv1) => Tv2
-): Readonly<Record<Tk, Tv2>> =>
-  pull_with_key(
-    dict,
-    (key, value) => valueFunc(key, value),
-    (key) => key
-    // This cast is safe because we map key to key, so all keys are going to
-    // be present in the output
-  ) as Record<Tk, Tv2>;
+const map_with_key = <T extends Record<keyof any, any>, Tv>(
+  dict: Readonly<T>,
+  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
+): Readonly<Record<keyof T, Tv>> =>
+  pull_with_key(dict, valueFunc, (key) => key);
 
 /**
  * @returns a new mapper-obj with mapped keys and values.
@@ -209,12 +172,12 @@ const map_with_key = <Tk extends keyof any, Tv1, Tv2>(
  *  - keys are the result of calling `keyFunc` on the original value.
  * In the case of duplicate keys, later values will overwrite the previous ones.
  */
-const pull = <Tk extends keyof any, Tv1, Tv2>(
-  items: readonly Tv1[],
-  valueFunc: (value: Tv1) => Tv2,
-  keyFunc: (value: Tv1) => Tk
-): Readonly<Partial<Record<Tk, Tv2>>> =>
-  from_partial_entries(items.map((item) => [keyFunc(item), valueFunc(item)]));
+const pull = <T, Tk extends keyof any, Tv>(
+  items: readonly T[],
+  valueFunc: (value: T) => Tv,
+  keyFunc: (value: T) => Tk
+): Readonly<Record<Tk, Tv>> =>
+  from_entries(items.map((item) => tuple(keyFunc(item), valueFunc(item))));
 
 /**
  * @returns a new mapper-obj with mapped keys and values.
@@ -223,11 +186,15 @@ const pull = <Tk extends keyof any, Tv1, Tv2>(
  *  - keys are the result of calling `keyFunc` on the original value/key.
  * In the case of duplicate keys, later values will overwrite the previous ones.
  */
-const pull_with_key = <Tk1 extends keyof any, Tk2 extends keyof any, Tv1, Tv2>(
-  dict: Readonly<Record<Tk1, Tv1>>,
-  valueFunc: (key: Tk1, value: Tv1) => Tv2,
-  keyFunc: (key: Tk1, value: Tv1) => Tk2
-): Readonly<Partial<Record<Tk2, Tv2>>> =>
+const pull_with_key = <
+  T extends Record<keyof any, any>,
+  Tk extends keyof any,
+  Tv
+>(
+  dict: Readonly<T>,
+  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv,
+  keyFunc: (key: keyof T, value: ValueOf<T>) => Tk
+): Readonly<Record<Tk, Tv>> =>
   pull(
     Vec.entries(dict),
     ([key, value]) => valueFunc(key, value),
@@ -235,14 +202,12 @@ const pull_with_key = <Tk1 extends keyof any, Tk2 extends keyof any, Tv1, Tv2>(
   );
 
 export const Shape = {
-  chunk,
   count_values,
   fill_keys,
   flatten,
   flip,
   from_entries,
   from_keys,
-  from_partial_entries,
   from_values,
   group_by,
   map_keys,

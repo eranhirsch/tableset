@@ -5,6 +5,7 @@
  */
 
 import { Shape as S, Vec } from "common";
+import { ValueOf } from "../_private/typeUtils";
 
 const size = (dict: Readonly<Record<keyof any, unknown>>): number =>
   Vec.values(dict).length;
@@ -13,9 +14,9 @@ const size = (dict: Readonly<Record<keyof any, unknown>>): number =>
  * @returns whether the two given mapper-obj have the same entries, using strict
  * equality. To guarantee equality of order as well as contents, use `===`.
  */
-function equal<Tk extends keyof any, Tv>(
-  dict1: Readonly<Record<Tk, Tv>>,
-  dict2: Readonly<Record<Tk, Tv>>
+function equal<T extends Record<keyof any, any>>(
+  dict1: Readonly<T>,
+  dict2: Readonly<T>
 ): boolean {
   const entries = Vec.entries(dict1);
   return (
@@ -27,8 +28,29 @@ function equal<Tk extends keyof any, Tv>(
 const is_empty = (dict: Readonly<Record<keyof any, unknown>>): boolean =>
   size(dict) === 0;
 
+/**
+ * Reduces the given object-mapper into a single value by applying an
+ * accumulator function against an intermediate result and each key/value.
+ */
+const reduce_with_key = <T extends Record<keyof any, any>, Ta>(
+  dict: Readonly<T>,
+  reducer: (
+    accumulator: Ta,
+    key: keyof T,
+    value: ValueOf<T>,
+    index: number
+  ) => Ta,
+  initial: Ta
+): Ta =>
+  Vec.entries(dict).reduce(
+    (accumulator, [key, value], index) =>
+      reducer(accumulator, key, value, index),
+    initial
+  );
+
 export const Shape = {
   size,
   equal,
   is_empty,
+  reduce_with_key,
 } as const;
