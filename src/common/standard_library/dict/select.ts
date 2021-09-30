@@ -6,69 +6,15 @@
 import { Dict as D, tuple, Vec } from "common";
 import { ValueOf } from "../_private/typeUtils";
 
-/**
- * @returns a mapper-obj containing only the entries of the first mapper-obj
- * whose keys do not appear in any of the other ones.
- * TODO: Move this to Shape and simplify for Dicts. we don't need all these
- * advanced typing here
- */
-function diff_by_key<T extends Record<keyof any, any>, Tk1 extends keyof any>(
-  base: Readonly<T>,
-  dict1: Readonly<Record<Tk1, unknown>>
-): Readonly<Omit<T, Tk1>>;
-function diff_by_key<
-  T extends Record<keyof any, any>,
-  Tk1 extends keyof any,
-  Tk2 extends keyof any
->(
-  base: Readonly<T>,
-  dict1: Readonly<Record<Tk1, unknown>>,
-  dict2: Readonly<Record<Tk2, unknown>>
-): Readonly<Omit<T, Tk1 | Tk2>>;
-function diff_by_key<
-  T extends Record<keyof any, any>,
-  Tk1 extends keyof any,
-  Tk2 extends keyof any,
-  Tk3 extends keyof any
->(
-  base: Readonly<T>,
-  dict1: Readonly<Record<Tk1, unknown>>,
-  dict2: Readonly<Record<Tk2, unknown>>,
-  dict3: Readonly<Record<Tk3, unknown>>
-): Readonly<Omit<T, Tk1 | Tk2 | Tk3>>;
-function diff_by_key<
-  T extends Record<keyof any, any>,
-  Tk1 extends keyof any,
-  Tk2 extends keyof any,
-  Tk3 extends keyof any,
-  Tk4 extends keyof any
->(
-  base: Readonly<T>,
-  dict1: Readonly<Record<Tk1, unknown>>,
-  dict2: Readonly<Record<Tk2, unknown>>,
-  dict3: Readonly<Record<Tk3, unknown>>,
-  dict4: Readonly<Record<Tk4, unknown>>
-): Readonly<Omit<T, Tk1 | Tk2 | Tk3 | Tk4>>;
-function diff_by_key<T extends Record<keyof any, any>>(
-  base: Readonly<T>,
-  ...rest: [
-    Readonly<Record<keyof any, unknown>>,
-    ...Readonly<Record<keyof any, unknown>>[]
-  ]
-): Readonly<Omit<T, keyof any>>;
-function diff_by_key<T extends Record<keyof any, any>>(
+const diff_by_key = <T extends Record<keyof any, any>>(
   base: Readonly<T>,
   ...rest: readonly [
     // This forces rest to have at least one item in it
     Readonly<Record<keyof any, unknown>>,
     ...Readonly<Record<keyof any, unknown>>[]
   ]
-): Readonly<T> {
-  return filter_with_keys(
-    base,
-    (key) => !rest.some((otherDict) => key in otherDict)
-  );
-}
+): Readonly<T> =>
+  filter_with_keys(base, (key) => !rest.some((otherDict) => key in otherDict));
 
 /**
  * @returns a mapper-obj containing all except the first `n` entries of the
