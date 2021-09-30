@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/select.php
  */
-import { Shape as S, tuple, Vec } from "common";
+import { Dict, Shape as S, tuple, Vec } from "common";
 import { ValueOf } from "../_private/typeUtils";
 
 /**
@@ -55,7 +55,7 @@ function diff_by_key<T extends Record<keyof any, any>>(
     Readonly<Record<keyof any, unknown>>,
     ...Readonly<Record<keyof any, unknown>>[]
   ]
-): Readonly<Omit<T, keyof any>>;
+): Readonly<Partial<T>>;
 function diff_by_key<T extends Record<keyof any, any>>(
   base: Readonly<T>,
   ...rest: readonly [
@@ -63,7 +63,7 @@ function diff_by_key<T extends Record<keyof any, any>>(
     Readonly<Record<keyof any, unknown>>,
     ...Readonly<Record<keyof any, unknown>>[]
   ]
-): Readonly<T> {
+): Readonly<Partial<T>> {
   return filter_with_keys(
     base,
     (key) => !rest.some((otherDict) => key in otherDict)
@@ -79,7 +79,7 @@ function diff_by_key<T extends Record<keyof any, any>>(
 const drop = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   n: number
-): Readonly<T> =>
+): Readonly<Partial<T>> =>
   // Optimize for react by returning the same object for a trivial `n` value
   n === 0 ? dict : S.from_entries(Vec.entries(dict).slice(n));
 
@@ -95,7 +95,8 @@ const drop = <T extends Record<keyof any, any>>(
 const filter = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   predicate: (value: ValueOf<T>) => boolean = Boolean
-): Readonly<T> => filter_with_keys(dict, (_, value) => predicate(value));
+): Readonly<Partial<T>> =>
+  filter_with_keys(dict, (_, value) => predicate(value));
 
 /**
  * Just like filter, but your predicate can include the key as well as
@@ -106,7 +107,7 @@ const filter = <T extends Record<keyof any, any>>(
 function filter_with_keys<T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   predicate: (key: keyof T, value: ValueOf<T>) => boolean
-): Readonly<T> {
+): Readonly<Partial<T>> {
   const entries = Vec.entries(dict);
   const filtered = entries.filter(([key, value]) => predicate(key, value));
   // Optimize for react by returning the same object if nothing got filtereS.
@@ -125,7 +126,7 @@ type NonNullableRecord<T extends Record<keyof any, any>> = Record<
  */
 function filter_nulls<T extends Record<keyof any, any>>(
   dict: Readonly<T>
-): Readonly<NonNullableRecord<T>> {
+): Readonly<Partial<NonNullableRecord<T>>> {
   const entries = Vec.entries(dict);
   const filtered = entries.filter(
     (entry): entry is [key: keyof T, value: NonNullable<ValueOf<T>>] =>
@@ -145,10 +146,10 @@ function filter_nulls<T extends Record<keyof any, any>>(
 function select_keys<T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   keys: readonly (keyof T)[]
-): Readonly<T> {
+): Readonly<Partial<T>> {
   const selected = filter_with_keys(dict, (key) => keys.includes(key));
   // Optimize for react by returning the same object if everything got selecteS.
-  return S.size(selected) === S.size(dict) ? dict : selected;
+  return Dict.size(selected) === Dict.size(dict) ? dict : selected;
 }
 
 /**
@@ -160,7 +161,7 @@ function select_keys<T extends Record<keyof any, any>>(
 const take = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   n: number
-): Readonly<T> =>
+): Readonly<Partial<T>> =>
   // We don't optimize here because checking the size of the Obj just to see if
   // `n` is bigger than it would probably cost more than the possibility this API
   // would be used trivially anyway.
@@ -174,13 +175,15 @@ const take = <T extends Record<keyof any, any>>(
  */
 function unique<T extends Record<keyof any, keyof any>>(
   dict: Readonly<T>
-): Readonly<T> {
+): Readonly<Partial<T>> {
   const dedupped = S.flip(dict);
   // If after flipping the object has the same number of entries then it had
   // no non-unique values and we can return the same object back.
   // TODO: We have to cast here because typescript is getting really confused
   // with all these keyof and ValueOf being operated on themselves...
-  return S.size(dedupped) === S.size(dict) ? dict : (S.flip(dedupped) as T);
+  return Dict.size(dedupped) === Dict.size(dict)
+    ? dict
+    : (S.flip(dedupped) as T);
 }
 
 /**
@@ -194,7 +197,7 @@ function unique<T extends Record<keyof any, keyof any>>(
 const unique_by = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   scalarFunc: (value: ValueOf<T>) => unknown
-): Readonly<T> =>
+): Readonly<Partial<T>> =>
   select_keys(dict, [
     // We use a map so our scalarFunc can use any return value it wants, and not
     // just `keyof any`. We create the map keyed by the scalarFunc, and the

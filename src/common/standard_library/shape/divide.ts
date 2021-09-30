@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/divide.php
  */
-import { Shape as S, tuple, Vec } from "common";
+import { Dict, Shape as S, tuple, Vec } from "common";
 import { ValueOf } from "../_private/typeUtils";
 
 /**
@@ -16,7 +16,7 @@ import { ValueOf } from "../_private/typeUtils";
 const chunk = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   size: number
-): readonly Readonly<T>[] =>
+): readonly Readonly<Partial<T>>[] =>
   Vec.chunk(Vec.entries(dict), size).map((chunk) => S.from_entries(chunk));
 
 /**
@@ -26,7 +26,7 @@ const chunk = <T extends Record<keyof any, any>>(
 const partition = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   predicate: (value: ValueOf<T>) => boolean
-): readonly [enabled: Readonly<T>, disabled: Readonly<T>] =>
+): readonly [enabled: Readonly<Partial<T>>, disabled: Readonly<Partial<T>>] =>
   partition_with_key(dict, (_, value) => predicate(value));
 
 /**
@@ -36,7 +36,7 @@ const partition = <T extends Record<keyof any, any>>(
 function partition_with_key<T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   predicate: (key: keyof T, value: ValueOf<T>) => boolean
-): readonly [enabled: Readonly<T>, disabled: Readonly<T>] {
+): readonly [enabled: Readonly<Partial<T>>, disabled: Readonly<Partial<T>>] {
   const enabled = S.filter_with_keys(dict, (key, value) =>
     predicate(key, value)
   );
@@ -48,7 +48,7 @@ function partition_with_key<T extends Record<keyof any, any>>(
     return tuple({} as T, dict);
   }
 
-  if (enabledValues.length === S.size(dict)) {
+  if (enabledValues.length === Dict.size(dict)) {
     // Optimize for react by returning the original object if the partition is
     // trivially one-sided
     return tuple(dict, {} as T);

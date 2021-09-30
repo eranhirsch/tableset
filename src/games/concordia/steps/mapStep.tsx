@@ -1,5 +1,5 @@
 import { styled, Typography } from "@mui/material";
-import { Shape, Vec } from "common";
+import { Dict, Vec } from "common";
 import React from "react";
 import createGenericItemsGameStep from "../../core/steps/createGenericItemsGameStep";
 import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
@@ -54,7 +54,7 @@ function InstanceManualComponent() {
           <GrammaticalList>
             {Vec.map_with_key(
               // Put tighter maps first
-              Shape.sort_by(MAPS, (map) => -map.tightnessScore),
+              Dict.sort_by(MAPS, (map) => -map.tightnessScore),
               (mapId, map) => (
                 <React.Fragment key={mapId}>
                   <RomanTitle>{map.name}</RomanTitle> ({map.tightnessScore})

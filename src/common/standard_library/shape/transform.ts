@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/transform.php
  */
 
-import { Shape as S, tuple, Vec } from "common";
+import { tuple, Vec } from "common";
 import { Entry, ValueOf } from "../_private/typeUtils";
 
 /**
@@ -13,7 +13,7 @@ import { Entry, ValueOf } from "../_private/typeUtils";
  */
 const count_values = <Tk extends keyof any>(
   items: readonly Tk[]
-): Readonly<Record<Tk, number>> =>
+): Readonly<Partial<Record<Tk, number>>> =>
   items.reduce((counters, item) => {
     counters[item] = (counters[item] ?? 0) + 1;
     return counters;
@@ -25,21 +25,8 @@ const count_values = <Tk extends keyof any>(
 const fill_keys = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   value: Tv
-): Readonly<Record<Tk, Tv>> =>
+): Readonly<Partial<Record<Tk, Tv>>> =>
   from_entries(keys.map((key) => tuple(key, value)));
-
-/**
- * @returns a new dict formed by merging the mapper-obj elements of the
- * given Traversable.
- *
- * In the case of duplicate keys, later values will overwrite
- * the previous ones.
- *
- * @see `Dict\merge()` for a fixed number of mapper-objects.
- */
-const flatten = <T extends Record<keyof any, unknown>>(
-  dicts: readonly Readonly<T>[]
-): Readonly<T> => S.merge(...dicts);
 
 /**
  * @returns a new mapper-obj keyed by the values of the given mapper-obj
@@ -50,7 +37,7 @@ const flatten = <T extends Record<keyof any, unknown>>(
  */
 const flip = <T extends Record<keyof any, keyof any>>(
   dict: Readonly<T>
-): Readonly<Record<ValueOf<T>, keyof T>> =>
+): Readonly<Partial<Record<ValueOf<T>, keyof T>>> =>
   pull_with_key(
     dict,
     // Notice that we swap the key and value here, the valueFunc returns the key
@@ -70,7 +57,7 @@ const flip = <T extends Record<keyof any, keyof any>>(
 const from_keys = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   valueFunc: (key: Tk) => Tv
-): Readonly<Record<Tk, Tv>> => pull(keys, valueFunc, (key) => key);
+): Readonly<Partial<Record<Tk, Tv>>> => pull(keys, valueFunc, (key) => key);
 
 /**
  * @returns a new mapper-obj where each mapping is defined by the given
@@ -87,7 +74,7 @@ const from_keys = <Tk extends keyof any, Tv>(
  */
 const from_entries = <T extends Record<keyof any, any>>(
   entries: Iterable<Entry<T>>
-): Readonly<T> =>
+): Readonly<Partial<T>> =>
   // We need this cast because the native JS version of `fromEntries` returns an
   // object mapped on strings no matter what the types of the input array is.
   // This cast should be safe because indexers are always cast to string (e.g.
@@ -109,7 +96,7 @@ const from_entries = <T extends Record<keyof any, any>>(
 const from_values = <Tk extends keyof any, Tv>(
   values: readonly Tv[],
   keyFunc: (value: Tv) => Tk
-): Readonly<Record<Tk, Tv>> => pull(values, (value) => value, keyFunc);
+): Readonly<Partial<Record<Tk, Tv>>> => pull(values, (value) => value, keyFunc);
 
 /**
  * @return a mapper-obj keyed by the result of calling the giving function,
@@ -123,7 +110,7 @@ const from_values = <Tk extends keyof any, Tv>(
 const group_by = <Tk extends keyof any, Tv>(
   values: readonly Tv[],
   keyFunc: (value: Tv) => Tk | undefined
-): Readonly<Record<Tk, readonly Tv[]>> =>
+): Readonly<Partial<Record<Tk, readonly Tv[]>>> =>
   values.reduce((out, value) => {
     const key = keyFunc(value);
     if (key != null) {
@@ -133,18 +120,6 @@ const group_by = <Tk extends keyof any, Tv>(
   }, {} as Record<Tk, Tv[]>);
 
 /**
- * @returns a new mapper-obj where each value is the result of calling the given
- * function on the original value.
- *
- * @see `Dict.map_async()` To use an async function.
- */
-const map = <T extends Record<keyof any, any>, Tv>(
-  dict: Readonly<T>,
-  valueFunc: (value: ValueOf<T>) => Tv
-): Readonly<Record<keyof T, Tv>> =>
-  map_with_key(dict, (_, value) => valueFunc(value));
-
-/**
  * @returns a new mapper-obj where each key is the result of calling the given
  * function on the original key. In the case of duplicate keys, later values
  * will overwrite the previous ones.
@@ -152,18 +127,12 @@ const map = <T extends Record<keyof any, any>, Tv>(
 const map_keys = <T extends Record<keyof any, any>, Tk extends keyof any>(
   dict: Readonly<T>,
   keyFunc: (key: keyof T) => Tk
-): Readonly<Record<Tk, ValueOf<T>>> =>
+): Readonly<Partial<Record<Tk, ValueOf<T>>>> =>
   pull_with_key(
     dict,
     (_, value) => value,
     (key) => keyFunc(key)
   );
-
-const map_with_key = <T extends Record<keyof any, any>, Tv>(
-  dict: Readonly<T>,
-  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
-): Readonly<Record<keyof T, Tv>> =>
-  pull_with_key(dict, valueFunc, (key) => key);
 
 /**
  * @returns a new mapper-obj with mapped keys and values.
@@ -176,7 +145,7 @@ const pull = <T, Tk extends keyof any, Tv>(
   items: readonly T[],
   valueFunc: (value: T) => Tv,
   keyFunc: (value: T) => Tk
-): Readonly<Record<Tk, Tv>> =>
+): Readonly<Partial<Record<Tk, Tv>>> =>
   from_entries(items.map((item) => tuple(keyFunc(item), valueFunc(item))));
 
 /**
@@ -194,7 +163,7 @@ const pull_with_key = <
   dict: Readonly<T>,
   valueFunc: (key: keyof T, value: ValueOf<T>) => Tv,
   keyFunc: (key: keyof T, value: ValueOf<T>) => Tk
-): Readonly<Record<Tk, Tv>> =>
+): Readonly<Partial<Record<Tk, Tv>>> =>
   pull(
     Vec.entries(dict),
     ([key, value]) => valueFunc(key, value),
@@ -204,15 +173,12 @@ const pull_with_key = <
 export const Shape = {
   count_values,
   fill_keys,
-  flatten,
   flip,
   from_entries,
   from_keys,
   from_values,
   group_by,
   map_keys,
-  map_with_key,
-  map,
   pull_with_key,
   pull,
 } as const;
