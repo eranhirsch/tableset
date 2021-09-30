@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/combine.php
  */
-import { C, Shape as S, tuple, Vec } from "common";
+import { Dict, Shape as S, tuple, Vec } from "common";
 
 /**
  * @returns a new mapper-obj where each element in `keys` maps to the
@@ -68,7 +68,7 @@ const inner_join = <Tk2 extends keyof any, Tv2, Tk1 extends Tk2, Tv1>(
   left: Readonly<Record<Tk1, Tv1>>,
   right: Readonly<Record<Tk2, Tv2>>
 ): Readonly<Partial<Record<Tk1, [left: Tv1, right: Tv2]>>> =>
-  C.reduce_with_key(
+  Dict.reduce_with_key(
     left,
     (joined, key, leftValue) => {
       const rightValue = right[key];

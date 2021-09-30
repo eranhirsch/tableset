@@ -1,4 +1,4 @@
-import { C, Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
+import { Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
 import { MapId, MAPS, Zone } from "./Maps";
 import { Resource, RESOURCE_COST } from "./resource";
 
@@ -50,7 +50,7 @@ function decodeCityResources(
   mapId: MapId,
   hash: string
 ): ProvinceCityResources {
-  return C.reduce_with_key(
+  return Dict.reduce_with_key(
     Dict.filter_nulls(MAPS[mapId].provinces),
     (result, zone, provinces, index) => {
       const zoneDef = CITY_TILES[zone];

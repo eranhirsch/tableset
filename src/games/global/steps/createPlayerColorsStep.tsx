@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
-import { C, Dict, invariant_violation, Vec } from "common";
+import { Dict, invariant_violation, Vec } from "common";
 import { playersSelectors } from "features/players/playersSlice";
 import { templateActions } from "features/template/templateSlice";
 import GamePiecesColor from "model/GamePiecesColor";
@@ -71,7 +71,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
       },
 
       refresh(current, playerIds) {
-        const remainingColors = C.reduce_with_key(
+        const remainingColors = Dict.reduce_with_key(
           current,
           (remainingColors, playerId, color) =>
             // TODO: Something about the typing of C.reduce_with_key isn't
