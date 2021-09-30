@@ -43,7 +43,7 @@ function partition_with_key<T extends Record<keyof any, any>>(
 
   return tuple(
     enabled,
-    D.filter_keys(dict, (key) => !(key in enabled))
+    D.filter_with_keys(dict, (key) => !(key in enabled))
   );
 }
 

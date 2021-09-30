@@ -9,6 +9,7 @@
  */
 
 import { Vec as V } from "common";
+import { ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns an array containing the original vec split into chunks of the
@@ -49,20 +50,11 @@ const fill = <Tv>(size: number, value: Tv): readonly Tv[] =>
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.map_with_key/
  */
- function map_with_key<Tk extends keyof any, Tv1, Tv2>(
-   dict: Readonly<Record<Tk, Tv1>>,
-   valueFunc: (key: Tk, value: Tv1) => Tv2
- ): readonly Tv2[];
- function map_with_key<Tk extends keyof any, Tv1, Tv2>(
-   dict: Readonly<Partial<Record<Tk, Tv1>>>,
-   valueFunc: (key: Tk, value: Tv1) => Tv2
- ): readonly Tv2[];
- function map_with_key<Tv1, Tv2>(
-   dict: Readonly<Record<keyof any, Tv1>>,
-   valueFunc: (key: any, value: Tv1) => Tv2
- ): readonly Tv2[] {
-   return V.entries(dict).map(([key, value]) => valueFunc(key, value));
- }
+const map_with_key = <T extends Record<keyof any, any>, Tv>(
+  dict: Readonly<T>,
+  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
+): readonly Tv[] =>
+  V.entries(dict).map(([key, value]) => valueFunc(key, value));
 
 export const Vec = {
   chunk,

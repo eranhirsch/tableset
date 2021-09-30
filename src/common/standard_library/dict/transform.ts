@@ -18,7 +18,7 @@ const chunk = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   size: number
 ): readonly Readonly<T>[] =>
-  Vec.chunk(Vec.entries<T>(dict), size).map((chunk) => from_entries<T>(chunk));
+  Vec.chunk(Vec.entries(dict), size).map((chunk) => from_entries(chunk));
 
 /**
  * @returns a new mapper-obj mapping each value to the number of times it
@@ -83,8 +83,7 @@ const flip = <T extends Record<keyof any, keyof any>>(
 const from_keys = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   valueFunc: (key: Tk) => Tv
-): Readonly<Record<Tk, Tv>> =>
-  from_entries(keys.map((key) => tuple(key, valueFunc(key))));
+): Readonly<Record<Tk, Tv>> => pull(keys, valueFunc, (key) => key);
 
 /**
  * @returns a new mapper-obj where each mapping is defined by the given
@@ -99,15 +98,14 @@ const from_keys = <Tk extends keyof any, Tv>(
  *
  * Also known as `unzip` or `fromItems` in other implementations.
  */
-function from_entries<T extends Record<keyof any, any>>(
+const from_entries = <T extends Record<keyof any, any>>(
   entries: Iterable<Entry<T>>
-): Readonly<T> {
+): Readonly<T> =>
   // We need this cast because the native JS version of `fromEntries` returns an
   // object mapped on strings no matter what the types of the input array is.
   // This cast should be safe because indexers are always cast to string (e.g.
   // `x[number] === x[`${number}`])
-  return Object.freeze(Object.fromEntries(entries) as T);
-}
+  Object.freeze(Object.fromEntries(entries) as T);
 
 /**
  * @returns a new mapper-obj keyed by the result of calling the given function on
@@ -124,8 +122,7 @@ function from_entries<T extends Record<keyof any, any>>(
 const from_values = <Tk extends keyof any, Tv>(
   values: readonly Tv[],
   keyFunc: (value: Tv) => Tk
-): Readonly<Record<Tk, Tv>> =>
-  from_entries(values.map((value) => tuple(keyFunc(value), value)));
+): Readonly<Record<Tk, Tv>> => pull(values, (value) => value, keyFunc);
 
 /**
  * @return a mapper-obj keyed by the result of calling the giving function,
