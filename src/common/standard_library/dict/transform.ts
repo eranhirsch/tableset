@@ -8,19 +8,6 @@ import { Dict as D, tuple, Vec } from "common";
 import { Entry, ValueOf } from "../_private/typeUtils";
 
 /**
- * @returns an array containing the original dict split into chunks of the given
- * size.
- *
- * If the original dict doesn't divide evenly, the final chunk will be
- * smaller.
- */
-const chunk = <T extends Record<keyof any, any>>(
-  dict: Readonly<T>,
-  size: number
-): readonly Readonly<T>[] =>
-  Vec.chunk(Vec.entries(dict), size).map((chunk) => from_entries(chunk));
-
-/**
  * @returns a new mapper-obj mapping each value to the number of times it
  * appears in the given array.
  */
@@ -215,7 +202,6 @@ const pull_with_key = <
   );
 
 export const Dict = {
-  chunk,
   count_values,
   fill_keys,
   flatten,

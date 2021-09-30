@@ -7,6 +7,19 @@ import { Dict as D, tuple, Vec } from "common";
 import { ValueOf } from "../_private/typeUtils";
 
 /**
+ * @returns an array containing the original dict split into chunks of the given
+ * size.
+ *
+ * If the original dict doesn't divide evenly, the final chunk will be
+ * smaller.
+ */
+ const chunk = <T extends Record<keyof any, any>>(
+  dict: Readonly<T>,
+  size: number
+): readonly Readonly<T>[] =>
+  Vec.chunk(Vec.entries(dict), size).map((chunk) => D.from_entries(chunk));
+
+/**
  * @returns a 2-tuple containing mapper-objs for which the given predicate
  * returned `true` and `false`, respectively.
  */
@@ -48,6 +61,7 @@ function partition_with_key<T extends Record<keyof any, any>>(
 }
 
 export const Dict = {
-  partition,
+  chunk,
   partition_with_key,
+  partition,
 } as const;
