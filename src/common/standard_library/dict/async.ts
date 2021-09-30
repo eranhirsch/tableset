@@ -71,7 +71,7 @@ const filter_with_key_async = async <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   predicate: (key: keyof T, value: ValueOf<T>) => Promise<boolean>
 ): Promise<Readonly<T>> => {
-  const resolved = await D.map_with_key_async(dict, predicate);
+  const resolved = await map_with_key_async(dict, predicate);
   return D.filter_with_keys(dict, (key) => resolved[key]);
 };
 

@@ -146,7 +146,7 @@ function select_keys<T extends Record<keyof any, any>>(
   dict: Readonly<T>,
   keys: readonly (keyof T)[]
 ): Readonly<T> {
-  const selected = S.filter_with_keys(dict, (key) => keys.includes(key));
+  const selected = filter_with_keys(dict, (key) => keys.includes(key));
   // Optimize for react by returning the same object if everything got selecteS.
   return S.size(selected) === S.size(dict) ? dict : selected;
 }

@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/introspect.php
  */
 
-import { Shape as S, Vec } from "common";
+import { Vec } from "common";
 import { ValueOf } from "../_private/typeUtils";
 
 const size = (dict: Readonly<Record<keyof any, unknown>>): number =>
@@ -20,7 +20,7 @@ function equal<T extends Record<keyof any, any>>(
 ): boolean {
   const entries = Vec.entries(dict1);
   return (
-    entries.length === S.size(dict2) &&
+    entries.length === size(dict2) &&
     !entries.some(([key, value]) => !(key in dict2) || value !== dict2[key])
   );
 }
