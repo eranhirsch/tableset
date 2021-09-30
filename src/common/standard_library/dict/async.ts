@@ -4,14 +4,23 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/async.php
  */
 import { Vec, Dict as D, tuple } from "common";
+import { PromisedType, ValueOf } from "../_private/typeUtils";
+
+type PromisedRecord = Record<keyof any, Promise<any>>;
+type ResolvedRecord<T extends PromisedRecord> = Record<
+  keyof T,
+  PromisedType<ValueOf<T>>
+>;
 
 /**
  * @returns a new mapper-object with each value `await`ed in parallel.
  */
-const from_async = async <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Promise<Tv>>>
-): Promise<Readonly<Record<Tk, Tv>>> =>
-  D.from_entries(
+const from_async = async <T extends PromisedRecord>(
+  dict: Readonly<T>
+): Promise<Readonly<ResolvedRecord<T>>> =>
+  // TODO: Typescript can't deduce the generic type here because it's restricted
+  // to return type and not the params in input. Maybe we can make it happen?!
+  D.from_entries<ResolvedRecord<T>>(
     await Vec.map_async(Vec.entries(dict), async ([key, valuePromise]) =>
       tuple(key, await valuePromise)
     )
@@ -26,58 +35,8 @@ const from_async = async <Tk extends keyof any, Tv>(
 const from_keys_async = async <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   valueFunc: (key: Tk) => Promise<Tv>
-): Promise<Readonly<Partial<Record<Tk, Tv>>>> =>
-  D.from_partial_entries(
-    await Vec.map_async(keys, async (key) => tuple(key, await valueFunc(key)))
-  );
-
-/**
- * @returns a mapper-obj containing only the values for which the given async
- * predicate returns `true`.
- *
- * @see `Dict.filter()` for non-async predicates
- */
-const filter_async = async <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>,
-  valuePredicate: (value: Tv) => Promise<boolean>
-): Promise<Readonly<Partial<Record<Tk, Tv>>>> =>
-  filter_with_key_async(dict, (_, value) => valuePredicate(value));
-
-/**
- * Like `filter_async`, but lets you utilize the keys of your dict too.
- *
- * @see `Dict.filter_with_key()` for non-async filters with key.
- */
-const filter_with_key_async = async <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>,
-  predicate: (key: Tk, value: Tv) => Promise<boolean>
-): Promise<Partial<Readonly<Record<Tk, Tv>>>> =>
-  D.map(
-    D.filter(
-      await D.map_with_key_async(dict, async (key, value) => ({
-        value,
-        isEnabled: await predicate(key, value),
-      })),
-      ({ isEnabled }) => isEnabled
-      // TODO: Typing here is hard and I couldn't get it to work. Obviously we
-      // want to type `map` so that is returns a Record with the same keys as
-      // the input, and we want to handle Partial Records as any other Record
-      // when sent to `map`. For now we just cast it and hope it doesn't break.
-    ) as Record<keyof any, { value: Tv }>,
-    ({ value }) => value
-  );
-
-/**
- * @returns a new mapper-obj where each value is the result of calling the given
- * async function on the original value.
- *
- * @see `Dict.map` for non-async functions.
- */
-const map_async = async <Tk extends keyof any, Tv1, Tv2>(
-  dict: Readonly<Record<Tk, Tv1>>,
-  valueFunc: (value: Tv1) => Promise<Tv2>
-): Promise<Readonly<Record<Tk, Tv2>>> =>
-  map_with_key_async(dict, (_, value) => valueFunc(value));
+): Promise<Readonly<Record<Tk, Tv>>> =>
+  from_async(D.from_keys(keys, valueFunc));
 
 /**
  * @returns a new mapper-obj where each value is the result of calling the given
@@ -85,11 +44,48 @@ const map_async = async <Tk extends keyof any, Tv1, Tv2>(
  *
  * @see `Dict.map` for non-async functions
  */
-const map_with_key_async = async <Tk extends keyof any, Tv1, Tv2>(
-  dict: Readonly<Record<Tk, Tv1>>,
-  valueFunc: (key: Tk, value: Tv1) => Promise<Tv2>
-): Promise<Readonly<Record<Tk, Tv2>>> =>
-  from_async(D.map_with_key(dict, (key, value) => valueFunc(key, value)));
+const map_with_key_async = async <T extends Record<keyof any, any>, Tv>(
+  dict: Readonly<T>,
+  valueFunc: (key: keyof T, value: ValueOf<T>) => Promise<Tv>
+): Promise<Readonly<Record<keyof T, Tv>>> =>
+  from_async(D.map_with_key(dict, valueFunc));
+
+/**
+ * @returns a new mapper-obj where each value is the result of calling the given
+ * async function on the original value.
+ *
+ * @see `Dict.map` for non-async functions.
+ */
+const map_async = async <T extends Record<keyof any, any>, Tv2>(
+  dict: Readonly<T>,
+  valueFunc: (value: ValueOf<T>) => Promise<Tv2>
+): Promise<Readonly<Record<keyof T, Tv2>>> =>
+  map_with_key_async(dict, (_, value) => valueFunc(value));
+
+/**
+ * Like `filter_async`, but lets you utilize the keys of your dict too.
+ *
+ * @see `Dict.filter_with_key()` for non-async filters with key.
+ */
+const filter_with_key_async = async <T extends Record<keyof any, any>>(
+  dict: Readonly<T>,
+  predicate: (key: keyof T, value: ValueOf<T>) => Promise<boolean>
+): Promise<Readonly<T>> => {
+  const resolved = await D.map_with_key_async(dict, predicate);
+  return D.filter_with_keys(dict, (key) => resolved[key]);
+};
+
+/**
+ * @returns a mapper-obj containing only the values for which the given async
+ * predicate returns `true`.
+ *
+ * @see `Dict.filter()` for non-async predicates
+ */
+const filter_async = async <T extends Record<keyof any, any>>(
+  dict: Readonly<T>,
+  valuePredicate: (value: ValueOf<T>) => Promise<boolean>
+): Promise<Readonly<T>> =>
+  filter_with_key_async(dict, (_, value) => valuePredicate(value));
 
 export const Dict = {
   filter_async,

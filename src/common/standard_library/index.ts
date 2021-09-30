@@ -15,6 +15,7 @@ export * from "./c";
 export * from "./dict";
 export * from "./math";
 export * from "./num";
+export * from "./shape";
 export * from "./str";
 export * from "./vec";
 

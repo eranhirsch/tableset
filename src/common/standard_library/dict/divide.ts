@@ -9,25 +9,20 @@ import { Dict as D, tuple, Vec } from "common";
  * @returns a 2-tuple containing mapper-objs for which the given predicate
  * returned `true` and `false`, respectively.
  */
-const partition = <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>,
-  predicate: (value: Tv) => boolean
-): readonly [
-  Readonly<Partial<Record<Tk, Tv>>>,
-  Readonly<Partial<Record<Tk, Tv>>>
-] => partition_with_key(dict, (_, value) => predicate(value));
+const partition = <T extends Record<keyof any, any>>(
+  dict: Readonly<T>,
+  predicate: (value: T[keyof T]) => boolean
+): readonly [enabled: Readonly<T>, disabled: Readonly<T>] =>
+  partition_with_key(dict, (_, value) => predicate(value));
 
 /**
  * @returns a 2-tuple containing mapper-objs for which the given keyed predicate
  * returned `true` and `false`, respectively.
  */
-function partition_with_key<Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>,
-  predicate: (key: Tk, value: Tv) => boolean
-): readonly [
-  Readonly<Partial<Record<Tk, Tv>>>,
-  Readonly<Partial<Record<Tk, Tv>>>
-] {
+function partition_with_key<T extends Record<keyof any, any>>(
+  dict: Readonly<T>,
+  predicate: (key: keyof T, value: T[keyof T]) => boolean
+): readonly [enabled: Readonly<T>, disabled: Readonly<T>] {
   const enabled = D.filter_with_keys(dict, (key, value) =>
     predicate(key, value)
   );
@@ -36,13 +31,13 @@ function partition_with_key<Tk extends keyof any, Tv>(
   if (Vec.is_empty(enabledValues)) {
     // Optimize for react by returning the original object if the partition is
     // trivially one-sided
-    return tuple({} as Partial<Record<Tk, Tv>>, dict);
+    return tuple({} as T, dict);
   }
 
   if (enabledValues.length === D.size(dict)) {
     // Optimize for react by returning the original object if the partition is
     // trivially one-sided
-    return tuple(dict, {} as Partial<Record<Tk, Tv>>);
+    return tuple(dict, {} as T);
   }
 
   return tuple(

@@ -49,11 +49,20 @@ const fill = <Tv>(size: number, value: Tv): readonly Tv[] =>
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.map_with_key/
  */
-const map_with_key = <Tk extends keyof any, Tv1, Tv2>(
-  dict: Readonly<Record<Tk, Tv1> | Partial<Record<Tk, Tv1>>>,
-  valueFunc: (key: Tk, value: Tv1) => Tv2
-): readonly Tv2[] =>
-  V.entries(dict).map(([key, value]) => valueFunc(key, value));
+ function map_with_key<Tk extends keyof any, Tv1, Tv2>(
+   dict: Readonly<Record<Tk, Tv1>>,
+   valueFunc: (key: Tk, value: Tv1) => Tv2
+ ): readonly Tv2[];
+ function map_with_key<Tk extends keyof any, Tv1, Tv2>(
+   dict: Readonly<Partial<Record<Tk, Tv1>>>,
+   valueFunc: (key: Tk, value: Tv1) => Tv2
+ ): readonly Tv2[];
+ function map_with_key<Tv1, Tv2>(
+   dict: Readonly<Record<keyof any, Tv1>>,
+   valueFunc: (key: any, value: Tv1) => Tv2
+ ): readonly Tv2[] {
+   return V.entries(dict).map(([key, value]) => valueFunc(key, value));
+ }
 
 export const Vec = {
   chunk,

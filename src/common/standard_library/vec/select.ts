@@ -13,6 +13,7 @@
  */
 
 import { Dict, Random } from "common";
+import { Entry } from "../_private/typeUtils";
 
 /**
  * @returns an array containing only the elements of the first array that do
@@ -70,15 +71,15 @@ function filter_nulls<Tv>(
  * @see `Array.filter`
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.filter_with_key/
  */
-const filter_with_key = <Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv>>,
-  predicate: (key: Tk, value: Tv) => boolean
-): readonly Tv[] =>
+const filter_with_key = <T extends Record<keyof any, any>>(
+  dict: Readonly<T>,
+  predicate: (key: keyof T, value: T[keyof T]) => boolean
+): readonly T[keyof T][] =>
   // TODO: Typing here is hard and I couldn't get it to work. Obviously we
   // want to type `map` so that is returns a Record with the same keys as
   // the input, and we want to handle Partial Records as any other Record
   // when sent to `map`. For now we just cast it and hope it doesn't break.
-  values(Dict.filter_with_keys(dict, predicate) as Record<keyof any, Tv>);
+  values(Dict.filter_with_keys(dict, predicate));
 
 /**
  * @returns an array containing only the elements of the first array that
@@ -104,12 +105,9 @@ function intersect<Tv>(
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.keys/
  */
-function keys<Tk extends keyof any>(
-  dict: Readonly<Record<Tk, unknown>>
-): readonly Tk[];
-function keys(dict: Readonly<Record<keyof any, unknown>>): readonly any[] {
-  return Object.keys(dict);
-}
+const keys = <T extends Record<keyof any, any>>(
+  dict: Readonly<T>
+): readonly (keyof T)[] => Object.keys(dict);
 
 /**
  * @returns an array containing an unbiased random sample of up to sampleSize
@@ -243,19 +241,19 @@ function unique_by<Tv>(
 const values = <Tv>(dict: Readonly<Record<keyof any, Tv>>): readonly Tv[] =>
   Object.values(dict);
 
-  /**
+/**
  * @returns an array of 2-tuples of the key/value pairs of the input mapper-obj.
  *
  * @see `Object.entries` for the native version of the same method, with more
  * correct typing, but more restrictive too.
  */
-function entries<Tk extends keyof any, Tv>(
-  dict: Readonly<Record<Tk, Tv> | Partial<Record<Tk, Tv>>>
-): readonly [key: Tk, value: Tv][];
-function entries<Tv>(
-  dict: Readonly<{ [key: keyof any]: Tv }>
-): readonly [key: keyof any, value: Tv][] {
-  return Object.entries(dict);
+function entries<T extends Record<keyof any, any>>(
+  dict: Readonly<T>
+): readonly Entry<T>[] {
+  // Object.entries returns strings for everything, but because indexers are
+  // always cast to string too (e.g. x[number] === x[`${number}`]) we can fake
+  // the indexer here (I hope... haven't tested this properly)
+  return Object.entries(dict) as Entry<T>[];
 }
 
 export const Vec = {

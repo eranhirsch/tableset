@@ -19,13 +19,13 @@ import { tuple } from "common";
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.zip/
  */
-const zip = <Tv, Tu>(
-  first: readonly Tv[],
-  second: readonly Tu[]
-): readonly (readonly [Tv, Tu])[] =>
-  first.length <= second.length
-    ? first.map((value, index) => tuple(value, second[index]))
-    : second.map((value, index) => tuple(first[index], value));
+const zip = <Tleft, Tright>(
+  left: readonly Tleft[],
+  right: readonly Tright[]
+): readonly (readonly [left: Tleft, right: Tright])[] =>
+  left.length <= right.length
+    ? left.map((value, index) => tuple(value, right[index]))
+    : right.map((value, index) => tuple(left[index], value));
 
 export const Vec = {
   zip,

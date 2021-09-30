@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/select.php
  */
-import { Dict as D, Vec } from "common";
+import { Shape as S, Vec } from "common";
 
 /**
  * @returns a mapper-obj containing only the entries of the first mapper-obj
@@ -62,7 +62,7 @@ function diff_by_key<Tk extends keyof any, Tv>(
     Readonly<Record<keyof any, unknown>>,
     ...Readonly<Record<keyof any, unknown>>[]
   ]
-): Readonly<Record<Tk, Tv>> {
+): Readonly<Partial<Record<Tk, Tv>>> {
   return filter_keys(
     base,
     (key) => !rest.some((otherDict) => key in otherDict)
@@ -78,9 +78,9 @@ function diff_by_key<Tk extends keyof any, Tv>(
 const drop = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   n: number
-): Readonly<Record<Tk, Tv>> =>
+): Readonly<Partial<Record<Tk, Tv>>> =>
   // Optimize for react by returning the same object for a trivial `n` value
-  n === 0 ? dict : D.from_entries(Vec.entries(dict).slice(n));
+  n === 0 ? dict : S.from_partial_entries(Vec.entries(dict).slice(n));
 
 /**
  * @returns a mapper-obj containing only the values for which the given
@@ -91,10 +91,11 @@ const drop = <Tk extends keyof any, Tv>(
  * way.
  * @see `Dict.filter_async()` to use an async predicate.
  */
-const filter = <T extends Record<keyof any, any>>(
-  dict: Readonly<T>,
-  predicate: (value: T[keyof T]) => boolean = Boolean
-): Readonly<T> => filter_with_keys(dict, (_, value) => predicate(value));
+const filter = <Tk extends keyof any, Tv>(
+  dict: Readonly<Record<Tk, Tv>>,
+  predicate: (value: Tv) => boolean = Boolean
+): Readonly<Partial<Record<Tk, Tv>>> =>
+  filter_with_keys(dict, (_, value) => predicate(value));
 
 /**
  * Just like filter, but your predicate can include the key as well as
@@ -102,34 +103,34 @@ const filter = <T extends Record<keyof any, any>>(
  *
  * @see `Dict.filter_with_key_async()` to use an async predicate.
  */
-function filter_with_keys<T extends Record<keyof any, any>>(
-  dict: Readonly<T>,
-  predicate: (key: keyof T, value: T[keyof T]) => boolean
-): Readonly<T> {
-  const entries = Vec.entries(dict);
-  const filtered = entries.filter(([key, value]) => predicate(key, value));
-  // Optimize for react by returning the same object if nothing got filtereD.
-  return entries.length === filtered.length
-    ? dict
-    : (D.from_entries(filtered) as T);
+function filter_with_keys<Tk extends keyof any, Tv>(
+  dict: Readonly<Record<Tk, Tv>>,
+  predicate: (key: Tk, value: Tv) => boolean
+): Readonly<Partial<Record<Tk, Tv>>> {
+  const filtered = S.from_partial_entries(
+    Vec.entries(dict).filter(([key, value]) => predicate(key, value))
+  );
+  // Optimize for react by returning the same object if nothing got filtereS.
+  return S.size(filtered) === S.size(dict) ? dict : filtered;
 }
 
 /**
  * @returns a mapper-obj containing only the keys for which the given predicate
  * returns `true`. The default predicate is casting the key to boolean.
  */
-const filter_keys = <T extends Record<keyof any, any>>(
-  dict: Readonly<T>,
-  predicate: (key: keyof T) => boolean = Boolean
-): Readonly<T> => filter_with_keys(dict, (key) => predicate(key));
+const filter_keys = <Tk extends keyof any, Tv>(
+  dict: Readonly<Record<Tk, Tv>>,
+  predicate: (key: Tk) => boolean = Boolean
+): Readonly<Partial<Record<Tk, Tv>>> =>
+  filter_with_keys(dict, (key) => predicate(key));
 
 /**
  * Given a mapper-obj with nullable values, returns a mapper-obj with null
- * values removeD.
+ * values removeS.
  */
 function filter_nulls<Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv | null | undefined>>
-): Readonly<Record<Tk, Tv>> {
+): Readonly<Partial<Record<Tk, Tv>>> {
   const entries = Vec.entries(dict);
   const filtered = entries.filter(
     (entry): entry is [key: Tk, value: Tv] => entry[1] != null
@@ -137,7 +138,7 @@ function filter_nulls<Tk extends keyof any, Tv>(
   // Optimize for react by returning the same object if nothing got filtereD.
   return filtered.length === entries.length
     ? (dict as Record<Tk, Tv>)
-    : D.from_entries(filtered);
+    : S.from_partial_entries(filtered);
 }
 
 /**
@@ -155,8 +156,8 @@ function select_keys<Tk extends keyof any, Tv>(
     }
     return selected;
   }, {} as Record<Tk, Tv>);
-  // Optimize for react by returning the same object if everything got selecteD.
-  return D.size(selected) === D.size(dict) ? dict : selected;
+  // Optimize for react by returning the same object if everything got selecteS.
+  return S.size(selected) === S.size(dict) ? dict : selected;
 }
 
 /**
@@ -168,9 +169,11 @@ function select_keys<Tk extends keyof any, Tv>(
 const take = <Tk extends keyof any, Tv>(
   dict: Readonly<Record<Tk, Tv>>,
   n: number
-): Readonly<Record<Tk, Tv>> =>
+): Readonly<Partial<Record<Tk, Tv>>> =>
   // If we need to take more entries than the dict has just return the dict.
-  n >= D.size(dict) ? dict : D.from_entries(Vec.take(Vec.entries(dict), n));
+  n >= S.size(dict)
+    ? dict
+    : S.from_partial_entries(Vec.take(Vec.entries(dict), n));
 
 /**
  * @returns a mapper-obj in which each value appears exactly once. In case of
@@ -180,11 +183,17 @@ const take = <Tk extends keyof any, Tv>(
  */
 function unique<Tk extends keyof any, Tv extends keyof any>(
   dict: Readonly<Record<Tk, Tv>>
-): Readonly<Record<Tk, Tv>> {
-  const dedupped = D.flip(dict);
+): Readonly<Partial<Record<Tk, Tv>>> {
+  const dedupped = S.flip(dict);
   // If after flipping the object has the same number of entries then it had
   // no non-unique values and we can return the same object back.
-  return D.size(dedupped) === D.size(dict) ? dict : D.flip(dedupped);
+  return S.size(dedupped) === S.size(dict)
+    ? dict
+    : // We need the first cast because typescript can't duck-type the partial
+      // record from the first flip invocation as a Record itself. We need the
+      // second cast because typescript at this point lost the typing for the
+      // values of the output dict.
+      (S.flip(dedupped as Record<keyof any, Tk>) as Partial<Record<Tk, Tv>>);
 }
 
 /**
@@ -211,7 +220,7 @@ const unique_by = <Tk extends keyof any, Tv>(
     ).values(),
   ]);
 
-export const Dict = {
+export const Shape = {
   diff_by_key,
   drop,
   filter,

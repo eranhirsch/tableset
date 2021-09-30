@@ -3,30 +3,17 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/combine.php
  */
-import { C, Dict as D, tuple, Vec } from "common";
+import { Dict as D, tuple, Vec } from "common";
+import { ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj where each element in `keys` maps to the
  * corresponding element in `values`.
  */
-function associate<Tv>(
-  keys: readonly string[],
-  values: readonly Tv[]
-): Readonly<Record<string, Tv>>;
-function associate<Tv>(
-  keys: readonly number[],
-  values: readonly Tv[]
-): Readonly<Record<number, Tv>>;
-function associate<Tk extends keyof any, Tv>(
+const associate = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   values: readonly Tv[]
-): Readonly<Partial<Record<Tk, Tv>>>;
-function associate<Tk extends keyof any, Tv>(
-  keys: readonly Tk[],
-  values: readonly Tv[]
-): Readonly<Partial<Record<Tk, Tv>>> {
-  return D.from_partial_entries(Vec.zip(keys, values));
-}
+): Readonly<Record<Tk, Tv>> => D.from_entries(Vec.zip(keys, values));
 
 /**
  * @returns a new mapper-obj formed by merging the mapper-obj elements of the
@@ -37,9 +24,9 @@ function associate<Tk extends keyof any, Tv>(
  *
  * @see `Dict.merge()` For a fixed number of mapper-objs.
  */
-const merge = <Tk extends keyof any, Tv>(
-  ...dicts: readonly Readonly<Record<Tk, Tv>>[]
-): Readonly<Record<Tk, Tv>> =>
+const merge = <T extends Record<keyof any, any>>(
+  ...dicts: readonly Readonly<T>[]
+): Readonly<T> =>
   // When we only have one dict to flatten we return the same object to optimize
   // for react.
   dicts.length === 1 ? dicts[0] : Object.assign({}, ...dicts);
@@ -48,63 +35,65 @@ const merge = <Tk extends keyof any, Tv>(
  * @returns a new mapper-obj where for each key in `left` a 2-tuple with the
  * values for that key in both the `left` and `right` mapper-obj (if any).
  */
-const left_join = <Tk2 extends keyof any, Tv2, Tk1 extends Tk2, Tv1>(
-  left: Readonly<Record<Tk1, Tv1>>,
-  right: Readonly<Record<Tk2, Tv2>>
-): Readonly<Record<Tk1, [left: Tv1, right: Tv2 | undefined]>> =>
-  D.map_with_key(left, (key, leftValue) => tuple(leftValue, right[key]));
+const left_join = <
+  Tleft extends Record<keyof any, any>,
+  Tright extends Record<keyof Tleft, any>
+>(
+  left: Readonly<Tleft>,
+  right: Readonly<Tright>
+): Readonly<
+  Record<
+    keyof Tleft,
+    [left: ValueOf<Tleft>, right: ValueOf<Tright> | undefined]
+  >
+> => D.map_with_key(left, (key, leftValue) => tuple(leftValue, right[key]));
 
-/**
- * @returns a new mapper-obj where for each key in `right` a 2-tuple with the
- * values for that key in both the `left` (if any) and `right` mapper-obj.
- */
-const right_join = <Tk1 extends keyof any, Tv1, Tk2 extends Tk1, Tv2>(
-  left: Readonly<Record<Tk1, Tv1>>,
-  right: Readonly<Record<Tk2, Tv2>>
-): Readonly<Record<Tk2, [left: Tv1 | undefined, right: Tv2]>> =>
-  D.map_with_key(right, (key, rightValue) => tuple(left[key], rightValue));
-
-const inner_join = <Tk2 extends keyof any, Tv2, Tk1 extends Tk2, Tv1>(
-  left: Readonly<Record<Tk1, Tv1>>,
-  right: Readonly<Record<Tk2, Tv2>>
-): Readonly<Partial<Record<Tk1, [left: Tv1, right: Tv2]>>> =>
-  C.reduce_with_key(
-    left,
-    (joined, key, leftValue) => {
-      const rightValue = right[key];
-      if (rightValue != null) {
-        joined[key] = tuple(leftValue, rightValue);
-      }
-      return joined;
-    },
-    {} as Record<Tk1, [left: Tv1, right: Tv2]>
+const inner_join = <
+  Tleft extends Record<keyof any, any>,
+  Tright extends Record<keyof Tleft, any>
+>(
+  left: Readonly<Tleft>,
+  right: Readonly<Tright>
+): Readonly<
+  Record<keyof Tleft, [left: ValueOf<Tleft>, right: ValueOf<Tright>]>
+> =>
+  D.filter_nulls(
+    // We dont use left-join here because it's harder to do the null checks
+    // inside the tuples cleanly without casts.
+    D.map_with_key(left, (key, value) =>
+      right[key] != null ? tuple(value, right[key]) : null
+    )
   );
 
-const outer_join = <Tk extends keyof any, Tv1, Tv2>(
-  left: Readonly<Record<Tk, Tv1>>,
-  right: Readonly<Record<Tk, Tv2>>
-): Readonly<Record<Tk, [left: Tv1 | undefined, right: Tv2 | undefined]>> =>
+const outer_join = <
+  Tleft extends Record<keyof any, any>,
+  Tright extends Record<keyof any, any>
+>(
+  left: Readonly<Tleft>,
+  right: Readonly<Tright>
+): Readonly<
+  Record<
+    keyof Tleft | keyof Tright,
+    [left: ValueOf<Tleft> | undefined, right: ValueOf<Tright> | undefined]
+  >
+> =>
   D.from_keys(
-    Vec.unique([...Vec.keys(left), ...Vec.keys(right)]),
+    Vec.unique(
+      // TODO: Not sure why we need the cast here, the types should have been
+      // merged by typescript without it :(
+      [...Vec.keys(left), ...Vec.keys(right)] as (keyof Tleft | keyof Tright)[]
+    ),
     (key) => tuple(left[key], right[key])
-    // We know this cast is safe because we are taking the keys of existing
-    // records and not an arbitrary input vec
-  ) as Record<Tk, [Tv1 | undefined, Tv2 | undefined]>;
+  );
 
-function compose<Tk1 extends keyof any, Tk2 extends keyof any, Tv>(
-  outer: Readonly<Record<Tk1, Tk2>>,
-  inner: Readonly<Partial<Record<Tk2, Tv>>>
-): Readonly<Record<Tk1, Tv | undefined>>;
-function compose<Tk1 extends keyof any, Tk2 extends keyof any, Tv>(
-  outer: Readonly<Partial<Record<Tk1, Tk2>>>,
-  inner: Readonly<Partial<Record<Tk2, Tv>>>
-): Readonly<Partial<Record<Tk1, Tv | undefined>>>;
-function compose<Tk1 extends keyof any, Tk2 extends keyof any, Tv>(
-  outer: Readonly<Record<Tk1, Tk2>>,
-  inner: Readonly<Partial<Record<Tk2, Tv>>>
-): Readonly<Record<Tk1, Tv | undefined>> {
-  return D.map(outer, (outerValue) => inner[outerValue]);
-}
+const compose = <
+  Tinner extends Record<keyof any, keyof any>,
+  Touter extends Record<ValueOf<Tinner>, any>
+>(
+  inner: Readonly<Tinner>,
+  outer: Readonly<Touter>
+): Readonly<Record<keyof Tinner, ValueOf<Touter> | undefined>> =>
+  D.map(inner, (innerValue) => outer[innerValue]);
 
 export const Dict = {
   associate,
@@ -112,6 +101,5 @@ export const Dict = {
   left_join,
   merge,
   outer_join,
-  right_join,
   compose,
 } as const;
