@@ -13,7 +13,7 @@
  */
 
 import { Dict, Random } from "common";
-import { Entry } from "../_private/typeUtils";
+import { Entry, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns an array containing only the elements of the first array that do
@@ -73,8 +73,8 @@ function filter_nulls<Tv>(
  */
 const filter_with_key = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
-  predicate: (key: keyof T, value: T[keyof T]) => boolean
-): readonly T[keyof T][] =>
+  predicate: (key: keyof T, value: ValueOf<T>) => boolean
+): readonly ValueOf<T>[] =>
   // TODO: Typing here is hard and I couldn't get it to work. Obviously we
   // want to type `map` so that is returns a Record with the same keys as
   // the input, and we want to handle Partial Records as any other Record
@@ -238,8 +238,9 @@ function unique_by<Tv>(
  * iterator method returning the values, making it usable in any API which takes
  * a Traversable.
  */
-const values = <Tv>(dict: Readonly<Record<keyof any, Tv>>): readonly Tv[] =>
-  Object.values(dict);
+const values = <T extends Record<keyof any, any>>(
+  dict: Readonly<T>
+): readonly ValueOf<T>[] => Object.values(dict);
 
 /**
  * @returns an array of 2-tuples of the key/value pairs of the input mapper-obj.
