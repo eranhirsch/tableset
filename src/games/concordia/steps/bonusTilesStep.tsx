@@ -1,5 +1,5 @@
 import { Grid, Typography } from "@mui/material";
-import { Dict, Shape, Vec } from "common";
+import { Dict, Vec } from "common";
 import React, { useMemo } from "react";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -47,7 +47,7 @@ function IncompleteInstanceDerivedComponent({
     // them
     const { provinces, hasLegacyProvincesSection } = MAPS[mapId];
     const provinceCities = Dict.flatten(
-      Vec.values(Shape.filter_nulls(provinces))
+      Vec.values(Dict.filter_nulls(provinces))
     );
 
     mapSpecificCount = ` of the ${Dict.size(provinceCities)} provinces`;
