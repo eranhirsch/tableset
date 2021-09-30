@@ -179,7 +179,7 @@ function TilesCountFootnote({ zones }: { zones: readonly Zone[] }) {
   return (
     <GrammaticalList>
       {Vec.map_with_key(
-        Dict.filter_keys(CITY_TILES, (zone) => zones.includes(zone)),
+        Dict.filter_with_keys(CITY_TILES, (zone) => zones.includes(zone)),
         (zone, tiles) => (
           <React.Fragment key={`zone_${zone}`}>
             {zone}: {MathUtils.sum(Vec.values(tiles))} tiles
