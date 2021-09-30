@@ -14,9 +14,9 @@ const size = (dict: Readonly<Record<keyof any, unknown>>): number =>
  * @returns whether the two given mapper-obj have the same entries, using strict
  * equality. To guarantee equality of order as well as contents, use `===`.
  */
-function equal<Tk extends keyof any, Tv>(
-  dict1: Readonly<Record<Tk, Tv>>,
-  dict2: Readonly<Record<Tk, Tv>>
+function equal<T extends Record<keyof any, any>>(
+  dict1: Readonly<T>,
+  dict2: Readonly<T>
 ): boolean {
   const entries = Vec.entries(dict1);
   return (

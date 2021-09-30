@@ -4,6 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/divide.php
  */
 import { Dict as D, tuple, Vec } from "common";
+import { ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a 2-tuple containing mapper-objs for which the given predicate
@@ -11,7 +12,7 @@ import { Dict as D, tuple, Vec } from "common";
  */
 const partition = <T extends Record<keyof any, any>>(
   dict: Readonly<T>,
-  predicate: (value: T[keyof T]) => boolean
+  predicate: (value: ValueOf<T>) => boolean
 ): readonly [enabled: Readonly<T>, disabled: Readonly<T>] =>
   partition_with_key(dict, (_, value) => predicate(value));
 
@@ -21,7 +22,7 @@ const partition = <T extends Record<keyof any, any>>(
  */
 function partition_with_key<T extends Record<keyof any, any>>(
   dict: Readonly<T>,
-  predicate: (key: keyof T, value: T[keyof T]) => boolean
+  predicate: (key: keyof T, value: ValueOf<T>) => boolean
 ): readonly [enabled: Readonly<T>, disabled: Readonly<T>] {
   const enabled = D.filter_with_keys(dict, (key, value) =>
     predicate(key, value)

@@ -35,14 +35,11 @@ const count_values = <Tk extends keyof any>(
 /**
  * @returns a new mapper-obj where all the given keys map to the given value.
  */
-const fill_keys = <T extends Record<keyof any, any>>(
-  keys: readonly (keyof T)[],
-  value: T[keyof T]
-): Readonly<T> => {
-  const y = keys.map((key) => tuple(key, value));
-  const x = from_entries(y);
-  return x;
-};
+const fill_keys = <Tk extends keyof any, Tv>(
+  keys: readonly Tk[],
+  value: Tv
+): Readonly<Record<Tk, Tv>> =>
+  from_entries(keys.map((key) => tuple(key, value)));
 
 /**
  * @returns a new dict formed by merging the mapper-obj elements of the
@@ -53,11 +50,9 @@ const fill_keys = <T extends Record<keyof any, any>>(
  *
  * @see `Dict\merge()` for a fixed number of mapper-objects.
  */
-function flatten<T extends Record<keyof any, unknown>>(
+const flatten = <T extends Record<keyof any, unknown>>(
   dicts: readonly Readonly<T>[]
-): Readonly<T> {
-  return D.merge(...dicts);
-}
+): Readonly<T> => D.merge(...dicts);
 
 /**
  * @returns a new mapper-obj keyed by the values of the given mapper-obj
@@ -66,9 +61,9 @@ function flatten<T extends Record<keyof any, unknown>>(
  * In case of duplicate values, later keys overwrite the
  * previous ones.
  */
-const flip = <Tk extends keyof any, Tv extends keyof any>(
-  dict: Readonly<Record<Tk, Tv>>
-): Readonly<Record<Tv, Tk>> =>
+const flip = <T extends Record<keyof any, keyof any>>(
+  dict: Readonly<T>
+): Readonly<Record<ValueOf<T>, keyof T>> =>
   pull_with_key(
     dict,
     // Notice that we swap the key and value here, the valueFunc returns the key
@@ -130,7 +125,7 @@ const from_values = <Tk extends keyof any, Tv>(
   values: readonly Tv[],
   keyFunc: (value: Tv) => Tk
 ): Readonly<Record<Tk, Tv>> =>
-  from_entries(values.map((value) => [keyFunc(value), value]));
+  from_entries(values.map((value) => tuple(keyFunc(value), value)));
 
 /**
  * @return a mapper-obj keyed by the result of calling the giving function,
@@ -184,10 +179,7 @@ const map_with_key = <T extends Record<keyof any, any>, Tv>(
   dict: Readonly<T>,
   valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
 ): Readonly<Record<keyof T, Tv>> =>
-  // TODO: See if we can drop the explicit generic typing here, it should be
-  // somehow deducible from the types of the other things here, but that doesn't
-  // seem to work.
-  pull_with_key<T, Record<keyof T, Tv>>(dict, valueFunc, (key) => key);
+  pull_with_key(dict, valueFunc, (key) => key);
 
 /**
  * @returns a new mapper-obj with mapped keys and values.
@@ -196,11 +188,11 @@ const map_with_key = <T extends Record<keyof any, any>, Tv>(
  *  - keys are the result of calling `keyFunc` on the original value.
  * In the case of duplicate keys, later values will overwrite the previous ones.
  */
-const pull = <Tv, T extends Record<keyof any, any>>(
-  items: readonly Tv[],
-  valueFunc: (value: Tv) => ValueOf<T>,
-  keyFunc: (value: Tv) => keyof T
-): Readonly<T> =>
+const pull = <T, Tk extends keyof any, Tv>(
+  items: readonly T[],
+  valueFunc: (value: T) => Tv,
+  keyFunc: (value: T) => Tk
+): Readonly<Record<Tk, Tv>> =>
   from_entries(items.map((item) => tuple(keyFunc(item), valueFunc(item))));
 
 /**
@@ -211,13 +203,14 @@ const pull = <Tv, T extends Record<keyof any, any>>(
  * In the case of duplicate keys, later values will overwrite the previous ones.
  */
 const pull_with_key = <
-  Tin extends Record<keyof any, any>,
-  Tout extends Record<keyof any, any>
+  T extends Record<keyof any, any>,
+  Tk extends keyof any,
+  Tv
 >(
-  dict: Readonly<Tin>,
-  valueFunc: (key: keyof Tin, value: ValueOf<Tin>) => ValueOf<Tout>,
-  keyFunc: (key: keyof Tin, value: ValueOf<Tin>) => keyof Tout
-): Readonly<Tout> =>
+  dict: Readonly<T>,
+  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv,
+  keyFunc: (key: keyof T, value: ValueOf<T>) => Tk
+): Readonly<Record<Tk, Tv>> =>
   pull(
     Vec.entries(dict),
     ([key, value]) => valueFunc(key, value),
