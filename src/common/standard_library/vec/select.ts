@@ -13,7 +13,7 @@
  */
 
 import { Dict, Random } from "common";
-import { Entry, ValueOf } from "../_private/typeUtils";
+import { DictLike, Entry, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns an array containing only the elements of the first array that do
@@ -71,7 +71,7 @@ function filter_nulls<Tv>(
  * @see `Array.filter`
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.filter_with_key/
  */
-const filter_with_key = <T extends Record<keyof any, any>>(
+const filter_with_key = <T extends DictLike>(
   dict: Readonly<T>,
   predicate: (key: keyof T, value: ValueOf<T>) => boolean
 ): readonly ValueOf<T>[] =>
@@ -105,9 +105,8 @@ function intersect<Tv>(
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.keys/
  */
-const keys = <T extends Record<keyof any, any>>(
-  dict: Readonly<T>
-): readonly (keyof T)[] => Object.keys(dict);
+const keys = <T extends DictLike>(dict: Readonly<T>): readonly (keyof T)[] =>
+  Object.keys(dict);
 
 /**
  * @returns an array containing an unbiased random sample of up to sampleSize
@@ -238,9 +237,8 @@ function unique_by<Tv>(
  * iterator method returning the values, making it usable in any API which takes
  * a Traversable.
  */
-const values = <T extends Record<keyof any, any>>(
-  dict: Readonly<T>
-): readonly ValueOf<T>[] => Object.values(dict);
+const values = <T extends DictLike>(dict: Readonly<T>): readonly ValueOf<T>[] =>
+  Object.values(dict);
 
 /**
  * @returns an array of 2-tuples of the key/value pairs of the input mapper-obj.
@@ -248,8 +246,8 @@ const values = <T extends Record<keyof any, any>>(
  * @see `Object.entries` for the native version of the same method, with more
  * correct typing, but more restrictive too.
  */
-function entries<T extends Record<keyof any, any>>(
-  dict: Readonly<T>
+function entries<T extends DictLike>(
+  dict: Readonly<T | Partial<T>>
 ): readonly Entry<T>[] {
   // Object.entries returns strings for everything, but because indexers are
   // always cast to string too (e.g. x[number] === x[`${number}`]) we can fake

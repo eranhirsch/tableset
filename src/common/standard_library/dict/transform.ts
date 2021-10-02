@@ -50,7 +50,7 @@ const flatten = <T extends Record<keyof any, unknown>>(
  */
 const flip = <T extends DictLike>(
   dict: Readonly<T>
-): Readonly<Record<ValueOf<T>, keyof T>> =>
+): Readonly<Partial<Record<ValueOf<T>, keyof T>>> =>
   pull_with_key(
     dict,
     // Notice that we swap the key and value here, the valueFunc returns the key

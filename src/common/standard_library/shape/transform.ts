@@ -36,7 +36,7 @@ const fill_keys = <Tk extends keyof any, Tv>(
  * previous ones.
  */
 const flip = <T extends Record<keyof any, keyof any>>(
-  dict: Readonly<T>
+  dict: Readonly<T | Partial<T>>
 ): Readonly<Partial<Record<ValueOf<T>, keyof T>>> =>
   pull_with_key(
     dict,
@@ -160,7 +160,7 @@ const pull_with_key = <
   Tk extends keyof any,
   Tv
 >(
-  dict: Readonly<T>,
+  dict: Readonly<T | Partial<T>>,
   valueFunc: (key: keyof T, value: ValueOf<T>) => Tv,
   keyFunc: (key: keyof T, value: ValueOf<T>) => Tk
 ): Readonly<Partial<Record<Tk, Tv>>> =>
