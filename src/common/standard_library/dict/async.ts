@@ -44,7 +44,7 @@ const from_keys_async = async <Tk extends keyof any, Tv>(
  *
  * @see `Dict.map` for non-async functions
  */
-const map_with_key_async = async <T extends Record<keyof any, any>, Tv>(
+const map_with_key_async = async <T extends DictLike, Tv>(
   dict: Readonly<T>,
   valueFunc: (key: keyof T, value: ValueOf<T>) => Promise<Tv>
 ): Promise<Readonly<Record<keyof T, Tv>>> =>
@@ -56,7 +56,7 @@ const map_with_key_async = async <T extends Record<keyof any, any>, Tv>(
  *
  * @see `Dict.map` for non-async functions.
  */
-const map_async = async <T extends Record<keyof any, any>, Tv2>(
+const map_async = async <T extends DictLike, Tv2>(
   dict: Readonly<T>,
   valueFunc: (value: ValueOf<T>) => Promise<Tv2>
 ): Promise<Readonly<Record<keyof T, Tv2>>> =>
@@ -67,7 +67,7 @@ const map_async = async <T extends Record<keyof any, any>, Tv2>(
  *
  * @see `Dict.filter_with_key()` for non-async filters with key.
  */
-const filter_with_key_async = async <T extends Record<keyof any, any>>(
+const filter_with_key_async = async <T extends DictLike>(
   dict: Readonly<T>,
   predicate: (key: keyof T, value: ValueOf<T>) => Promise<boolean>
 ): Promise<Readonly<T>> => {
@@ -81,7 +81,7 @@ const filter_with_key_async = async <T extends Record<keyof any, any>>(
  *
  * @see `Dict.filter()` for non-async predicates
  */
-const filter_async = async <T extends Record<keyof any, any>>(
+const filter_async = async <T extends DictLike>(
   dict: Readonly<T>,
   valuePredicate: (value: ValueOf<T>) => Promise<boolean>
 ): Promise<Readonly<T>> =>

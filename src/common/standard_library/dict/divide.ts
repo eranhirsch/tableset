@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/divide.php
  */
 import { Dict as D, tuple, Vec } from "common";
-import { ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns an array containing the original dict split into chunks of the given
@@ -13,7 +13,7 @@ import { ValueOf } from "../_private/typeUtils";
  * If the original dict doesn't divide evenly, the final chunk will be
  * smaller.
  */
- const chunk = <T extends Record<keyof any, any>>(
+const chunk = <T extends DictLike>(
   dict: Readonly<T>,
   size: number
 ): readonly Readonly<T>[] =>
@@ -23,7 +23,7 @@ import { ValueOf } from "../_private/typeUtils";
  * @returns a 2-tuple containing mapper-objs for which the given predicate
  * returned `true` and `false`, respectively.
  */
-const partition = <T extends Record<keyof any, any>>(
+const partition = <T extends DictLike>(
   dict: Readonly<T>,
   predicate: (value: ValueOf<T>) => boolean
 ): readonly [enabled: Readonly<T>, disabled: Readonly<T>] =>
@@ -33,7 +33,7 @@ const partition = <T extends Record<keyof any, any>>(
  * @returns a 2-tuple containing mapper-objs for which the given keyed predicate
  * returned `true` and `false`, respectively.
  */
-function partition_with_key<T extends Record<keyof any, any>>(
+function partition_with_key<T extends DictLike>(
   dict: Readonly<T>,
   predicate: (key: keyof T, value: ValueOf<T>) => boolean
 ): readonly [enabled: Readonly<T>, disabled: Readonly<T>] {

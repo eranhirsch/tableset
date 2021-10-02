@@ -4,9 +4,9 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/select.php
  */
 import { Dict as D, tuple, Vec } from "common";
-import { ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
-const diff_by_key = <T extends Record<keyof any, any>>(
+const diff_by_key = <T extends DictLike>(
   base: Readonly<T>,
   ...rest: readonly [
     // This forces rest to have at least one item in it
@@ -22,10 +22,7 @@ const diff_by_key = <T extends Record<keyof any, any>>(
  *
  * @see `Dict.take()` to take only the first `n`.
  */
-const drop = <T extends Record<keyof any, any>>(
-  dict: Readonly<T>,
-  n: number
-): Readonly<T> =>
+const drop = <T extends DictLike>(dict: Readonly<T>, n: number): Readonly<T> =>
   // Optimize for react by returning the same object for a trivial `n` value
   n === 0 ? dict : D.from_entries(Vec.entries(dict).slice(n));
 
@@ -38,7 +35,7 @@ const drop = <T extends Record<keyof any, any>>(
  * way.
  * @see `Dict.filter_async()` to use an async predicate.
  */
-const filter = <T extends Record<keyof any, any>>(
+const filter = <T extends DictLike>(
   dict: Readonly<T>,
   predicate: (value: ValueOf<T>) => boolean = Boolean
 ): Readonly<T> => filter_with_keys(dict, (_, value) => predicate(value));
@@ -49,7 +46,7 @@ const filter = <T extends Record<keyof any, any>>(
  *
  * @see `Dict.filter_with_key_async()` to use an async predicate.
  */
-function filter_with_keys<T extends Record<keyof any, any>>(
+function filter_with_keys<T extends DictLike>(
   dict: Readonly<T>,
   predicate: (key: keyof T, value: ValueOf<T>) => boolean
 ): Readonly<T> {
@@ -61,7 +58,7 @@ function filter_with_keys<T extends Record<keyof any, any>>(
     : (D.from_entries(filtered) as T);
 }
 
-type NonNullableRecord<T extends Record<keyof any, any>> = Record<
+type NonNullableRecord<T extends DictLike> = Record<
   keyof T,
   NonNullable<ValueOf<T>>
 >;
@@ -69,7 +66,7 @@ type NonNullableRecord<T extends Record<keyof any, any>> = Record<
  * Given a mapper-obj with nullable values, returns a mapper-obj with null
  * values removeD.
  */
-function filter_nulls<T extends Record<keyof any, any>>(
+function filter_nulls<T extends DictLike>(
   dict: Readonly<T>
 ): Readonly<NonNullableRecord<T>> {
   const entries = Vec.entries(dict);
@@ -88,7 +85,7 @@ function filter_nulls<T extends Record<keyof any, any>>(
  * container mapper-obj and the given array. The mapper-obj will have the same
  * ordering as the `keys` array.
  */
-function select_keys<T extends Record<keyof any, any>>(
+function select_keys<T extends DictLike>(
   dict: Readonly<T>,
   keys: readonly (keyof T)[]
 ): Readonly<T> {
@@ -103,10 +100,7 @@ function select_keys<T extends Record<keyof any, any>>(
  *
  * @see Dict.drop() to drop the first `n` entries.
  */
-const take = <T extends Record<keyof any, any>>(
-  dict: Readonly<T>,
-  n: number
-): Readonly<T> =>
+const take = <T extends DictLike>(dict: Readonly<T>, n: number): Readonly<T> =>
   // We don't optimize here because checking the size of the Obj just to see if
   // `n` is bigger than it would probably cost more than the possibility this API
   // would be used trivially anyway.
@@ -118,9 +112,7 @@ const take = <T extends Record<keyof any, any>>(
  *
  * @see `Dict.unique_by()` for non-keyof any values.
  */
-function unique<T extends Record<keyof any, keyof any>>(
-  dict: Readonly<T>
-): Readonly<T> {
+function unique<T extends DictLike>(dict: Readonly<T>): Readonly<T> {
   const dedupped = D.flip(dict);
   // If after flipping the object has the same number of entries then it had
   // no non-unique values and we can return the same object back.
@@ -137,7 +129,7 @@ function unique<T extends Record<keyof any, keyof any>>(
  *
  * @see `Dict.unique()` for keyof any values.
  */
-const unique_by = <T extends Record<keyof any, any>>(
+const unique_by = <T extends DictLike>(
   dict: Readonly<T>,
   scalarFunc: (value: ValueOf<T>) => unknown
 ): Readonly<T> =>

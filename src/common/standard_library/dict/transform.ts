@@ -5,7 +5,7 @@
  */
 
 import { Dict as D, tuple, Vec } from "common";
-import { Entry, ValueOf } from "../_private/typeUtils";
+import { DictLike, Entry, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj mapping each value to the number of times it
@@ -48,7 +48,7 @@ const flatten = <T extends Record<keyof any, unknown>>(
  * In case of duplicate values, later keys overwrite the
  * previous ones.
  */
-const flip = <T extends Record<keyof any, keyof any>>(
+const flip = <T extends DictLike>(
   dict: Readonly<T>
 ): Readonly<Record<ValueOf<T>, keyof T>> =>
   pull_with_key(
@@ -85,7 +85,7 @@ const from_keys = <Tk extends keyof any, Tv>(
  *
  * Also known as `unzip` or `fromItems` in other implementations.
  */
-const from_entries = <T extends Record<keyof any, any>>(
+const from_entries = <T extends DictLike>(
   entries: Iterable<Entry<T>>
 ): Readonly<T> =>
   // We need this cast because the native JS version of `fromEntries` returns an
@@ -138,7 +138,7 @@ const group_by = <Tk extends keyof any, Tv>(
  *
  * @see `Dict.map_async()` To use an async function.
  */
-const map = <T extends Record<keyof any, any>, Tv>(
+const map = <T extends DictLike, Tv>(
   dict: Readonly<T>,
   valueFunc: (value: ValueOf<T>) => Tv
 ): Readonly<Record<keyof T, Tv>> =>
@@ -149,7 +149,7 @@ const map = <T extends Record<keyof any, any>, Tv>(
  * function on the original key. In the case of duplicate keys, later values
  * will overwrite the previous ones.
  */
-const map_keys = <T extends Record<keyof any, any>, Tk extends keyof any>(
+const map_keys = <T extends DictLike, Tk extends keyof any>(
   dict: Readonly<T>,
   keyFunc: (key: keyof T) => Tk
 ): Readonly<Record<Tk, ValueOf<T>>> =>
@@ -159,7 +159,7 @@ const map_keys = <T extends Record<keyof any, any>, Tk extends keyof any>(
     (key) => keyFunc(key)
   );
 
-const map_with_key = <T extends Record<keyof any, any>, Tv>(
+const map_with_key = <T extends DictLike, Tv>(
   dict: Readonly<T>,
   valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
 ): Readonly<Record<keyof T, Tv>> =>
@@ -186,11 +186,7 @@ const pull = <T, Tk extends keyof any, Tv>(
  *  - keys are the result of calling `keyFunc` on the original value/key.
  * In the case of duplicate keys, later values will overwrite the previous ones.
  */
-const pull_with_key = <
-  T extends Record<keyof any, any>,
-  Tk extends keyof any,
-  Tv
->(
+const pull_with_key = <T extends DictLike, Tk extends keyof any, Tv>(
   dict: Readonly<T>,
   valueFunc: (key: keyof T, value: ValueOf<T>) => Tv,
   keyFunc: (key: keyof T, value: ValueOf<T>) => Tk

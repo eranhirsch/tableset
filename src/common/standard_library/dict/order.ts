@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/order.php
  */
 import { Dict as D, Vec } from "common";
-import { ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 // Just a simple helper function that takes a value and returns it, for use in
 // places where we need a method but don't need it to do anything.
@@ -14,9 +14,8 @@ const asIs = <T>(x: T): T => x;
  * @returns a new mapper-obj with the original entries in reversed iteration
  * order.
  */
-const reverse = <T extends Record<keyof any, any>>(
-  dict: Readonly<T>
-): Readonly<T> => D.from_entries(Vec.reverse(Vec.entries(dict)));
+const reverse = <T extends DictLike>(dict: Readonly<T>): Readonly<T> =>
+  D.from_entries(Vec.reverse(Vec.entries(dict)));
 
 /**
  * @returns a new mapper-obj with the key value pairs of the given input
@@ -24,9 +23,8 @@ const reverse = <T extends Record<keyof any, any>>(
  *
  * `shuffle` is not using cryptographically secure randomness.
  */
-const shuffle = <T extends Record<keyof any, any>>(
-  dict: Readonly<T>
-): Readonly<T> => D.from_entries(Vec.shuffle(Vec.entries(dict)));
+const shuffle = <T extends DictLike>(dict: Readonly<T>): Readonly<T> =>
+  D.from_entries(Vec.shuffle(Vec.entries(dict)));
 
 /**
  * @returns a mapper-obj sorted by the values of the given mapper-obj. If
@@ -37,7 +35,7 @@ const shuffle = <T extends Record<keyof any, any>>(
  * @see `Dict.sort_by()` to sort by some computable property of each value.
  * @see `Dict.sort_by_key()` to sort by the keys of the mapper-obj.
  */
-const sort = <T extends Record<keyof any, any>>(
+const sort = <T extends DictLike>(
   dict: Readonly<T>,
   valueComparator?: (a: ValueOf<T>, b: ValueOf<T>) => number
 ): Readonly<T> => sort_by(dict, asIs, valueComparator);
@@ -52,7 +50,7 @@ const sort = <T extends Record<keyof any, any>>(
  * @see `Dict.sort()` to sort by the values of the mapper-obj.
  * @see `Dict.sort_by_key()` to sort by the keys of the mapper-obj.
  */
-const sort_by = <T extends Record<keyof any, any>, Ts>(
+const sort_by = <T extends DictLike, Ts>(
   dict: Readonly<T>,
   scalarFunc: (value: ValueOf<T>) => Ts,
   scalarComparator?: (a: Ts, b: Ts) => number
@@ -68,7 +66,7 @@ const sort_by = <T extends Record<keyof any, any>, Ts>(
  * @see `Dict\sort()` to sort by the values of the mapper_obj.
  * @see `Dict\sort_by()` to sort by some computable property of each value.
  */
-const sort_by_key = <T extends Record<keyof any, any>>(
+const sort_by_key = <T extends DictLike>(
   dict: Readonly<T>,
   keyComparator?: (a: keyof T, b: keyof T) => number
 ): Readonly<T> => sort_by_with_key(dict, asIs, keyComparator);
@@ -81,7 +79,7 @@ const sort_by_key = <T extends Record<keyof any, any>>(
  * with too many similar methods. If you feel you need it simply add it and
  * remove this note.
  */
-function sort_by_with_key<T extends Record<keyof any, any>, Ts>(
+function sort_by_with_key<T extends DictLike, Ts>(
   dict: Readonly<T>,
   scalarFunc: (key: keyof T, value: ValueOf<T>) => Ts,
   scalarComparator?: (a: Ts, b: Ts) => number

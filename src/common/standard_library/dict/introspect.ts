@@ -5,7 +5,7 @@
  */
 
 import { Vec } from "common";
-import { ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 const size = (dict: Readonly<Record<keyof any, unknown>>): number =>
   Vec.values(dict).length;
@@ -14,7 +14,7 @@ const size = (dict: Readonly<Record<keyof any, unknown>>): number =>
  * @returns whether the two given mapper-obj have the same entries, using strict
  * equality. To guarantee equality of order as well as contents, use `===`.
  */
-function equal<T extends Record<keyof any, any>>(
+function equal<T extends DictLike>(
   dict1: Readonly<T>,
   dict2: Readonly<T>
 ): boolean {
@@ -32,7 +32,7 @@ const is_empty = (dict: Readonly<Record<keyof any, unknown>>): boolean =>
  * Reduces the given object-mapper into a single value by applying an
  * accumulator function against an intermediate result and each key/value.
  */
-const reduce_with_key = <T extends Record<keyof any, any>, Ta>(
+const reduce_with_key = <T extends DictLike, Ta>(
   dict: Readonly<T>,
   reducer: (
     accumulator: Ta,

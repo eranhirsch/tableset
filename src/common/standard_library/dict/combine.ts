@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/combine.php
  */
 import { Dict as D, tuple, Vec } from "common";
-import { ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj where each element in `keys` maps to the
@@ -24,7 +24,7 @@ const associate = <Tk extends keyof any, Tv>(
  *
  * @see `Dict.merge()` For a fixed number of mapper-objs.
  */
-const merge = <T extends Record<keyof any, any>>(
+const merge = <T extends DictLike>(
   ...dicts: readonly Readonly<T>[]
 ): Readonly<T> =>
   // When we only have one dict to flatten we return the same object to optimize
@@ -36,7 +36,7 @@ const merge = <T extends Record<keyof any, any>>(
  * values for that key in both the `left` and `right` mapper-obj (if any).
  */
 const left_join = <
-  Tleft extends Record<keyof any, any>,
+  Tleft extends DictLike,
   Tright extends Record<keyof Tleft, any>
 >(
   left: Readonly<Tleft>,
@@ -49,7 +49,7 @@ const left_join = <
 > => D.map_with_key(left, (key, leftValue) => tuple(leftValue, right[key]));
 
 const inner_join = <
-  Tleft extends Record<keyof any, any>,
+  Tleft extends DictLike,
   Tright extends Record<keyof Tleft, any>
 >(
   left: Readonly<Tleft>,
@@ -65,10 +65,7 @@ const inner_join = <
     )
   );
 
-const outer_join = <
-  Tleft extends Record<keyof any, any>,
-  Tright extends Record<keyof any, any>
->(
+const outer_join = <Tleft extends DictLike, Tright extends DictLike>(
   left: Readonly<Tleft>,
   right: Readonly<Tright>
 ): Readonly<
@@ -87,7 +84,7 @@ const outer_join = <
   );
 
 const compose = <
-  Tinner extends Record<keyof any, keyof any>,
+  Tinner extends DictLike,
   Touter extends Record<ValueOf<Tinner>, any>
 >(
   inner: Readonly<Tinner>,
