@@ -4,27 +4,28 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/async.php
  */
 import { Vec, Dict as D, tuple } from "common";
-import { PromisedType, ValueOf } from "../_private/typeUtils";
-
-type PromisedRecord = Record<keyof any, Promise<any>>;
-type ResolvedRecord<T extends PromisedRecord> = Record<
-  keyof T,
-  PromisedType<ValueOf<T>>
->;
+import { DictLike, PromisedType, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-object with each value `await`ed in parallel.
  */
-const from_async = async <T extends PromisedRecord>(
+async function from_async<T extends Record<keyof any, Promise<any>>>(
   dict: Readonly<T>
-): Promise<Readonly<ResolvedRecord<T>>> =>
+): Promise<Readonly<Record<keyof T, PromisedType<ValueOf<T>>>>>;
+async function from_async<T extends Record<keyof any, Promise<any>>>(
+  dict: Readonly<Partial<T>>
+): Promise<Readonly<Partial<Record<keyof T, PromisedType<ValueOf<T>>>>>>;
+async function from_async<T extends Record<keyof any, Promise<any>>>(
+  dict: Readonly<T>
+): Promise<Readonly<Record<keyof T, PromisedType<ValueOf<T>>>>> {
   // TODO: Typescript can't deduce the generic type here because it's restricted
   // to return type and not the params in input. Maybe we can make it happen?!
-  D.from_entries<ResolvedRecord<T>>(
+  return D.from_entries<Record<keyof T, PromisedType<ValueOf<T>>>>(
     await Vec.map_async(Vec.entries(dict), async ([key, valuePromise]) =>
       tuple(key, await valuePromise)
     )
   );
+}
 
 /**
  * @returns a new mapper-obj where each value is the result of calling the given
