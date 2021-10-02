@@ -13,7 +13,7 @@
  */
 
 import { Dict, Random } from "common";
-import { DictLike, Entry, ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns an array containing only the elements of the first array that do
@@ -237,8 +237,9 @@ function unique_by<Tv>(
  * iterator method returning the values, making it usable in any API which takes
  * a Traversable.
  */
-const values = <T extends DictLike>(dict: Readonly<T>): readonly ValueOf<T>[] =>
-  Object.values(dict);
+const values = <T extends DictLike>(
+  dict: Readonly<T | Partial<T>>
+): readonly ValueOf<T>[] => Object.values(dict);
 
 /**
  * @returns an array of 2-tuples of the key/value pairs of the input mapper-obj.
@@ -248,11 +249,11 @@ const values = <T extends DictLike>(dict: Readonly<T>): readonly ValueOf<T>[] =>
  */
 function entries<T extends DictLike>(
   dict: Readonly<T | Partial<T>>
-): readonly Entry<T>[] {
+): readonly (readonly [key: keyof T, value: ValueOf<T>])[] {
   // Object.entries returns strings for everything, but because indexers are
   // always cast to string too (e.g. x[number] === x[`${number}`]) we can fake
   // the indexer here (I hope... haven't tested this properly)
-  return Object.entries(dict) as Entry<T>[];
+  return Object.entries(dict) as [key: keyof T, value: ValueOf<T>][];
 }
 
 export const Vec = {

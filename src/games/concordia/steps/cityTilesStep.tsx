@@ -1,5 +1,5 @@
 import { Grid, Typography, useTheme } from "@mui/material";
-import { Dict, MathUtils, Vec } from "common";
+import { Dict, MathUtils, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
@@ -120,7 +120,7 @@ function InstanceManualComponent() {
       </BlockWithFootnotes>
     );
   } else {
-    const usedZones = Vec.keys(Dict.filter_nulls(MAPS[mapId].provinces));
+    const usedZones = Vec.keys(MAPS[mapId].provinces);
     if (usedZones.length === allZones.length) {
       gatheringStep = (
         <BlockWithFootnotes
@@ -178,12 +178,14 @@ function InstanceManualComponent() {
 function TilesCountFootnote({ zones }: { zones: readonly Zone[] }) {
   return (
     <GrammaticalList>
-      {Vec.map_with_key(
-        Dict.filter_with_keys(CITY_TILES, (zone) => zones.includes(zone)),
-        (zone, tiles) => (
-          <React.Fragment key={`zone_${zone}`}>
-            {zone}: {MathUtils.sum(Vec.values(tiles))} tiles
-          </React.Fragment>
+      {React.Children.toArray(
+        Vec.map_with_key(
+          Shape.select_keys(CITY_TILES, zones),
+          (zone, tiles) => (
+            <>
+              {zone}: {MathUtils.sum(Vec.values(tiles))} tiles
+            </>
+          )
         )
       )}
     </GrammaticalList>

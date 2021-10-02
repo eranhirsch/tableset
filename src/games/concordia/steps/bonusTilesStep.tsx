@@ -46,9 +46,7 @@ function IncompleteInstanceDerivedComponent({
     // We dont care about zones here, so we create a merged object out of all of
     // them
     const { provinces, hasLegacyProvincesSection } = MAPS[mapId];
-    const provinceCities = Dict.flatten(
-      Vec.values(Dict.filter_nulls(provinces))
-    );
+    const provinceCities = Dict.flatten(Vec.values(provinces));
 
     mapSpecificCount = ` of the ${Dict.size(provinceCities)} provinces`;
 

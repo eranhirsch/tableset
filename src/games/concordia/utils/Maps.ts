@@ -26,7 +26,6 @@ export const MAPS = Object.freeze({
         Sicilia: ["Messana", "Panormvs", "Syracvsae"],
         Umbria: ["Ancona", "Hadria", "Spoletvm"],
       },
-      D: null,
     },
   },
 
@@ -70,7 +69,6 @@ export const MAPS = Object.freeze({
       { locationName: "Portvs Itivs", type: "sea" },
     ],
     provinces: {
-      A: null,
       B: {
         Brigantia: ["Deva", "Mancvnivm", "Monapia"],
         Caledonia: ["Lvgvvalivm", "Pons Aelii", "Trimontivm"],
@@ -142,7 +140,7 @@ interface MapBoard {
    */
   hasLegacyProvincesSection?: true;
 
-  provinces: Readonly<Record<Zone, Provinces | null>>;
+  provinces: Readonly<Partial<Record<Zone, Provinces>>>;
 }
 
 export interface StartingColonistLocation {

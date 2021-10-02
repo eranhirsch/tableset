@@ -20,7 +20,7 @@ async function from_async<T extends Record<keyof any, Promise<any>>>(
 ): Promise<Readonly<Record<keyof T, PromisedType<ValueOf<T>>>>> {
   // TODO: Typescript can't deduce the generic type here because it's restricted
   // to return type and not the params in input. Maybe we can make it happen?!
-  return D.from_entries<Record<keyof T, PromisedType<ValueOf<T>>>>(
+  return D.from_entries(
     await Vec.map_async(Vec.entries(dict), async ([key, valuePromise]) =>
       tuple(key, await valuePromise)
     )
@@ -36,7 +36,7 @@ async function from_async<T extends Record<keyof any, Promise<any>>>(
 const from_keys_async = async <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   valueFunc: (key: Tk) => Promise<Tv>
-): Promise<Readonly<Record<Tk, Tv>>> =>
+): Promise<Readonly<Record<Tk, PromisedType<Promise<Tv>>>>> =>
   from_async(D.from_keys(keys, valueFunc));
 
 /**

@@ -1,4 +1,4 @@
-import { Dict, Vec, Random, MathUtils, Num, nullthrows } from "common";
+import { Dict, Vec, Random, MathUtils, Num, nullthrows, Shape } from "common";
 import CityResourcesEncoder from "./CityResourcesEncoder";
 import { MapId } from "./Maps";
 import { Resource } from "./resource";
@@ -30,7 +30,7 @@ type CastleResource = Readonly<{ [location: string]: Resource }>;
 
 export default {
   randomHash(mapId: MapId, citiesHash: string): string {
-    const usedResources = Dict.count_values(
+    const usedResources = Shape.count_values(
       Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash))
     );
 

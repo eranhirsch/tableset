@@ -8,6 +8,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/c/select.php
  */
 import { invariant, invariant_violation, nullthrows, Vec } from "common";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns the first value of the given Traversable for which the predicate
@@ -35,10 +36,10 @@ function findx<Tv>(
  * @returns the key of the first value of the given object-mapper for which
  * the predicate returns true, or undefined if no such value is found.
  */
-function find_key<Tk extends keyof any, Tv>(
-  keyedTraversable: Readonly<Record<Tk, Tv>>,
-  valuePredicate: (value: Tv) => boolean
-): Tk | undefined {
+function find_key<T extends DictLike>(
+  keyedTraversable: Readonly<T>,
+  valuePredicate: (value: ValueOf<T>) => boolean
+): keyof T | undefined {
   const entry = Vec.entries(keyedTraversable).find(([key, value]) =>
     valuePredicate(value)
   );

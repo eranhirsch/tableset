@@ -26,7 +26,7 @@ const fill = <Tv>(size: number, value: Tv): readonly Tv[] =>
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.map_with_key/
  */
 const map_with_key = <T extends Record<keyof any, any>, Tv>(
-  dict: Readonly<T>,
+  dict: Readonly<T | Partial<T>>,
   valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
 ): readonly Tv[] =>
   V.entries(dict).map(([key, value]) => valueFunc(key, value));

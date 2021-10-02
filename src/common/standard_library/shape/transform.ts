@@ -5,7 +5,7 @@
  */
 
 import { tuple, Vec } from "common";
-import { Entry, ValueOf } from "../_private/typeUtils";
+import { ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj mapping each value to the number of times it
@@ -72,14 +72,14 @@ const from_keys = <Tk extends keyof any, Tv>(
  *
  * Also known as `unzip` or `fromItems` in other implementations.
  */
-const from_entries = <T extends Record<keyof any, any>>(
-  entries: Iterable<Entry<T>>
-): Readonly<Partial<T>> =>
+const from_entries = <Tk extends keyof any, Tv>(
+  entries: Iterable<readonly [key: Tk, value: Tv]>
+): Readonly<Partial<Record<Tk, Tv>>> =>
   // We need this cast because the native JS version of `fromEntries` returns an
   // object mapped on strings no matter what the types of the input array is.
   // This cast should be safe because indexers are always cast to string (e.g.
   // `x[number] === x[`${number}`])
-  Object.freeze(Object.fromEntries(entries) as T);
+  Object.freeze(Object.fromEntries(entries) as Partial<Record<Tk, Tv>>);
 
 /**
  * @returns a new mapper-obj keyed by the result of calling the given function on
