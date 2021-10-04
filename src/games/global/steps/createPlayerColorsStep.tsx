@@ -63,7 +63,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
           ? Dict.associate(playerIds, availableColors)
           : undefined,
 
-      refresh(current, playerIds) {
+      refresh(current, { playerIds }) {
         const stillActivePlayerColors = Dict.select_keys(current, playerIds);
         const colorlessPlayers = Vec.diff(playerIds, Vec.keys(current));
 

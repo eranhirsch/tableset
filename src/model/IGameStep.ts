@@ -1,18 +1,21 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import { PlayerId } from "model/Player";
-import { Strategy } from "features/template/Strategy";
 import { SetupStep } from "features/instance/instanceSlice";
+import { Strategy } from "features/template/Strategy";
 import { TemplateElement } from "features/template/templateSlice";
-import { StepId } from "./IGame";
+import { PlayerId } from "model/Player";
+import { ProductId, StepId } from "./IGame";
 
-export interface TemplateContext {
-  template: Readonly<Dictionary<Readonly<TemplateElement>>>;
+interface ContextBase {
   playerIds: readonly PlayerId[];
+  productIds: readonly ProductId[];
 }
 
-export interface InstanceContext {
+export interface TemplateContext extends ContextBase {
+  template: Readonly<Dictionary<Readonly<TemplateElement>>>;
+}
+
+export interface InstanceContext extends ContextBase {
   instance: readonly SetupStep[];
-  playerIds: readonly PlayerId[];
 }
 
 export default interface IGameStep<T = never> {
@@ -41,7 +44,10 @@ export default interface IGameStep<T = never> {
   strategies?(context: TemplateContext): readonly Strategy[];
 
   initialFixedValue?(playerIds: readonly string[]): T;
-  refreshFixedValue?(current: T, playerIds: readonly string[]): T | undefined;
+  refreshFixedValue?(
+    current: T,
+    context: Omit<TemplateContext, "template">
+  ): T | undefined;
 
   resolveRandom?(context: InstanceContext): T;
   resolveDefault?(context: InstanceContext): T;

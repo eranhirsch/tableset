@@ -1,7 +1,7 @@
 import { createEntityAdapter, createSlice, Dictionary } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
+import IGame, { ProductId, StepId } from "../../model/IGame";
 import { PlayerId } from "../../model/Player";
-import IGame, { StepId } from "../../model/IGame";
 import { TemplateElement } from "../template/templateSlice";
 import { templateElementResolver } from "./templateElementResolver";
 
@@ -22,7 +22,8 @@ export default createSlice({
       prepare: (
         game: IGame,
         template: Dictionary<TemplateElement>,
-        playerIds: readonly PlayerId[]
+        playerIds: readonly PlayerId[],
+        productIds: readonly ProductId[]
       ) => ({
         payload: game.steps.reduce((ongoing, { id }) => {
           const element = template[id];
@@ -33,6 +34,7 @@ export default createSlice({
           const value = templateElementResolver(game.atEnforce(id), element, {
             instance: ongoing,
             playerIds,
+            productIds,
           });
 
           if (value != null) {

@@ -44,7 +44,7 @@ export default createVariableGameStep({
       return playerIds[0];
     },
 
-    refresh: (current, playerIds) =>
+    refresh: (current, { playerIds }) =>
       playerIds.includes(current) ? current : undefined,
   },
 });

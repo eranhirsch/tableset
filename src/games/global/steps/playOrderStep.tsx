@@ -63,7 +63,7 @@ export default createVariableGameStep({
       return restOfPlayers;
     },
 
-    refresh(current, playerIds) {
+    refresh(current, { playerIds }) {
       // Remove any deleted players from the current value.
       let currentRefreshed = current.filter((playerId) =>
         playerIds.includes(playerId)

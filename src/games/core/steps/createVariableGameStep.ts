@@ -1,8 +1,11 @@
 import { nullthrows, type_invariant } from "common";
-import { PlayerId } from "model/Player";
 import { Strategy } from "features/template/Strategy";
+import { PlayerId } from "model/Player";
+import IGameStep, {
+  InstanceContext,
+  TemplateContext,
+} from "../../../model/IGameStep";
 import createGameStep, { CreateGameStepOptions } from "./createGameStep";
-import IGameStep, { InstanceContext } from "../../../model/IGameStep";
 
 export interface VariableStepInstanceComponentProps<T> {
   value: T;
@@ -23,7 +26,10 @@ interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
 
   fixed?: {
     initializer(playerIds: readonly PlayerId[]): T | undefined;
-    refresh?(current: T, playerIds: readonly string[]): T | undefined;
+    refresh?(
+      current: T,
+      context: Omit<TemplateContext, "template">
+    ): T | undefined;
 
     renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
     renderSelector?(props: { current: T }): JSX.Element;
@@ -127,7 +133,10 @@ interface CreateVariableGameStepOptions<
   recommended?(context: InstanceContext): T | undefined;
   fixed?: {
     initializer(playerIds: readonly PlayerId[]): T | undefined;
-    refresh?(current: T, playerIds: readonly string[]): T | undefined;
+    refresh?(
+      current: T,
+      context: Omit<TemplateContext, "template">
+    ): T | undefined;
     renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
     renderSelector?(props: { current: T }): JSX.Element;
   };
@@ -234,7 +243,11 @@ export function createVariableGameStep<T>({
       // doesn't allow us to catch cases where the instance is required to
       // calculate the recommended value (e.g. if it relies on the value of
       // a previous step)
-      const value = recommended({ playerIds: context.playerIds, instance: [] });
+      const value = recommended({
+        playerIds: context.playerIds,
+        productIds: context.productIds,
+        instance: [],
+      });
       if (value != null) {
         strategies.push(Strategy.DEFAULT);
       }

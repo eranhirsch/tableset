@@ -7,10 +7,11 @@ import {
   Typography,
 } from "@mui/material";
 import { Vec } from "common";
+import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { StepId } from "../../model/IGame";
+import { ProductId, StepId } from "../../model/IGame";
 import { PlayerId } from "../../model/Player";
 import { gameSelector } from "../game/gameSlice";
 import { playersSelectors } from "../players/playersSlice";
@@ -25,7 +26,12 @@ function InstanceItemContent({
 
   const instance = useAppSelector(instanceSelectors.selectEntities);
 
-  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
+  const playerIds = useAppSelector(
+    playersSelectors.selectIds
+  ) as readonly PlayerId[];
+  const productIds = useAppSelector(
+    allExpansionIdsSelector
+  ) as readonly ProductId[];
 
   const gameStep = game.atEnforce(stepId);
 
@@ -51,6 +57,7 @@ function InstanceItemContent({
             Vec.values(instance as Record<StepId, SetupStep | undefined>)
           ),
           playerIds,
+          productIds,
         }}
       />
     );

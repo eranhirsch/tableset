@@ -28,6 +28,8 @@ export default expansionsSlice;
 
 export const expansionsActions = expansionsSlice.actions;
 
+export const allExpansionIdsSelector = (state: RootState) =>
+  state.expansions.expansions;
 export const hasExpansionSelector =
   (productId: ProductId) => (state: RootState) =>
-    state.expansions.expansions.includes(productId);
+    allExpansionIdsSelector(state).includes(productId);

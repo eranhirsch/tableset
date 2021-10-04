@@ -2,15 +2,16 @@ import {
   createEntityAdapter,
   createSelector,
   createSlice,
-  PayloadAction,
+  PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
 import { nullthrows, Vec } from "common";
 import { playersActions } from "features/players/playersSlice";
 import { Strategy } from "features/template/Strategy";
 import GameMapper, { GameId } from "games/core/GameMapper";
-import { StepId } from "model/IGame";
 import { PLAYERS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createPlayersDependencyMetaStep";
+import { StepId } from "model/IGame";
+import { TemplateContext } from "model/IGameStep";
 import { PlayerId } from "model/Player";
 
 type ConstantTemplateElement = Readonly<{
@@ -103,7 +104,7 @@ const templateSlice = createSlice({
 
     refresh: (
       state,
-      { payload: playerIds }: PayloadAction<readonly PlayerId[]>
+      { payload: context }: PayloadAction<Omit<TemplateContext, "template">>
     ) => {
       const game = GameMapper.forId(state.gameId);
       game.steps.forEach((step) => {
@@ -125,7 +126,7 @@ const templateSlice = createSlice({
         }
 
         const strategies = step.strategies({
-          playerIds,
+          ...context,
           template: state.entities,
         });
 
@@ -139,7 +140,7 @@ const templateSlice = createSlice({
           element.strategy === Strategy.FIXED &&
           step.refreshFixedValue != null
         ) {
-          const newValue = step.refreshFixedValue(element.value, playerIds);
+          const newValue = step.refreshFixedValue(element.value, context);
           if (newValue != null) {
             element.value = newValue;
             element.isStale = false;

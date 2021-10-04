@@ -1,10 +1,11 @@
 import { Chip, Stack } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { nullthrows, ReactUtils } from "common";
+import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { useGameStep } from "features/game/useGameStep";
 import { Strategy } from "features/template/Strategy";
 import { strategyLabel } from "features/template/strategyLabel";
-import { StepId } from "model/IGame";
+import { ProductId, StepId } from "model/IGame";
 import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import { playersSelectors } from "../players/playersSlice";
@@ -16,15 +17,20 @@ export function StrategiesSelector({
   stepId: StepId;
 }): JSX.Element {
   const gameStep = useGameStep(stepId);
-  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
+  const playerIds = useAppSelector(
+    playersSelectors.selectIds
+  ) as readonly PlayerId[];
+  const productIds = useAppSelector(
+    allExpansionIdsSelector
+  ) as readonly ProductId[];
   const template = useAppSelector(templateSelectors.selectEntities);
   const strategies = useMemo(
     () =>
       nullthrows(
         gameStep.strategies,
         `Missing strategies method for step ${stepId}`
-      )({ template, playerIds }),
-    [gameStep, playerIds, stepId, template]
+      )({ template, playerIds, productIds }),
+    [gameStep.strategies, playerIds, productIds, stepId, template]
   );
 
   const templateElement = ReactUtils.useAppEntityIdSelectorNullable(
