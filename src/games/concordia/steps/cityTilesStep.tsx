@@ -97,7 +97,7 @@ function InstanceManualComponent() {
     // We don't even know what map is used, we need to explain everything!
     lettersStep = (
       <BlockWithFootnotes
-        footnotes={[<GrammaticalList>{Vec.keys(CITY_TILES)}</GrammaticalList>]}
+        footnotes={[<GrammaticalList>{allZones}</GrammaticalList>]}
       >
         {(Footnote) => (
           <>
@@ -136,7 +136,7 @@ function InstanceManualComponent() {
         </BlockWithFootnotes>
       );
     } else {
-      const unusedZones = allZones.filter((zone) => !usedZones.includes(zone));
+      const unusedZones = Vec.diff(allZones, usedZones);
       gatheringStep = (
         <BlockWithFootnotes
           footnotes={[<TilesCountFootnote zones={usedZones} />]}

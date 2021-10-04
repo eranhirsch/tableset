@@ -118,15 +118,13 @@ function IncompleteInstanceDerivedComponent({
           <>
             The resources (sorted in descending value) are{" "}
             <GrammaticalList>
-              {Vec.map(
-                Vec.values(
-                  Dict.sort_by(
-                    Dict.inner_join(RESOURCE_NAME, RESOURCE_COST),
-                    // We want descending order, so we negate the value
-                    ([_, cost]) => -cost
-                  )
+              {Vec.map_with_key(
+                Dict.sort_by(
+                  Dict.inner_join(RESOURCE_NAME, RESOURCE_COST),
+                  // We want descending order, so we negate the value
+                  ([_, cost]) => -cost
                 ),
-                ([name]) => name
+                (_, [name]) => name
               )}
             </GrammaticalList>
             .
