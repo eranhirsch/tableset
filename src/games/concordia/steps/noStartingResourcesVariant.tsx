@@ -3,7 +3,7 @@ import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import GrammaticalList from "games/core/ux/GrammaticalList";
 import { createVariant } from "../../core/steps/createVariant";
-import { RESOURCE_NAME, RESOURCE_COST } from "../utils/resource";
+import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 
 const noStartingResourcesVariant = createVariant({
   id: "noStartingResources",
@@ -36,8 +36,8 @@ function InstanceVariableComponent(): JSX.Element {
           Players will take <em>no</em> starting resources
           <Footnote index={1} />; <strong>instead</strong>, they will get{" "}
           <em>more</em> money to start
-          <Footnote index={2} />, and <em>before their first turn</em> they will
-          buy the resources they need
+          <Footnote index={2} />, and <em>at the start of their first turn</em>{" "}
+          they will buy the resources they need
           <Footnote index={3} />.
         </>
       )}
