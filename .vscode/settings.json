@@ -5,6 +5,9 @@
     ],
     "formatOnSave": true,
     "formatOnSaveMode": "modifications",
+    "codeActionsOnSave": {
+      "source.organizeImports": true
+    }
   },
   "cSpell.words": [
     "Concordia",
@@ -18,4 +21,5 @@
     "Tkin",
     "Tkout"
   ],
+  "typescript.tsdk": "node_modules/typescript/lib",
 }
