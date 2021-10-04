@@ -68,16 +68,21 @@ function StrategyChip({
 
   const gameStep = useGameStep(stepId);
 
-  const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
+  const playerIds = useAppSelector(
+    playersSelectors.selectIds
+  ) as readonly PlayerId[];
+  const productIds = useAppSelector(
+    allExpansionIdsSelector
+  ) as readonly ProductId[];
 
   const onClick = useCallback(
     () =>
       dispatch(
         strategy === Strategy.FIXED
-          ? templateActions.enabledConstantValue(
-              stepId,
-              playerIds as PlayerId[]
-            )
+          ? templateActions.enabledConstantValue(stepId, {
+              playerIds,
+              productIds,
+            })
           : strategy === Strategy.OFF
           ? templateActions.disabled(stepId)
           : templateActions.enabled({
@@ -85,7 +90,7 @@ function StrategyChip({
               strategy,
             })
       ),
-    [dispatch, playerIds, stepId, strategy]
+    [dispatch, playerIds, productIds, stepId, strategy]
   );
 
   const label =

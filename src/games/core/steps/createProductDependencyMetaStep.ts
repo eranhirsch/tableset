@@ -3,18 +3,18 @@ import IGameStep from "../../../model/IGameStep";
 
 export const PRODUCTS_DEPENDENCY_META_STEP_ID = "__product";
 
-const createProductDependencyMetaStep = (
-  // TODO: We need to make the coupling with the actual game definition tighter
-  // so that we don't use aritrary strings here
-  productId: ProductId
-): Readonly<IGameStep<readonly ProductId[]>> =>
+const createProductDependencyMetaStep = <Pid extends ProductId>(
+  ...requiredProducts: readonly Pid[]
+): Readonly<IGameStep<readonly Pid[]>> =>
   Object.freeze({
     id: PRODUCTS_DEPENDENCY_META_STEP_ID,
-    label: `<Product[${productId}]>`,
+    label: `<Product[${requiredProducts.join(",")}]>`,
 
-    hasValue: ({ productIds }) => productIds.includes(productId),
+    hasValue: ({ productIds }) =>
+      requiredProducts.length === 0 ||
+      requiredProducts.some((productId) => productIds.includes(productId)),
 
-    extractInstanceValue: ({ productIds }) => productIds,
+    extractInstanceValue: ({ productIds }) => productIds as readonly Pid[],
 
     isOptional: false,
   });

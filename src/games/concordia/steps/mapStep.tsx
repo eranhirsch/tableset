@@ -1,28 +1,43 @@
 import { styled, Typography } from "@mui/material";
-import { Dict, Random, Vec } from "common";
+import { useAppSelector } from "app/hooks";
+import { Dict, Random, Shape, Vec } from "common";
+import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { templateActions } from "features/template/templateSlice";
+import createProductDependencyMetaStep from "games/core/steps/createProductDependencyMetaStep";
 import GenericItemsFixedTemplateLabel from "games/core/ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "games/core/ux/GenericItemsListPanel";
 import React from "react";
 import {
   createVariableGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
+import { ConcordiaProductId } from "../ConcordiaGame";
 import { MapId, MAPS } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 
+const MAPS_BY_PRODUCT = Object.freeze({
+  base: ["imperium", "italia"],
+  britanniaGermania: ["britannia", "germania"],
+} as Record<ConcordiaProductId, readonly MapId[]>);
+
+const allMaps = (productIds: readonly ConcordiaProductId[]): readonly MapId[] =>
+  Vec.flatten(Vec.values(Shape.select_keys(MAPS_BY_PRODUCT, productIds)));
+
 export default createVariableGameStep({
   id: "map",
+
+  dependencies: [createProductDependencyMetaStep<ConcordiaProductId>()],
+
   isType: (x: string): x is MapId => x in MAPS,
 
   InstanceManualComponent,
   InstanceVariableComponent,
 
-  random() {
-    const mapIds = Vec.keys(MAPS);
-    return mapIds[Random.index(mapIds)];
+  random(productIds) {
+    const availableMaps = allMaps(productIds);
+    return availableMaps[Random.index(availableMaps)];
   },
 
   recommended: ({ playerIds }) =>
@@ -35,7 +50,7 @@ export default createVariableGameStep({
       : undefined,
 
   fixed: {
-    initializer: () => Vec.keys(MAPS)[0],
+    initializer: (productIds) => allMaps(productIds)[0],
 
     renderTemplateLabel: TemplateLabel,
     renderSelector: Selector,
@@ -100,9 +115,12 @@ function TemplateLabel({ value }: { value: MapId }): JSX.Element {
 }
 
 function Selector({ current }: { current: MapId }): JSX.Element {
+  const productIds = useAppSelector(
+    allExpansionIdsSelector
+  ) as readonly ConcordiaProductId[];
   return (
     <GenericItemsListPanel
-      itemIds={Vec.keys(MAPS)}
+      itemIds={allMaps(productIds)}
       selectedId={current}
       onLabelForItem={(id) => MAPS[id].name}
       onUpdateItem={(itemId) =>

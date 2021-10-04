@@ -43,7 +43,7 @@ export default interface IGameStep<T = never> {
 
   strategies?(context: TemplateContext): readonly Strategy[];
 
-  initialFixedValue?(playerIds: readonly string[]): T;
+  initialFixedValue?(context: InstanceContext): T;
   refreshFixedValue?(
     current: T,
     context: Omit<TemplateContext, "template">

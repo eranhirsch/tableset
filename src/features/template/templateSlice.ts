@@ -12,7 +12,6 @@ import GameMapper, { GameId } from "games/core/GameMapper";
 import { PLAYERS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createPlayersDependencyMetaStep";
 import { StepId } from "model/IGame";
 import { TemplateContext } from "model/IGameStep";
-import { PlayerId } from "model/Player";
 
 type ConstantTemplateElement = Readonly<{
   strategy: Strategy.FIXED;
@@ -58,24 +57,24 @@ const templateSlice = createSlice({
     },
 
     enabledConstantValue: {
-      prepare: (id: StepId, playerIds: PlayerId[]) => ({
+      prepare: (id: StepId, context: Omit<TemplateContext, "template">) => ({
         payload: id,
-        meta: { playerIds },
+        meta: context,
       }),
 
       reducer(
         state,
         {
           payload: id,
-          meta: { playerIds },
-        }: PayloadAction<StepId, string, { playerIds: PlayerId[] }>
+          meta: context,
+        }: PayloadAction<StepId, string, Omit<TemplateContext, "template">>
       ) {
         templateAdapter.upsertOne(state, {
           id,
           strategy: Strategy.FIXED,
           isStale: false,
           value: GameMapper.forId(state.gameId).atEnforce(id)
-            .initialFixedValue!(playerIds),
+            .initialFixedValue!({ ...context, instance: [] }),
         });
 
         markDownstreamElementsStale(id, state);

@@ -1,6 +1,5 @@
-import { nullthrows, type_invariant } from "common";
+import { nullthrows, type_invariant, Vec } from "common";
 import { Strategy } from "features/template/Strategy";
-import { PlayerId } from "model/Player";
 import IGameStep, {
   InstanceContext,
   TemplateContext,
@@ -25,7 +24,7 @@ interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
   recommended?(context: InstanceContext): T | undefined;
 
   fixed?: {
-    initializer(playerIds: readonly PlayerId[]): T | undefined;
+    initializer(...dependencies: any[]): T | undefined;
     refresh?(
       current: T,
       context: Omit<TemplateContext, "template">
@@ -132,7 +131,18 @@ interface CreateVariableGameStepOptions<
   ): T;
   recommended?(context: InstanceContext): T | undefined;
   fixed?: {
-    initializer(playerIds: readonly PlayerId[]): T | undefined;
+    initializer(
+      dependency1: D1,
+      dependency2: D2,
+      dependency3: D3,
+      dependency4: D4,
+      dependency5: D5,
+      dependency6: D6,
+      dependency7: D7,
+      dependency8: D8,
+      dependency9: D9,
+      dependency10: D10
+    ): T | undefined;
     refresh?(
       current: T,
       context: Omit<TemplateContext, "template">
@@ -227,10 +237,17 @@ export function createVariableGameStep<T>({
   if (fixed != null) {
     gameStep.TemplateFixedValueLabel = fixed.renderTemplateLabel;
     gameStep.TemplateFixedValueSelector = fixed.renderSelector;
-    gameStep.initialFixedValue = (playerIds) =>
+    gameStep.initialFixedValue = (context) =>
       nullthrows(
-        fixed.initializer(playerIds),
-        `Trying to derive the 'initial fixed' item when it shouldn't be allowed for id ${gameStep.id}`
+        fixed.initializer(
+          ...(dependencies?.map((dependency) =>
+            nullthrows(
+              dependency.extractInstanceValue!(context),
+              `Unfulfilled dependency ${dependency.id} for ${gameStep.id}`
+            )
+          ) ?? []),
+          `Trying to derive the 'initial fixed' item when it shouldn't be allowed for id ${gameStep.id}`
+        )
       );
     gameStep.refreshFixedValue = fixed.refresh;
   }
@@ -238,23 +255,27 @@ export function createVariableGameStep<T>({
   gameStep.strategies = (context) => {
     const strategies = [];
 
+    const fakeInstanceContext = { ...context, instance: [] };
+
     if (recommended != null) {
       // TODO: We use an empty instance here, this is problematic because it
       // doesn't allow us to catch cases where the instance is required to
       // calculate the recommended value (e.g. if it relies on the value of
       // a previous step)
-      const value = recommended({
-        playerIds: context.playerIds,
-        productIds: context.productIds,
-        instance: [],
-      });
+      const value = recommended(fakeInstanceContext);
       if (value != null) {
         strategies.push(Strategy.DEFAULT);
       }
     }
 
+    const fulfilledDependencies =
+      dependencies != null
+        ? Vec.map(dependencies, (dependency) =>
+            dependency.extractInstanceValue!(fakeInstanceContext)
+          )
+        : [];
     const fixedValue =
-      fixed != null ? fixed.initializer(context.playerIds) : undefined;
+      fixed != null ? fixed.initializer(...fulfilledDependencies) : undefined;
     if (fixed == null || fixedValue != null) {
       const areDependenciesFulfilled =
         dependencies?.every((dependency) => dependency.hasValue!(context)) ??
