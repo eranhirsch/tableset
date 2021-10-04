@@ -46,7 +46,10 @@ function min_by<T>(
 }
 
 const sum = (arr: readonly number[]): number =>
-  arr.reduce((sum, num) => sum + num, 0);
+  arr.reduce((sum, num) => sum + num);
+
+const product = (arr: readonly number[]): number =>
+  arr.reduce((sum, num) => sum * num);
 
 export const MathUtils = {
   max_by,
@@ -56,4 +59,5 @@ export const MathUtils = {
   min_by,
   min,
   sum,
+  product,
 } as const;

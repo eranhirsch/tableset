@@ -3,29 +3,25 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/async.php
  */
-import { Vec, Dict as D, tuple } from "common";
-import { DictLike, PromisedType, ValueOf } from "../_private/typeUtils";
+import { Dict as D, tuple, Vec } from "common";
+import {
+  DictLike,
+  PromisedType,
+  RemappedDict,
+  ValueOf,
+} from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-object with each value `await`ed in parallel.
  */
-async function from_async<T extends Record<keyof any, Promise<any>>>(
-  dict: Readonly<T>
-): Promise<Readonly<Record<keyof T, PromisedType<ValueOf<T>>>>>;
-async function from_async<T extends Record<keyof any, Promise<any>>>(
-  dict: Readonly<Partial<T>>
-): Promise<Readonly<Partial<Record<keyof T, PromisedType<ValueOf<T>>>>>>;
-async function from_async<T extends Record<keyof any, Promise<any>>>(
-  dict: Readonly<T>
-): Promise<Readonly<Record<keyof T, PromisedType<ValueOf<T>>>>> {
-  // TODO: Typescript can't deduce the generic type here because it's restricted
-  // to return type and not the params in input. Maybe we can make it happen?!
-  return D.from_entries(
+const from_async = async <T extends DictLike>(
+  dict: Readonly<RemappedDict<T, Promise<ValueOf<T>>>>
+): Promise<Readonly<T>> =>
+  D.from_entries(
     await Vec.map_async(Vec.entries(dict), async ([key, valuePromise]) =>
       tuple(key, await valuePromise)
     )
   );
-}
 
 /**
  * @returns a new mapper-obj where each value is the result of calling the given
@@ -33,10 +29,12 @@ async function from_async<T extends Record<keyof any, Promise<any>>>(
  *
  * @see `Dict.from_keys` for non-async functions
  */
-const from_keys_async = async <Tk extends keyof any, Tv>(
-  keys: readonly Tk[],
-  valueFunc: (key: Tk) => Promise<Tv>
-): Promise<Readonly<Record<Tk, PromisedType<Promise<Tv>>>>> =>
+const from_keys_async = async <K extends keyof any, V>(
+  keys: readonly K[],
+  valueFunc: (key: K) => Promise<V>
+): Promise<Readonly<Required<Record<K, V>>>> =>
+  // TODO: I can't seem to get the types to work here
+  // @ts-ignore
   from_async(D.from_keys(keys, valueFunc));
 
 /**
@@ -45,10 +43,12 @@ const from_keys_async = async <Tk extends keyof any, Tv>(
  *
  * @see `Dict.map` for non-async functions
  */
-const map_with_key_async = async <T extends DictLike, Tv>(
+const map_with_key_async = async <T extends DictLike, Tv extends Promise<any>>(
   dict: Readonly<T>,
-  valueFunc: (key: keyof T, value: ValueOf<T>) => Promise<Tv>
-): Promise<Readonly<Record<keyof T, Tv>>> =>
+  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
+): Promise<Readonly<RemappedDict<T, PromisedType<Tv>>>> =>
+  // TODO: I can't seem to get the types to work here
+  // @ts-ignore
   from_async(D.map_with_key(dict, valueFunc));
 
 /**
@@ -57,10 +57,10 @@ const map_with_key_async = async <T extends DictLike, Tv>(
  *
  * @see `Dict.map` for non-async functions.
  */
-const map_async = async <T extends DictLike, Tv2>(
+const map_async = async <T extends DictLike, Tv extends Promise<any>>(
   dict: Readonly<T>,
-  valueFunc: (value: ValueOf<T>) => Promise<Tv2>
-): Promise<Readonly<Record<keyof T, Tv2>>> =>
+  valueFunc: (value: ValueOf<T>) => Tv
+): Promise<Readonly<RemappedDict<T, PromisedType<Tv>>>> =>
   map_with_key_async(dict, (_, value) => valueFunc(value));
 
 /**
@@ -68,13 +68,13 @@ const map_async = async <T extends DictLike, Tv2>(
  *
  * @see `Dict.filter_with_key()` for non-async filters with key.
  */
-const filter_with_key_async = async <T extends DictLike>(
+async function filter_with_key_async<T extends DictLike>(
   dict: Readonly<T>,
   predicate: (key: keyof T, value: ValueOf<T>) => Promise<boolean>
-): Promise<Readonly<T>> => {
+): Promise<Readonly<T>> {
   const resolved = await map_with_key_async(dict, predicate);
   return D.filter_with_keys(dict, (key) => resolved[key]);
-};
+}
 
 /**
  * @returns a mapper-obj containing only the values for which the given async

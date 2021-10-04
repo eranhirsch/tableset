@@ -237,9 +237,8 @@ function unique_by<Tv>(
  * iterator method returning the values, making it usable in any API which takes
  * a Traversable.
  */
-const values = <T extends DictLike>(
-  dict: Readonly<T | Partial<T>>
-): readonly ValueOf<T>[] => Object.values(dict);
+const values = <T extends DictLike>(dict: Readonly<T>): readonly ValueOf<T>[] =>
+  Object.values(dict);
 
 /**
  * @returns an array of 2-tuples of the key/value pairs of the input mapper-obj.
@@ -248,7 +247,13 @@ const values = <T extends DictLike>(
  * correct typing, but more restrictive too.
  */
 function entries<T extends DictLike>(
-  dict: Readonly<T | Partial<T>>
+  dict: Readonly<T>
+): readonly (readonly [key: keyof T, value: ValueOf<T>])[];
+function entries<K extends keyof any, V>(
+  dict: Readonly<DictLike<K, V>>
+): readonly (readonly [key: K, value: V])[];
+function entries<T extends DictLike>(
+  dict: Readonly<T>
 ): readonly (readonly [key: keyof T, value: ValueOf<T>])[] {
   // Object.entries returns strings for everything, but because indexers are
   // always cast to string too (e.g. x[number] === x[`${number}`]) we can fake

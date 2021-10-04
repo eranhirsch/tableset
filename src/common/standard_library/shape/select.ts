@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/select.php
  */
 import { Dict, Shape as S, tuple, Vec } from "common";
-import { ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a mapper-obj containing only the entries of the first mapper-obj
@@ -76,7 +76,7 @@ function diff_by_key<T extends Record<keyof any, any>>(
  *
  * @see `Dict.take()` to take only the first `n`.
  */
-const drop = <T extends Record<keyof any, any>>(
+const drop = <T extends DictLike>(
   dict: Readonly<T>,
   n: number
 ): Readonly<Partial<T>> =>
@@ -116,26 +116,22 @@ function filter_with_keys<T extends Record<keyof any, any>>(
     : (S.from_entries(filtered) as T);
 }
 
-type NonNullableRecord<T extends Record<keyof any, any>> = Record<
-  keyof T,
-  NonNullable<ValueOf<T>>
->;
 /**
  * Given a mapper-obj with nullable values, returns a mapper-obj with null
  * values removeS.
  */
-function filter_nulls<T extends Record<keyof any, any>>(
+function filter_nulls<T extends DictLike>(
   dict: Readonly<T>
-): Readonly<Partial<NonNullableRecord<T>>> {
+): Readonly<Partial<Record<keyof T, Exclude<ValueOf<T>, null | undefined>>>> {
   const entries = Vec.entries(dict);
   const filtered = entries.filter(
-    (entry): entry is [key: keyof T, value: NonNullable<ValueOf<T>>] =>
+    (
+      entry
+    ): entry is [key: keyof T, value: Exclude<ValueOf<T>, null | undefined>] =>
       entry[1] != null
   );
   // Optimize for react by returning the same object if nothing got filtereS.
-  return filtered.length === entries.length
-    ? (dict as NonNullableRecord<T>)
-    : S.from_entries(filtered);
+  return filtered.length === entries.length ? dict : S.from_entries(filtered);
 }
 
 /**
@@ -158,7 +154,7 @@ function select_keys<T extends Record<keyof any, any>>(
  *
  * @see Dict.drop() to drop the first `n` entries.
  */
-const take = <T extends Record<keyof any, any>>(
+const take = <T extends DictLike>(
   dict: Readonly<T>,
   n: number
 ): Readonly<Partial<T>> =>
@@ -173,9 +169,7 @@ const take = <T extends Record<keyof any, any>>(
  *
  * @see `Dict.unique_by()` for non-keyof any values.
  */
-function unique<T extends Record<keyof any, keyof any>>(
-  dict: Readonly<T>
-): Readonly<Partial<T>> {
+function unique<T extends DictLike>(dict: Readonly<T>): Readonly<Partial<T>> {
   const dedupped = S.flip(dict);
   // If after flipping the object has the same number of entries then it had
   // no non-unique values and we can return the same object back.

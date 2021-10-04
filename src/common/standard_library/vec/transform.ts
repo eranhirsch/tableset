@@ -9,7 +9,7 @@
  */
 
 import { Vec as V } from "common";
-import { ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new array of size `size` where all the values are `value`
@@ -25,8 +25,8 @@ const fill = <Tv>(size: number, value: Tv): readonly Tv[] =>
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.map_with_key/
  */
-const map_with_key = <T extends Record<keyof any, any>, Tv>(
-  dict: Readonly<T | Partial<T>>,
+const map_with_key = <T extends DictLike, Tv>(
+  dict: Readonly<T>,
   valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
 ): readonly Tv[] =>
   V.entries(dict).map(([key, value]) => valueFunc(key, value));

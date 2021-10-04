@@ -5,7 +5,12 @@
  */
 
 import { Dict as D, tuple, Vec } from "common";
-import { DictLike, ValueOf } from "../_private/typeUtils";
+import {
+  DictLike,
+  RekeyedDict,
+  RemappedDict,
+  ValueOf
+} from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj mapping each value to the number of times it
@@ -37,7 +42,7 @@ const fill_keys = <Tk extends keyof any, Tv>(
  *
  * @see `Dict\merge()` for a fixed number of mapper-objects.
  */
-const flatten = <T extends Record<keyof any, unknown>>(
+const flatten = <T extends DictLike>(
   dicts: readonly Readonly<T>[]
 ): Readonly<T> => D.merge(...dicts);
 
@@ -50,7 +55,7 @@ const flatten = <T extends Record<keyof any, unknown>>(
  */
 const flip = <T extends DictLike>(
   dict: Readonly<T>
-): Readonly<Partial<Record<ValueOf<T>, keyof T>>> =>
+): Readonly<Required<Record<ValueOf<T>, keyof T>>> =>
   pull_with_key(
     dict,
     // Notice that we swap the key and value here, the valueFunc returns the key
@@ -70,7 +75,7 @@ const flip = <T extends DictLike>(
 const from_keys = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   valueFunc: (key: Tk) => Tv
-): Readonly<Record<Tk, Tv>> => pull(keys, valueFunc, (key) => key);
+): Readonly<Required<Record<Tk, Tv>>> => pull(keys, valueFunc, (key) => key);
 
 /**
  * @returns a new mapper-obj where each mapping is defined by the given
@@ -85,14 +90,21 @@ const from_keys = <Tk extends keyof any, Tv>(
  *
  * Also known as `unzip` or `fromItems` in other implementations.
  */
-const from_entries = <Tk extends keyof any, Tv>(
+function from_entries<T extends DictLike>(
+  entries: Iterable<readonly [key: keyof T, value: ValueOf<T>]>
+): Readonly<T>;
+function from_entries<Tk extends keyof any, Tv>(
   entries: Iterable<readonly [key: Tk, value: Tv]>
-): Readonly<Record<Tk, Tv>> =>
+): Readonly<Required<Record<Tk, Tv>>>;
+function from_entries<Tk extends keyof any, Tv>(
+  entries: Iterable<readonly [key: Tk, value: Tv]>
+): Readonly<Required<Record<Tk, Tv>>> {
   // We need this cast because the native JS version of `fromEntries` returns an
   // object mapped on strings no matter what the types of the input array is.
   // This cast should be safe because indexers are always cast to string (e.g.
   // `x[number] === x[`${number}`])
-  Object.freeze(Object.fromEntries(entries) as Record<Tk, Tv>);
+  return Object.freeze(Object.fromEntries(entries) as Required<Record<Tk, Tv>>);
+}
 
 /**
  * @returns a new mapper-obj keyed by the result of calling the given function on
@@ -141,7 +153,7 @@ const group_by = <Tk extends keyof any, Tv>(
 const map = <T extends DictLike, Tv>(
   dict: Readonly<T>,
   valueFunc: (value: ValueOf<T>) => Tv
-): Readonly<Record<keyof T, Tv>> =>
+): Readonly<RemappedDict<T, Tv>> =>
   map_with_key(dict, (_, value) => valueFunc(value));
 
 /**
@@ -152,7 +164,7 @@ const map = <T extends DictLike, Tv>(
 const map_keys = <T extends DictLike, Tk extends keyof any>(
   dict: Readonly<T>,
   keyFunc: (key: keyof T) => Tk
-): Readonly<Record<Tk, ValueOf<T>>> =>
+): Readonly<RekeyedDict<T, Tk>> =>
   pull_with_key(
     dict,
     (_, value) => value,
@@ -161,8 +173,8 @@ const map_keys = <T extends DictLike, Tk extends keyof any>(
 
 const map_with_key = <T extends DictLike, Tv>(
   dict: Readonly<T>,
-  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
-): Readonly<Record<keyof T, Tv>> =>
+  valueFunc: (key: keyof T, value: ValueOf<T>, index: number) => Tv
+): Readonly<RemappedDict<T, Tv>> =>
   pull_with_key(dict, valueFunc, (key) => key);
 
 /**
@@ -174,10 +186,14 @@ const map_with_key = <T extends DictLike, Tv>(
  */
 const pull = <T, Tk extends keyof any, Tv>(
   items: readonly T[],
-  valueFunc: (value: T) => Tv,
-  keyFunc: (value: T) => Tk
-): Readonly<Record<Tk, Tv>> =>
-  from_entries(items.map((item) => tuple(keyFunc(item), valueFunc(item))));
+  valueFunc: (value: T, index: number) => Tv,
+  keyFunc: (value: T, index: number) => Tk
+): Readonly<Required<Record<Tk, Tv>>> =>
+  from_entries(
+    items.map((item, index) =>
+      tuple(keyFunc(item, index), valueFunc(item, index))
+    )
+  );
 
 /**
  * @returns a new mapper-obj with mapped keys and values.
@@ -188,13 +204,13 @@ const pull = <T, Tk extends keyof any, Tv>(
  */
 const pull_with_key = <T extends DictLike, Tk extends keyof any, Tv>(
   dict: Readonly<T>,
-  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv,
-  keyFunc: (key: keyof T, value: ValueOf<T>) => Tk
-): Readonly<Record<Tk, Tv>> =>
+  valueFunc: (key: keyof T, value: ValueOf<T>, index: number) => Tv,
+  keyFunc: (key: keyof T, value: ValueOf<T>, index: number) => Tk
+): Readonly<Required<Record<Tk, Tv>>> =>
   pull(
     Vec.entries(dict),
-    ([key, value]) => valueFunc(key, value),
-    ([key, value]) => keyFunc(key, value)
+    ([key, value], index) => valueFunc(key, value, index),
+    ([key, value], index) => keyFunc(key, value, index)
   );
 
 export const Dict = {

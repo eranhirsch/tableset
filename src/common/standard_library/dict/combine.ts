@@ -50,20 +50,21 @@ const left_join = <
 
 const inner_join = <
   Tleft extends DictLike,
-  Tright extends Record<keyof Tleft, any>
+  Tright extends DictLike<keyof Tleft, any>
 >(
   left: Readonly<Tleft>,
   right: Readonly<Tright>
 ): Readonly<
   Record<keyof Tleft, [left: ValueOf<Tleft>, right: ValueOf<Tright>]>
-> =>
-  D.filter_nulls(
+> => {
+  return D.filter_nulls(
     // We dont use left-join here because it's harder to do the null checks
     // inside the tuples cleanly without casts.
     D.map_with_key(left, (key, value) =>
-      right[key] != null ? tuple(value, right[key]) : null
+      key in right ? tuple(value, right[key]) : undefined
     )
   );
+};
 
 const outer_join = <Tleft extends DictLike, Tright extends DictLike>(
   left: Readonly<Tleft>,

@@ -3,7 +3,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/async.php
  */
-import { Shape as S, Dict } from "common";
+import { Dict, Shape as S } from "common";
 import { ValueOf } from "../_private/typeUtils";
 
 /**
@@ -16,6 +16,8 @@ const from_keys_async = async <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   valueFunc: (key: Tk) => Promise<Tv>
 ): Promise<Readonly<Partial<Record<Tk, Tv>>>> =>
+  // TODO: I can't seem to get the types to work here
+  // @ts-ignore
   Dict.from_async(S.from_keys(keys, valueFunc));
 
 /**

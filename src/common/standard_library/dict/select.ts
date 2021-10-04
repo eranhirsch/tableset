@@ -58,26 +58,19 @@ function filter_with_keys<T extends DictLike>(
     : (D.from_entries(filtered) as T);
 }
 
-type NonNullableRecord<T extends DictLike> = Record<
-  keyof T,
-  NonNullable<ValueOf<T>>
->;
 /**
  * Given a mapper-obj with nullable values, returns a mapper-obj with null
  * values removeD.
  */
 function filter_nulls<T extends DictLike>(
   dict: Readonly<T>
-): Readonly<NonNullableRecord<T>> {
+): Readonly<Record<keyof T, Exclude<ValueOf<T>, null | undefined>>> {
   const entries = Vec.entries(dict);
   const filtered = entries.filter(
-    (entry): entry is [key: keyof T, value: NonNullable<ValueOf<T>>] =>
-      entry[1] != null
+    (entry): entry is [keyof T, ValueOf<T>] => entry[1] != null
   );
   // Optimize for react by returning the same object if nothing got filtereD.
-  return filtered.length === entries.length
-    ? (dict as NonNullableRecord<T>)
-    : D.from_entries(filtered);
+  return filtered.length === entries.length ? dict : D.from_entries(filtered);
 }
 
 /**
@@ -100,11 +93,17 @@ function select_keys<T extends DictLike>(
  *
  * @see Dict.drop() to drop the first `n` entries.
  */
-const take = <T extends DictLike>(dict: Readonly<T>, n: number): Readonly<T> =>
+const take = <T extends DictLike>(
+  dict: Readonly<T>,
+  n: number
+): Readonly<T> => {
   // We don't optimize here because checking the size of the Obj just to see if
   // `n` is bigger than it would probably cost more than the possibility this API
   // would be used trivially anyway.
-  D.from_entries(Vec.take(Vec.entries(dict), n));
+  const entries = Vec.entries(dict);
+  const taken = Vec.take(entries, n);
+  return D.from_entries(taken);
+};
 
 /**
  * @returns a mapper-obj in which each value appears exactly once. In case of
@@ -118,7 +117,10 @@ function unique<T extends DictLike>(dict: Readonly<T>): Readonly<T> {
   // no non-unique values and we can return the same object back.
   // TODO: We have to cast here because typescript is getting really confused
   // with all these keyof and ValueOf being operated on themselves...
-  return D.size(dedupped) === D.size(dict) ? dict : (D.flip(dedupped) as T);
+  return D.size(dedupped) === D.size(dict)
+    ? dict
+    : // @ts-ignore
+      (D.flip(dedupped) as T);
 }
 
 /**

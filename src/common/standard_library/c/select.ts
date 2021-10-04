@@ -77,10 +77,8 @@ function firstx<Tv>(arr: readonly Tv[]): Tv {
  *
  * @see `C.first_keyx` for non-empty Traversables.
  */
-function first_key<Tk extends keyof any>(
-  keyedTraversable: Readonly<Record<Tk, unknown>>
-): Tk | undefined {
-  const [[key]] = Vec.entries(keyedTraversable);
+function first_key<T extends DictLike>(dict: Readonly<T>): keyof T | undefined {
+  const [[key]] = Vec.entries(dict);
   return key;
 }
 
@@ -90,15 +88,10 @@ function first_key<Tk extends keyof any>(
  *
  * @see `C.first_key` for possibly empty Traversables.
  */
-const first_keyx = <Tk extends keyof any>(
-  keyedTraversable: Readonly<Record<Tk, unknown>>
-): Tk =>
+const first_keyx = <T extends DictLike>(dict: Readonly<T>): keyof T =>
   // For keys we can simply check nulls because `null`/`undefined` aren't valid
   // keys (because they don't extend `keyof any`)
-  nullthrows(
-    first_key(keyedTraversable),
-    "first_keyx: Expected at least one element."
-  );
+  nullthrows(first_key(dict), "first_keyx: Expected at least one element.");
 
 /**
  * @returns the last element of the given Traversable, or undefined if the
@@ -128,10 +121,8 @@ function lastx<Tv>(arr: readonly Tv[]): Tv {
  *
  * @see `C.last_keyx` for non-empty Traversables.
  */
-function last_key<Tk extends keyof any>(
-  keyedTraversable: Readonly<Record<Tk, unknown>>
-): Tk | undefined {
-  const lastEntry = last(Vec.entries(keyedTraversable));
+function last_key<T extends DictLike>(dict: Readonly<T>): keyof T | undefined {
+  const lastEntry = last(Vec.entries(dict));
   if (lastEntry == null) {
     return;
   }
@@ -145,13 +136,8 @@ function last_key<Tk extends keyof any>(
  *
  * @see `C.last_key` for possibly empty Traversables.
  */
-const last_keyx = <Tk extends keyof any>(
-  keyedTraversable: Readonly<Record<Tk, unknown>>
-): Tk =>
-  nullthrows(
-    last_key(keyedTraversable),
-    "last_keyx: Expected at least one element."
-  );
+const last_keyx = <T extends DictLike>(dict: Readonly<T>): keyof T =>
+  nullthrows(last_key(dict), "last_keyx: Expected at least one element.");
 
 /**
  * @returns the first element of the given Traversable, or undefined if the

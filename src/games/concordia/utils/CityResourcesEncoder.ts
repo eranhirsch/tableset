@@ -1,4 +1,12 @@
-import { Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
+import {
+  Dict,
+  invariant,
+  MathUtils,
+  nullthrows,
+  Num,
+  Random,
+  Vec,
+} from "common";
 import { MapId, MAPS, Zone } from "./Maps";
 import { Resource, RESOURCE_COST } from "./resource";
 
@@ -15,16 +23,16 @@ export const CITY_TILES: Readonly<Record<Zone, ZoneResourceTiles>> =
   });
 
 type CityResources = Readonly<{ [cityName: string]: Resource }>;
-type ProvinceCityResources = Readonly<{
-  [provinceName: string]: CityResources;
-}>;
-type ProvinceBonusResource = Readonly<{
-  [provinceName: string]: Resource;
-}>;
+type ProvinceCityResources = Readonly<
+  Record<string /* provinceName */, CityResources>
+>;
+type ProvinceBonusResource = Readonly<
+  Record<string /* provinceName */, Resource>
+>;
 
 export default {
   randomHash: (mapId: MapId): string =>
-    Vec.map_with_key(Dict.filter_nulls(MAPS[mapId].provinces), (zone) =>
+    Vec.map_with_key(MAPS[mapId].provinces, (zone) =>
       Num.encode_base32(
         Random.index(MathUtils.permutations_lazy_array(CITY_TILES[zone]))
       )
@@ -50,36 +58,36 @@ function decodeCityResources(
   mapId: MapId,
   hash: string
 ): ProvinceCityResources {
-  return Dict.reduce_with_key(
-    Dict.filter_nulls(MAPS[mapId].provinces),
-    (result, zone, provinces, index) => {
-      const zoneDef = CITY_TILES[zone];
-      const permutationIdx = Num.decode_base32(
-        hash.split(HASH_SEPARATOR)[index]
-      );
-      const permutations = MathUtils.permutations_lazy_array(zoneDef);
-      const resources = nullthrows(
-        permutations.at(permutationIdx),
-        `Index ${permutationIdx} is out of bounds for permutations ${permutations}`
+  const permutationIndices = hash
+    .split(HASH_SEPARATOR)
+    .map((hash) => Num.decode_base32(hash));
+
+  const x = Dict.map_with_key(
+    MAPS[mapId].provinces,
+    (zone, provinces, index) => {
+      const permutations = MathUtils.permutations_lazy_array(CITY_TILES[zone]);
+
+      let resources = nullthrows(
+        permutations.at(permutationIndices[index]),
+        `Index ${permutationIndices[index]} is out of bounds for permutations ${permutations}`
       );
 
-      let resourceIdx = 0;
-      Vec.map_with_key(provinces, (provinceName, cities) => {
-        const mappedResources: { [cityName: string]: Resource } = {};
-        cities.forEach((cityName) => {
-          mappedResources[cityName] = nullthrows(
-            resources[resourceIdx++],
-            `Not enough items in the resources permutation!`
-          );
-        });
-        result = {
-          ...result,
-          [provinceName]: mappedResources,
-        };
+      return Dict.map(provinces, (cities) => {
+        const cityResources = Vec.zip(cities, resources);
+        invariant(
+          cityResources.length === cities.length,
+          `Number of resources ${cityResources.length} didn't match number of cities ${cities.length}`
+        );
+        resources = resources.slice(cities.length);
+        return Dict.from_entries(cityResources);
       });
-
-      return result;
-    },
-    {} as ProvinceCityResources
+    }
+  );
+  return Dict.flatten(
+    Vec.values(
+      // TODO: map_with_key needs to return partial records when given a partial
+      // record as input.
+      x
+    )
   );
 }

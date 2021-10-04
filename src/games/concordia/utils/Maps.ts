@@ -151,4 +151,4 @@ export interface StartingColonistLocation {
 export type Zone = "A" | "B" | "C" | "D";
 
 type CityNames = readonly string[];
-export type Provinces = Readonly<{ [provinceName: string]: CityNames }>;
+export type Provinces = Readonly<Record<string /* provinceName */, CityNames>>;

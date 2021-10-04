@@ -5,7 +5,7 @@
  */
 
 import { tuple, Vec } from "common";
-import { ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj mapping each value to the number of times it
@@ -35,8 +35,8 @@ const fill_keys = <Tk extends keyof any, Tv>(
  * In case of duplicate values, later keys overwrite the
  * previous ones.
  */
-const flip = <T extends Record<keyof any, keyof any>>(
-  dict: Readonly<T | Partial<T>>
+const flip = <T extends DictLike>(
+  dict: Readonly<T>
 ): Readonly<Partial<Record<ValueOf<T>, keyof T>>> =>
   pull_with_key(
     dict,
@@ -141,11 +141,11 @@ const map_keys = <T extends Record<keyof any, any>, Tk extends keyof any>(
  *  - keys are the result of calling `keyFunc` on the original value.
  * In the case of duplicate keys, later values will overwrite the previous ones.
  */
-const pull = <T, Tk extends keyof any, Tv>(
+const pull = <T, K extends keyof any, V>(
   items: readonly T[],
-  valueFunc: (value: T) => Tv,
-  keyFunc: (value: T) => Tk
-): Readonly<Partial<Record<Tk, Tv>>> =>
+  valueFunc: (value: T) => V,
+  keyFunc: (value: T) => K
+): Readonly<Partial<Record<K, V>>> =>
   from_entries(items.map((item) => tuple(keyFunc(item), valueFunc(item))));
 
 /**
@@ -155,15 +155,11 @@ const pull = <T, Tk extends keyof any, Tv>(
  *  - keys are the result of calling `keyFunc` on the original value/key.
  * In the case of duplicate keys, later values will overwrite the previous ones.
  */
-const pull_with_key = <
-  T extends Record<keyof any, any>,
-  Tk extends keyof any,
-  Tv
->(
-  dict: Readonly<T | Partial<T>>,
-  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv,
-  keyFunc: (key: keyof T, value: ValueOf<T>) => Tk
-): Readonly<Partial<Record<Tk, Tv>>> =>
+const pull_with_key = <T extends DictLike, K extends keyof any, V>(
+  dict: Readonly<T>,
+  valueFunc: (key: keyof T, value: ValueOf<T>) => V,
+  keyFunc: (key: keyof T, value: ValueOf<T>) => K
+): Readonly<Partial<Record<K, V>>> =>
   pull(
     Vec.entries(dict),
     ([key, value]) => valueFunc(key, value),

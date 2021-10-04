@@ -26,7 +26,7 @@ const LOCATIONS = [
   "Helvetia",
 ] as const;
 
-type CastleResource = Readonly<{ [location: string]: Resource }>;
+type CastleResource = Readonly<Record<typeof LOCATIONS[number], Resource>>;
 
 export default {
   randomHash(mapId: MapId, citiesHash: string): string {
@@ -61,7 +61,7 @@ export default {
   ): CastleResource {
     const [resourcesHash, ...leftOvers] = castlesHash.split(DIVIDER, 3);
 
-    const usedResources = Dict.count_values(
+    const usedResources = Shape.count_values(
       Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash))
     );
     const remainingResources = Dict.map_with_key(
@@ -80,6 +80,9 @@ export default {
       `Index ${castlesIndex} is out of bounds for permutations ${permutations}`
     );
 
-    return Dict.associate(LOCATIONS, resources);
+    // We cast here intentionally, we know that the output would contain an
+    // entry for each location because of how we wrote the algorithm.
+    // TODO: Can we do something to remove the cast here?
+    return Shape.associate(LOCATIONS, resources) as CastleResource;
   },
 } as const;
