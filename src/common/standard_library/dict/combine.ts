@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/combine.php
  */
 import { Dict as D, tuple, Vec } from "common";
-import { DictLike, ValueOf } from "../_private/typeUtils";
+import { DictLike, TransformedDict, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj where each element in `keys` maps to the
@@ -13,7 +13,7 @@ import { DictLike, ValueOf } from "../_private/typeUtils";
 const associate = <Tk extends keyof any, Tv>(
   keys: readonly Tk[],
   values: readonly Tv[]
-): Readonly<Record<Tk, Tv>> => D.from_entries(Vec.zip(keys, values));
+): Readonly<Required<Record<Tk, Tv>>> => D.from_entries(Vec.zip(keys, values));
 
 /**
  * @returns a new mapper-obj formed by merging the mapper-obj elements of the
@@ -37,7 +37,7 @@ const merge = <T extends DictLike>(
  */
 const left_join = <
   Tleft extends DictLike,
-  Tright extends Record<keyof Tleft, any>
+  Tright extends DictLike<keyof Tleft, any>
 >(
   left: Readonly<Tleft>,
   right: Readonly<Tright>
@@ -70,7 +70,8 @@ const outer_join = <Tleft extends DictLike, Tright extends DictLike>(
   left: Readonly<Tleft>,
   right: Readonly<Tright>
 ): Readonly<
-  Record<
+  TransformedDict<
+    Tleft,
     keyof Tleft | keyof Tright,
     [left: ValueOf<Tleft> | undefined, right: ValueOf<Tright> | undefined]
   >

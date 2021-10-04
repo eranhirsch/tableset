@@ -27,6 +27,17 @@ const zip = <Tleft, Tright>(
     ? left.map((value, index) => tuple(value, right[index]))
     : right.map((value, index) => tuple(left[index], value));
 
+/**
+ * The typescript typing for concat on a ReadOnlyArray returns a mutable
+ * array. To make sure that our API is the safest possible we export it
+ * here retyped with readonly properties on it.
+ */
+const concat = <T>(
+  first: readonly T[],
+  ...rest: readonly (T | ConcatArray<T>)[]
+): readonly T[] => first.concat(...rest);
+
 export const Vec = {
   zip,
+  concat,
 } as const;

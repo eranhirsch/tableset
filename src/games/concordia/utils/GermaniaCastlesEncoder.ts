@@ -1,4 +1,13 @@
-import { Dict, Vec, Random, MathUtils, Num, nullthrows, Shape } from "common";
+import {
+  Dict,
+  invariant,
+  MathUtils,
+  nullthrows,
+  Num,
+  Random,
+  Shape,
+  Vec,
+} from "common";
 import CityResourcesEncoder from "./CityResourcesEncoder";
 import { MapId } from "./Maps";
 import { Resource } from "./resource";
@@ -61,16 +70,21 @@ export default {
   ): CastleResource {
     const [resourcesHash, ...leftOvers] = castlesHash.split(DIVIDER, 3);
 
-    const usedResources = Shape.count_values(
-      Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash))
+    const leftOverResources = leftOvers.filter(
+      (resourceStr): resourceStr is Resource => resourceStr in BONUS_TILES
     );
-    const remainingResources = Dict.map_with_key(
-      BONUS_TILES,
-      (resource, total) =>
-        total -
-        (usedResources[resource] ?? 0) -
-        (leftOvers[0] === resource ? 1 : 0) -
-        (leftOvers[1] === resource ? 1 : 0)
+    invariant(
+      leftOverResources.length === 2,
+      `Not enough left-overs found in hash ${castlesHash}`
+    );
+
+    const usedResources = Vec.concat(
+      Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash)),
+      leftOverResources
+    );
+    const remainingResources = Dict.map(
+      Dict.left_join(BONUS_TILES, Shape.count_values(usedResources)),
+      ([total, used]) => total - (used ?? 0)
     );
 
     const permutations = MathUtils.permutations_lazy_array(remainingResources);
@@ -80,9 +94,13 @@ export default {
       `Index ${castlesIndex} is out of bounds for permutations ${permutations}`
     );
 
-    // We cast here intentionally, we know that the output would contain an
-    // entry for each location because of how we wrote the algorithm.
-    // TODO: Can we do something to remove the cast here?
-    return Shape.associate(LOCATIONS, resources) as CastleResource;
+    invariant(
+      resources.length === LOCATIONS.length,
+      `Not enough resources in result: ${resources} for castlesHash ${castlesHash}`
+    );
+    // We use Dict instead of Shape here intentionally, we know that the output
+    // would contain an entry for EACH location because of how we wrote the
+    // algorithm.
+    return Dict.associate(LOCATIONS, resources);
   },
 } as const;
