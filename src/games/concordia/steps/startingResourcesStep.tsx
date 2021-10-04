@@ -10,13 +10,13 @@ import GrammaticalList from "../../core/ux/GrammaticalList";
 import { Resource, RESOURCE_NAME } from "../utils/resource";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
 
-const STARTING_RESOURCES: Record<Resource, number> = Object.freeze({
+const STARTING_RESOURCES = Object.freeze({
   cloth: 1,
   wine: 1,
   tools: 1,
   food: 2,
   bricks: 1,
-});
+} as Record<Resource, number>);
 
 export default createDerivedGameStep({
   id: "startingResources",

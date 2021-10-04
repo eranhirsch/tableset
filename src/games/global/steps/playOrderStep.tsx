@@ -18,6 +18,9 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
+import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
+import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
@@ -26,9 +29,6 @@ import {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
-import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
-import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
-import { PlayerShortName } from "../../../features/players/PlayerShortName";
 
 export default createVariableGameStep({
   id: "playOrder",
@@ -45,7 +45,9 @@ export default createVariableGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  random: (playerIds) => Vec.shuffle(playerIds.slice(1)),
+  random: (playerIds) =>
+    // We slice the first player because it acts as a pivot
+    Vec.shuffle(playerIds.slice(1)),
 
   fixed: {
     renderSelector: Selector,

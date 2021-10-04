@@ -5,7 +5,7 @@ import {
   Chip,
   Stack,
   Typography,
-  useTheme,
+  useTheme
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
@@ -13,14 +13,14 @@ import { Dict, invariant_violation, Shape, Vec } from "common";
 import { playersSelectors } from "features/players/playersSlice";
 import { templateActions } from "features/template/templateSlice";
 import GamePiecesColor from "model/GamePiecesColor";
-import { Player, PlayerId } from "model/Player";
+import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import {
   DragDropContext,
   Draggable,
   DraggableProvided,
   Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
@@ -28,7 +28,7 @@ import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
   createVariableGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
@@ -167,13 +167,7 @@ function Selector({
 }): JSX.Element | null {
   const dispatch = useAppDispatch();
 
-  // TODO: We cast here so that typescript has an easier job deducing types with
-  // our HSL common module because Redux Toolkit's `Dictionary` has a
-  // `undefined` in the value and number in the key :( I don't know why?...
-  const players = useAppSelector(playersSelectors.selectEntities) as Record<
-    PlayerId,
-    Player
-  >;
+  const players = useAppSelector(playersSelectors.selectEntities);
 
   // We need the data indexed by color too
   const colorPlayerIds = useMemo(
@@ -250,10 +244,6 @@ function Selector({
     [closestAvailableColor, colorPlayerIds, dispatch, playerColors]
   );
 
-  const colorPlayers = useMemo(
-    () => Dict.compose(colorPlayerIds, players),
-    [colorPlayerIds, players]
-  );
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Stack
@@ -265,7 +255,11 @@ function Selector({
         height={48}
       >
         {Vec.map(availableColors, (color) => (
-          <ColorSlot key={color} color={color} player={colorPlayers[color]} />
+          <ColorSlot
+            key={color}
+            color={color}
+            playerId={colorPlayerIds[color]}
+          />
         ))}
       </Stack>
     </DragDropContext>
@@ -273,31 +267,31 @@ function Selector({
 }
 
 const draggablePlayerRendererFactory =
-  (player: Player) => (provided: DraggableProvided) =>
+  (playerId: PlayerId) => (provided: DraggableProvided) =>
     (
       <Avatar
         ref={provided.innerRef}
         {...provided.dragHandleProps}
         {...provided.draggableProps}
       >
-        <PlayerNameShortAbbreviation playerId={player.id} />
+        <PlayerNameShortAbbreviation playerId={playerId} />
       </Avatar>
     );
 
-function DraggablePlayer({ player }: { player: Player }) {
+function DraggablePlayer({ playerId }: { playerId: PlayerId }) {
   return (
-    <Draggable draggableId={player.id} index={0}>
-      {draggablePlayerRendererFactory(player)}
+    <Draggable draggableId={playerId} index={0}>
+      {draggablePlayerRendererFactory(playerId)}
     </Draggable>
   );
 }
 
 function ColorSlot({
   color,
-  player,
+  playerId,
 }: {
   color: GamePiecesColor;
-  player: Player | undefined;
+  playerId: PlayerId | undefined;
 }) {
   const theme = useTheme();
 
@@ -306,7 +300,7 @@ function ColorSlot({
       droppableId={color}
       // We need to clone the dragged item as we move it between lists
       renderClone={
-        player != null ? draggablePlayerRendererFactory(player) : undefined
+        playerId != null ? draggablePlayerRendererFactory(playerId) : undefined
       }
     >
       {(provided, snapshot) => (
@@ -321,9 +315,9 @@ function ColorSlot({
           invisible={
             // We don't need a badge when there's no avatar hiding the
             // background color
-            player == null ||
+            playerId == null ||
             snapshot.isDraggingOver ||
-            snapshot.draggingFromThisWith === player.id
+            snapshot.draggingFromThisWith === playerId
           }
         >
           <Avatar
@@ -341,13 +335,13 @@ function ColorSlot({
               transitionTimingFunction: "ease-out",
             }}
           >
-            {player != null &&
+            {playerId != null &&
               // We need to remove players occupying slots we are dragging so
               // they don't render and move around, but we don't want to do
               // this to the source slot where our item originated from
               (!snapshot.isDraggingOver ||
-                snapshot.draggingFromThisWith === player.id) && (
-                <DraggablePlayer player={player} />
+                snapshot.draggingFromThisWith === playerId) && (
+                <DraggablePlayer playerId={playerId} />
               )}
             <Box display="none">
               {

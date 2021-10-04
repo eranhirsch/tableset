@@ -22,7 +22,9 @@ function InstanceItemContent({
   stepId: StepId;
 }): JSX.Element | null {
   const game = useAppSelector(gameSelector);
+
   const instance = useAppSelector(instanceSelectors.selectEntities);
+
   const playerIds = useAppSelector(playersSelectors.selectIds) as PlayerId[];
 
   const gameStep = game.atEnforce(stepId);
@@ -46,7 +48,7 @@ function InstanceItemContent({
             // redux dictionaries are really weird because they support ID types
             // which aren't used, and have undefined as part of the value.
             // We cast here to work around it...
-            Vec.values(instance as Record<string, SetupStep | undefined>)
+            Vec.values(instance as Record<StepId, SetupStep | undefined>)
           ),
           playerIds,
         }}

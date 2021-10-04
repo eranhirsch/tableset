@@ -17,16 +17,15 @@ import GamePiecesColor from "model/GamePiecesColor";
  * textually. Multiple piece colors can share a name (in case different games
  * want to use different hues for the same "color").
  */
-export const colorName: Readonly<Record<GamePiecesColor, string>> =
-  Object.freeze({
-    black: "Black",
-    blue: "Blue",
-    green: "Green",
-    red: "Red",
-    yellow: "Yellow",
-    white: "White",
-    pink: "Pink",
-  });
+export const colorName = Object.freeze({
+  black: "Black",
+  blue: "Blue",
+  green: "Green",
+  red: "Red",
+  yellow: "Yellow",
+  white: "White",
+  pink: "Pink",
+} as Record<GamePiecesColor, string>);
 
 /**
  * For each color we want to add we need to provide all colors required by the
@@ -40,7 +39,7 @@ export const colorName: Readonly<Record<GamePiecesColor, string>> =
  *
  * @see https://material.io/resources/color/
  */
-const colorDefs: Record<GamePiecesColor, PaletteColor> = Object.freeze({
+const colorDefs = Object.freeze({
   black: {
     main: grey[900],
     light: "#484848",
@@ -83,7 +82,7 @@ const colorDefs: Record<GamePiecesColor, PaletteColor> = Object.freeze({
     dark: "#c8b900",
     contrastText: "#000000",
   },
-});
+} as Record<GamePiecesColor, PaletteColor>);
 
 declare module "@mui/material/styles" {
   // We need to add the color ids into the main palette object so they can be

@@ -1,21 +1,21 @@
 import { Avatar, Badge, Stack, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { invariant_violation, ReactUtils, Vec } from "common";
+import { invariant_violation, Random, ReactUtils } from "common";
 import { playersSelectors } from "features/players/playersSlice";
 import { Strategy } from "features/template/Strategy";
 import {
   templateActions,
   templateSelectors,
 } from "features/template/templateSlice";
+import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
+import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
+import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
   createVariableGameStep,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
-import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
-import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
-import { PlayerShortName } from "../../../features/players/PlayerShortName";
 
 export default createVariableGameStep({
   id: "firstPlayer",
@@ -30,7 +30,7 @@ export default createVariableGameStep({
   InstanceVariableComponent,
   InstanceManualComponent: "Choose which player goes first.",
 
-  random: (playerIds) => Vec.sample(playerIds, 1)[0],
+  random: (playerIds) => playerIds[Random.index(playerIds)],
 
   fixed: {
     renderSelector: Selector,
