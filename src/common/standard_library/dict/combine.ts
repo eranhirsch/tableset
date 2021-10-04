@@ -4,7 +4,12 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/combine.php
  */
 import { Dict as D, tuple, Vec } from "common";
-import { DictLike, TransformedDict, ValueOf } from "../_private/typeUtils";
+import {
+  DictLike,
+  RemappedDict,
+  TransformedDict,
+  ValueOf,
+} from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj where each element in `keys` maps to the
@@ -87,11 +92,11 @@ const outer_join = <Tleft extends DictLike, Tright extends DictLike>(
 
 const compose = <
   Tinner extends DictLike,
-  Touter extends Record<ValueOf<Tinner>, any>
+  Touter extends DictLike<ValueOf<Tinner>, any>
 >(
   inner: Readonly<Tinner>,
   outer: Readonly<Touter>
-): Readonly<Record<keyof Tinner, ValueOf<Touter> | undefined>> =>
+): Readonly<RemappedDict<Tinner, ValueOf<Touter> | undefined>> =>
   D.map(inner, (innerValue) => outer[innerValue]);
 
 export const Dict = {

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
-import { Dict, invariant_violation, Vec } from "common";
+import { Dict, invariant_violation, Shape, Vec } from "common";
 import { playersSelectors } from "features/players/playersSlice";
 import { templateActions } from "features/template/templateSlice";
 import GamePiecesColor from "model/GamePiecesColor";
@@ -22,6 +22,9 @@ import {
   Droppable,
   DropResult,
 } from "react-beautiful-dnd";
+import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
+import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
+import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
   createVariableGameStep,
@@ -29,11 +32,8 @@ import {
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
-import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
-import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
-import { PlayerShortName } from "../../../features/players/PlayerShortName";
 
-export type PlayerColors = Record<PlayerId, GamePiecesColor>;
+export type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
 
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
   createVariableGameStep<PlayerColors, readonly PlayerId[]>({
@@ -48,7 +48,10 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     InstanceManualComponent: () => InstanceManualComponent({ availableColors }),
 
     random: (playerIds) =>
-      Dict.associate(playerIds, Vec.shuffle(availableColors)),
+      Dict.associate(
+        playerIds,
+        Vec.shuffle(Vec.sample(availableColors, playerIds.length))
+      ),
 
     fixed: {
       renderSelector: ({ current }) => (
@@ -56,41 +59,24 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
       ),
       renderTemplateLabel: TemplateLabel,
 
-      initializer(playerIds) {
-        if (playerIds.length < 1) {
-          // No one to assign colors to
-          return;
-        }
-
-        if (playerIds.length > availableColors.length) {
-          // Too many players, not enough colors
-          return;
-        }
-
-        return Dict.associate(playerIds, availableColors);
-      },
+      initializer: (playerIds) =>
+        playerIds.length >= 1 && playerIds.length <= availableColors.length
+          ? Dict.associate(playerIds, availableColors)
+          : undefined,
 
       refresh(current, playerIds) {
-        const remainingColors = Dict.reduce_with_key(
-          current,
-          (remainingColors, playerId, color) =>
-            // TODO: Something about the typing of C.reduce_with_key isn't
-            // inferring the keys of the Record properly, sending a number type
-            // here. We need to fix the typing there and then remove the `as`
-            // here
-            playerIds.includes(playerId as PlayerId)
-              ? remainingColors.filter((c) => color !== c)
-              : remainingColors,
-          availableColors as GamePiecesColor[]
+        const stillActivePlayerColors = Dict.select_keys(current, playerIds);
+        const colorlessPlayers = Vec.diff(playerIds, Vec.keys(current));
+
+        return Dict.merge(
+          stillActivePlayerColors,
+          // Associate an available color for each player without a color
+          Dict.associate(
+            colorlessPlayers,
+            // Colors that aren't used by active players
+            Vec.diff(availableColors, Vec.values(stillActivePlayerColors))
+          )
         );
-        return Dict.from_keys(
-          playerIds,
-          (playerId) => current[playerId] ?? remainingColors.shift()
-          // TODO: We need this cast because I couldn't find a way to tell
-          // typescript that when the key is a regular key (string | number |
-          // symbol) and not a derived type (like "a" | "b") then the result
-          // is not partial.
-        ) as PlayerColors;
       },
     },
   });
@@ -189,10 +175,16 @@ function Selector({
 }): JSX.Element | null {
   const dispatch = useAppDispatch();
 
-  const players = useAppSelector(playersSelectors.selectEntities);
+  const players = useAppSelector(playersSelectors.selectEntities) as Record<
+    PlayerId,
+    Player
+  >;
 
   // We need the data indexed by color too
-  const colorPlayerIds = useMemo(() => Dict.flip(playerColors), [playerColors]);
+  const colorPlayerIds = useMemo(
+    () => Shape.flip(playerColors),
+    [playerColors]
+  );
 
   const closestAvailableColor = useCallback(
     (
@@ -263,7 +255,10 @@ function Selector({
     [closestAvailableColor, colorPlayerIds, dispatch, playerColors]
   );
 
-  const colorPlayers = Dict.compose(colorPlayerIds, players);
+  const colorPlayers = useMemo(
+    () => Dict.compose(colorPlayerIds, players),
+    [colorPlayerIds, players]
+  );
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Stack
@@ -274,12 +269,9 @@ function Selector({
         spacing={1}
         height={48}
       >
-        {Vec.map_with_key(
-          Dict.from_keys(availableColors, (color) => colorPlayers[color]),
-          (color, player) => (
-            <ColorSlot key={color} color={color} player={player} />
-          )
-        )}
+        {Vec.map(availableColors, (color) => (
+          <ColorSlot key={color} color={color} player={colorPlayers[color]} />
+        ))}
       </Stack>
     </DragDropContext>
   );
