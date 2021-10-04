@@ -7,10 +7,9 @@ import {
   Typography,
   useTheme
 } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "app/hooks";
+import { useAppDispatch } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
 import { Dict, invariant_violation, Shape, Vec } from "common";
-import { playersSelectors } from "features/players/playersSlice";
 import { templateActions } from "features/template/templateSlice";
 import GamePiecesColor from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
@@ -20,7 +19,7 @@ import {
   Draggable,
   DraggableProvided,
   Droppable,
-  DropResult
+  DropResult,
 } from "react-beautiful-dnd";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
@@ -28,7 +27,7 @@ import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
   createVariableGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
@@ -166,8 +165,6 @@ function Selector({
   playerColors: PlayerColors;
 }): JSX.Element | null {
   const dispatch = useAppDispatch();
-
-  const players = useAppSelector(playersSelectors.selectEntities);
 
   // We need the data indexed by color too
   const colorPlayerIds = useMemo(
