@@ -9,7 +9,7 @@ import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder from "../utils/CityResourcesEncoder";
 import { MapId, MAPS } from "../utils/Maps";
-import { RESOURCE_NAME, RESOURCE_COST } from "../utils/resource";
+import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
@@ -118,12 +118,15 @@ function IncompleteInstanceDerivedComponent({
           <>
             The resources (sorted in descending value) are{" "}
             <GrammaticalList>
-              {Vec.values(
-                Dict.sort_by_key(
-                  RESOURCE_NAME,
-                  // We want descending order, so we negate the value
-                  (value) => -RESOURCE_COST[value]
-                )
+              {Vec.map(
+                Vec.values(
+                  Dict.sort_by(
+                    Dict.inner_join(RESOURCE_NAME, RESOURCE_COST),
+                    // We want descending order, so we negate the value
+                    ([_, cost]) => -cost
+                  )
+                ),
+                ([name]) => name
               )}
             </GrammaticalList>
             .

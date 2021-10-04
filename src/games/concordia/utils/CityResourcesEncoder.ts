@@ -41,16 +41,14 @@ export default {
   decodeCityResources,
 
   decodeProvinceBonuses: (mapId: MapId, hash: string): ProvinceBonusResource =>
-    Dict.map_with_key(
-      decodeCityResources(mapId, hash),
-      (provinceName, cityResources) =>
-        nullthrows(
-          MathUtils.max_by(
-            Vec.values(cityResources),
-            (resource) => RESOURCE_COST[resource]
-          ),
-          `Province ${provinceName} had no city resources`
-        )
+    Dict.map(decodeCityResources(mapId, hash), (cityResources) =>
+      nullthrows(
+        MathUtils.max_by(
+          Vec.values(cityResources),
+          (resource) => RESOURCE_COST[resource]
+        ),
+        `Empty city resources encountered for ${mapId} and ${hash}`
+      )
     ),
 } as const;
 
