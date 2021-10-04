@@ -16,42 +16,6 @@ import { Dict, Random } from "common";
 import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
- * @returns an array containing only the elements of the first array that do
- * not appear in any of the other ones.
- *
- * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.diff/
- */
-function diff<Tv>(
-  first: readonly Tv[],
-  ...rest: readonly [readonly Tv[], ...(readonly Tv[])[]]
-): readonly Tv[] {
-  const filtered = first.filter(
-    (item) => !rest.some((otherArray) => otherArray.includes(item))
-  );
-  return filtered.length < first.length ? filtered : first;
-}
-
-/**
- * @returns an array containing only the elements of the first array that do
- * not appear in the second one, where an element's identity is determined by
- * the scalar function
- *
- * @see `Vec.diff`
- * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.diff_by/
- */
-function diff_by<Tv, Ts>(
-  first: readonly Tv[],
-  second: readonly Tv[],
-  scalarFunc: (value: Tv) => Ts
-): readonly Tv[] {
-  const secondScalars = second.map((item) => scalarFunc(item));
-  const filtered = first.filter(
-    (item) => !secondScalars.includes(scalarFunc(item))
-  );
-  return filtered.length < first.length ? filtered : first;
-}
-
-/**
  * @returns an array containing only non-null values of the given array.
  */
 function filter_nulls<Tv>(
@@ -262,8 +226,6 @@ function entries<T extends DictLike>(
 }
 
 export const Vec = {
-  diff_by,
-  diff,
   filter_nulls,
   filter_with_key,
   intersect,
