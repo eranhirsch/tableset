@@ -31,7 +31,18 @@ const map_with_key = <T extends DictLike, Tv>(
 ): readonly Tv[] =>
   V.entries(dict).map(([key, value]) => valueFunc(key, value));
 
+/**
+ * The typing for the ReadonlyArray's map method doesn't return a readonly array
+ * as a result. This kinda doesn't match expectations so we wrap it with better
+ * typing here.
+ */
+const map = <V1, V2>(
+  arr: readonly V1[],
+  valueFunc: (item: V1, index: number) => V2
+): readonly V2[] => arr.map(valueFunc);
+
 export const Vec = {
   fill,
+  map,
   map_with_key,
 } as const;

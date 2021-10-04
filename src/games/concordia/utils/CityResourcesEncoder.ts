@@ -5,6 +5,8 @@ import {
   nullthrows,
   Num,
   Random,
+  Shape,
+  tuple,
   Vec,
 } from "common";
 import { MapId, MAPS, Zone } from "./Maps";
@@ -58,36 +60,37 @@ function decodeCityResources(
   mapId: MapId,
   hash: string
 ): ProvinceCityResources {
-  const permutationIndices = hash
-    .split(HASH_SEPARATOR)
-    .map((hash) => Num.decode_base32(hash));
-
-  const x = Dict.map_with_key(
-    MAPS[mapId].provinces,
-    (zone, provinces, index) => {
-      const permutations = MathUtils.permutations_lazy_array(CITY_TILES[zone]);
-
-      let resources = nullthrows(
-        permutations.at(permutationIndices[index]),
-        `Index ${permutationIndices[index]} is out of bounds for permutations ${permutations}`
-      );
-
-      return Dict.map(provinces, (cities) => {
-        const cityResources = Vec.zip(cities, resources);
-        invariant(
-          cityResources.length === cities.length,
-          `Number of resources ${cityResources.length} didn't match number of cities ${cities.length}`
-        );
-        resources = resources.slice(cities.length);
-        return Dict.from_entries(cityResources);
-      });
-    }
-  );
   return Dict.flatten(
-    Vec.values(
-      // TODO: map_with_key needs to return partial records when given a partial
-      // record as input.
-      x
+    Vec.map(
+      Vec.map(
+        Vec.zip(
+          Vec.values(
+            Shape.inner_join(
+              MAPS[mapId].provinces,
+              Dict.map(CITY_TILES, MathUtils.permutations_lazy_array)
+            )
+          ),
+          hash.split(HASH_SEPARATOR).map(Num.decode_base32)
+        ),
+        ([[provinces, permutations], permutationIndex]) =>
+          tuple(
+            provinces,
+            nullthrows(
+              permutations.at(permutationIndex),
+              `Index ${permutationIndex} is out of bounds for permutations ${permutations}`
+            )
+          )
+      ),
+      ([provinces, resources]) =>
+        Dict.map(provinces, (cities) => {
+          const cityResources = Vec.zip(cities, resources);
+          invariant(
+            cityResources.length === cities.length,
+            `Number of resources ${cityResources.length} didn't match number of cities ${cities.length}`
+          );
+          resources = resources.slice(cities.length);
+          return Dict.from_entries(cityResources);
+        })
     )
   );
 }

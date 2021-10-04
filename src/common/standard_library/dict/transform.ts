@@ -152,9 +152,9 @@ const group_by = <Tk extends keyof any, Tv>(
  */
 const map = <T extends DictLike, Tv>(
   dict: Readonly<T>,
-  valueFunc: (value: ValueOf<T>) => Tv
+  valueFunc: (value: ValueOf<T>, index: number) => Tv
 ): Readonly<RemappedDict<T, Tv>> =>
-  map_with_key(dict, (_, value) => valueFunc(value));
+  map_with_key(dict, (_, value, index) => valueFunc(value, index));
 
 /**
  * @returns a new mapper-obj where each key is the result of calling the given
