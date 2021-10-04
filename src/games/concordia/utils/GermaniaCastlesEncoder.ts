@@ -6,7 +6,7 @@ import {
   Num,
   Random,
   Shape,
-  Vec,
+  Vec
 } from "common";
 import CityResourcesEncoder from "./CityResourcesEncoder";
 import { MapId } from "./Maps";
@@ -39,28 +39,32 @@ type CastleResource = Readonly<Record<typeof LOCATIONS[number], Resource>>;
 
 export default {
   randomHash(mapId: MapId, citiesHash: string): string {
-    const usedResources = Shape.count_values(
-      Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash))
+    const remainingResources = Vec.diff(
+      // All tiles available (normalized)
+      Vec.flatten(
+        Vec.map_with_key(BONUS_TILES, (resource, total) =>
+          Vec.fill(total, resource)
+        )
+      ),
+      provinceBonusTiles(mapId, citiesHash)
     );
 
-    // We shuffle the whole array instead of just sampling 2 items because we
-    // also want to remove them from the array so we can generate a permutation
-    // from the remaining items. This is just a cleaner way to do that using JS
-    // array deconstruction.
-    const [leftOver1, leftOver2, ...afterLeftOver] = Vec.shuffle(
-      Vec.map_with_key(BONUS_TILES, (resource, total) =>
-        Vec.fill(total - (usedResources[resource] ?? 0), resource)
-      ).flat()
+    // Pick 2 tiles to be left out (returned to the box)
+    const leftOvers = Vec.sample(remainingResources, 2);
+    const resourcesHash = Num.encode_base32(
+      Random.index(
+        MathUtils.permutations_lazy_array(
+          // The remaining 10 tiles would be used for the castles
+          Vec.diff(remainingResources, leftOvers)
+        )
+      )
     );
 
-    // To normalize the leftovers array we sort it
-    const leftOvers = Vec.sort([leftOver1, leftOver2]);
-
-    const permutations = MathUtils.permutations_lazy_array(afterLeftOver);
-    const castlesIndex = Random.index(permutations);
-    const resourcesHash = Num.encode_base32(castlesIndex);
-
-    return [resourcesHash, ...leftOvers].join(DIVIDER);
+    return [
+      resourcesHash,
+      // To normalize the leftovers array we sort it
+      ...Vec.sort(leftOvers),
+    ].join(DIVIDER);
   },
 
   decode(
@@ -79,7 +83,7 @@ export default {
     );
 
     const usedResources = Vec.concat(
-      Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash)),
+      provinceBonusTiles(mapId, citiesHash),
       leftOverResources
     );
     const remainingResources = Dict.map(
@@ -104,3 +108,9 @@ export default {
     return Dict.associate(LOCATIONS, resources);
   },
 } as const;
+
+const provinceBonusTiles = (
+  mapId: MapId,
+  citiesHash: string
+): readonly Resource[] =>
+  Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash));

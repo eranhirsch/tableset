@@ -1,13 +1,13 @@
-import { Vec } from "common";
+import { Random } from "common";
 import { templateActions } from "features/template/templateSlice";
 import { StepId } from "../../../model/IGame";
+import { InstanceContext } from "../../../model/IGameStep";
 import GenericItemsFixedTemplateLabel from "../ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "../ux/GenericItemsListPanel";
 import {
   createVariableGameStep,
   VariableStepInstanceComponentProps,
 } from "./createVariableGameStep";
-import { InstanceContext } from "../../../model/IGameStep";
 
 interface CreateGenericItemsGameStepOptions<T extends string = string> {
   id: StepId;
@@ -40,7 +40,7 @@ const createGenericItemsGameStep = <T extends string>({
     InstanceManualComponent,
     InstanceVariableComponent,
 
-    random: () => Vec.sample(itemIds, 1)[0],
+    random: () => itemIds[Random.index(itemIds)],
 
     recommended,
 

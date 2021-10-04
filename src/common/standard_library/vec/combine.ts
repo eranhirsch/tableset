@@ -37,7 +37,15 @@ const concat = <T>(
   ...rest: readonly (T | ConcatArray<T>)[]
 ): readonly T[] => first.concat(...rest);
 
+/**
+ * Typescript typing for flatten on a ReadOnlyArray returns a mutable array. To
+ * make sure that our API is the safest possible we export it here retyped with
+ * readonly properties on it.
+ */
+const flatten = <T>(arr: readonly (readonly T[])[]): readonly T[] => arr.flat();
+
 export const Vec = {
   zip,
   concat,
+  flatten,
 } as const;
