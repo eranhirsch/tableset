@@ -54,10 +54,10 @@ function InstanceManualComponent() {
           <GrammaticalList>
             {Vec.map_with_key(
               // Put tighter maps first
-              Dict.sort_by(MAPS, (map) => -map.tightnessScore),
-              (mapId, map) => (
+              Dict.sort_by(MAPS, ({ tightnessScore }) => -tightnessScore),
+              (mapId, { name, tightnessScore }) => (
                 <React.Fragment key={mapId}>
-                  <RomanTitle>{map.name}</RomanTitle> ({map.tightnessScore})
+                  <RomanTitle>{name}</RomanTitle> ({tightnessScore})
                 </React.Fragment>
               )
             )}

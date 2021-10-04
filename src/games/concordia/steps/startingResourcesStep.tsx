@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { Vec } from "common";
+import { Shape, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import createDerivedGameStep, {
   DerivedStepInstanceComponentProps,
@@ -51,13 +51,12 @@ function InstanceDerivedComponent({
     <Typography variant="body1">
       Each player takes{" "}
       <GrammaticalList>
-        {Vec.filter_nulls(
-          Vec.map_with_key(STARTING_RESOURCES, (resource, count) =>
-            count > 0 ? (
-              <React.Fragment key={`starting_resource_${resource}`}>
-                {count} <strong>{RESOURCE_NAME[resource]}</strong>
-              </React.Fragment>
-            ) : null
+        {Vec.map_with_key(
+          Shape.filter(STARTING_RESOURCES, (count) => count > 0),
+          (resource, count) => (
+            <React.Fragment key={`starting_resource_${resource}`}>
+              {count} <strong>{RESOURCE_NAME[resource]}</strong>
+            </React.Fragment>
           )
         )}
       </GrammaticalList>{" "}

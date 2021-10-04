@@ -37,7 +37,7 @@ export function Expansions(): JSX.Element {
   return (
     <List sx={{ width: "100%" }}>
       {React.Children.toArray(
-        Vec.keys(game.products).map((productId) => (
+        Vec.map_with_key(game.products, (productId) => (
           <ExpansionListItem productId={productId} />
         ))
       )}
