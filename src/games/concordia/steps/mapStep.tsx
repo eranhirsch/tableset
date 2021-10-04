@@ -1,22 +1,30 @@
 import { styled, Typography } from "@mui/material";
-import { Dict, Vec } from "common";
+import { Dict, Random, Vec } from "common";
+import { templateActions } from "features/template/templateSlice";
+import GenericItemsFixedTemplateLabel from "games/core/ux/GenericItemsFixedTemplateLabel";
+import GenericItemsListPanel from "games/core/ux/GenericItemsListPanel";
 import React from "react";
-import createGenericItemsGameStep from "../../core/steps/createGenericItemsGameStep";
-import { VariableStepInstanceComponentProps } from "../../core/steps/createVariableGameStep";
+import {
+  createVariableGameStep,
+  VariableStepInstanceComponentProps,
+} from "../../core/steps/createVariableGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { MapId, MAPS } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 
-export default createGenericItemsGameStep({
+export default createVariableGameStep({
   id: "map",
-  itemIds: Vec.keys(MAPS),
-
-  labelFor: (id: MapId) => MAPS[id].name,
-  InstanceVariableComponent,
-  InstanceManualComponent,
-
   isType: (x: string): x is MapId => x in MAPS,
+
+  InstanceManualComponent,
+  InstanceVariableComponent,
+
+  random() {
+    const mapIds = Vec.keys(MAPS);
+    return mapIds[Random.index(mapIds)];
+  },
+
   recommended: ({ playerIds }) =>
     playerIds.length <= 1
       ? undefined
@@ -25,6 +33,13 @@ export default createGenericItemsGameStep({
       : playerIds.length <= 5
       ? "imperium"
       : undefined,
+
+  fixed: {
+    initializer: () => Vec.keys(MAPS)[0],
+
+    renderTemplateLabel: TemplateLabel,
+    renderSelector: Selector,
+  },
 });
 
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({
@@ -72,5 +87,30 @@ function InstanceManualComponent() {
         </Typography>
       )}
     </BlockWithFootnotes>
+  );
+}
+
+function TemplateLabel({ value }: { value: MapId }): JSX.Element {
+  return (
+    <GenericItemsFixedTemplateLabel
+      onLabelForItem={(id) => MAPS[id].name}
+      selectedId={value}
+    />
+  );
+}
+
+function Selector({ current }: { current: MapId }): JSX.Element {
+  return (
+    <GenericItemsListPanel
+      itemIds={Vec.keys(MAPS)}
+      selectedId={current}
+      onLabelForItem={(id) => MAPS[id].name}
+      onUpdateItem={(itemId) =>
+        templateActions.constantValueChanged({
+          id: "map",
+          value: itemId,
+        })
+      }
+    />
   );
 }
