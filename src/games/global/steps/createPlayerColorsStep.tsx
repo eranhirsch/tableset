@@ -150,10 +150,6 @@ function TemplateLabel({ value }: { value: PlayerColors }): JSX.Element {
             component="span"
             size="small"
             color={color}
-            // TODO: Something about the typing of Vec.map_with_key isn't
-            // inferring the keys of the Record properly, sending a number type
-            // here. We need to fix the typing there and then remove the `as`
-            // here
             label={<PlayerShortName playerId={playerId} />}
           />
         ))
