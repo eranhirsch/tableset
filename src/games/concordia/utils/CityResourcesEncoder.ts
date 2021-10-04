@@ -32,7 +32,7 @@ type ProvinceBonusResource = Readonly<
 
 export default {
   randomHash: (mapId: MapId): string =>
-    Vec.map(Vec.keys(MAPS[mapId].provinces), (zone) =>
+    Vec.map_with_key(MAPS[mapId].provinces, (zone) =>
       Num.encode_base32(
         Random.index(MathUtils.permutations_lazy_array(CITY_TILES[zone]))
       )
@@ -57,10 +57,8 @@ function decodeCityResources(
   hash: string
 ): ProvinceCityResources {
   const allPerms = Dict.map(CITY_TILES, MathUtils.permutations_lazy_array);
-  const zonePerms = Shape.inner_join(MAPS[mapId].provinces, allPerms);
-  const relevantPerms = Vec.values(zonePerms);
   const withHashIndices = Vec.zip(
-    relevantPerms,
+    Vec.values(Shape.inner_join(MAPS[mapId].provinces, allPerms)),
     hash.split(HASH_SEPARATOR).map(Num.decode_base32)
   );
   const zoneResources = Vec.map(
