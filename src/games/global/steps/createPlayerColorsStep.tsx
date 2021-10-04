@@ -99,11 +99,7 @@ function InstanceVariableComponent({
             invisible={false}
             color={color}
           >
-            {/* TODO: Something about the typing of Vec.map_with_key isn't 
-            inferring the keys of the Record properly, sending a number type 
-            here. We need to fix the typing there and then remove the `as` here 
-            */}
-            <PlayerAvatar playerId={playerId as PlayerId} />
+            <PlayerAvatar playerId={playerId} />
           </Badge>
         ))}
       </Stack>
@@ -158,7 +154,7 @@ function TemplateLabel({ value }: { value: PlayerColors }): JSX.Element {
             // inferring the keys of the Record properly, sending a number type
             // here. We need to fix the typing there and then remove the `as`
             // here
-            label={<PlayerShortName playerId={playerId as PlayerId} />}
+            label={<PlayerShortName playerId={playerId} />}
           />
         ))
       )}
@@ -175,6 +171,9 @@ function Selector({
 }): JSX.Element | null {
   const dispatch = useAppDispatch();
 
+  // TODO: We cast here so that typescript has an easier job deducing types with
+  // our HSL common module because Redux Toolkit's `Dictionary` has a
+  // `undefined` in the value and number in the key :( I don't know why?...
   const players = useAppSelector(playersSelectors.selectEntities) as Record<
     PlayerId,
     Player
