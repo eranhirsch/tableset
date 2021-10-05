@@ -1,7 +1,7 @@
 import { Random } from "common";
 import { createRandomGameStep } from "games/core/steps/createRandomGameStep";
 
-interface VariantOptions {
+interface Options {
   id: string;
   name: String;
   InstanceVariableComponent(): JSX.Element;
@@ -11,7 +11,7 @@ export const createVariant = ({
   id,
   name,
   InstanceVariableComponent,
-}: VariantOptions) =>
+}: Options) =>
   createRandomGameStep({
     id: `variant_${id}`,
     labelOverride: `Variant: ${name}`,

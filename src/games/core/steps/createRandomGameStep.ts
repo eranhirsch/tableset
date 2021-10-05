@@ -6,6 +6,7 @@ import { StepId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
 import { ContextBase } from "../../../model/ContextBase";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
+import { WithDependencies } from "./WithDependencies";
 
 export interface VariableStepInstanceComponentProps<T> {
   value: T;
@@ -63,7 +64,7 @@ interface FixedOptions<
   renderSelector?(props: { current: T }): JSX.Element;
 }
 
-interface Options<
+type Options<
   T,
   D1 = never,
   D2 = never,
@@ -75,96 +76,29 @@ interface Options<
   D8 = never,
   D9 = never,
   D10 = never
-> extends CreateGameStepOptions {
-  dependencies?:
-    | [VariableGameStep<D1>]
-    | [VariableGameStep<D1>, VariableGameStep<D2>]
-    | [VariableGameStep<D1>, VariableGameStep<D2>, VariableGameStep<D3>]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>,
-        VariableGameStep<D7>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>,
-        VariableGameStep<D7>,
-        VariableGameStep<D8>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>,
-        VariableGameStep<D7>,
-        VariableGameStep<D8>,
-        VariableGameStep<D9>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>,
-        VariableGameStep<D7>,
-        VariableGameStep<D8>,
-        VariableGameStep<D9>,
-        VariableGameStep<D10>
-      ];
+> = CreateGameStepOptions &
+  Partial<WithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>> & {
+    isType?(value: unknown): value is T;
 
-  isType?(value: unknown): value is T;
+    InstanceVariableComponent(
+      props: VariableStepInstanceComponentProps<T>
+    ): JSX.Element;
 
-  InstanceVariableComponent(
-    props: VariableStepInstanceComponentProps<T>
-  ): JSX.Element;
-
-  random(
-    dependency1: D1,
-    dependency2: D2,
-    dependency3: D3,
-    dependency4: D4,
-    dependency5: D5,
-    dependency6: D6,
-    dependency7: D7,
-    dependency8: D8,
-    dependency9: D9,
-    dependency10: D10
-  ): T;
-  recommended?(context: InstanceContext): T | undefined;
-  fixed?: FixedOptions<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>;
-}
+    random(
+      dependency1: D1,
+      dependency2: D2,
+      dependency3: D3,
+      dependency4: D4,
+      dependency5: D5,
+      dependency6: D6,
+      dependency7: D7,
+      dependency8: D8,
+      dependency9: D9,
+      dependency10: D10
+    ): T;
+    recommended?(context: InstanceContext): T | undefined;
+    fixed?: FixedOptions<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>;
+  };
 
 interface FixedOptionsInternal<T>
   extends FixedOptions<
