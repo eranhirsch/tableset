@@ -1,7 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import { Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
-import createProductDependencyMetaStep from "games/core/steps/createProductDependencyMetaStep";
 import {
   createVariableGameStep,
   VariableStepInstanceComponentProps,
@@ -16,18 +15,13 @@ import mapStep from "./mapStep";
 export default createVariableGameStep({
   id: "germaniaRomanCastles",
   labelOverride: "Roman Castles (Germania Map Only!)",
-  isOptional: true,
 
-  dependencies: [
-    createProductDependencyMetaStep("britanniaGermania"),
-    mapStep,
-    cityTilesStep,
-  ],
+  dependencies: [mapStep, cityTilesStep],
 
   InstanceVariableComponent,
 
-  random: (expansions, mapId, hash) =>
-    expansions.includes("britanniaGermania") && mapId === "germania"
+  random: (mapId, hash) =>
+    mapId === "germania"
       ? GermaniaCastlesEncoder.randomHash(mapId, hash)
       : null,
 });
