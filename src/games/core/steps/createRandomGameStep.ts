@@ -27,8 +27,8 @@ export interface RandomGameStep<T = unknown> extends VariableGameStep<T> {
   dependencies?: [...VariableGameStep<unknown>[]];
   isType?(value: unknown): value is T;
   resolveDefault?(context: InstanceContext): T;
-  TemplateFixedValueLabel?: ((props: { value: any }) => JSX.Element) | string;
-  TemplateFixedValueSelector?(props: { current: any }): JSX.Element;
+  TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
+  TemplateFixedValueSelector?(props: { current: T }): JSX.Element;
   initialFixedValue?(context: InstanceContext): T;
   refreshFixedValue?(
     current: T,
