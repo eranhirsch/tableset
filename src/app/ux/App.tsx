@@ -2,21 +2,18 @@ import { Container, ThemeProvider } from "@mui/material";
 import themeWithGameColors from "app/ux/themeWithGameColors";
 import { Expansions } from "features/expansions/Expansions";
 import { expansionsActions } from "features/expansions/expansionsSlice";
-import { gameIdSelector } from "features/game/gameSlice";
 import Instance from "features/instance/Instance";
 import Players from "features/players/Players";
 import { playersActions } from "features/players/playersSlice";
 import Template from "features/template/Template";
 import { useEffect, useState } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../hooks";
+import { useAppDispatch } from "../hooks";
 import { TableSetAppBar } from "./TableSetAppBar";
 
 function App(): JSX.Element | null {
   const dispatch = useAppDispatch();
   const [isInitialized, setIsInitialized] = useState(false);
-
-  const gameId = useAppSelector(gameIdSelector);
 
   useEffect(() => {
     if (!isInitialized) {
@@ -27,7 +24,7 @@ function App(): JSX.Element | null {
       dispatch(expansionsActions.toggled("base"));
       setIsInitialized(true);
     }
-  }, [dispatch, gameId, isInitialized]);
+  }, [dispatch, isInitialized]);
 
   return (
     <ThemeProvider theme={themeWithGameColors}>

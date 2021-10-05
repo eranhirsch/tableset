@@ -16,7 +16,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { ProductId, StepId } from "../../model/Game";
 import { PlayerId } from "../../model/Player";
-import { gameSelector, gameStepSelector } from "../game/gameSlice";
+import { gameStepSelector, gameStepsSelector } from "../game/gameSlice";
 import { playersSelectors } from "../players/playersSlice";
 import { instanceSelectors, SetupStep } from "./instanceSlice";
 
@@ -79,21 +79,14 @@ export default function Instance(): JSX.Element | null {
   const location = useLocation();
   const history = useHistory();
 
-  const game = useAppSelector(gameSelector);
-  const instance = useAppSelector(instanceSelectors.selectEntities);
-  const activeGameSteps = useMemo(
-    () =>
-      game.steps.filter(
-        ({ id, isOptional }) => !isOptional || instance[id] != null
-      ),
-    [game.steps, instance]
-  );
+  const allSteps = useAppSelector(gameStepsSelector);
 
   const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
 
   const groups = useMemo(
     () =>
-      activeGameSteps
+      // TODO: hide steps via the new API for step hiding
+      allSteps
         .reduce(
           (groups: StepId[][], step) => {
             if (
@@ -117,13 +110,11 @@ export default function Instance(): JSX.Element | null {
           [[]]
         )
         .filter((group) => group.length > 0),
-    [activeGameSteps]
+    [allSteps]
   );
 
   const activeStepId = location.hash.substring(1) as StepId;
-  const activeStepIdx = activeGameSteps.findIndex(
-    (step) => step.id === activeStepId
-  );
+  const activeStepIdx = allSteps.findIndex((step) => step.id === activeStepId);
 
   const expandedGroupIdx = useMemo(
     () => groups.findIndex((group) => group.includes(activeStepId)),
@@ -194,7 +185,7 @@ export default function Instance(): JSX.Element | null {
                   setCompletedSteps((steps) =>
                     steps.includes(stepId) ? steps : [...steps, stepId]
                   );
-                  const nextStepId = activeGameSteps.find(
+                  const nextStepId = allSteps.find(
                     (x) => !completedSteps.includes(x.id) && x.id !== stepId
                   )?.id;
                   setActiveStepId(nextStepId);

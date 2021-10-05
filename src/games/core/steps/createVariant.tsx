@@ -18,7 +18,8 @@ export const createVariant = ({
 
     isType: (value): value is true => value === true,
 
-    isOptional: true,
+    // TODO: reimplment with new API for showStep
+    // isOptional: true,
 
     random: () => (Random.coin_flip(0.5) ? true : null),
     InstanceVariableComponent,

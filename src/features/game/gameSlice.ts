@@ -17,7 +17,7 @@ const gameSlice = createSlice({
 });
 export default gameSlice;
 
-export const gameIdSelector = (state: RootState) => state.game.id;
+const gameIdSelector = (state: RootState) => state.game.id;
 export const gameSelector = createSelector(gameIdSelector, GameMapper.forId);
 export const gameStepsSelector = createSelector(
   gameSelector,
