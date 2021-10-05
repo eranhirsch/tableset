@@ -8,9 +8,9 @@ import GenericItemsFixedTemplateLabel from "games/core/ux/GenericItemsFixedTempl
 import GenericItemsListPanel from "games/core/ux/GenericItemsListPanel";
 import React from "react";
 import {
-  createVariableGameStep,
-  VariableStepInstanceComponentProps
-} from "../../core/steps/createVariableGameStep";
+  createRandomGameStep,
+  VariableStepInstanceComponentProps,
+} from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { ConcordiaProductId } from "../ConcordiaGame";
@@ -25,7 +25,7 @@ const MAPS_BY_PRODUCT = Object.freeze({
 const allMaps = (productIds: readonly ConcordiaProductId[]): readonly MapId[] =>
   Vec.flatten(Vec.values(Shape.select_keys(MAPS_BY_PRODUCT, productIds)));
 
-export default createVariableGameStep({
+export default createRandomGameStep({
   id: "map",
 
   dependencies: [createProductDependencyMetaStep<ConcordiaProductId>()],

@@ -1,5 +1,5 @@
 import { Random } from "common";
-import { createVariableGameStep } from "games/core/steps/createVariableGameStep";
+import { createRandomGameStep } from "games/core/steps/createRandomGameStep";
 
 interface VariantOptions {
   id: string;
@@ -12,7 +12,7 @@ export const createVariant = ({
   name,
   InstanceVariableComponent,
 }: VariantOptions) =>
-  createVariableGameStep({
+  createRandomGameStep({
     id: `variant_${id}`,
     labelOverride: `Variant: ${name}`,
 

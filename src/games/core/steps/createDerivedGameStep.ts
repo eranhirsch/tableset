@@ -2,7 +2,7 @@ import { nullthrows } from "common";
 import { VariableGameStep } from "model/VariableGameStep";
 import { DerivedGameStep } from "../../../model/DerivedGameStep";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
-import { InstanceContext } from "./createVariableGameStep";
+import { InstanceContext } from "./createRandomGameStep";
 
 export interface DerivedStepInstanceComponentProps<
   D0 = never,

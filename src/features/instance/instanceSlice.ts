@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice, Dictionary } from "@reduxjs/toolkit";
-import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { RootState } from "../../app/store";
 import { ProductId, StepId } from "../../model/Game";
 import { PlayerId } from "../../model/Player";

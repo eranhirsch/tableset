@@ -10,7 +10,7 @@ import { playersActions } from "features/players/playersSlice";
 import { Strategy } from "features/template/Strategy";
 import GameMapper, { GameId } from "games/core/GameMapper";
 import { PLAYERS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createPlayersDependencyMetaStep";
-import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { ContextBase } from "model/ContextBase";
 import { StepId } from "model/Game";
 

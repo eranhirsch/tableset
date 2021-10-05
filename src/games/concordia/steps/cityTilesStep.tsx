@@ -6,9 +6,9 @@ import {
 } from "features/instance/useInstanceValue";
 import React, { useMemo } from "react";
 import {
-  createVariableGameStep,
+  createRandomGameStep,
   VariableStepInstanceComponentProps,
-} from "../../core/steps/createVariableGameStep";
+} from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
@@ -20,7 +20,7 @@ import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 
-export default createVariableGameStep({
+export default createRandomGameStep({
   id: "cityTiles",
   labelOverride: "City Resources",
 

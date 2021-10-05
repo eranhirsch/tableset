@@ -26,16 +26,16 @@ import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNam
 import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
-  createVariableGameStep,
+  createRandomGameStep,
   VariableStepInstanceComponentProps,
-} from "../../core/steps/createVariableGameStep";
+} from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 
 export type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
 
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
-  createVariableGameStep<PlayerColors, readonly PlayerId[]>({
+  createRandomGameStep<PlayerColors, readonly PlayerId[]>({
     id: "playerColors",
     labelOverride: "Colors",
 

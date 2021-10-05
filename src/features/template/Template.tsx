@@ -3,7 +3,7 @@ import { CircularProgress, Fab, List } from "@mui/material";
 import { Dict, Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { gameStepsSelector } from "features/game/gameSlice";
-import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { ProductId, StepId } from "model/Game";
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";

@@ -13,11 +13,11 @@ import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
-  createVariableGameStep,
+  createRandomGameStep,
   VariableStepInstanceComponentProps,
-} from "../../core/steps/createVariableGameStep";
+} from "../../core/steps/createRandomGameStep";
 
-export default createVariableGameStep({
+export default createRandomGameStep({
   id: "firstPlayer",
 
   dependencies: [

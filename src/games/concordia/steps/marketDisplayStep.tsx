@@ -1,16 +1,16 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
-  createVariableGameStep,
+  createRandomGameStep,
   VariableStepInstanceComponentProps,
-} from "../../core/steps/createVariableGameStep";
+} from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 import RomanTitle from "../ux/RomanTitle";
 import marketCardsStep from "./marketCardsStep";
 
-export default createVariableGameStep({
+export default createRandomGameStep({
   id: "marketDisplay",
   labelOverride: "Cards Display",
 

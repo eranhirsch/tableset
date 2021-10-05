@@ -2,9 +2,9 @@ import { Grid, Typography } from "@mui/material";
 import { Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
-  createVariableGameStep,
+  createRandomGameStep,
   VariableStepInstanceComponentProps,
-} from "games/core/steps/createVariableGameStep";
+} from "games/core/steps/createRandomGameStep";
 import React, { useMemo } from "react";
 import GermaniaCastlesEncoder from "../utils/GermaniaCastlesEncoder";
 import { RESOURCE_NAME } from "../utils/resource";
@@ -12,7 +12,7 @@ import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
 
-export default createVariableGameStep({
+export default createRandomGameStep({
   id: "germaniaRomanCastles",
   labelOverride: "Roman Castles (Germania Map Only!)",
 

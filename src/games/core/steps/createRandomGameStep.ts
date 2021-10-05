@@ -183,7 +183,7 @@ interface CreateVariableGameStepOptions<
   };
 }
 
-export function createVariableGameStep<
+export function createRandomGameStep<
   T,
   D1 = never,
   D2 = never,
@@ -210,7 +210,7 @@ export function createVariableGameStep<
     D10
   >
 ): Readonly<RandomGameStep<T>>;
-export function createVariableGameStep<T>({
+export function createRandomGameStep<T>({
   dependencies,
   isType,
   InstanceVariableComponent,

@@ -4,7 +4,7 @@ import { TemplateElement } from "features/template/templateSlice";
 import {
   InstanceContext,
   RandomGameStep,
-} from "games/core/steps/createVariableGameStep";
+} from "games/core/steps/createRandomGameStep";
 
 export function templateElementResolver<T>(
   gameStep: RandomGameStep<T>,

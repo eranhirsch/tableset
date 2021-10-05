@@ -3,7 +3,7 @@ import { useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
 import { gameStepSelector } from "features/game/gameSlice";
 import { Strategy } from "features/template/Strategy";
-import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { StepId } from "model/Game";
 import { useMemo } from "react";
 import { StrategiesSelector } from "./StrategiesSelector";

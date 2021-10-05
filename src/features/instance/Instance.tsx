@@ -9,7 +9,7 @@ import {
 import { Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { StepLabel } from "features/game/StepLabel";
-import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
 import React, { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";

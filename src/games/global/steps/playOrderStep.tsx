@@ -25,12 +25,12 @@ import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerId } from "../../../model/Player";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
-  createVariableGameStep,
+  createRandomGameStep,
   VariableStepInstanceComponentProps,
-} from "../../core/steps/createVariableGameStep";
+} from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 
-export default createVariableGameStep({
+export default createRandomGameStep({
   id: "playOrder",
   labelOverride: "Seating",
 

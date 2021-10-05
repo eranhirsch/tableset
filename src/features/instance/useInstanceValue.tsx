@@ -1,5 +1,5 @@
 import { nullthrows, ReactUtils, type_invariant } from "common";
-import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { instanceSelectors } from "./instanceSlice";
 
 export const useRequiredInstanceValue = <T,>(step: RandomGameStep<T>): T =>
