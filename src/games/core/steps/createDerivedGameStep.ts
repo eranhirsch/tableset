@@ -3,6 +3,7 @@ import { VariableGameStep } from "model/VariableGameStep";
 import { DerivedGameStep } from "../../../model/DerivedGameStep";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { InstanceContext } from "./createRandomGameStep";
+import { WithDependencies } from "./WithDependencies";
 
 export interface DerivedStepInstanceComponentProps<
   D1 = never,
@@ -30,7 +31,7 @@ export interface DerivedStepInstanceComponentProps<
   ];
 }
 
-interface CreateDerivedGameStepOptions<
+type Options<
   D1 = never,
   D2 = never,
   D3 = never,
@@ -41,92 +42,25 @@ interface CreateDerivedGameStepOptions<
   D8 = never,
   D9 = never,
   D10 = never
-> extends Omit<CreateGameStepOptions, "InstanceManualComponent"> {
-  dependencies:
-    | [VariableGameStep<D1>]
-    | [VariableGameStep<D1>, VariableGameStep<D2>]
-    | [VariableGameStep<D1>, VariableGameStep<D2>, VariableGameStep<D3>]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>,
-        VariableGameStep<D7>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>,
-        VariableGameStep<D7>,
-        VariableGameStep<D8>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>,
-        VariableGameStep<D7>,
-        VariableGameStep<D8>,
-        VariableGameStep<D9>
-      ]
-    | [
-        VariableGameStep<D1>,
-        VariableGameStep<D2>,
-        VariableGameStep<D3>,
-        VariableGameStep<D4>,
-        VariableGameStep<D5>,
-        VariableGameStep<D6>,
-        VariableGameStep<D7>,
-        VariableGameStep<D8>,
-        VariableGameStep<D9>,
-        VariableGameStep<D10>
-      ];
+> = Omit<CreateGameStepOptions, "InstanceManualComponent"> &
+  WithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> & {
+    InstanceDerivedComponent(
+      props: DerivedStepInstanceComponentProps<
+        D1,
+        D2,
+        D3,
+        D4,
+        D5,
+        D6,
+        D7,
+        D8,
+        D9,
+        D10
+      >
+    ): JSX.Element | null;
+  };
 
-  InstanceDerivedComponent(
-    props: DerivedStepInstanceComponentProps<
-      D1,
-      D2,
-      D3,
-      D4,
-      D5,
-      D6,
-      D7,
-      D8,
-      D9,
-      D10
-    >
-  ): JSX.Element | null;
-}
-
-export default function createDerivedGameStep<
+export const createDerivedGameStep = <
   D1 = never,
   D2 = never,
   D3 = never,
@@ -141,19 +75,8 @@ export default function createDerivedGameStep<
   dependencies,
   InstanceDerivedComponent,
   ...baseOptions
-}: CreateDerivedGameStepOptions<
-  D1,
-  D2,
-  D3,
-  D4,
-  D5,
-  D6,
-  D7,
-  D8,
-  D9,
-  D10
->): Readonly<DerivedGameStep> {
-  return {
+}: Options<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>) =>
+  Object.freeze({
     ...createGameStep(baseOptions),
     InstanceDerivedComponent: ({ context }) =>
       InstanceDerivedComponent({
@@ -170,8 +93,7 @@ export default function createDerivedGameStep<
           maybeFulfillDependency(context, dependencies[9]),
         ],
       }),
-  };
-}
+  } as DerivedGameStep);
 
 function maybeFulfillDependency<T>(
   context: InstanceContext,

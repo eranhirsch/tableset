@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
 import React from "react";
-import createDerivedGameStep, {
+import {
+  createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";

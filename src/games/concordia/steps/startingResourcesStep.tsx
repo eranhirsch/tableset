@@ -1,7 +1,8 @@
 import { Typography } from "@mui/material";
 import { Shape, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
-import createDerivedGameStep, {
+import {
+  createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";

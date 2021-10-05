@@ -2,7 +2,8 @@ import { Typography } from "@mui/material";
 import { Str } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerId } from "../../../model/Player";
-import createDerivedGameStep, {
+import {
+  createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";

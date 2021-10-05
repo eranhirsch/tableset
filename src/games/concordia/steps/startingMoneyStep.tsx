@@ -4,7 +4,8 @@ import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerId } from "model/Player";
 import React from "react";
-import createDerivedGameStep, {
+import {
+  createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";

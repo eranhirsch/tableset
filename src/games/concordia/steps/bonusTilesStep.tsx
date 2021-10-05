@@ -1,7 +1,8 @@
 import { Grid, Typography } from "@mui/material";
 import { Dict, Vec } from "common";
 import React, { useMemo } from "react";
-import createDerivedGameStep, {
+import {
+  createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
