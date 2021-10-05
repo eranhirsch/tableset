@@ -26,7 +26,7 @@ function InstanceDerivedComponent({
   readonly PlayerId[],
   readonly PlayerId[],
   PlayerId
->): JSX.Element | null {
+>): JSX.Element {
   if (playerIds == null) {
     return (
       <Typography variant="body1">

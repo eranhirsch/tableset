@@ -18,7 +18,7 @@ export default createDerivedGameStep({
 
 function InstanceDerivedComponent({
   dependencies: [mapId],
-}: DerivedStepInstanceComponentProps<MapId>): JSX.Element | null {
+}: DerivedStepInstanceComponentProps<MapId>): JSX.Element {
   if (mapId == null) {
     // We don't know what map we are playing on, so can't say what the capital
     // is

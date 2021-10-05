@@ -57,7 +57,7 @@ type Options<
         D9,
         D10
       >
-    ): JSX.Element | null;
+    ): JSX.Element;
   };
 
 export const createDerivedGameStep = <

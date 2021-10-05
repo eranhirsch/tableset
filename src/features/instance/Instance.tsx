@@ -40,26 +40,25 @@ function InstanceItemContent({
 
   const { InstanceManualComponent } = gameStep;
 
-  if ("InstanceVariableComponent" in gameStep) {
-    const instanceStep = instance[stepId];
-    if (instanceStep != null) {
-      return <gameStep.InstanceVariableComponent value={instanceStep.value} />;
-    }
-  } else if (gameStep.InstanceDerivedComponent != null) {
+  if ("InstanceDerivedComponent" in gameStep) {
     return (
       <gameStep.InstanceDerivedComponent
         context={{
-          instance: Vec.filter_nulls(
+          instance:
             // redux dictionaries are really weird because they support ID types
             // which aren't used, and have undefined as part of the value.
             // We cast here to work around it...
-            Vec.values(instance as Record<StepId, SetupStep | undefined>)
-          ),
+            Vec.values(instance as Record<StepId, SetupStep>),
           playerIds,
           productIds,
         }}
       />
     );
+  }
+
+  const instanceStep = instance[stepId];
+  if (instanceStep != null) {
+    return <gameStep.InstanceVariableComponent value={instanceStep.value} />;
   }
 
   if (InstanceManualComponent != null) {
