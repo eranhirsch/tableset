@@ -1,17 +1,43 @@
+import { Dictionary } from "@reduxjs/toolkit";
 import { nullthrows, type_invariant, Vec } from "common";
+import { SetupStep } from "features/instance/instanceSlice";
 import { Strategy } from "features/template/Strategy";
-import IGameStep, {
-  InstanceContext,
-  TemplateContext,
-} from "../../../model/IGameStep";
-import createGameStep, { CreateGameStepOptions } from "./createGameStep";
+import { TemplateElement } from "features/template/templateSlice";
+import { VariableGameStep } from "model/VariableGameStep";
+import { ContextBase } from "../../../model/ContextBase";
+import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 
 export interface VariableStepInstanceComponentProps<T> {
   value: T;
 }
 
+export interface TemplateContext extends ContextBase {
+  template: Readonly<Dictionary<Readonly<TemplateElement>>>;
+}
+
+export interface InstanceContext extends ContextBase {
+  instance: readonly SetupStep[];
+}
+
+export interface RandomGameStep<T = unknown> extends VariableGameStep<T> {
+  InstanceVariableComponent(props: { value: any }): JSX.Element;
+  resolveRandom(context: InstanceContext): T;
+  strategies(context: TemplateContext): readonly Strategy[];
+
+  dependencies?: [...VariableGameStep<unknown>[]];
+  isType?(value: unknown): value is T;
+  resolveDefault?(context: InstanceContext): T;
+  TemplateFixedValueLabel?: ((props: { value: any }) => JSX.Element) | string;
+  TemplateFixedValueSelector?(props: { current: any }): JSX.Element;
+  initialFixedValue?(context: InstanceContext): T;
+  refreshFixedValue?(
+    current: T,
+    context: Omit<TemplateContext, "template">
+  ): T | undefined;
+}
+
 interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
-  dependencies?: [IGameStep<any>, ...IGameStep<any>[]];
+  dependencies?: [VariableGameStep<any>, ...VariableGameStep<any>[]];
 
   isType?(value: any): value is T;
 
@@ -49,66 +75,71 @@ interface CreateVariableGameStepOptions<
   D10 = never
 > extends CreateGameStepOptions {
   dependencies?:
-    | [IGameStep<D1>]
-    | [IGameStep<D1>, IGameStep<D2>]
-    | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>]
-    | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>, IGameStep<D4>]
+    | [VariableGameStep<D1>]
+    | [VariableGameStep<D1>, VariableGameStep<D2>]
+    | [VariableGameStep<D1>, VariableGameStep<D2>, VariableGameStep<D3>]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>,
-        IGameStep<D8>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>,
-        IGameStep<D8>,
-        IGameStep<D9>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>,
+        VariableGameStep<D8>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>,
-        IGameStep<D8>,
-        IGameStep<D9>,
-        IGameStep<D10>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>,
+        VariableGameStep<D8>,
+        VariableGameStep<D9>
+      ]
+    | [
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>,
+        VariableGameStep<D8>,
+        VariableGameStep<D9>,
+        VariableGameStep<D10>
       ];
 
   isType?(value: any): value is T;
@@ -178,7 +209,7 @@ export function createVariableGameStep<
     D9,
     D10
   >
-): Readonly<IGameStep<T>>;
+): Readonly<RandomGameStep<T>>;
 export function createVariableGameStep<T>({
   dependencies,
   isType,
@@ -187,18 +218,16 @@ export function createVariableGameStep<T>({
   recommended,
   fixed,
   ...baseOptions
-}: CreateVariableGameStepOptionsAny<T>): Readonly<IGameStep<T>> {
-  const gameStep: IGameStep<T> = createGameStep(baseOptions);
+}: CreateVariableGameStepOptionsAny<T>): Readonly<RandomGameStep<T>> {
+  const baseStep = createGameStep(baseOptions);
 
-  gameStep.dependencies = dependencies;
-
-  gameStep.hasValue = (context) =>
+  const hasValue = (context: TemplateContext | InstanceContext) =>
     "template" in context
-      ? context.template[gameStep.id] != null
-      : context.instance.some(({ id }) => id === gameStep.id);
+      ? context.template[baseStep.id] != null
+      : context.instance.some(({ id }) => id === baseStep.id);
 
-  gameStep.extractInstanceValue = ({ instance }) => {
-    const step = instance.find((setupStep) => setupStep.id === gameStep.id);
+  const extractInstanceValue = ({ instance }: InstanceContext) => {
+    const step = instance.find((setupStep) => setupStep.id === baseStep.id);
     if (step == null) {
       return null;
     }
@@ -206,99 +235,114 @@ export function createVariableGameStep<T>({
       step.value,
       nullthrows(
         isType,
-        `Game step ${gameStep.id} does not have a type predicate defined`
+        `Game step ${baseStep.id} does not have a type predicate defined`
       ),
-      `Value ${step.value} couldn't be converted to the type defined by it's type ${gameStep.id}`
+      `Value ${step.value} couldn't be converted to the type defined by it's type ${baseStep.id}`
     );
   };
 
-  gameStep.isType = isType;
+  const variableStep: RandomGameStep<T> = {
+    ...baseStep,
+    isType,
+    dependencies,
+    hasValue,
+    extractInstanceValue,
+    InstanceVariableComponent,
 
-  gameStep.InstanceVariableComponent = InstanceVariableComponent;
+    resolveRandom: (context) =>
+      random(
+        ...(dependencies?.map((dependency) =>
+          nullthrows(
+            dependency.extractInstanceValue!(context),
+            `Unfulfilled dependency ${dependency.id} for ${baseStep.id}`
+          )
+        ) ?? [])
+      ),
 
-  gameStep.resolveRandom = (context) =>
-    random(
-      ...(dependencies?.map((dependency) =>
-        nullthrows(
-          dependency.extractInstanceValue!(context),
-          `Unfulfilled dependency ${dependency.id} for ${gameStep.id}`
-        )
-      ) ?? [])
-    );
+    strategies: (context) =>
+      strategies(context, dependencies ?? [], fixed?.initializer, recommended),
+  };
 
   if (recommended != null) {
-    gameStep.resolveDefault = (context) =>
+    variableStep.resolveDefault = (context) =>
       nullthrows(
         recommended(context),
-        `Trying to derive the 'recommended' item when it shouldn't be allowed for id ${gameStep.id}`
+        `Trying to derive the 'recommended' item when it shouldn't be allowed for id ${baseStep.id}`
       );
   }
 
   if (fixed != null) {
-    gameStep.TemplateFixedValueLabel = fixed.renderTemplateLabel;
-    gameStep.TemplateFixedValueSelector = fixed.renderSelector;
-    gameStep.initialFixedValue = (context) =>
+    variableStep.TemplateFixedValueLabel = fixed.renderTemplateLabel;
+    variableStep.TemplateFixedValueSelector = fixed.renderSelector;
+    variableStep.initialFixedValue = (context) =>
       nullthrows(
         fixed.initializer(
           ...(dependencies?.map((dependency) =>
             nullthrows(
               dependency.extractInstanceValue!(context),
-              `Unfulfilled dependency ${dependency.id} for ${gameStep.id}`
+              `Unfulfilled dependency ${dependency.id} for ${baseStep.id}`
             )
           ) ?? []),
-          `Trying to derive the 'initial fixed' item when it shouldn't be allowed for id ${gameStep.id}`
+          `Trying to derive the 'initial fixed' item when it shouldn't be allowed for id ${baseStep.id}`
         )
       );
-    gameStep.refreshFixedValue = fixed.refresh;
+    variableStep.refreshFixedValue = fixed.refresh;
   }
 
-  gameStep.strategies = (context) => {
-    const strategies = [];
+  return variableStep;
+}
 
-    const fakeInstanceContext = { ...context, instance: [] };
+function strategies(
+  context: TemplateContext,
+  dependencies: readonly VariableGameStep<unknown>[],
+  fixedInitializer?: (...dependencies: any[]) => unknown | undefined,
+  recommended?: (context: InstanceContext) => unknown | undefined
+) {
+  const strategies = [];
 
-    if (recommended != null) {
-      // TODO: We use an empty instance here, this is problematic because it
-      // doesn't allow us to catch cases where the instance is required to
-      // calculate the recommended value (e.g. if it relies on the value of
-      // a previous step)
-      const value = recommended(fakeInstanceContext);
-      if (value != null) {
-        strategies.push(Strategy.DEFAULT);
-      }
+  const fakeInstanceContext = { ...context, instance: [] };
+
+  if (recommended != null) {
+    // TODO: We use an empty instance here, this is problematic because it
+    // doesn't allow us to catch cases where the instance is required to
+    // calculate the recommended value (e.g. if it relies on the value of
+    // a previous step)
+    const value = recommended(fakeInstanceContext);
+    if (value != null) {
+      strategies.push(Strategy.DEFAULT);
+    }
+  }
+
+  const fulfilledDependencies =
+    dependencies != null
+      ? Vec.map(dependencies, (dependency) =>
+          dependency.extractInstanceValue!(fakeInstanceContext)
+        )
+      : [];
+  const fixedValue =
+    fixedInitializer != null
+      ? fixedInitializer(...fulfilledDependencies)
+      : undefined;
+  if (fixedInitializer == null || fixedValue != null) {
+    const areDependenciesFulfilled =
+      dependencies?.every((dependency) => dependency.hasValue!(context)) ??
+      true;
+    if (areDependenciesFulfilled) {
+      strategies.push(Strategy.RANDOM);
     }
 
-    const fulfilledDependencies =
-      dependencies != null
-        ? Vec.map(dependencies, (dependency) =>
-            dependency.extractInstanceValue!(fakeInstanceContext)
-          )
-        : [];
-    const fixedValue =
-      fixed != null ? fixed.initializer(...fulfilledDependencies) : undefined;
-    if (fixed == null || fixedValue != null) {
-      const areDependenciesFulfilled =
-        dependencies?.every((dependency) => dependency.hasValue!(context)) ??
-        true;
-      if (areDependenciesFulfilled) {
-        strategies.push(Strategy.RANDOM);
-      }
-
-      if (fixedValue != null) {
-        strategies.push(Strategy.FIXED, Strategy.ASK);
-      }
+    if (fixedValue != null) {
+      strategies.push(Strategy.FIXED, Strategy.ASK);
     }
+  }
 
-    if (strategies.length > 0) {
-      // Only if we have other strategies do we add the OFF strategy, otherwise
-      // we prefer returning an empty array instead of an array with just
-      // Strategy.OFF, this will allow us in the future to reconsider how we
-      // represent the OFF status.
-      strategies.unshift(Strategy.OFF);
-    }
+  if (strategies.length > 0) {
+    // Only if we have other strategies do we add the OFF strategy, otherwise
+    // we prefer returning an empty array instead of an array with just
+    // Strategy.OFF, this will allow us in the future to reconsider how we
+    // represent the OFF status.
+    strategies.unshift(Strategy.OFF);
+  }
 
-    return strategies;
-  };
-
-  return gameStep;
+  return strategies;
 }

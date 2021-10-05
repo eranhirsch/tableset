@@ -1,6 +1,8 @@
 import { nullthrows } from "common";
-import createGameStep, { CreateGameStepOptions } from "./createGameStep";
-import IGameStep, { InstanceContext } from "../../../model/IGameStep";
+import { VariableGameStep } from "model/VariableGameStep";
+import { DerivedGameStep } from "../../../model/DerivedGameStep";
+import { createGameStep, CreateGameStepOptions } from "./createGameStep";
+import { InstanceContext } from "./createVariableGameStep";
 
 export interface DerivedStepInstanceComponentProps<
   D0 = never,
@@ -41,66 +43,71 @@ interface CreateDerivedGameStepOptions<
   D10 = never
 > extends Omit<CreateGameStepOptions, "InstanceManualComponent"> {
   dependencies:
-    | [IGameStep<D1>]
-    | [IGameStep<D1>, IGameStep<D2>]
-    | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>]
-    | [IGameStep<D1>, IGameStep<D2>, IGameStep<D3>, IGameStep<D4>]
+    | [VariableGameStep<D1>]
+    | [VariableGameStep<D1>, VariableGameStep<D2>]
+    | [VariableGameStep<D1>, VariableGameStep<D2>, VariableGameStep<D3>]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>,
-        IGameStep<D8>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>,
-        IGameStep<D8>,
-        IGameStep<D9>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>,
+        VariableGameStep<D8>
       ]
     | [
-        IGameStep<D1>,
-        IGameStep<D2>,
-        IGameStep<D3>,
-        IGameStep<D4>,
-        IGameStep<D5>,
-        IGameStep<D6>,
-        IGameStep<D7>,
-        IGameStep<D8>,
-        IGameStep<D9>,
-        IGameStep<D10>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>,
+        VariableGameStep<D8>,
+        VariableGameStep<D9>
+      ]
+    | [
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>,
+        VariableGameStep<D8>,
+        VariableGameStep<D9>,
+        VariableGameStep<D10>
       ];
 
   InstanceDerivedComponent(
@@ -145,31 +152,30 @@ export default function createDerivedGameStep<
   D8,
   D9,
   D10
->): Readonly<IGameStep<never>> {
-  const gameStep = createGameStep(baseOptions);
-
-  gameStep.InstanceDerivedComponent = ({ context }) =>
-    InstanceDerivedComponent({
-      dependencies: [
-        maybeFulfillDependency(context, dependencies[0]),
-        maybeFulfillDependency(context, dependencies[1]),
-        maybeFulfillDependency(context, dependencies[2]),
-        maybeFulfillDependency(context, dependencies[3]),
-        maybeFulfillDependency(context, dependencies[4]),
-        maybeFulfillDependency(context, dependencies[5]),
-        maybeFulfillDependency(context, dependencies[6]),
-        maybeFulfillDependency(context, dependencies[7]),
-        maybeFulfillDependency(context, dependencies[8]),
-        maybeFulfillDependency(context, dependencies[9]),
-      ],
-    });
-
-  return gameStep;
+>): Readonly<DerivedGameStep> {
+  return {
+    ...createGameStep(baseOptions),
+    InstanceDerivedComponent: ({ context }) =>
+      InstanceDerivedComponent({
+        dependencies: [
+          maybeFulfillDependency(context, dependencies[0]),
+          maybeFulfillDependency(context, dependencies[1]),
+          maybeFulfillDependency(context, dependencies[2]),
+          maybeFulfillDependency(context, dependencies[3]),
+          maybeFulfillDependency(context, dependencies[4]),
+          maybeFulfillDependency(context, dependencies[5]),
+          maybeFulfillDependency(context, dependencies[6]),
+          maybeFulfillDependency(context, dependencies[7]),
+          maybeFulfillDependency(context, dependencies[8]),
+          maybeFulfillDependency(context, dependencies[9]),
+        ],
+      }),
+  };
 }
 
 function maybeFulfillDependency<T>(
   context: InstanceContext,
-  dependency: IGameStep<T> | undefined
+  dependency: VariableGameStep<T> | undefined
 ): T | null | undefined {
   if (dependency == null) {
     return;

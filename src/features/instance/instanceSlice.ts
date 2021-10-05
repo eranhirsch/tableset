@@ -1,6 +1,7 @@
 import { createEntityAdapter, createSlice, Dictionary } from "@reduxjs/toolkit";
+import { RandomGameStep } from "games/core/steps/createVariableGameStep";
 import { RootState } from "../../app/store";
-import IGame, { ProductId, StepId } from "../../model/IGame";
+import { ProductId, StepId } from "../../model/Game";
 import { PlayerId } from "../../model/Player";
 import { TemplateElement } from "../template/templateSlice";
 import { templateElementResolver } from "./templateElementResolver";
@@ -20,18 +21,18 @@ export default createSlice({
   reducers: {
     created: {
       prepare: (
-        game: IGame,
+        allRandomSteps: readonly RandomGameStep[],
         template: Dictionary<TemplateElement>,
         playerIds: readonly PlayerId[],
         productIds: readonly ProductId[]
       ) => ({
-        payload: game.steps.reduce((ongoing, { id }) => {
-          const element = template[id];
+        payload: allRandomSteps.reduce((ongoing, step) => {
+          const element = template[step.id];
           if (element == null) {
             return ongoing;
           }
 
-          const value = templateElementResolver(game.atEnforce(id), element, {
+          const value = templateElementResolver(step, element, {
             instance: ongoing,
             playerIds,
             productIds,
@@ -40,7 +41,7 @@ export default createSlice({
           if (value != null) {
             // Null means ignore the step, it is a valid response in some cases
             // (like variants, modules, and expansions)
-            ongoing.push({ id, value });
+            ongoing.push({ id: step.id, value });
           }
 
           return ongoing;

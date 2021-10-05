@@ -1,20 +1,18 @@
 import { invariant_violation } from "common";
 import { Strategy } from "features/template/Strategy";
 import { TemplateElement } from "features/template/templateSlice";
-import IGameStep, { InstanceContext } from "model/IGameStep";
+import {
+  InstanceContext,
+  RandomGameStep,
+} from "games/core/steps/createVariableGameStep";
 
 export function templateElementResolver<T>(
-  gameStep: IGameStep<T>,
+  gameStep: RandomGameStep<T>,
   element: TemplateElement,
   context: InstanceContext
 ): T {
   switch (element.strategy) {
     case Strategy.RANDOM:
-      if (gameStep.resolveRandom == null) {
-        invariant_violation(
-          `Element ${JSON.stringify(element)} does not have a random resolver`
-        );
-      }
       return gameStep.resolveRandom(context);
 
     case Strategy.DEFAULT:

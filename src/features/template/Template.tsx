@@ -1,14 +1,14 @@
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { CircularProgress, Fab, List } from "@mui/material";
-import { EntityId } from "@reduxjs/toolkit";
+import { Dict, Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
-import { ProductId } from "model/IGame";
+import { gameStepsSelector } from "features/game/gameSlice";
+import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { ProductId, StepId } from "model/Game";
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import GameMapper from "../../games/core/GameMapper";
 import { PlayerId } from "../../model/Player";
-import { gameIdSelector } from "../game/gameSlice";
 import instanceSlice from "../instance/instanceSlice";
 import { playersSelectors } from "../players/playersSlice";
 import TemplateItem from "./TemplateItem";
@@ -20,11 +20,14 @@ import {
 
 export default function Template(): JSX.Element | null {
   const dispatch = useAppDispatch();
-  const [expandedStepId, setExpandedStepId] = useState<EntityId>();
 
-  const gameId = useAppSelector(gameIdSelector);
+  const [expandedStepId, setExpandedStepId] = useState<StepId>();
+
+  const allSteps = useAppSelector(gameStepsSelector);
+
   const template = useAppSelector(templateSelectors.selectEntities);
   const isStale = useAppSelector(templateIsStaleSelector);
+
   const playerIds = useAppSelector(
     playersSelectors.selectIds
   ) as readonly PlayerId[];
@@ -32,19 +35,21 @@ export default function Template(): JSX.Element | null {
     allExpansionIdsSelector
   ) as readonly ProductId[];
 
-  const game = GameMapper.forId(gameId);
-  const allItems = game.steps;
-  const templatableItems = useMemo(
+  const allRandomSteps = allSteps.filter(
+    (x): x is RandomGameStep =>
+      (x as Partial<RandomGameStep>).strategies != null
+  );
+  const allStrategies = useMemo(
     () =>
-      allItems.filter((step) => {
-        if (step.strategies == null) {
-          return false;
-        }
-        return step.strategies({ template, playerIds, productIds }).length > 1;
-      }),
-    [allItems, playerIds, productIds, template]
+      Dict.map(
+        Dict.from_values(allRandomSteps, ({ id }) => id),
+        ({ strategies }) => strategies({ template, playerIds, productIds })
+      ),
+    [allRandomSteps, playerIds, productIds, template]
   );
 
+  // TODO: This should probably show a megaphone with more info and a button to
+  // manually refresh the template once the user understands what happened.
   useEffect(() => {
     if (isStale) {
       dispatch(templateActions.refresh({ playerIds, productIds }));
@@ -54,16 +59,19 @@ export default function Template(): JSX.Element | null {
   return (
     <>
       <List component="ol">
-        {templatableItems.map((step) => (
-          <TemplateItem
-            key={step.id}
-            stepId={step.id}
-            expanded={step.id === expandedStepId}
-            onClick={(isExpanded) =>
-              setExpandedStepId(isExpanded ? undefined : step.id)
-            }
-          />
-        ))}
+        {Vec.map_with_key(
+          Dict.filter(allStrategies, (strategies) => strategies.length > 1),
+          (stepId) => (
+            <TemplateItem
+              key={stepId}
+              stepId={stepId}
+              expanded={stepId === expandedStepId}
+              onClick={(isExpanded) =>
+                setExpandedStepId(isExpanded ? undefined : stepId)
+              }
+            />
+          )
+        )}
       </List>
       <Fab
         disabled={isStale}
@@ -74,7 +82,12 @@ export default function Template(): JSX.Element | null {
         aria-label="go"
         onClick={() => {
           dispatch(
-            instanceSlice.actions.created(game, template, playerIds, productIds)
+            instanceSlice.actions.created(
+              allRandomSteps,
+              template,
+              playerIds,
+              productIds
+            )
           );
         }}
       >

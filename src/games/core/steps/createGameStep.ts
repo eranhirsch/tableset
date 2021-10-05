@@ -1,9 +1,7 @@
-import { StepId } from "../../../model/IGame";
-import IGameStep from "../../../model/IGameStep";
+import { StepId } from "../../../model/Game";
+import { GameStepBase } from "../../../model/GameStepBase";
 
 export interface CreateGameStepOptions {
-  // Used to identify, validate, and find the game step inside the game. Use
-  // camelCase!
   id: StepId;
 
   isOptional?: true;
@@ -15,18 +13,16 @@ export interface CreateGameStepOptions {
   InstanceManualComponent?: (() => JSX.Element) | string;
 }
 
-export default function createGameStep({
+export const createGameStep = ({
   id,
   labelOverride,
   isOptional,
   InstanceManualComponent,
-}: CreateGameStepOptions): IGameStep<never> {
-  return {
-    id,
-    label:
-      labelOverride ??
-      id[0].toUpperCase() + id.replaceAll(/[A-Z]/g, " $&").slice(1),
-    isOptional: isOptional ?? false,
-    InstanceManualComponent,
-  };
-}
+}: CreateGameStepOptions): GameStepBase => ({
+  id,
+  label:
+    labelOverride ??
+    id[0].toUpperCase() + id.replaceAll(/[A-Z]/g, " $&").slice(1),
+  isOptional: isOptional ?? false,
+  InstanceManualComponent,
+});

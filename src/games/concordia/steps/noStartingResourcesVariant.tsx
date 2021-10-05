@@ -18,8 +18,8 @@ function InstanceVariableComponent(): JSX.Element {
       footnotes={[
         // TODO: Find a way to couple these IDs with the steps themselves so
         // that we don't use magic strings here...
-        <InstanceStepLink step="startingResources" />,
-        <InstanceStepLink step="startingMoney" />,
+        <InstanceStepLink stepId="startingResources" />,
+        <InstanceStepLink stepId="startingMoney" />,
         <>
           At their regular prices:{" "}
           <GrammaticalList>

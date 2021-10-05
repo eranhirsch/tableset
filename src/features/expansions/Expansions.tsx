@@ -2,7 +2,7 @@ import { List, ListItem, ListItemText, Switch } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { Vec } from "common";
 import { gameSelector } from "features/game/gameSlice";
-import { ProductId } from "model/IGame";
+import { ProductId } from "model/Game";
 import React from "react";
 import { expansionsActions, hasExpansionSelector } from "./expansionsSlice";
 

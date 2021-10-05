@@ -1,9 +1,7 @@
-import { Product } from "model/IExpansion";
-import { nullthrows } from "../../common";
-import GamePiecesColor from "../../model/GamePiecesColor";
-import IGame, { StepId } from "../../model/IGame";
-import IGameStep from "../../model/IGameStep";
-import createGameStep from "../core/steps/createGameStep";
+import { createGameStep } from "games/core/steps/createGameStep";
+import { Game } from "model/Game";
+import { GameStepBase } from "model/GameStepBase";
+import { Product } from "model/Product";
 import createPlayerColorsStep from "../global/steps/createPlayerColorsStep";
 import firstPlayerStep from "../global/steps/firstPlayerStep";
 import playOrderStep from "../global/steps/playOrderStep";
@@ -31,8 +29,8 @@ export const CONCORDIA_PRODUCTS = Object.freeze({
   },
 } as Record<ConcordiaProductId, Product>);
 
-export default class ConcordiaGame implements IGame {
-  readonly steps: readonly Readonly<IGameStep<unknown>>[];
+export default class ConcordiaGame implements Game {
+  readonly steps: readonly GameStepBase[];
   readonly products = CONCORDIA_PRODUCTS;
 
   constructor() {
@@ -59,7 +57,7 @@ export default class ConcordiaGame implements IGame {
           "Form a pile of coins as the bank near the board.",
       }),
       playOrderStep,
-      createPlayerColorsStep(this.playerColors),
+      createPlayerColorsStep(["black", "blue", "green", "red", "yellow"]),
       playerComponentsStep,
       startingColonistsStep,
       noStartingResourcesVariant,
@@ -68,20 +66,5 @@ export default class ConcordiaGame implements IGame {
       startingMoneyStep,
       praefectusMagnusStep,
     ];
-  }
-
-  public atNullable(id: StepId): Readonly<IGameStep<unknown>> | undefined {
-    return this.steps.find((step) => step.id === id);
-  }
-
-  public atEnforce(id: StepId): Readonly<IGameStep<unknown>> {
-    return nullthrows(
-      this.atNullable(id),
-      `${this.constructor.name} does not define step ${id}`
-    );
-  }
-
-  public get playerColors(): readonly GamePiecesColor[] {
-    return ["black", "blue", "green", "red", "yellow"];
   }
 }

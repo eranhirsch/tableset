@@ -2,8 +2,9 @@ import { useAppSelector } from "app/hooks";
 import { invariant_violation, ReactUtils } from "common";
 import { Strategy } from "features/template/Strategy";
 import { strategyLabel } from "features/template/strategyLabel";
-import { StepId } from "model/IGame";
-import { gameSelector } from "../game/gameSlice";
+import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { StepId } from "model/Game";
+import { gameStepSelector } from "../game/gameSlice";
 import { templateSelectors } from "./templateSlice";
 
 export function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element | null {
@@ -11,8 +12,9 @@ export function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element | null {
     templateSelectors,
     stepId
   );
-
-  const game = useAppSelector(gameSelector);
+  const { TemplateFixedValueLabel } = useAppSelector(
+    gameStepSelector(stepId)
+  ) as RandomGameStep;
 
   if (templateElement == null) {
     return <>{strategyLabel(Strategy.OFF)}</>;
@@ -21,8 +23,6 @@ export function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element | null {
   if (templateElement.strategy !== Strategy.FIXED) {
     return <>{strategyLabel(templateElement.strategy)}</>;
   }
-
-  const { TemplateFixedValueLabel } = game.atEnforce(stepId);
 
   if (TemplateFixedValueLabel == null) {
     invariant_violation(`No label component defined for step ${stepId}`);

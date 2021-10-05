@@ -1,5 +1,5 @@
+import { createGameStep } from "games/core/steps/createGameStep";
 import React from "react";
-import createGameStep from "../../core/steps/createGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";

@@ -1,11 +1,11 @@
-import { ProductId } from "model/IGame";
-import IGameStep from "../../../model/IGameStep";
+import { ProductId } from "model/Game";
+import { VariableGameStep } from "model/VariableGameStep";
 
 export const PRODUCTS_DEPENDENCY_META_STEP_ID = "__product";
 
 const createProductDependencyMetaStep = <Pid extends ProductId>(
   ...requiredProducts: readonly Pid[]
-): Readonly<IGameStep<readonly Pid[]>> =>
+): Readonly<VariableGameStep<readonly Pid[]>> =>
   Object.freeze({
     id: PRODUCTS_DEPENDENCY_META_STEP_ID,
     label: `<Product[${requiredProducts.join(",")}]>`,

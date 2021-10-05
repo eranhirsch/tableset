@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
-import { ProductId } from "model/IGame";
+import { ProductId } from "model/Game";
 
 interface State {
   expansions: readonly string[];

@@ -1,5 +1,5 @@
+import { VariableGameStep } from "model/VariableGameStep";
 import { PlayerId } from "../../../model/Player";
-import IGameStep from "../../../model/IGameStep";
 
 export const PLAYERS_DEPENDENCY_META_STEP_ID = "__players";
 
@@ -10,17 +10,16 @@ const createPlayersDependencyMetaStep = ({
 }: {
   min?: number;
   max?: number;
-} = {}): Readonly<IGameStep<readonly PlayerId[]>> =>
+} = {}): Readonly<VariableGameStep<readonly PlayerId[]>> =>
   Object.freeze({
     id: PLAYERS_DEPENDENCY_META_STEP_ID,
     label: "<Players>",
+    isOptional: false,
 
     hasValue: ({ playerIds }) =>
       playerIds.length >= min && playerIds.length <= max,
 
     extractInstanceValue: ({ playerIds }) => playerIds,
-
-    isOptional: false,
   });
 
 export default createPlayersDependencyMetaStep;

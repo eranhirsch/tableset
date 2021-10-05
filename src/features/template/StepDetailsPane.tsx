@@ -1,10 +1,11 @@
 import { Collapse, Stack } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
+import { gameStepSelector } from "features/game/gameSlice";
 import { Strategy } from "features/template/Strategy";
-import { StepId } from "model/IGame";
+import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { StepId } from "model/Game";
 import { useMemo } from "react";
-import { gameSelector } from "../game/gameSlice";
 import { StrategiesSelector } from "./StrategiesSelector";
 import { templateSelectors } from "./templateSlice";
 
@@ -13,28 +14,29 @@ export default function StepDetailsPane({
 }: {
   stepId: StepId;
 }): JSX.Element {
-  const game = useAppSelector(gameSelector);
-  const step = ReactUtils.useAppEntityIdSelectorNullable(
+  const gameStep = useAppSelector(gameStepSelector(stepId)) as RandomGameStep;
+  const templateElement = ReactUtils.useAppEntityIdSelectorNullable(
     templateSelectors,
     stepId
   );
 
   const strategyControls = useMemo(() => {
-    if (step == null) {
+    if (templateElement == null) {
       return null;
     }
 
-    if (step.strategy !== Strategy.FIXED) {
+    if (templateElement.strategy !== Strategy.FIXED) {
       return null;
     }
 
-    const { TemplateFixedValueSelector } = game.atEnforce(stepId);
-    if (TemplateFixedValueSelector == null) {
+    if (gameStep.TemplateFixedValueSelector == null) {
       return null;
     }
 
-    return <TemplateFixedValueSelector current={step.value} />;
-  }, [game, step, stepId]);
+    return (
+      <gameStep.TemplateFixedValueSelector current={templateElement.value} />
+    );
+  }, [gameStep, templateElement]);
 
   return (
     <Stack sx={{ padding: 1 }} alignItems="center" spacing={1}>

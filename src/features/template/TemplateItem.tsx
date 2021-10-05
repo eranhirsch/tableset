@@ -5,11 +5,10 @@ import {
   ListItemText,
   Paper,
 } from "@mui/material";
-import { useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
+import { StepLabel } from "features/game/StepLabel";
 import { Strategy } from "features/template/Strategy";
-import { StepId } from "model/IGame";
-import { gameSelector } from "../game/gameSlice";
+import { StepId } from "model/Game";
 import { ItemLabel } from "./ItemLabel";
 import StepDetailsPane from "./StepDetailsPane";
 import StrategyIcon from "./StrategyIcon";
@@ -28,7 +27,6 @@ export default function TemplateItem({
     templateSelectors,
     stepId
   );
-  const game = useAppSelector(gameSelector);
 
   if (element?.isStale) {
     // TODO: Actual loading visualization
@@ -42,7 +40,7 @@ export default function TemplateItem({
           <StrategyIcon strategy={element?.strategy ?? Strategy.OFF} />
         </ListItemIcon>
         <ListItemText secondary={<ItemLabel stepId={stepId} />}>
-          {game.atEnforce(stepId).label}
+          <StepLabel stepId={stepId} />
         </ListItemText>
       </ListItemButton>
       <Collapse in={expanded} unmountOnExit>

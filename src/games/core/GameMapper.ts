@@ -1,5 +1,5 @@
+import { Game } from "model/Game";
 import ConcordiaGame from "../concordia/ConcordiaGame";
-import Game from "../../model/IGame";
 
 export type GameId = "concordia";
 

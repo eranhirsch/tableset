@@ -2,10 +2,11 @@ import { Chip, Stack } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { nullthrows, ReactUtils } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
-import { useGameStep } from "features/game/useGameStep";
+import { gameStepSelector } from "features/game/gameSlice";
 import { Strategy } from "features/template/Strategy";
 import { strategyLabel } from "features/template/strategyLabel";
-import { ProductId, StepId } from "model/IGame";
+import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { ProductId, StepId } from "model/Game";
 import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import { playersSelectors } from "../players/playersSlice";
@@ -16,7 +17,7 @@ export function StrategiesSelector({
 }: {
   stepId: StepId;
 }): JSX.Element {
-  const gameStep = useGameStep(stepId);
+  const gameStep = useAppSelector(gameStepSelector(stepId)) as RandomGameStep;
   const playerIds = useAppSelector(
     playersSelectors.selectIds
   ) as readonly PlayerId[];
@@ -66,7 +67,7 @@ function StrategyChip({
 }): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const gameStep = useGameStep(stepId);
+  const gameStep = useAppSelector(gameStepSelector(stepId)) as RandomGameStep;
 
   const playerIds = useAppSelector(
     playersSelectors.selectIds

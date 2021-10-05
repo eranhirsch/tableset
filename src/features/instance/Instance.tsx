@@ -8,12 +8,15 @@ import {
 } from "@mui/material";
 import { Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
-import { useMemo, useState } from "react";
+import { StepLabel } from "features/game/StepLabel";
+import { RandomGameStep } from "games/core/steps/createVariableGameStep";
+import { DerivedGameStep } from "model/DerivedGameStep";
+import React, { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { ProductId, StepId } from "../../model/IGame";
+import { ProductId, StepId } from "../../model/Game";
 import { PlayerId } from "../../model/Player";
-import { gameSelector } from "../game/gameSlice";
+import { gameSelector, gameStepSelector } from "../game/gameSlice";
 import { playersSelectors } from "../players/playersSlice";
 import { instanceSelectors, SetupStep } from "./instanceSlice";
 
@@ -22,7 +25,9 @@ function InstanceItemContent({
 }: {
   stepId: StepId;
 }): JSX.Element | null {
-  const game = useAppSelector(gameSelector);
+  const gameStep = useAppSelector(gameStepSelector(stepId)) as
+    | RandomGameStep
+    | DerivedGameStep;
 
   const instance = useAppSelector(instanceSelectors.selectEntities);
 
@@ -33,22 +38,16 @@ function InstanceItemContent({
     allExpansionIdsSelector
   ) as readonly ProductId[];
 
-  const gameStep = game.atEnforce(stepId);
+  const { InstanceManualComponent } = gameStep;
 
-  const {
-    InstanceVariableComponent,
-    InstanceDerivedComponent,
-    InstanceManualComponent,
-  } = gameStep;
-
-  if (InstanceVariableComponent != null) {
+  if ("InstanceVariableComponent" in gameStep) {
     const instanceStep = instance[stepId];
     if (instanceStep != null) {
-      return <InstanceVariableComponent value={instanceStep.value} />;
+      return <gameStep.InstanceVariableComponent value={instanceStep.value} />;
     }
-  } else if (InstanceDerivedComponent != null) {
+  } else if (gameStep.InstanceDerivedComponent != null) {
     return (
-      <InstanceDerivedComponent
+      <gameStep.InstanceDerivedComponent
         context={{
           instance: Vec.filter_nulls(
             // redux dictionaries are really weird because they support ID types
@@ -96,25 +95,24 @@ export default function Instance(): JSX.Element | null {
     () =>
       activeGameSteps
         .reduce(
-          (
-            groups: StepId[][],
-            { id, InstanceDerivedComponent, InstanceVariableComponent }
-          ) => {
+          (groups: StepId[][], step) => {
             if (
-              InstanceDerivedComponent == null &&
-              InstanceVariableComponent == null
+              !(
+                "InstanceDerivedComponent" in step ||
+                "InstanceVariableComponent" in step
+              )
             ) {
               // Trivial steps dont have any special component rendering defined,
               // they will ALWAYS render exactly the same, so we group them to
               // make it easier to skip them
-              groups[groups.length - 1].push(id);
+              groups[groups.length - 1].push(step.id);
               return groups;
             }
 
             // We need to create a new group for each non-manual step and
             // push an additional group after the step so that the next
             // iterations' doesn't add anything to this group.
-            return groups.concat([[id], []]);
+            return groups.concat([[step.id], []]);
           },
           [[]]
         )
@@ -155,12 +153,15 @@ export default function Instance(): JSX.Element | null {
                 onClick={() => setActiveStepId(group[0])}
               >
                 <Typography variant="caption">
-                  {`${group
-                    .slice(0, 2)
-                    .map((stepId) => game.atEnforce(stepId).label)
-                    .join(", ")}${
-                    group.length > 2 ? `, and ${group.length - 1} more...` : ""
-                  }`}
+                  {React.Children.toArray(
+                    group.slice(0, 2).map((stepId, index) => (
+                      <>
+                        {index > 0 && ", "}
+                        <StepLabel stepId={stepId} />
+                      </>
+                    ))
+                  )}
+                  {group.length > 2 && `, and ${group.length - 2} more...`}
                 </Typography>
               </StepButton>
             </Step>
@@ -181,7 +182,7 @@ export default function Instance(): JSX.Element | null {
                   : undefined
               }
             >
-              {game.atEnforce(stepId).label}
+              <StepLabel stepId={stepId} />
             </StepButton>
             <StepContent>
               <InstanceItemContent stepId={stepId} />
