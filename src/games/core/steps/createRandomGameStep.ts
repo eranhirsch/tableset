@@ -30,38 +30,40 @@ export interface RandomGameStep<T = unknown> extends VariableGameStep<T> {
   TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
   TemplateFixedValueSelector?(props: { current: T }): JSX.Element;
   initialFixedValue?(context: InstanceContext): T;
-  refreshFixedValue?(
-    current: T,
-    context: Omit<TemplateContext, "template">
+  refreshFixedValue?(current: T, context: ContextBase): T | undefined;
+}
+
+interface FixedOptions<
+  T,
+  D1 = never,
+  D2 = never,
+  D3 = never,
+  D4 = never,
+  D5 = never,
+  D6 = never,
+  D7 = never,
+  D8 = never,
+  D9 = never,
+  D10 = never
+> {
+  initializer(
+    dependency1: D1,
+    dependency2: D2,
+    dependency3: D3,
+    dependency4: D4,
+    dependency5: D5,
+    dependency6: D6,
+    dependency7: D7,
+    dependency8: D8,
+    dependency9: D9,
+    dependency10: D10
   ): T | undefined;
+  refresh?(current: T, context: ContextBase): T | undefined;
+  renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
+  renderSelector?(props: { current: T }): JSX.Element;
 }
 
-interface CreateVariableGameStepOptionsAny<T> extends CreateGameStepOptions {
-  dependencies?: [VariableGameStep<any>, ...VariableGameStep<any>[]];
-
-  isType?(value: any): value is T;
-
-  InstanceVariableComponent(
-    props: VariableStepInstanceComponentProps<T>
-  ): JSX.Element;
-
-  random(...dependencies: any[]): T;
-
-  recommended?(context: InstanceContext): T | undefined;
-
-  fixed?: {
-    initializer(...dependencies: any[]): T | undefined;
-    refresh?(
-      current: T,
-      context: Omit<TemplateContext, "template">
-    ): T | undefined;
-
-    renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
-    renderSelector?(props: { current: T }): JSX.Element;
-  };
-}
-
-interface CreateVariableGameStepOptions<
+interface Options<
   T,
   D1 = never,
   D2 = never,
@@ -142,7 +144,7 @@ interface CreateVariableGameStepOptions<
         VariableGameStep<D10>
       ];
 
-  isType?(value: any): value is T;
+  isType?(value: unknown): value is T;
 
   InstanceVariableComponent(
     props: VariableStepInstanceComponentProps<T>
@@ -161,26 +163,42 @@ interface CreateVariableGameStepOptions<
     dependency10: D10
   ): T;
   recommended?(context: InstanceContext): T | undefined;
-  fixed?: {
-    initializer(
-      dependency1: D1,
-      dependency2: D2,
-      dependency3: D3,
-      dependency4: D4,
-      dependency5: D5,
-      dependency6: D6,
-      dependency7: D7,
-      dependency8: D8,
-      dependency9: D9,
-      dependency10: D10
-    ): T | undefined;
-    refresh?(
-      current: T,
-      context: Omit<TemplateContext, "template">
-    ): T | undefined;
-    renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
-    renderSelector?(props: { current: T }): JSX.Element;
-  };
+  fixed?: FixedOptions<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>;
+}
+
+interface FixedOptionsInternal<T>
+  extends FixedOptions<
+    T,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown
+  > {
+  initializer(...dependencies: unknown[]): T | undefined;
+}
+
+interface OptionsInternal<T>
+  extends Options<
+    T,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown
+  > {
+  random(...dependencies: unknown[]): T;
+  fixed?: FixedOptionsInternal<T>;
 }
 
 export function createRandomGameStep<
@@ -196,19 +214,7 @@ export function createRandomGameStep<
   D9 = never,
   D10 = never
 >(
-  options: CreateVariableGameStepOptions<
-    T,
-    D1,
-    D2,
-    D3,
-    D4,
-    D5,
-    D6,
-    D7,
-    D8,
-    D9,
-    D10
-  >
+  options: Options<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
 ): Readonly<RandomGameStep<T>>;
 export function createRandomGameStep<T>({
   dependencies,
@@ -218,7 +224,7 @@ export function createRandomGameStep<T>({
   recommended,
   fixed,
   ...baseOptions
-}: CreateVariableGameStepOptionsAny<T>): Readonly<RandomGameStep<T>> {
+}: OptionsInternal<T>): Readonly<RandomGameStep<T>> {
   const baseStep = createGameStep(baseOptions);
 
   const hasValue = (context: TemplateContext | InstanceContext) =>
@@ -295,7 +301,7 @@ export function createRandomGameStep<T>({
 function strategies(
   context: TemplateContext,
   dependencies: readonly VariableGameStep<unknown>[],
-  fixedInitializer?: (...dependencies: any[]) => unknown | undefined,
+  fixedInitializer?: (...dependencies: unknown[]) => unknown | undefined,
   recommended?: (context: InstanceContext) => unknown | undefined
 ) {
   const strategies = [];
