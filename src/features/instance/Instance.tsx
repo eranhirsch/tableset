@@ -11,6 +11,7 @@ import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { StepLabel } from "features/game/StepLabel";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
+import { isSkippable } from "model/Skippable";
 import React, { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
@@ -79,13 +80,28 @@ export default function Instance(): JSX.Element | null {
   const history = useHistory();
 
   const allSteps = useAppSelector(gameStepsSelector);
+  const instance = useAppSelector(instanceSelectors.selectAll);
+  const playerIds = useAppSelector(
+    playersSelectors.selectIds
+  ) as readonly PlayerId[];
+  const productIds = useAppSelector(
+    allExpansionIdsSelector
+  ) as readonly ProductId[];
+
+  const activeSteps = useMemo(
+    () =>
+      allSteps.filter(
+        (step) =>
+          !isSkippable(step) || step.skip({ instance, playerIds, productIds })
+      ),
+    [allSteps, instance, playerIds, productIds]
+  );
 
   const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
 
   const groups = useMemo(
     () =>
-      // TODO: hide steps via the new API for step hiding
-      allSteps
+      activeSteps
         .reduce(
           (groups: StepId[][], step) => {
             if (
@@ -109,11 +125,13 @@ export default function Instance(): JSX.Element | null {
           [[]]
         )
         .filter((group) => group.length > 0),
-    [allSteps]
+    [activeSteps]
   );
 
   const activeStepId = location.hash.substring(1) as StepId;
-  const activeStepIdx = allSteps.findIndex((step) => step.id === activeStepId);
+  const activeStepIdx = activeSteps.findIndex(
+    (step) => step.id === activeStepId
+  );
 
   const expandedGroupIdx = useMemo(
     () => groups.findIndex((group) => group.includes(activeStepId)),
@@ -184,7 +202,7 @@ export default function Instance(): JSX.Element | null {
                   setCompletedSteps((steps) =>
                     steps.includes(stepId) ? steps : [...steps, stepId]
                   );
-                  const nextStepId = allSteps.find(
+                  const nextStepId = activeSteps.find(
                     (x) => !completedSteps.includes(x.id) && x.id !== stepId
                   )?.id;
                   setActiveStepId(nextStepId);

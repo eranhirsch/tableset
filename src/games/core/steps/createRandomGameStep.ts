@@ -3,6 +3,7 @@ import { SetupStep } from "features/instance/instanceSlice";
 import { Strategy } from "features/template/Strategy";
 import { TemplateElement } from "features/template/templateSlice";
 import { StepId } from "model/Game";
+import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { ContextBase } from "../../../model/ContextBase";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
@@ -20,7 +21,9 @@ export interface InstanceContext extends ContextBase {
   instance: readonly SetupStep[];
 }
 
-export interface RandomGameStep<T = unknown> extends VariableGameStep<T> {
+export interface RandomGameStep<T = unknown>
+  extends VariableGameStep<T>,
+    Skippable {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
   resolveRandom(context: InstanceContext): T;
   strategies(context: TemplateContext): readonly Strategy[];
@@ -161,11 +164,6 @@ export function createRandomGameStep<T>({
 }: OptionsInternal<T>): Readonly<RandomGameStep<T>> {
   const baseStep = createGameStep(baseOptions);
 
-  const hasValue = (context: TemplateContext | InstanceContext) =>
-    "template" in context
-      ? context.template[baseStep.id] != null
-      : context.instance.some(({ id }) => id === baseStep.id);
-
   const extractInstanceValue = ({ instance }: InstanceContext) => {
     const step = instance.find((setupStep) => setupStep.id === baseStep.id);
     if (step == null) {
@@ -185,9 +183,15 @@ export function createRandomGameStep<T>({
     ...baseStep,
     isType,
     dependencies,
-    hasValue,
     extractInstanceValue,
     InstanceVariableComponent,
+
+    skip: () => false,
+
+    hasValue: (context: TemplateContext | InstanceContext) =>
+      "template" in context
+        ? context.template[baseStep.id] != null
+        : context.instance.some(({ id }) => id === baseStep.id),
 
     resolveRandom: (context) =>
       random(

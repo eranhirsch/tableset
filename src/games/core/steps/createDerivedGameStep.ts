@@ -31,7 +31,7 @@ export interface DerivedStepInstanceComponentProps<
   ];
 }
 
-type Options<
+interface Options<
   D1 = never,
   D2 = never,
   D3 = never,
@@ -42,23 +42,23 @@ type Options<
   D8 = never,
   D9 = never,
   D10 = never
-> = Omit<CreateGameStepOptions, "InstanceManualComponent"> &
-  StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> & {
-    InstanceDerivedComponent(
-      props: DerivedStepInstanceComponentProps<
-        D1,
-        D2,
-        D3,
-        D4,
-        D5,
-        D6,
-        D7,
-        D8,
-        D9,
-        D10
-      >
-    ): JSX.Element;
-  };
+> extends Omit<CreateGameStepOptions, "InstanceManualComponent">,
+    StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> {
+  InstanceDerivedComponent(
+    props: DerivedStepInstanceComponentProps<
+      D1,
+      D2,
+      D3,
+      D4,
+      D5,
+      D6,
+      D7,
+      D8,
+      D9,
+      D10
+    >
+  ): JSX.Element;
+}
 
 export const createDerivedGameStep = <
   D1 = never,
@@ -93,6 +93,7 @@ export const createDerivedGameStep = <
           maybeFulfillDependency(context, dependencies[9]),
         ],
       }),
+    skip: () => false,
   } as DerivedGameStep);
 
 function maybeFulfillDependency<T>(
