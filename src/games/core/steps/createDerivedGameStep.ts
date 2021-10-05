@@ -5,7 +5,6 @@ import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { InstanceContext } from "./createRandomGameStep";
 
 export interface DerivedStepInstanceComponentProps<
-  D0 = never,
   D1 = never,
   D2 = never,
   D3 = never,
@@ -14,10 +13,10 @@ export interface DerivedStepInstanceComponentProps<
   D6 = never,
   D7 = never,
   D8 = never,
-  D9 = never
+  D9 = never,
+  D10 = never
 > {
   dependencies: [
-    D0 | null | undefined,
     D1 | null | undefined,
     D2 | null | undefined,
     D3 | null | undefined,
@@ -26,7 +25,8 @@ export interface DerivedStepInstanceComponentProps<
     D6 | null | undefined,
     D7 | null | undefined,
     D8 | null | undefined,
-    D9 | null | undefined
+    D9 | null | undefined,
+    D10 | null | undefined
   ];
 }
 

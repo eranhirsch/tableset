@@ -1,8 +1,8 @@
-import { Dictionary } from "@reduxjs/toolkit";
 import { nullthrows, type_invariant, Vec } from "common";
 import { SetupStep } from "features/instance/instanceSlice";
 import { Strategy } from "features/template/Strategy";
 import { TemplateElement } from "features/template/templateSlice";
+import { StepId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
 import { ContextBase } from "../../../model/ContextBase";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
@@ -12,7 +12,7 @@ export interface VariableStepInstanceComponentProps<T> {
 }
 
 export interface TemplateContext extends ContextBase {
-  template: Readonly<Dictionary<Readonly<TemplateElement>>>;
+  template: Readonly<Record<StepId, Readonly<TemplateElement>>>;
 }
 
 export interface InstanceContext extends ContextBase {
