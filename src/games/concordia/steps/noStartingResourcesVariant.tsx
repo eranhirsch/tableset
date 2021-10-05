@@ -18,7 +18,6 @@ function InstanceVariableComponent(): JSX.Element {
       footnotes={[
         // TODO: Find a way to couple these IDs with the steps themselves so
         // that we don't use magic strings here...
-        <InstanceStepLink stepId="startingResources" />,
         <InstanceStepLink stepId="startingMoney" />,
         <>
           At their regular prices:{" "}
@@ -33,11 +32,10 @@ function InstanceVariableComponent(): JSX.Element {
     >
       {(Footnote) => (
         <>
-          Players will take <em>no</em> starting resources
-          <Footnote index={1} />; <strong>instead</strong>, they will get{" "}
-          <em>more</em> money to start
+          Players will take <em>no</em> starting resources;{" "}
+          <strong>instead</strong>, they will get <em>more</em> money to start
           <Footnote index={2} />, and <em>at the start of their first turn</em>{" "}
-          they will buy the resources they need
+          they will <strong>buy</strong> resources
           <Footnote index={3} />.
         </>
       )}

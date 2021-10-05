@@ -23,6 +23,8 @@ export default createDerivedGameStep({
   id: "startingResources",
   dependencies: [noStartingResourcesVariant],
   InstanceDerivedComponent,
+  skip: ([noStartingResources]) =>
+    noStartingResources != null && noStartingResources,
 });
 
 function InstanceDerivedComponent({
