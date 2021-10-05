@@ -4,23 +4,22 @@ import {
   StepButton,
   StepContent,
   Stepper,
-  Typography,
+  Typography
 } from "@mui/material";
 import { Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { StepLabel } from "features/game/StepLabel";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
-import { isSkippable } from "model/Skippable";
 import React, { useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { ProductId, StepId } from "../../model/Game";
 import { PlayerId } from "../../model/Player";
-import { gameStepSelector, gameStepsSelector } from "../game/gameSlice";
+import { gameStepSelector } from "../game/gameSlice";
 import { playersSelectors } from "../players/playersSlice";
 import { instanceSelectors, SetupStep } from "./instanceSlice";
-
+import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
 function InstanceItemContent({
   stepId,
 }: {
@@ -29,18 +28,14 @@ function InstanceItemContent({
   const gameStep = useAppSelector(gameStepSelector(stepId)) as
     | RandomGameStep
     | DerivedGameStep;
-
   const instance = useAppSelector(instanceSelectors.selectEntities);
-
   const playerIds = useAppSelector(
     playersSelectors.selectIds
   ) as readonly PlayerId[];
   const productIds = useAppSelector(
     allExpansionIdsSelector
   ) as readonly ProductId[];
-
   const { InstanceManualComponent } = gameStep;
-
   if ("InstanceDerivedComponent" in gameStep) {
     return (
       <gameStep.InstanceDerivedComponent
@@ -56,12 +51,10 @@ function InstanceItemContent({
       />
     );
   }
-
   const instanceStep = instance[stepId];
   if (instanceStep != null) {
     return <gameStep.InstanceVariableComponent value={instanceStep.value} />;
   }
-
   if (InstanceManualComponent != null) {
     if (typeof InstanceManualComponent === "string") {
       // We allow simple strings as components too, in those cases we just
@@ -70,35 +63,14 @@ function InstanceItemContent({
     }
     return <InstanceManualComponent />;
   }
-
   // TODO: Kill this, make InstanceManualComponent non nullable
   return <div>Manual Section</div>;
 }
-
 export default function Instance(): JSX.Element | null {
   const location = useLocation();
   const history = useHistory();
-
-  const allSteps = useAppSelector(gameStepsSelector);
-  const instance = useAppSelector(instanceSelectors.selectAll);
-  const playerIds = useAppSelector(
-    playersSelectors.selectIds
-  ) as readonly PlayerId[];
-  const productIds = useAppSelector(
-    allExpansionIdsSelector
-  ) as readonly ProductId[];
-
-  const activeSteps = useMemo(
-    () =>
-      allSteps.filter(
-        (step) =>
-          !isSkippable(step) || step.skip({ instance, playerIds, productIds })
-      ),
-    [allSteps, instance, playerIds, productIds]
-  );
-
   const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
-
+  const activeSteps = useInstanceActiveSteps();
   const groups = useMemo(
     () =>
       activeSteps
@@ -116,7 +88,6 @@ export default function Instance(): JSX.Element | null {
               groups[groups.length - 1].push(step.id);
               return groups;
             }
-
             // We need to create a new group for each non-manual step and
             // push an additional group after the step so that the next
             // iterations' doesn't add anything to this group.
@@ -127,20 +98,16 @@ export default function Instance(): JSX.Element | null {
         .filter((group) => group.length > 0),
     [activeSteps]
   );
-
   const activeStepId = location.hash.substring(1) as StepId;
   const activeStepIdx = activeSteps.findIndex(
     (step) => step.id === activeStepId
   );
-
   const expandedGroupIdx = useMemo(
     () => groups.findIndex((group) => group.includes(activeStepId)),
     [activeStepId, groups]
   );
-
   const setActiveStepId = (stepId: StepId | undefined) =>
     history.push(stepId != null ? `#${stepId}` : "#");
-
   return (
     <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
       {groups.map((group, groupIdx) => {
@@ -175,7 +142,6 @@ export default function Instance(): JSX.Element | null {
             </Step>
           );
         }
-
         return group.map((stepId, idx) => (
           <Step
             key={stepId}

@@ -1,18 +1,17 @@
 import { Link } from "@mui/material";
-import { gameStepsSelector } from "features/game/gameSlice";
 import { StepLabel } from "features/game/StepLabel";
 import { StepId } from "model/Game";
 import { GameStepBase } from "model/GameStepBase";
 import { Link as RouterLink } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
+import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
 
 export function InstanceStepLink(
   props: { step: GameStepBase } | { stepId: StepId }
 ): JSX.Element {
-  const allSteps = useAppSelector(gameStepsSelector);
+  const activeSteps = useInstanceActiveSteps();
 
   const stepId = "stepId" in props ? props.stepId : props.step.id;
-  const stepIdx = allSteps.findIndex(({ id }) => id === stepId);
+  const stepIdx = activeSteps.findIndex(({ id }) => id === stepId);
 
   return (
     <Link component={RouterLink} to={`#${stepId}`}>
