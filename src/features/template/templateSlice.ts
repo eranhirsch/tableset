@@ -122,7 +122,9 @@ const templateSlice = createSlice({
 
           const strategies = step.strategies({
             ...context,
-            template: state.entities,
+            template: state.entities as Readonly<
+              Record<StepId, Readonly<TemplateElement>>
+            >,
           });
 
           if (!strategies.includes(element.strategy)) {

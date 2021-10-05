@@ -14,8 +14,9 @@ import { playersSelectors } from "../players/playersSlice";
 import TemplateItem from "./TemplateItem";
 import {
   templateActions,
+  TemplateElement,
   templateIsStaleSelector,
-  templateSelectors,
+  templateSelectors
 } from "./templateSlice";
 
 export default function Template(): JSX.Element | null {
@@ -25,7 +26,9 @@ export default function Template(): JSX.Element | null {
 
   const allSteps = useAppSelector(gameStepsSelector);
 
-  const template = useAppSelector(templateSelectors.selectEntities);
+  const template = useAppSelector(templateSelectors.selectEntities) as Readonly<
+    Record<StepId, Readonly<TemplateElement>>
+  >;
   const isStale = useAppSelector(templateIsStaleSelector);
 
   const playerIds = useAppSelector(

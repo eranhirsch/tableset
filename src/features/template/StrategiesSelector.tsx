@@ -10,7 +10,11 @@ import { ProductId, StepId } from "model/Game";
 import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import { playersSelectors } from "../players/playersSlice";
-import { templateActions, templateSelectors } from "./templateSlice";
+import {
+  templateActions,
+  TemplateElement,
+  templateSelectors,
+} from "./templateSlice";
 
 export function StrategiesSelector({
   stepId,
@@ -24,7 +28,9 @@ export function StrategiesSelector({
   const productIds = useAppSelector(
     allExpansionIdsSelector
   ) as readonly ProductId[];
-  const template = useAppSelector(templateSelectors.selectEntities);
+  const template = useAppSelector(templateSelectors.selectEntities) as Readonly<
+    Record<StepId, Readonly<TemplateElement>>
+  >;
   const strategies = useMemo(
     () =>
       nullthrows(
