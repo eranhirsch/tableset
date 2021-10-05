@@ -20,7 +20,7 @@ export interface InstanceContext extends ContextBase {
 }
 
 export interface RandomGameStep<T = unknown> extends VariableGameStep<T> {
-  InstanceVariableComponent(props: { value: any }): JSX.Element;
+  InstanceVariableComponent(props: { value: T }): JSX.Element;
   resolveRandom(context: InstanceContext): T;
   strategies(context: TemplateContext): readonly Strategy[];
 
