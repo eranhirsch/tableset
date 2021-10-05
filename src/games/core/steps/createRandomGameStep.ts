@@ -6,7 +6,7 @@ import { StepId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
 import { ContextBase } from "../../../model/ContextBase";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
-import { WithDependencies } from "./WithDependencies";
+import { StepWithDependencies } from "./StepWithDependencies";
 
 export interface VariableStepInstanceComponentProps<T> {
   value: T;
@@ -77,7 +77,7 @@ type Options<
   D9 = never,
   D10 = never
 > = CreateGameStepOptions &
-  Partial<WithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>> & {
+  Partial<StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>> & {
     isType?(value: unknown): value is T;
 
     InstanceVariableComponent(

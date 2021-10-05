@@ -1,6 +1,6 @@
 import { VariableGameStep } from "model/VariableGameStep";
 
-export interface WithDependencies<
+export interface StepWithDependencies<
   D1 = never,
   D2 = never,
   D3 = never,
