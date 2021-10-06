@@ -7,6 +7,8 @@ import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { ContextBase } from "../../../model/ContextBase";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
+import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
+import { DepsTuple } from "./DepsTuple";
 import { StepWithDependencies } from "./StepWithDependencies";
 
 export interface VariableStepInstanceComponentProps<T> {
@@ -101,6 +103,10 @@ type Options<
     ): T;
     recommended?(context: InstanceContext): T | undefined;
     fixed?: FixedOptions<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>;
+    skip?(
+      value: T | null,
+      dependencies: DepsTuple<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
+    ): boolean;
   };
 
 interface FixedOptionsInternal<T>
@@ -160,23 +166,23 @@ export function createRandomGameStep<T>({
   random,
   recommended,
   fixed,
+  skip,
   ...baseOptions
 }: OptionsInternal<T>): Readonly<RandomGameStep<T>> {
   const baseStep = createGameStep(baseOptions);
 
   const extractInstanceValue = ({ instance }: InstanceContext) => {
-    const step = instance.find((setupStep) => setupStep.id === baseStep.id);
-    if (step == null) {
-      return null;
-    }
-    return type_invariant(
-      step.value,
-      nullthrows(
-        isType,
-        `Game step ${baseStep.id} does not have a type predicate defined`
-      ),
-      `Value ${step.value} couldn't be converted to the type defined by it's type ${baseStep.id}`
-    );
+    const step = instance.find(({ id }) => id === baseStep.id);
+    return step == null
+      ? null
+      : type_invariant(
+          step.value,
+          nullthrows(
+            isType,
+            `Game step ${baseStep.id} does not have a type predicate defined`
+          ),
+          `Value ${step.value} couldn't be converted to the type defined by it's type ${baseStep.id}`
+        );
   };
 
   const variableStep: RandomGameStep<T> = {
@@ -186,7 +192,13 @@ export function createRandomGameStep<T>({
     extractInstanceValue,
     InstanceVariableComponent,
 
-    skip: () => false,
+    skip: (context) =>
+      dependencies != null && skip != null
+        ? skip(
+            extractInstanceValue(context),
+            dependenciesInstanceValues(context, dependencies)
+          )
+        : false,
 
     hasValue: (context: TemplateContext | InstanceContext) =>
       "template" in context
