@@ -8,7 +8,7 @@ import { RootState } from "app/store";
 import { Dict, nullthrows, Vec } from "common";
 import { playersActions } from "features/players/playersSlice";
 import { Strategy } from "features/template/Strategy";
-import GameMapper, { GameId } from "games/core/GameMapper";
+import { GameId, gameMapper } from "games/core/GameMapper";
 import { PLAYERS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createPlayersDependencyMetaStep";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { ContextBase } from "model/ContextBase";
@@ -75,7 +75,7 @@ const templateSlice = createSlice({
           strategy: Strategy.FIXED,
           isStale: false,
           value: (
-            GameMapper.forId(state.gameId).steps.find(
+            gameMapper[state.gameId].steps.find(
               ({ id }) => stepId === id
             ) as RandomGameStep<unknown>
           ).initialFixedValue!({ ...context, instance: [] }),
@@ -106,8 +106,7 @@ const templateSlice = createSlice({
     },
 
     refresh: (state, { payload: context }: PayloadAction<ContextBase>) => {
-      const game = GameMapper.forId(state.gameId);
-      game.steps
+      gameMapper[state.gameId].steps
         .filter((step): step is RandomGameStep<unknown> => "strategies" in step)
         .forEach((step) => {
           const element = state.entities[step.id];
@@ -183,13 +182,11 @@ export const fullTemplateSelector = createSelector(
 
 export const templateActions = templateSlice.actions;
 
-
 function markDownstreamElementsStale(
   changedElementId: StepId,
   { gameId, entities }: RootState["template"]
 ): void {
-  const { steps } = GameMapper.forId(gameId);
-  const downstreamSteps = steps
+  const downstreamSteps = gameMapper[gameId].steps
     .filter((x): x is RandomGameStep<unknown> => "dependencies" in x)
     .filter((x) => x.dependencies?.some(({ id }) => id === changedElementId));
   const downstreamElements = Vec.filter_nulls(

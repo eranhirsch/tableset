@@ -2,7 +2,7 @@ import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { nullthrows } from "common";
 import { StepId } from "model/Game";
 import { RootState } from "../../app/store";
-import GameMapper, { GameId } from "../../games/core/GameMapper";
+import { GameId, gameMapper } from "../../games/core/GameMapper";
 
 interface GameState {
   id: GameId;
@@ -18,7 +18,10 @@ const gameSlice = createSlice({
 export default gameSlice;
 
 const gameIdSelector = (state: RootState) => state.game.id;
-export const gameSelector = createSelector(gameIdSelector, GameMapper.forId);
+export const gameSelector = createSelector(
+  gameIdSelector,
+  (gameId) => gameMapper[gameId]
+);
 export const gameStepsSelector = createSelector(
   gameSelector,
   (game) => game.steps
