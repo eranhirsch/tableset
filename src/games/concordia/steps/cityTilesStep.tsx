@@ -2,36 +2,38 @@ import { Grid, Typography, useTheme } from "@mui/material";
 import { Dict, MathUtils, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder, {
-  CITY_TILES,
+  CITY_TILES
 } from "../utils/CityResourcesEncoder";
 import { MAPS, Zone } from "../utils/Maps";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
+import salsaVariantStep from "./salsaVariantStep";
 
 export default createRandomGameStep({
   id: "cityTiles",
   labelOverride: "City Resources",
 
-  dependencies: [mapStep],
+  dependencies: [mapStep, salsaVariantStep],
 
   isType: (x): x is string => typeof x === "string",
 
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  random: (mapId) => CityResourcesEncoder.randomHash(mapId),
+  random: (mapId, withSalsa) =>
+    CityResourcesEncoder.randomHash(mapId, withSalsa),
 });
 
 function InstanceVariableComponent({
@@ -41,10 +43,12 @@ function InstanceVariableComponent({
 
   // TODO: Move this to dependencies
   const mapId = useRequiredInstanceValue(mapStep);
+  const withSalsa = useOptionalInstanceValue(salsaVariantStep);
 
   const provinces = useMemo(
-    () => CityResourcesEncoder.decodeCityResources(mapId, hash),
-    [hash, mapId]
+    () =>
+      CityResourcesEncoder.decodeCityResources(mapId, withSalsa ?? false, hash),
+    [hash, mapId, withSalsa]
   );
 
   return (

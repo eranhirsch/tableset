@@ -29,12 +29,22 @@ const associate = <Tk extends keyof any, Tv>(
  *
  * @see `Dict.merge()` For a fixed number of mapper-objs.
  */
-const merge = <T extends DictLike>(
+function merge<T1 extends DictLike, T2 extends DictLike>(
+  dict1: Readonly<T1>,
+  dict2: Readonly<T2>
+): Readonly<
+  TransformedDict<T1, keyof T1 | keyof T2, ValueOf<T1> | ValueOf<T2>>
+>;
+function merge<T extends DictLike>(
   ...dicts: readonly Readonly<T>[]
-): Readonly<T> =>
+): Readonly<T>;
+function merge<T extends DictLike>(
+  ...dicts: readonly Readonly<T>[]
+): Readonly<T> {
   // When we only have one dict to flatten we return the same object to optimize
   // for react.
-  dicts.length === 1 ? dicts[0] : Object.assign({}, ...dicts);
+  return dicts.length === 1 ? dicts[0] : Object.assign({}, ...dicts);
+}
 
 /**
  * @returns a new mapper-obj where for each key in `left` a 2-tuple with the

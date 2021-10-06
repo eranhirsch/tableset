@@ -39,6 +39,7 @@ type CastleResource = Readonly<Record<typeof LOCATIONS[number], Resource>>;
 
 const remainingResources = (
   mapId: MapId,
+  withSalsa: boolean,
   citiesHash: string
 ): readonly Resource[] =>
   Vec.diff(
@@ -49,7 +50,9 @@ const remainingResources = (
       )
     ),
     // Tiles used as bonus resources for provinces
-    Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash))
+    Vec.values(
+      CityResourcesEncoder.decodeProvinceBonuses(mapId, withSalsa, citiesHash)
+    )
   );
 
 export const EXPECTED_REMAINING_RESOURCES_COUNT =
@@ -62,8 +65,8 @@ export const NUM_LEFT_OVER =
   EXPECTED_REMAINING_RESOURCES_COUNT - LOCATIONS.length;
 
 export default {
-  randomHash(mapId: MapId, citiesHash: string): string {
-    const remaining = remainingResources(mapId, citiesHash);
+  randomHash(mapId: MapId, withSalsa: boolean, citiesHash: string): string {
+    const remaining = remainingResources(mapId, withSalsa, citiesHash);
 
     // Pick tiles in excess of the number of tiles we need to fulfil all
     // locations to be returned to the box
@@ -81,10 +84,11 @@ export default {
 
   decode(
     mapId: MapId,
+    withSalsa: boolean,
     citiesHash: string,
     castlesHash: string
   ): CastleResource {
-    const remaining = remainingResources(mapId, citiesHash);
+    const remaining = remainingResources(mapId, withSalsa, citiesHash);
 
     const [resourcesHash, ...leftOversStr] = castlesHash.split(DIVIDER);
     const leftOvers = leftOversStr.filter(

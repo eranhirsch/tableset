@@ -35,6 +35,18 @@ const SALT_MAP_EXTRA_RESOURCE: Readonly<Record<Zone, Resource>> = {
   D: "bricks",
 };
 
+/**
+ * When playing with Salt on regular maps (which don't have an extra city per-
+ * zone) we need to remove one regular resource tile per-zone to make room for
+ * the salt one.
+ */
+const REGULAR_MAPS_SALT_ALTERNATIVE: Readonly<Record<Zone, Resource>> = {
+  A: "food",
+  B: "tools",
+  C: "wine",
+  D: "bricks",
+};
+
 type CityResources = Readonly<Record<string /* cityName */, Resource>>;
 type ProvinceCityResources = Readonly<
   Record<string /* provinceName */, CityResources>
@@ -44,19 +56,25 @@ type ProvinceBonusResource = Readonly<
 >;
 
 export default {
-  randomHash: (mapId: MapId): string =>
+  randomHash: (mapId: MapId, withSalsa: boolean): string =>
     Vec.map_with_key(MAPS[mapId].provinces, (zone) =>
       Num.encode_base32(
         Random.index(
-          MathUtils.permutations_lazy_array(withoutSalt(zone, mapId))
+          MathUtils.permutations_lazy_array(
+            withSalsa ? saltTiles(zone, mapId) : noSaltTiles(zone, mapId)
+          )
         )
       )
     ).join(HASH_SEPARATOR),
 
   decodeCityResources,
 
-  decodeProvinceBonuses: (mapId: MapId, hash: string): ProvinceBonusResource =>
-    Dict.map(decodeCityResources(mapId, hash), (cityResources) =>
+  decodeProvinceBonuses: (
+    mapId: MapId,
+    withSalsa: boolean,
+    hash: string
+  ): ProvinceBonusResource =>
+    Dict.map(decodeCityResources(mapId, withSalsa, hash), (cityResources) =>
       nullthrows(
         MathUtils.max_by(
           Vec.values(cityResources),
@@ -69,10 +87,11 @@ export default {
 
 function decodeCityResources(
   mapId: MapId,
+  withSalsa: boolean,
   hash: string
 ): ProvinceCityResources {
   const zonesWithoutSalt = Dict.from_keys(Vec.keys(CITY_TILES), (zone) =>
-    withoutSalt(zone, mapId)
+    withSalsa ? saltTiles(zone, mapId) : noSaltTiles(zone, mapId)
   );
   const allPerms = Dict.map(
     zonesWithoutSalt,
@@ -110,7 +129,7 @@ function decodeCityResources(
 /**
  * Return the city tiles for the zone, when playing without salsa
  */
-const withoutSalt = (zone: Zone, mapId: MapId): typeof CITY_TILES[Zone] =>
+const noSaltTiles = (zone: Zone, mapId: MapId): typeof CITY_TILES[Zone] =>
   MAPS[mapId].isSaltMap
     ? Dict.map_with_key(
         CITY_TILES[zone],
@@ -118,3 +137,20 @@ const withoutSalt = (zone: Zone, mapId: MapId): typeof CITY_TILES[Zone] =>
           count + (resource === SALT_MAP_EXTRA_RESOURCE[zone] ? 1 : 0)
       )
     : CITY_TILES[zone];
+
+const saltTiles = (
+  zone: Zone,
+  mapId: MapId
+): Readonly<Record<Resource, number>> =>
+  Dict.merge(
+    MAPS[mapId].isSaltMap
+      ? CITY_TILES[zone]
+      : // Remove one tile from each zone in regular maps
+        Dict.map_with_key(
+          CITY_TILES[zone],
+          (resource, count) =>
+            count - (resource === REGULAR_MAPS_SALT_ALTERNATIVE[zone] ? 1 : 0)
+        ),
+    // Add the salt tile to the zone tiles
+    { salt: 1 }
+  );

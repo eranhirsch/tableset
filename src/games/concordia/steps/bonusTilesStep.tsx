@@ -14,21 +14,26 @@ import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
+import salsaVariantStep from "./salsaVariantStep";
 
 export default createDerivedGameStep({
   id: "bonusTiles",
   labelOverride: "Province Bonuses",
 
-  dependencies: [mapStep, cityTilesStep],
+  dependencies: [mapStep, salsaVariantStep, cityTilesStep],
 
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [mapId, hash],
-}: DerivedStepInstanceComponentProps<MapId, string>): JSX.Element {
+  dependencies: [mapId, withSalsa, hash],
+}: DerivedStepInstanceComponentProps<MapId, true | null, string>): JSX.Element {
   return mapId != null && hash != null ? (
-    <ComputedInstanceComponent mapId={mapId} hash={hash} />
+    <ComputedInstanceComponent
+      mapId={mapId}
+      withSalsa={withSalsa ?? false}
+      hash={hash}
+    />
   ) : (
     <IncompleteInstanceDerivedComponent mapId={mapId} />
   );
@@ -153,14 +158,16 @@ function IncompleteInstanceDerivedComponent({
 
 function ComputedInstanceComponent({
   mapId,
+  withSalsa,
   hash,
 }: {
   mapId: MapId;
+  withSalsa: boolean;
   hash: string;
 }): JSX.Element | null {
   const provinceResource = useMemo(
-    () => CityResourcesEncoder.decodeProvinceBonuses(mapId, hash),
-    [hash, mapId]
+    () => CityResourcesEncoder.decodeProvinceBonuses(mapId, withSalsa, hash),
+    [hash, mapId, withSalsa]
   );
 
   return (
