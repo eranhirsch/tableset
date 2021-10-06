@@ -88,7 +88,7 @@ export default function Instance(): JSX.Element | null {
     () =>
       activeSteps
         .reduce(
-          (groups: StepId[][], step) => {
+          (groups, step) => {
             if (
               !(
                 "InstanceDerivedComponent" in step ||
@@ -106,7 +106,7 @@ export default function Instance(): JSX.Element | null {
             // iterations' doesn't add anything to this group.
             return groups.concat([[step.id], []]);
           },
-          [[]]
+          [[]] as StepId[][]
         )
         .filter((group) => group.length > 0),
     [activeSteps]
