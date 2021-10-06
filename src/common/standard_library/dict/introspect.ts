@@ -7,8 +7,7 @@
 import { Vec } from "common";
 import { DictLike, ValueOf } from "../_private/typeUtils";
 
-const size = (dict: Readonly<Record<keyof any, unknown>>): number =>
-  Vec.values(dict).length;
+const size = (dict: Readonly<DictLike>): number => Vec.values(dict).length;
 
 /**
  * @returns whether the two given mapper-obj have the same entries, using strict

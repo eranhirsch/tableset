@@ -15,7 +15,7 @@ const permutations_lazy_array = <T extends keyof any>(
       : (permutation_or_definition as Record<T, number>)
   );
 
-class PermutationsLazyArray<K extends keyof any> {
+export class PermutationsLazyArray<K extends keyof any> {
   private readonly definition: readonly (readonly [K, number])[];
 
   constructor(definition: Readonly<Partial<Record<K, number>>>) {

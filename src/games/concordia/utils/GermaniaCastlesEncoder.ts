@@ -5,16 +5,16 @@ import {
   nullthrows,
   Num,
   Random,
-  Shape,
-  Vec
+  Vec,
 } from "common";
+import { PermutationsLazyArray } from "common/standard_library/math/permutationsLazyArray";
 import CityResourcesEncoder from "./CityResourcesEncoder";
-import { MapId } from "./Maps";
+import { MapId, MAPS } from "./Maps";
 import { Resource } from "./resource";
 
 const DIVIDER = "/";
 
-const BONUS_TILES = Object.freeze({
+export const BONUS_TILES = Object.freeze({
   cloth: 4,
   wine: 5,
   tools: 6,
@@ -22,7 +22,7 @@ const BONUS_TILES = Object.freeze({
   bricks: 3,
 } as Record<Resource, number>);
 
-const LOCATIONS = [
+export const LOCATIONS = [
   "Vbii",
   "Belgica",
   "Francia (near Mogonatiacvm)",
@@ -37,28 +37,40 @@ const LOCATIONS = [
 
 type CastleResource = Readonly<Record<typeof LOCATIONS[number], Resource>>;
 
+const remainingResources = (
+  mapId: MapId,
+  citiesHash: string
+): readonly Resource[] =>
+  Vec.diff(
+    // All tiles available (normalized)
+    Vec.flatten(
+      Vec.map_with_key(BONUS_TILES, (resource, total) =>
+        Vec.fill(total, resource)
+      )
+    ),
+    // Tiles used as bonus resources for provinces
+    Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash))
+  );
+
+export const EXPECTED_REMAINING_RESOURCES_COUNT =
+  // Sum of all bonus tiles in the box
+  MathUtils.sum(Vec.values(BONUS_TILES)) -
+  // Number of provinces in the Germania Map
+  Dict.size(Dict.flatten(Vec.values(MAPS.germania.provinces)));
+
+export const NUM_LEFT_OVER =
+  EXPECTED_REMAINING_RESOURCES_COUNT - LOCATIONS.length;
+
 export default {
   randomHash(mapId: MapId, citiesHash: string): string {
-    const remainingResources = Vec.diff(
-      // All tiles available (normalized)
-      Vec.flatten(
-        Vec.map_with_key(BONUS_TILES, (resource, total) =>
-          Vec.fill(total, resource)
-        )
-      ),
-      provinceBonusTiles(mapId, citiesHash)
-    );
+    const remaining = remainingResources(mapId, citiesHash);
 
-    // Pick 2 tiles to be left out (returned to the box)
-    const leftOvers = Vec.sample(remainingResources, 2);
-    const resourcesHash = Num.encode_base32(
-      Random.index(
-        MathUtils.permutations_lazy_array(
-          // The remaining 10 tiles would be used for the castles
-          Vec.diff(remainingResources, leftOvers)
-        )
-      )
-    );
+    // Pick tiles in excess of the number of tiles we need to fulfil all
+    // locations to be returned to the box
+    const leftOvers = Vec.sample(remaining, NUM_LEFT_OVER);
+
+    const perms = castleTilesPermutations(remaining, leftOvers);
+    const resourcesHash = Num.encode_base32(Random.index(perms));
 
     return [
       resourcesHash,
@@ -72,45 +84,45 @@ export default {
     citiesHash: string,
     castlesHash: string
   ): CastleResource {
-    const [resourcesHash, ...leftOvers] = castlesHash.split(DIVIDER, 3);
+    const remaining = remainingResources(mapId, citiesHash);
 
-    const leftOverResources = leftOvers.filter(
+    const [resourcesHash, ...leftOversStr] = castlesHash.split(DIVIDER);
+    const leftOvers = leftOversStr.filter(
       (resourceStr): resourceStr is Resource => resourceStr in BONUS_TILES
     );
     invariant(
-      leftOverResources.length === 2,
+      leftOvers.length === NUM_LEFT_OVER,
       `Not enough left-overs found in hash ${castlesHash}`
     );
 
-    const usedResources = Vec.concat(
-      provinceBonusTiles(mapId, citiesHash),
-      leftOverResources
-    );
-    const remainingResources = Dict.map(
-      Dict.left_join(BONUS_TILES, Shape.count_values(usedResources)),
-      ([total, used]) => total - (used ?? 0)
-    );
-
-    const permutations = MathUtils.permutations_lazy_array(remainingResources);
-    const castlesIndex = Num.decode_base32(resourcesHash);
+    const perms = castleTilesPermutations(remaining, leftOvers);
     const resources = nullthrows(
-      permutations.at(castlesIndex),
-      `Index ${castlesIndex} is out of bounds for permutations ${permutations}`
+      perms.at(Num.decode_base32(resourcesHash)),
+      `Encountered issue when handling ${castlesHash}`
     );
 
-    invariant(
-      resources.length === LOCATIONS.length,
-      `Not enough resources in result: ${resources} for castlesHash ${castlesHash}`
-    );
     // We use Dict instead of Shape here intentionally, we know that the output
     // would contain an entry for EACH location because of how we wrote the
     // algorithm.
     return Dict.associate(LOCATIONS, resources);
   },
+
+  remainingResources,
 } as const;
 
-const provinceBonusTiles = (
-  mapId: MapId,
-  citiesHash: string
-): readonly Resource[] =>
-  Vec.values(CityResourcesEncoder.decodeProvinceBonuses(mapId, citiesHash));
+function castleTilesPermutations(
+  remaining: readonly Resource[],
+  leftOvers: readonly Resource[]
+): PermutationsLazyArray<Resource> {
+  // We remove the sampled left-overs from the tiles pool
+  const locationTiles = Vec.diff(remaining, leftOvers);
+  invariant(
+    locationTiles.length === LOCATIONS.length,
+    `Mismatch for number of tiles (${
+      LOCATIONS.length
+    }) to be used for randomization for the casltes: ${locationTiles.join(
+      ", "
+    )}`
+  );
+  return MathUtils.permutations_lazy_array(locationTiles);
+}
