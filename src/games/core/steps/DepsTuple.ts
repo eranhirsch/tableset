@@ -9,7 +9,7 @@ export type DepsTuple<
   D8 = never,
   D9 = never,
   D10 = never
-> = [
+> = readonly [
   D1 | null | undefined,
   D2 | null | undefined,
   D3 | null | undefined,

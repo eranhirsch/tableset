@@ -7,11 +7,7 @@ interface Options {
   InstanceVariableComponent(): JSX.Element;
 }
 
-export const createVariant = ({
-  id,
-  name,
-  InstanceVariableComponent,
-}: Options) =>
+export const createVariant = ({ id, name, InstanceVariableComponent }: Options) =>
   createRandomGameStep({
     id: `variant_${id}`,
     labelOverride: `Variant: ${name}`,
@@ -28,4 +24,6 @@ export const createVariant = ({
       initializer: (_) => true as true,
       renderTemplateLabel: "Enabled",
     },
+
+    skip: (isEnabled) => isEnabled == null,
   });

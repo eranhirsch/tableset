@@ -193,10 +193,23 @@ export function createRandomGameStep<T>({
     InstanceVariableComponent,
 
     skip: (context) =>
-      dependencies != null && skip != null
+      skip != null
         ? skip(
             extractInstanceValue(context),
-            dependenciesInstanceValues(context, dependencies)
+            dependencies != null
+              ? dependenciesInstanceValues(context, dependencies)
+              : [
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                ]
           )
         : false,
 
