@@ -1,4 +1,4 @@
-import { Vec } from "common";
+import { Dict, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import GrammaticalList from "games/core/ux/GrammaticalList";
@@ -23,7 +23,7 @@ function InstanceVariableComponent(): JSX.Element {
           At their regular prices:{" "}
           <GrammaticalList>
             {Vec.map_with_key(
-              RESOURCE_COST,
+              Dict.filter(RESOURCE_COST, (cost) => cost > 0),
               (resource, cost) => `${RESOURCE_NAME[resource]}-${cost}`
             )}
           </GrammaticalList>

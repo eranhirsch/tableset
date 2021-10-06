@@ -18,4 +18,4 @@ export const RESOURCE_NAME: Record<Resource, string> = {
   cloth: "Cloth",
 };
 
-export const isResource = (x: string): x is Resource => x in RESOURCE_COST;
+export const isResource = (x: string): x is Resource => x in RESOURCE_NAME;

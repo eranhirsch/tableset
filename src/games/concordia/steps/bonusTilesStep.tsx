@@ -35,14 +35,19 @@ function InstanceDerivedComponent({
       hash={hash}
     />
   ) : (
-    <IncompleteInstanceDerivedComponent mapId={mapId} />
+    <IncompleteInstanceDerivedComponent
+      mapId={mapId}
+      withSalsa={withSalsa ?? false}
+    />
   );
 }
 
 function IncompleteInstanceDerivedComponent({
   mapId,
+  withSalsa,
 }: {
   mapId: MapId | null | undefined;
+  withSalsa: boolean;
 }): JSX.Element {
   let mapSpecificCount;
   let provinceCityCountsFootnote;
@@ -126,13 +131,22 @@ function IncompleteInstanceDerivedComponent({
             <GrammaticalList>
               {Vec.map_with_key(
                 Dict.sort_by(
-                  Dict.inner_join(RESOURCE_NAME, RESOURCE_COST),
+                  Dict.inner_join(
+                    RESOURCE_NAME,
+                    // Remove resources without any value.
+                    Dict.filter(RESOURCE_COST, (cost) => cost > 0)
+                  ),
                   // We want descending order, so we negate the value
                   ([_, cost]) => -cost
                 ),
                 (_, [name]) => name
               )}
             </GrammaticalList>
+            {withSalsa && (
+              <>
+                ; <em>Ignoring {RESOURCE_NAME.salt}</em>
+              </>
+            )}
             .
           </>,
           <>

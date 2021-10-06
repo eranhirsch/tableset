@@ -77,7 +77,7 @@ export default {
     Dict.map(decodeCityResources(mapId, withSalsa, hash), (cityResources) =>
       nullthrows(
         MathUtils.max_by(
-          Vec.values(cityResources),
+          Vec.values(cityResources).filter((resource) => resource !== "salt"),
           (resource) => RESOURCE_COST[resource]
         ),
         `Empty city resources encountered for ${mapId} and ${hash}`
