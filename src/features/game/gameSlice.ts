@@ -2,7 +2,7 @@ import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { nullthrows } from "common";
 import { StepId } from "model/Game";
 import { RootState } from "../../app/store";
-import { GameId, gameMapper } from "../../games/core/GameMapper";
+import { GameId, gameMapper } from "../../games/core/gameMapper";
 
 interface GameState {
   id: GameId;

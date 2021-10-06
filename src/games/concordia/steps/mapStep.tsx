@@ -13,7 +13,7 @@ import {
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
-import { ConcordiaProductId } from "../ConcordiaGame";
+import { ConcordiaProductId } from "../concordiaGame";
 import { MapId, MAPS } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 
