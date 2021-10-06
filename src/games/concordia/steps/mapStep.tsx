@@ -1,6 +1,6 @@
 import { styled, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Dict, Random, Shape, Vec } from "common";
+import { Dict, Random, Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { templateActions } from "features/template/templateSlice";
 import createProductDependencyMetaStep from "games/core/steps/createProductDependencyMetaStep";
@@ -17,13 +17,14 @@ import { ConcordiaProductId } from "../concordiaGame";
 import { MapId, MAPS } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 
-const MAPS_BY_PRODUCT = Object.freeze({
-  base: ["imperium", "italia"],
-  britanniaGermania: ["britannia", "germania"],
-} as Record<ConcordiaProductId, readonly MapId[]>);
-
-const allMaps = (productIds: readonly ConcordiaProductId[]): readonly MapId[] =>
-  Vec.flatten(Vec.values(Shape.select_keys(MAPS_BY_PRODUCT, productIds)));
+const allMaps = (
+  activeProducts: readonly ConcordiaProductId[]
+): readonly MapId[] =>
+  Vec.keys(
+    Dict.filter(MAPS, ({ providedIn }) =>
+      providedIn.some((productId) => activeProducts.includes(productId))
+    )
+  );
 
 export default createRandomGameStep({
   id: "map",

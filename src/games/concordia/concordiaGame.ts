@@ -19,7 +19,7 @@ import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
 
-export type ConcordiaProductId = "base" | "britanniaGermania";
+export type ConcordiaProductId = "base" | "britanniaGermania" | "salsa";
 
 export const concordiaGame = Object.freeze({
   products: Object.freeze({
@@ -29,6 +29,7 @@ export const concordiaGame = Object.freeze({
       bggId: 165023,
       year: 2014,
     },
+    salsa: { name: "Salsa", bggId: 181084, year: 2015 },
   } as Record<ConcordiaProductId, Product>),
 
   steps: [
