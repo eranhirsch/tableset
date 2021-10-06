@@ -10,26 +10,37 @@ import React from "react";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { Resource, RESOURCE_NAME } from "../utils/resource";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
+import salsaVariantStep from "./salsaVariantStep";
 
-const STARTING_RESOURCES = Object.freeze({
+const REGULAR_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
+  salt: 0,
   cloth: 1,
   wine: 1,
   tools: 1,
   food: 2,
   bricks: 1,
-} as Record<Resource, number>);
+};
+
+const SALSA_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
+  salt: 1,
+  cloth: 1,
+  wine: 1,
+  tools: 1,
+  food: 1,
+  bricks: 1,
+};
 
 export default createDerivedGameStep({
   id: "startingResources",
-  dependencies: [noStartingResourcesVariant],
+  dependencies: [salsaVariantStep, noStartingResourcesVariant],
   InstanceDerivedComponent,
-  skip: ([noStartingResources]) =>
+  skip: ([_, noStartingResources]) =>
     noStartingResources != null && noStartingResources,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [isNoStartingResourcesVariantEnabled],
-}: DerivedStepInstanceComponentProps<true>): JSX.Element {
+  dependencies: [withSalsa, isNoStartingResourcesVariantEnabled],
+}: DerivedStepInstanceComponentProps<true, true>): JSX.Element {
   if (isNoStartingResourcesVariantEnabled != null) {
     return (
       <BlockWithFootnotes
@@ -55,7 +66,10 @@ function InstanceDerivedComponent({
       Each player takes{" "}
       <GrammaticalList>
         {Vec.map_with_key(
-          Shape.filter(STARTING_RESOURCES, (count) => count > 0),
+          Shape.filter(
+            withSalsa ? SALSA_STARTING_RESOURCES : REGULAR_STARTING_RESOURCES,
+            (count) => count > 0
+          ),
           (resource, count) => (
             <React.Fragment key={`starting_resource_${resource}`}>
               {count} <strong>{RESOURCE_NAME[resource]}</strong>
