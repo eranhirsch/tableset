@@ -6,19 +6,23 @@ import {
   Stepper,
   Typography
 } from "@mui/material";
-import { Vec } from "common";
+import { Dict, Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { StepLabel } from "features/game/StepLabel";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { ProductId, StepId } from "../../model/Game";
 import { PlayerId } from "../../model/Player";
 import { gameStepSelector } from "../game/gameSlice";
 import { playersSelectors } from "../players/playersSlice";
-import { instanceSelectors, SetupStep } from "./instanceSlice";
+import {
+  fullInstanceSelector,
+  instanceSelectors,
+  SetupStep,
+} from "./instanceSlice";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
 function InstanceItemContent({
   stepId,
@@ -69,8 +73,17 @@ function InstanceItemContent({
 export default function Instance(): JSX.Element | null {
   const location = useLocation();
   const history = useHistory();
+
   const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
+
   const activeSteps = useInstanceActiveSteps();
+
+  // Just for logging, dump the full instance, normalized
+  const fullInstance = useAppSelector(fullInstanceSelector);
+  useEffect(() => {
+    console.log("INSTANCE", Dict.sort_by_key(fullInstance));
+  }, [fullInstance]);
+
   const groups = useMemo(
     () =>
       activeSteps

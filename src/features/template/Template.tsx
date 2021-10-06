@@ -13,10 +13,11 @@ import instanceSlice from "../instance/instanceSlice";
 import { playersSelectors } from "../players/playersSlice";
 import TemplateItem from "./TemplateItem";
 import {
+  fullTemplateSelector,
   templateActions,
   TemplateElement,
   templateIsStaleSelector,
-  templateSelectors
+  templateSelectors,
 } from "./templateSlice";
 
 export default function Template(): JSX.Element | null {
@@ -30,6 +31,11 @@ export default function Template(): JSX.Element | null {
     Record<StepId, Readonly<TemplateElement>>
   >;
   const isStale = useAppSelector(templateIsStaleSelector);
+
+  const fullTemplate = useAppSelector(fullTemplateSelector);
+  useEffect(() => {
+    console.log("TEMPLATE", Dict.sort_by_key(fullTemplate));
+  }, [fullTemplate]);
 
   const playerIds = useAppSelector(
     playersSelectors.selectIds

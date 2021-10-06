@@ -5,7 +5,7 @@ import {
   PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
-import { nullthrows, Vec } from "common";
+import { Dict, nullthrows, Vec } from "common";
 import { playersActions } from "features/players/playersSlice";
 import { Strategy } from "features/template/Strategy";
 import GameMapper, { GameId } from "games/core/GameMapper";
@@ -164,13 +164,25 @@ export default templateSlice;
 export const templateSelectors = templateAdapter.getSelectors<RootState>(
   (state) => state.template
 );
-
 export const templateIsStaleSelector = createSelector(
   templateSelectors.selectAll,
   (elements) => elements.some(({ isStale }) => isStale)
 );
+export const fullTemplateSelector = createSelector(
+  templateSelectors.selectAll,
+  (elements) =>
+    Dict.pull(
+      elements,
+      (element) =>
+        element.strategy === Strategy.FIXED
+          ? element.value
+          : `__strategy:${element.strategy}`,
+      ({ id }) => id
+    )
+);
 
 export const templateActions = templateSlice.actions;
+
 
 function markDownstreamElementsStale(
   changedElementId: StepId,

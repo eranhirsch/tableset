@@ -1,4 +1,10 @@
-import { createEntityAdapter, createSlice, Dictionary } from "@reduxjs/toolkit";
+import {
+  createEntityAdapter,
+  createSelector,
+  createSlice,
+  Dictionary,
+} from "@reduxjs/toolkit";
+import { Dict } from "common";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { RootState } from "../../app/store";
 import { ProductId, StepId } from "../../model/Game";
@@ -8,7 +14,7 @@ import { templateElementResolver } from "./templateElementResolver";
 
 export type SetupStep = Readonly<{
   id: StepId;
-  value: any;
+  value: unknown;
 }>;
 
 const instanceAdapter = createEntityAdapter<SetupStep>({
@@ -55,4 +61,14 @@ export default createSlice({
 
 export const instanceSelectors = instanceAdapter.getSelectors<RootState>(
   (state) => state.instance
+);
+
+export const fullInstanceSelector = createSelector(
+  instanceSelectors.selectAll,
+  (steps) =>
+    Dict.pull(
+      steps,
+      ({ value }) => value,
+      ({ id }) => id
+    )
 );
