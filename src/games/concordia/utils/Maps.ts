@@ -1,3 +1,4 @@
+import { Dict, Vec } from "common";
 import { ConcordiaProductId } from "../concordiaGame";
 
 export type MapId =
@@ -68,7 +69,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     ],
     provinces: {
       A: {
-        Liguria: ["Genva", "Nicaea"],
+        Ligvria: ["Genva", "Nicaea"],
         Transpadana: ["Comvm", "Segvsio"],
         Venetia: ["Aqvileia", "Bavsanvm", "Verona"],
       },
@@ -76,11 +77,11 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
         Aemilia: ["Mvtina", "Ravenna"],
         Campania: ["Casinvm", "Neapolis"],
         Corsica: ["Aleria", "Olbia"],
-        Etruria: ["Cosa", "Florentia"],
+        Etrvria: ["Cosa", "Florentia"],
       },
       C: {
-        Apulia: ["Brvndisivm", "Lvcria"],
-        Lucania: ["Croton", "Potentia"],
+        Apvlia: ["Brvndisivm", "Lvcria"],
+        Lvcania: ["Croton", "Potentia"],
         Sicilia: ["Messana", "Panormvs", "Syracvsae"],
         Umbria: ["Ancona", "Hadria", "Spoletvm"],
       },
@@ -88,7 +89,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
   },
 
   imperium: {
-    name: "Imperium",
+    name: "Imperivm",
     providedIn: ["base"],
     tightnessScore: 0.8,
     hasLegacyProvincesSection: true,
@@ -105,10 +106,10 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
       B: {
         Galia: ["Bvrdigala", "Lvtetia", "Massilia"],
         Hispania: ["Brigantivm", "Olisipo", "Valentia"],
-        Mauretania: ["Carthago", "Rvsadir"],
+        Mavretania: ["Carthago", "Rvsadir"],
       },
       C: {
-        Aegyptus: ["Alexandria", "Memphis", "Petra"],
+        Aegyptvs: ["Alexandria", "Memphis", "Petra"],
         Asia: ["Attalia", "Bycantivm", "Sinope"],
         Lybia: ["Cyrene", "Leptis Magna"],
         Syria: ["Antiochia", "Tyros"],
@@ -181,7 +182,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
   },
 
   byzantium: {
-    name: "Byzantium",
+    name: "Byzantivm",
     providedIn: ["salsa"],
     tightnessScore: 1.0,
     startingColonists: [
@@ -237,3 +238,12 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     },
   },
 };
+
+export const mapsForProducts = (
+  activeProducts: readonly ConcordiaProductId[]
+): readonly MapId[] =>
+  Vec.keys(
+    Dict.filter(MAPS, ({ providedIn }) =>
+      providedIn.some((productId) => activeProducts.includes(productId))
+    )
+  );

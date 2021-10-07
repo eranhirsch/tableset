@@ -14,7 +14,7 @@ import {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { ConcordiaProductId } from "../concordiaGame";
-import { MapId, MAPS } from "../utils/Maps";
+import { MapId, MAPS, mapsForProducts } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 
 export default createRandomGameStep({
@@ -28,7 +28,7 @@ export default createRandomGameStep({
   InstanceVariableComponent,
 
   random(productIds) {
-    const availableMaps = allMaps(productIds);
+    const availableMaps = mapsForProducts(productIds);
     return availableMaps[Random.index(availableMaps)];
   },
 
@@ -42,22 +42,12 @@ export default createRandomGameStep({
       : undefined,
 
   fixed: {
-    initializer: (productIds) => allMaps(productIds)[0],
+    initializer: (productIds) => mapsForProducts(productIds)[0],
 
     renderTemplateLabel: TemplateLabel,
     renderSelector: Selector,
   },
 });
-
-function allMaps(
-  activeProducts: readonly ConcordiaProductId[]
-): readonly MapId[] {
-  return Vec.keys(
-    Dict.filter(MAPS, ({ providedIn }) =>
-      providedIn.some((productId) => activeProducts.includes(productId))
-    )
-  );
-}
 
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({
   color: theme.palette.primary.main,
@@ -122,7 +112,7 @@ function Selector({ current }: { current: MapId }): JSX.Element {
   ) as readonly ConcordiaProductId[];
   return (
     <GenericItemsListPanel
-      itemIds={allMaps(productIds)}
+      itemIds={mapsForProducts(productIds)}
       selectedId={current}
       onLabelForItem={(id) => MAPS[id].name}
       onUpdateItem={(itemId) =>
