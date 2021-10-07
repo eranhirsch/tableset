@@ -15,6 +15,7 @@ import marketDisplayStep from "./steps/marketDisplayStep";
 import noStartingResourcesVariant from "./steps/noStartingResourcesVariant";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
+import resourcePilesStep from "./steps/resourcePilesStep";
 import salsaVariantStep from "./steps/salsaVariantStep";
 import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
@@ -46,11 +47,7 @@ export const concordiaGame = Object.freeze({
       id: "concordiaCard",
       InstanceManualComponent: "Place the Concordia card next to the board.",
     }),
-    createGameStep({
-      id: "resourcePiles",
-      InstanceManualComponent:
-        "Separate the resources into piles near the board.",
-    }),
+    resourcePilesStep,
     createGameStep({
       id: "bank",
       InstanceManualComponent:
