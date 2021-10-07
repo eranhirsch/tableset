@@ -102,16 +102,9 @@ function InstanceManualComponent() {
       <GatherStep />
       {withSalsaProduct && maybeRenderSalsaStep(mapId, withSalsa)}
       <>Set all tiles on the table so that their letter is showing.</>
-      <>
-        <strong>Shuffle</strong> the tiles.
-      </>
-      <>
-        <strong>Cover</strong> each city with a tile of the same letter as the
-        city.
-      </>
-      <>
-        <strong>Flip</strong> all tiles so that their resource is showing.
-      </>
+      <>Shuffle the tiles.</>
+      <>Cover each city with a tile of the same letter as the city.</>
+      <>Flip all tiles so that their resource is showing.</>
     </HeaderAndSteps>
   );
 }
@@ -134,8 +127,8 @@ function GatherStep(): JSX.Element {
         {(Footnote) => (
           <>
             Go over the cities on the board, see what letters
-            <Footnote index={1} /> are used on this map, <strong>gather</strong>{" "}
-            all city tiles with those letters on their back
+            <Footnote index={1} /> are used on this map, gather all city tiles
+            with those letters on their back
             <Footnote index={2} />;{" "}
             <em>leaving the tiles with other letters in the box</em>.
           </>
@@ -156,7 +149,7 @@ function GatherStep(): JSX.Element {
     >
       {(Footnote) => (
         <>
-          <strong>Gather</strong> all city tiles with letters{" "}
+          Gather all city tiles with letters{" "}
           <GrammaticalList>{usedZones}</GrammaticalList> on their back
           <Footnote index={1} />
           {!Vec.is_empty(unusedZones) && (
@@ -208,7 +201,7 @@ function maybeRenderSalsaStep(
           </GrammaticalList>
         ) : (
           <>
-            the <strong>salt</strong> tiles
+            the <strong>{RESOURCE_NAME.salt}</strong> tiles
           </>
         )}{" "}
         to the box; <em>otherwise skip this step</em>.
@@ -241,7 +234,7 @@ function maybeRenderSalsaStep(
         </GrammaticalList>
       ) : (
         <>
-          the {usedZones.length} <strong>salt</strong> tiles
+          the {usedZones.length} <strong>{RESOURCE_NAME.salt}</strong> tiles
         </>
       )}{" "}
       to the box.
