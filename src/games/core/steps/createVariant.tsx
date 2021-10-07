@@ -4,8 +4,22 @@ import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { createGameStep } from "./createGameStep";
 import { InstanceContext, TemplateContext } from "./createRandomGameStep";
+import { StepWithDependencies } from "./StepWithDependencies";
 
-interface Options {
+interface Options<
+  D1 = never,
+  D2 = never,
+  D3 = never,
+  D4 = never,
+  D5 = never,
+  D6 = never,
+  D7 = never,
+  D8 = never,
+  D9 = never,
+  D10 = never
+> extends Partial<
+    StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
+  > {
   id: string;
   name: String;
   InstanceVariableComponent(): JSX.Element;
@@ -22,11 +36,23 @@ export interface VariantGameStep extends VariableGameStep<boolean>, Skippable {
   initialFixedValue(context: InstanceContext): true;
 }
 
-export function createVariant({
+export function createVariant<
+  D1 = never,
+  D2 = never,
+  D3 = never,
+  D4 = never,
+  D5 = never,
+  D6 = never,
+  D7 = never,
+  D8 = never,
+  D9 = never,
+  D10 = never
+>({
   id,
   name,
+  dependencies,
   InstanceVariableComponent,
-}: Options): VariantGameStep {
+}: Options<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>): VariantGameStep {
   const baseStep = createGameStep({
     id: `variant_${id}`,
     labelOverride: `Variant: ${name}`,
@@ -37,6 +63,9 @@ export function createVariant({
 
   return {
     ...baseStep,
+
+    dependencies,
+
     extractInstanceValue,
     InstanceVariableComponent,
 
@@ -57,7 +86,11 @@ export function createVariant({
 
     resolveRandom: () => (Random.coin_flip(0.5) ? true : null),
 
-    strategies: () => [Strategy.OFF, Strategy.RANDOM, Strategy.FIXED],
+    strategies: (context) =>
+      dependencies == null ||
+      dependencies.every((dependency) => dependency.hasValue!(context))
+        ? [Strategy.OFF, Strategy.RANDOM, Strategy.FIXED]
+        : [],
 
     TemplateFixedValueLabel: "Enabled",
     initialFixedValue: () => true,
