@@ -5,18 +5,18 @@ export const PRODUCTS_DEPENDENCY_META_STEP_ID = "__product";
 
 const createProductDependencyMetaStep = <Pid extends ProductId>(
   ...requiredProducts: readonly Pid[]
-): Readonly<VariableGameStep<readonly Pid[]>> =>
-  Object.freeze({
-    id: PRODUCTS_DEPENDENCY_META_STEP_ID,
-    label: `<Product[${requiredProducts.join(",")}]>`,
+): Readonly<VariableGameStep<readonly Pid[]>> => ({
+  id: PRODUCTS_DEPENDENCY_META_STEP_ID,
+  label: `<Product[${requiredProducts.join(",")}]>`,
 
-    hasValue: ({ productIds }) =>
-      requiredProducts.length === 0 ||
-      requiredProducts.some((productId) => productIds.includes(productId)),
+  // trivial impl, these steps are never part of the template.
+  coerceInstanceEntry: () => null,
 
-    extractInstanceValue: ({ productIds }) => productIds as readonly Pid[],
+  hasValue: ({ productIds }) =>
+    requiredProducts.length === 0 ||
+    requiredProducts.some((productId) => productIds.includes(productId)),
 
-    isOptional: false,
-  });
+  extractInstanceValue: ({ productIds }) => productIds as readonly Pid[],
+});
 
 export default createProductDependencyMetaStep;

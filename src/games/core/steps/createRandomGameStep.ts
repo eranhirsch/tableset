@@ -184,7 +184,21 @@ export function createRandomGameStep<T>({
 
   const variableStep: RandomGameStep<T> = {
     ...baseStep,
-    isType,
+
+    coerceInstanceEntry: (entry) =>
+      entry == null
+        ? null
+        : type_invariant(
+            entry.value,
+            nullthrows(
+              isType,
+              `No type coercer defined for step ${baseStep.id}`
+            ),
+            `Value ${JSON.stringify(
+              entry.value
+            )} failed to validate type for step ${baseStep.id}`
+          ),
+
     dependencies,
     extractInstanceValue,
     InstanceVariableComponent,

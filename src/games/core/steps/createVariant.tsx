@@ -1,4 +1,4 @@
-import { Random } from "common";
+import { invariant_violation, Random } from "common";
 import { Strategy } from "features/template/Strategy";
 import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
@@ -17,9 +17,9 @@ export interface VariantGameStep extends VariableGameStep<boolean>, Skippable {
   strategies(context: TemplateContext): readonly Strategy[];
 
   dependencies?: [...VariableGameStep<unknown>[]];
-  TemplateFixedValueLabel?: ((props: { value: true }) => JSX.Element) | string;
-  TemplateFixedValueSelector?(props: { current: boolean }): JSX.Element;
-  initialFixedValue?(context: InstanceContext): true;
+
+  TemplateFixedValueLabel: ((props: { value: true }) => JSX.Element) | string;
+  initialFixedValue(context: InstanceContext): true;
 }
 
 export function createVariant({
@@ -41,6 +41,17 @@ export function createVariant({
     InstanceVariableComponent,
 
     skip: (context) => !extractInstanceValue(context),
+
+    coerceInstanceEntry: (entry) =>
+      entry == null
+        ? false
+        : typeof entry.value === "boolean"
+        ? entry.value
+        : invariant_violation(
+            `Found unexpected value type ${typeof entry.value}: ${JSON.stringify(
+              entry.value
+            )} for variant ID ${id}`
+          ),
 
     hasValue: (_: TemplateContext | InstanceContext) => true,
 

@@ -10,16 +10,17 @@ const createPlayersDependencyMetaStep = ({
 }: {
   min?: number;
   max?: number;
-} = {}): Readonly<VariableGameStep<readonly PlayerId[]>> =>
-  Object.freeze({
-    id: PLAYERS_DEPENDENCY_META_STEP_ID,
-    label: "<Players>",
-    isOptional: false,
+} = {}): Readonly<VariableGameStep<readonly PlayerId[]>> => ({
+  id: PLAYERS_DEPENDENCY_META_STEP_ID,
+  label: "<Players>",
 
-    hasValue: ({ playerIds }) =>
-      playerIds.length >= min && playerIds.length <= max,
+  // trivial impl, these steps are never part of the template.
+  coerceInstanceEntry: () => null,
 
-    extractInstanceValue: ({ playerIds }) => playerIds,
-  });
+  hasValue: ({ playerIds }) =>
+    playerIds.length >= min && playerIds.length <= max,
+
+  extractInstanceValue: ({ playerIds }) => playerIds,
+});
 
 export default createPlayersDependencyMetaStep;

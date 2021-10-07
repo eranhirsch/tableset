@@ -1,4 +1,4 @@
-import { nullthrows, ReactUtils, type_invariant } from "common";
+import { nullthrows, ReactUtils } from "common";
 import { VariableGameStep } from "model/VariableGameStep";
 import { instanceSelectors } from "./instanceSlice";
 
@@ -16,15 +16,6 @@ export function useOptionalInstanceValue<T>(
     instanceSelectors,
     step.id
   );
-  if (instanceEntry == null) {
-    return null;
-  }
 
-  return type_invariant(
-    instanceEntry.value,
-    nullthrows(step.isType, `No type coercer defined for step ${step.id}`),
-    `Value ${JSON.stringify(
-      instanceEntry.value
-    )} failed to validate type for step ${step.id}`
-  );
+  return step.coerceInstanceEntry(instanceEntry);
 }
