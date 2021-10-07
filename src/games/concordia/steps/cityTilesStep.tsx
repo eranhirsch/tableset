@@ -17,6 +17,7 @@ import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder, {
   CITY_TILES,
   REGULAR_MAPS_SALT_ALTERNATIVE,
+  SALT_MAP_EXTRA_RESOURCE,
 } from "../utils/CityResourcesEncoder";
 import { MapId, MAPS, Zone } from "../utils/Maps";
 import { RESOURCE_NAME } from "../utils/resource";
@@ -100,11 +101,12 @@ function InstanceManualComponent() {
   return (
     <HeaderAndSteps synopsis="Set up the city resource tiles on the board:">
       <GatherStep />
-      {withSalsaProduct && maybeRenderSalsaStep(mapId, withSalsa)}
+      {withSalsaProduct && maybeRenderSalsaPreStep(mapId, withSalsa)}
       <>Set all tiles on the table so that their letter is showing.</>
       <>Shuffle the tiles.</>
       <>Cover each city with a tile of the same letter as the city.</>
       <>Flip all tiles so that their resource is showing.</>
+      {withSalsaProduct && !withSalsa && maybeRenderSalsaPostStep(mapId)}
     </HeaderAndSteps>
   );
 }
@@ -168,61 +170,41 @@ function GatherStep(): JSX.Element {
   );
 }
 
-function maybeRenderSalsaStep(
+function maybeRenderSalsaPreStep(
   mapId: MapId | null,
   withSalsa: boolean
 ): JSX.Element | null {
-  if (mapId == null) {
-    return (
-      <>
-        If <em>not</em> playing on{" "}
-        <GrammaticalList finalConjunction="or">
-          {React.Children.toArray(
-            Vec.map_with_key(
-              Dict.filter(MAPS, ({ isSaltMap }) => isSaltMap ?? false),
-              (_, { name }) => <RomanTitle>{name}</RomanTitle>
-            )
-          )}
-        </GrammaticalList>
-        : return{" "}
-        {withSalsa ? (
-          <GrammaticalList>
-            {React.Children.toArray(
-              Vec.map_with_key(
-                REGULAR_MAPS_SALT_ALTERNATIVE,
-                (zone, resource) => (
-                  <>
-                    a <strong>{RESOURCE_NAME[resource]}</strong> tile with{" "}
-                    <strong>{zone}</strong> on it's back
-                  </>
-                )
-              )
-            )}
-          </GrammaticalList>
-        ) : (
-          <>
-            the <strong>{RESOURCE_NAME.salt}</strong> tiles
-          </>
-        )}{" "}
-        to the box; <em>otherwise skip this step</em>.
-      </>
-    );
-  }
-
-  const { provinces, isSaltMap } = MAPS[mapId];
-  if (isSaltMap) {
+  if (mapId != null && MAPS[mapId].isSaltMap) {
+    // This step is only relevant for non-salt maps
     return null;
   }
 
-  const usedZones = Vec.keys(provinces);
+  const zones =
+    mapId == null ? Vec.keys(CITY_TILES) : Vec.keys(MAPS[mapId].provinces);
   return (
     <>
-      Return{" "}
+      {mapId == null ? (
+        <>
+          If <em>not</em> playing on{" "}
+          <GrammaticalList finalConjunction="or">
+            {React.Children.toArray(
+              Vec.map_with_key(
+                Dict.filter(MAPS, ({ isSaltMap }) => isSaltMap ?? false),
+                (_, { name }) => <RomanTitle>{name}</RomanTitle>
+              )
+            )}
+          </GrammaticalList>
+          : r
+        </>
+      ) : (
+        <>R</>
+      )}
+      eturn{" "}
       {withSalsa ? (
         <GrammaticalList>
           {React.Children.toArray(
             Vec.map_with_key(
-              Dict.select_keys(REGULAR_MAPS_SALT_ALTERNATIVE, usedZones),
+              Dict.select_keys(REGULAR_MAPS_SALT_ALTERNATIVE, zones),
               (zone, resource) => (
                 <>
                   a <strong>{RESOURCE_NAME[resource]}</strong> tile with{" "}
@@ -234,10 +216,66 @@ function maybeRenderSalsaStep(
         </GrammaticalList>
       ) : (
         <>
-          the {usedZones.length} <strong>{RESOURCE_NAME.salt}</strong> tiles
+          the {zones.length} <strong>{RESOURCE_NAME.salt}</strong> tiles
         </>
       )}{" "}
-      to the box.
+      to the box
+      {mapId == null && (
+        <>
+          ; <em>otherwise skip this step</em>
+        </>
+      )}
+      .
+    </>
+  );
+}
+
+function maybeRenderSalsaPostStep(mapId: MapId | null): JSX.Element | null {
+  if (mapId != null && MAPS[mapId].isSaltMap == null) {
+    // This step is only relevant for salt maps
+    return null;
+  }
+
+  const zones =
+    mapId == null ? Vec.keys(CITY_TILES) : Vec.keys(MAPS[mapId].provinces);
+  return (
+    <>
+      {mapId == null ? (
+        <>
+          If playing on{" "}
+          <GrammaticalList finalConjunction="or">
+            {React.Children.toArray(
+              Vec.map_with_key(
+                Dict.filter(MAPS, ({ isSaltMap }) => isSaltMap ?? false),
+                (_, { name }) => <RomanTitle>{name}</RomanTitle>
+              )
+            )}
+          </GrammaticalList>
+          : s
+        </>
+      ) : (
+        <>S</>
+      )}
+      wap the {RESOURCE_NAME.salt} tiles on the board with tiles from the box:{" "}
+      <GrammaticalList>
+        {React.Children.toArray(
+          Vec.map_with_key(
+            Dict.select_keys(SALT_MAP_EXTRA_RESOURCE, zones),
+            (zone, resource) => (
+              <>
+                a tile with a <strong>{zone}</strong> on it's back with a{" "}
+                <strong>{RESOURCE_NAME[resource]}</strong> tile
+              </>
+            )
+          )
+        )}
+      </GrammaticalList>
+      {mapId == null && (
+        <>
+          ; <em>otherwise skip this step</em>
+        </>
+      )}
+      .
     </>
   );
 }
