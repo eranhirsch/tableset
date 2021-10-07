@@ -1,13 +1,12 @@
 import { Stack, Typography, useTheme } from "@mui/material";
-import { ReactNode } from "react";
+import React, { PropsWithChildren } from "react";
 
 export default function HeaderAndSteps({
   synopsis,
   children,
-}: {
+}: PropsWithChildren<{
   synopsis: JSX.Element | string;
-  children: ReactNode[];
-}): JSX.Element {
+}>): JSX.Element {
   const theme = useTheme();
 
   return (
@@ -22,10 +21,11 @@ export default function HeaderAndSteps({
         sx={{ paddingInlineStart: theme.spacing(2) }}
         spacing={2}
       >
-        {children.map(
-          (child, index) =>
+        {React.Children.map(
+          children,
+          (child) =>
             child != null && (
-              <Typography key={`child_${index}`} component="li" variant="body2">
+              <Typography component="li" variant="body2">
                 {child}
               </Typography>
             )

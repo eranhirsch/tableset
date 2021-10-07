@@ -28,7 +28,7 @@ export const CITY_TILES: Readonly<
  * playing without salt, these need to be fulfilled with tiles from unused
  * zones via the following mapping.
  */
-const SALT_MAP_EXTRA_RESOURCE: Readonly<Record<Zone, Resource>> = {
+export const SALT_MAP_EXTRA_RESOURCE: Readonly<Record<Zone, Resource>> = {
   A: "tools",
   B: "wine",
   C: "cloth",
@@ -40,7 +40,7 @@ const SALT_MAP_EXTRA_RESOURCE: Readonly<Record<Zone, Resource>> = {
  * zone) we need to remove one regular resource tile per-zone to make room for
  * the salt one.
  */
-const REGULAR_MAPS_SALT_ALTERNATIVE: Readonly<Record<Zone, Resource>> = {
+export const REGULAR_MAPS_SALT_ALTERNATIVE: Readonly<Record<Zone, Resource>> = {
   A: "food",
   B: "tools",
   C: "wine",

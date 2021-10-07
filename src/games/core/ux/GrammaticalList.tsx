@@ -3,9 +3,11 @@ import { Children, ReactChild, ReactFragment, ReactPortal } from "react";
 export default function GrammaticalList({
   children,
   pluralize,
+  finalConjunction = "and",
 }: {
   children: readonly (ReactChild | ReactFragment | ReactPortal | string)[];
   pluralize?: string;
+  finalConjunction?: string;
 }): JSX.Element | null {
   if (children.length === 1) {
     return (
@@ -21,7 +23,7 @@ export default function GrammaticalList({
   if (children.length === 2) {
     return (
       <>
-        {prefix} {children[0]} and {children[1]}
+        {prefix} {children[0]} {finalConjunction} {children[1]}
       </>
     );
   }
@@ -34,7 +36,7 @@ export default function GrammaticalList({
           .slice(0, children.length - 1)
           .map((child, idx) => <>{child}, </>)
       )}{" "}
-      and {children[children.length - 1]}
+      {finalConjunction} {children[children.length - 1]}
     </>
   );
 }
