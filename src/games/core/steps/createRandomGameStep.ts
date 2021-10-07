@@ -23,15 +23,12 @@ export interface InstanceContext extends ContextBase {
   instance: readonly SetupStep[];
 }
 
-export interface RandomGameStep<T = unknown>
-  extends VariableGameStep<T>,
-    Skippable {
+export interface RandomGameStep<T = unknown> extends VariableGameStep<T>, Skippable {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
   resolveRandom(context: InstanceContext): T;
   strategies(context: TemplateContext): readonly Strategy[];
 
   dependencies?: [...VariableGameStep<unknown>[]];
-  isType?(value: unknown): value is T;
   resolveDefault?(context: InstanceContext): T;
   TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
   TemplateFixedValueSelector?(props: { current: T }): JSX.Element;

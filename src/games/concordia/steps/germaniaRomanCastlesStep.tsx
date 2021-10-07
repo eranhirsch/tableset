@@ -57,17 +57,11 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
   // TODO: Move this to dependencies
   const mapId = useRequiredInstanceValue(mapStep);
-  const withSalsa = useOptionalInstanceValue(salsaVariantStep);
+  const withSalsa = useRequiredInstanceValue(salsaVariantStep);
   const cityTilesHash = useRequiredInstanceValue(cityTilesStep);
 
   const resourceLocations = useMemo(
-    () =>
-      GermaniaCastlesEncoder.decode(
-        mapId,
-        withSalsa ?? false,
-        cityTilesHash,
-        value
-      ),
+    () => GermaniaCastlesEncoder.decode(mapId, withSalsa, cityTilesHash, value),
     [cityTilesHash, mapId, value, withSalsa]
   );
 
@@ -101,7 +95,7 @@ function InstanceVariableComponent({
 
 function InstanceManualComponent(): JSX.Element {
   const mapId = useOptionalInstanceValue(mapStep);
-  const withSalsa = useOptionalInstanceValue(salsaVariantStep);
+  const withSalsa = useRequiredInstanceValue(salsaVariantStep);
   const citiesHash = useOptionalInstanceValue(cityTilesStep);
 
   return (
@@ -113,7 +107,7 @@ function InstanceManualComponent(): JSX.Element {
               The remaining tiles would be:{" "}
               <RemainingTiles
                 mapId={mapId}
-                withSalsa={withSalsa ?? false}
+                withSalsa={withSalsa}
                 citiesHash={citiesHash}
               />
             </>

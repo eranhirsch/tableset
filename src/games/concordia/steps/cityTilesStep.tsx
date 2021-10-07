@@ -43,11 +43,10 @@ function InstanceVariableComponent({
 
   // TODO: Move this to dependencies
   const mapId = useRequiredInstanceValue(mapStep);
-  const withSalsa = useOptionalInstanceValue(salsaVariantStep);
+  const withSalsa = useRequiredInstanceValue(salsaVariantStep);
 
   const provinces = useMemo(
-    () =>
-      CityResourcesEncoder.decodeCityResources(mapId, withSalsa ?? false, hash),
+    () => CityResourcesEncoder.decodeCityResources(mapId, withSalsa, hash),
     [hash, mapId, withSalsa]
   );
 

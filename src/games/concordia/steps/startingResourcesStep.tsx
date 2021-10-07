@@ -40,8 +40,8 @@ export default createDerivedGameStep({
 
 function InstanceDerivedComponent({
   dependencies: [withSalsa, isNoStartingResourcesVariantEnabled],
-}: DerivedStepInstanceComponentProps<true, true>): JSX.Element {
-  if (isNoStartingResourcesVariantEnabled != null) {
+}: DerivedStepInstanceComponentProps<boolean, boolean>): JSX.Element {
+  if (isNoStartingResourcesVariantEnabled) {
     return (
       <BlockWithFootnotes
         footnotes={[

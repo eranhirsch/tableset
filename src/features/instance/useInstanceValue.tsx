@@ -1,14 +1,17 @@
 import { nullthrows, ReactUtils, type_invariant } from "common";
-import { RandomGameStep } from "games/core/steps/createRandomGameStep";
+import { VariableGameStep } from "model/VariableGameStep";
 import { instanceSelectors } from "./instanceSlice";
 
-export const useRequiredInstanceValue = <T,>(step: RandomGameStep<T>): T =>
-  nullthrows(
+export function useRequiredInstanceValue<T>(step: VariableGameStep<T>): T {
+  return nullthrows(
     useOptionalInstanceValue(step),
     `Missing required instance value of step '${step.id}'`
   );
+}
 
-export function useOptionalInstanceValue<T>(step: RandomGameStep<T>): T | null {
+export function useOptionalInstanceValue<T>(
+  step: VariableGameStep<T>
+): T | null {
   const instanceEntry = ReactUtils.useAppEntityIdSelectorNullable(
     instanceSelectors,
     step.id

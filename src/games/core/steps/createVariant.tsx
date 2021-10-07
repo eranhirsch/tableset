@@ -1,5 +1,9 @@
 import { Random } from "common";
-import { createRandomGameStep } from "games/core/steps/createRandomGameStep";
+import { Strategy } from "features/template/Strategy";
+import { Skippable } from "model/Skippable";
+import { VariableGameStep } from "model/VariableGameStep";
+import { createGameStep } from "./createGameStep";
+import { InstanceContext, TemplateContext } from "./createRandomGameStep";
 
 interface Options {
   id: string;
@@ -7,20 +11,44 @@ interface Options {
   InstanceVariableComponent(): JSX.Element;
 }
 
-export const createVariant = ({ id, name, InstanceVariableComponent }: Options) =>
-  createRandomGameStep({
+export interface VariantGameStep extends VariableGameStep<boolean>, Skippable {
+  InstanceVariableComponent(props: { value: boolean }): JSX.Element;
+  resolveRandom(context: InstanceContext): true | null;
+  strategies(context: TemplateContext): readonly Strategy[];
+
+  dependencies?: [...VariableGameStep<unknown>[]];
+  TemplateFixedValueLabel?: ((props: { value: true }) => JSX.Element) | string;
+  TemplateFixedValueSelector?(props: { current: boolean }): JSX.Element;
+  initialFixedValue?(context: InstanceContext): true;
+}
+
+export function createVariant({
+  id,
+  name,
+  InstanceVariableComponent,
+}: Options): VariantGameStep {
+  const baseStep = createGameStep({
     id: `variant_${id}`,
     labelOverride: `Variant: ${name}`,
+  });
 
-    isType: (value): value is true => value === true,
+  const extractInstanceValue = ({ instance }: InstanceContext) =>
+    instance.some(({ id }) => id === baseStep.id);
 
-    random: () => (Random.coin_flip(0.5) ? true : null),
+  return {
+    ...baseStep,
+    extractInstanceValue,
     InstanceVariableComponent,
 
-    fixed: {
-      initializer: (_) => true as true,
-      renderTemplateLabel: "Enabled",
-    },
+    skip: (context) => !extractInstanceValue(context),
 
-    skip: (isEnabled) => isEnabled == null,
-  });
+    hasValue: (_: TemplateContext | InstanceContext) => true,
+
+    resolveRandom: () => (Random.coin_flip(0.5) ? true : null),
+
+    strategies: () => [Strategy.OFF, Strategy.RANDOM, Strategy.FIXED],
+
+    TemplateFixedValueLabel: "Enabled",
+    initialFixedValue: () => true,
+  };
+}

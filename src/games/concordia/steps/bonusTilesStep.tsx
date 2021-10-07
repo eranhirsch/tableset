@@ -27,7 +27,7 @@ export default createDerivedGameStep({
 
 function InstanceDerivedComponent({
   dependencies: [mapId, withSalsa, hash],
-}: DerivedStepInstanceComponentProps<MapId, true | null, string>): JSX.Element {
+}: DerivedStepInstanceComponentProps<MapId, boolean, string>): JSX.Element {
   return mapId != null && hash != null ? (
     <ComputedInstanceComponent
       mapId={mapId}
@@ -35,10 +35,7 @@ function InstanceDerivedComponent({
       hash={hash}
     />
   ) : (
-    <IncompleteInstanceDerivedComponent
-      mapId={mapId}
-      withSalsa={withSalsa ?? false}
-    />
+    <IncompleteInstanceDerivedComponent mapId={mapId} withSalsa={withSalsa} />
   );
 }
 
@@ -47,7 +44,7 @@ function IncompleteInstanceDerivedComponent({
   withSalsa,
 }: {
   mapId: MapId | null | undefined;
-  withSalsa: boolean;
+  withSalsa: boolean | null | undefined;
 }): JSX.Element {
   let mapSpecificCount;
   let provinceCityCountsFootnote;

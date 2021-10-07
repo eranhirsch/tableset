@@ -40,13 +40,11 @@ function InstanceDerivedComponent({
   readonly PlayerId[],
   readonly PlayerId[],
   PlayerId,
-  true
+  boolean
 >): JSX.Element {
   if (playerIds == null) {
     return (
-      <NoPlayers
-        withExtraSestertii={isNoStartingResourcesVariantEnabled != null}
-      />
+      <NoPlayers withExtraSestertii={isNoStartingResourcesVariantEnabled} />
     );
   }
 
@@ -89,7 +87,7 @@ function InstanceDerivedComponent({
 function NoPlayers({
   withExtraSestertii,
 }: {
-  withExtraSestertii: boolean;
+  withExtraSestertii: boolean | null | undefined;
 }): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Provide each player money from the bank:">
