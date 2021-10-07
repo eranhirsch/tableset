@@ -17,15 +17,6 @@ import { ConcordiaProductId } from "../concordiaGame";
 import { MapId, MAPS } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 
-const allMaps = (
-  activeProducts: readonly ConcordiaProductId[]
-): readonly MapId[] =>
-  Vec.keys(
-    Dict.filter(MAPS, ({ providedIn }) =>
-      providedIn.some((productId) => activeProducts.includes(productId))
-    )
-  );
-
 export default createRandomGameStep({
   id: "map",
 
@@ -57,6 +48,16 @@ export default createRandomGameStep({
     renderSelector: Selector,
   },
 });
+
+function allMaps(
+  activeProducts: readonly ConcordiaProductId[]
+): readonly MapId[] {
+  return Vec.keys(
+    Dict.filter(MAPS, ({ providedIn }) =>
+      providedIn.some((productId) => activeProducts.includes(productId))
+    )
+  );
+}
 
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({
   color: theme.palette.primary.main,
