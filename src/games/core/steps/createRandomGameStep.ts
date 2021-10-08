@@ -1,4 +1,4 @@
-import { nullthrows, type_invariant, Vec } from "common";
+import { invariant_violation, nullthrows, type_invariant, Vec } from "common";
 import { SetupStep } from "features/instance/instanceSlice";
 import { Strategy } from "features/template/Strategy";
 import { TemplateElement } from "features/template/templateSlice";
@@ -9,7 +9,7 @@ import { ContextBase } from "../../../model/ContextBase";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
 import { DepsTuple } from "./DepsTuple";
-import { StepWithDependencies } from "./StepWithDependencies";
+import { Dependency, StepWithDependencies } from "./StepWithDependencies";
 
 export interface VariableStepInstanceComponentProps<T> {
   value: T;
@@ -23,12 +23,14 @@ export interface InstanceContext extends ContextBase {
   instance: readonly SetupStep[];
 }
 
-export interface RandomGameStep<T = unknown> extends VariableGameStep<T>, Skippable {
+export interface RandomGameStep<T = unknown>
+  extends VariableGameStep<T>,
+    Skippable {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
   resolveRandom(context: InstanceContext): T;
   strategies(context: TemplateContext): readonly Strategy[];
 
-  dependencies?: [...VariableGameStep<unknown>[]];
+  dependencies?: [...Dependency<unknown>[]];
   resolveDefault?(context: InstanceContext): T;
   TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
   TemplateFixedValueSelector?(props: { current: T }): JSX.Element;
@@ -79,7 +81,7 @@ type Options<
   D9 = never,
   D10 = never
 > = CreateGameStepOptions &
-  Partial<StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>> & {
+  StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> & {
     isType?(value: unknown): value is T;
 
     InstanceVariableComponent(
@@ -229,18 +231,22 @@ export function createRandomGameStep<T>({
         ? context.template[baseStep.id] != null
         : context.instance.some(({ id }) => id === baseStep.id),
 
-    resolveRandom: (context) =>
-      random(
-        ...(dependencies?.map((dependency) =>
-          nullthrows(
-            dependency.extractInstanceValue!(context),
-            `Unfulfilled dependency ${dependency.id} for ${baseStep.id}`
-          )
-        ) ?? [])
-      ),
+    resolveRandom: (context) => {
+      return random(
+        ...dependencies.map((dependency) =>
+          extractAcceptableDependencyValue(dependency, context, baseStep.id)
+        )
+      );
+    },
 
     strategies: (context) =>
-      strategies(context, dependencies ?? [], fixed?.initializer, recommended),
+      strategies(
+        context,
+        dependencies,
+        fixed?.initializer,
+        recommended,
+        baseStep.id
+      ),
   };
 
   if (recommended != null) {
@@ -257,12 +263,9 @@ export function createRandomGameStep<T>({
     variableStep.initialFixedValue = (context) =>
       nullthrows(
         fixed.initializer(
-          ...(dependencies?.map((dependency) =>
-            nullthrows(
-              dependency.extractInstanceValue!(context),
-              `Unfulfilled dependency ${dependency.id} for ${baseStep.id}`
-            )
-          ) ?? []),
+          ...dependencies.map((dependency) =>
+            extractAcceptableDependencyValue(dependency, context, baseStep.id)
+          ),
           `Trying to derive the 'initial fixed' item when it shouldn't be allowed for id ${baseStep.id}`
         )
       );
@@ -274,9 +277,10 @@ export function createRandomGameStep<T>({
 
 function strategies(
   context: TemplateContext,
-  dependencies: readonly VariableGameStep<unknown>[],
-  fixedInitializer?: (...dependencies: unknown[]) => unknown | undefined,
-  recommended?: (context: InstanceContext) => unknown | undefined
+  dependencies: readonly Dependency<unknown>[],
+  fixedInitializer: ((...dependencies: unknown[]) => unknown) | undefined,
+  recommended: ((context: InstanceContext) => unknown) | undefined,
+  idForLogging: StepId
 ) {
   const strategies = [];
 
@@ -293,20 +297,24 @@ function strategies(
     }
   }
 
-  const fulfilledDependencies =
-    dependencies != null
-      ? Vec.map(dependencies, (dependency) =>
-          dependency.extractInstanceValue!(fakeInstanceContext)
-        )
-      : [];
+  const fulfilledDependencies = Vec.map(dependencies, (dependency) =>
+    extractAcceptableDependencyValue(
+      dependency,
+      fakeInstanceContext,
+      idForLogging
+    )
+  );
   const fixedValue =
     fixedInitializer != null
       ? fixedInitializer(...fulfilledDependencies)
       : undefined;
   if (fixedInitializer == null || fixedValue != null) {
     const areDependenciesFulfilled =
-      dependencies?.every((dependency) => dependency.hasValue!(context)) ??
-      true;
+      dependencies?.every((dependency) =>
+        (Array.isArray(dependency) ? dependency[0] : dependency).hasValue!(
+          context
+        )
+      ) ?? true;
     if (areDependenciesFulfilled) {
       strategies.push(Strategy.RANDOM);
     }
@@ -325,4 +333,33 @@ function strategies(
   }
 
   return strategies;
+}
+
+function extractAcceptableDependencyValue<T>(
+  dependency: Dependency<T>,
+  context: InstanceContext,
+  idForLogging: StepId
+): T | null {
+  let step: VariableGameStep<T>;
+  let values: unknown[] = [];
+
+  if (!Array.isArray(dependency)) {
+    step = dependency;
+  } else {
+    [step, ...values] = dependency;
+  }
+
+  const instanceValue = step.extractInstanceValue!(context);
+  return Vec.is_empty(values)
+    ? nullthrows(
+        instanceValue,
+        `${idForLogging} expected ${step.id} to have a value`
+      )
+    : values.includes(instanceValue)
+    ? instanceValue
+    : invariant_violation(
+        `${idForLogging} expected ${
+          step.id
+        } to have a value in ${JSON.stringify(values)}`
+      );
 }

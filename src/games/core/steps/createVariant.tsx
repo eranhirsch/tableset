@@ -4,7 +4,7 @@ import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { createGameStep } from "./createGameStep";
 import { InstanceContext, TemplateContext } from "./createRandomGameStep";
-import { StepWithDependencies } from "./StepWithDependencies";
+import { Dependency, StepWithDependencies } from "./StepWithDependencies";
 
 interface Options<
   D1 = never,
@@ -30,7 +30,7 @@ export interface VariantGameStep extends VariableGameStep<boolean>, Skippable {
   resolveRandom(context: InstanceContext): true | null;
   strategies(context: TemplateContext): readonly Strategy[];
 
-  dependencies?: [...VariableGameStep<unknown>[]];
+  dependencies?: [...Dependency<unknown>[]];
 
   TemplateFixedValueLabel: ((props: { value: true }) => JSX.Element) | string;
   initialFixedValue(context: InstanceContext): true;
@@ -88,7 +88,11 @@ export function createVariant<
 
     strategies: (context) =>
       dependencies == null ||
-      dependencies.every((dependency) => dependency.hasValue!(context))
+      dependencies.every((dependency) =>
+        (Array.isArray(dependency) ? dependency[0] : dependency).hasValue!(
+          context
+        )
+      )
         ? [Strategy.OFF, Strategy.RANDOM, Strategy.FIXED]
         : [],
 

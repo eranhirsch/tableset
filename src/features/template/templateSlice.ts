@@ -188,7 +188,14 @@ function markDownstreamElementsStale(
 ): void {
   const downstreamSteps = GAMES[gameId].steps
     .filter((x): x is RandomGameStep<unknown> => "dependencies" in x)
-    .filter((x) => x.dependencies?.some(({ id }) => id === changedElementId));
+    .filter((x) =>
+      x.dependencies?.some((dependency) => {
+        if (Array.isArray(dependency)) {
+          dependency = dependency[0];
+        }
+        return dependency.id === changedElementId;
+      })
+    );
   const downstreamElements = Vec.filter_nulls(
     downstreamSteps.map(({ id }) => entities[id])
   );

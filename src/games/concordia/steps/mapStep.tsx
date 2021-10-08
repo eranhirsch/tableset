@@ -20,7 +20,15 @@ import RomanTitle from "../ux/RomanTitle";
 export default createRandomGameStep({
   id: "map",
 
-  dependencies: [createProductDependencyMetaStep<ConcordiaProductId>()],
+  dependencies: [
+    [
+      createProductDependencyMetaStep<ConcordiaProductId>(),
+      // Products with maps included
+      ...Vec.unique(
+        Vec.flatten(Vec.map_with_key(MAPS, (_, { providedIn }) => providedIn))
+      ),
+    ],
+  ],
 
   isType: (x: string): x is MapId => x in MAPS,
 
