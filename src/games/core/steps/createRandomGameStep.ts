@@ -71,6 +71,7 @@ interface FixedOptions<
 }
 
 export interface Query<T> {
+  willResolve(): boolean;
   canResolveTo(value: T): boolean;
   // willResolve(): boolean;
   // canResolveTo(item: T): boolean;
@@ -290,6 +291,8 @@ export function createRandomGameStep<T>({
         }
         return element.value === value;
       },
+
+      willResolve: () => template[baseStep.id] != null,
     }),
   };
 

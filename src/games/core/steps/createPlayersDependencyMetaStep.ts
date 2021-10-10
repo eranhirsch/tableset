@@ -22,8 +22,9 @@ const createPlayersDependencyMetaStep = ({
 
   extractInstanceValue: ({ playerIds }) => playerIds,
 
-  query: () => ({
+  query: (_, { playerIds }) => ({
     canResolveTo: (_: readonly PlayerId[]) => false,
+    willResolve: () => playerIds.length > 0,
   }),
 });
 

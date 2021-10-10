@@ -139,6 +139,7 @@ export function createVariant({
     query: (template) => ({
       canResolveTo: (value: boolean) =>
         value === (template[baseStep.id] != null),
+      willResolve: () => template[baseStep.id] != null,
     }),
   };
 }
