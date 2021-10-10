@@ -23,6 +23,7 @@ const createProductDependencyMetaStep = <Pid extends ProductId>(
     canResolveTo: (requestedProductIds: readonly Pid[]) =>
       Vec.contained_in(requestedProductIds, productIds),
     willResolve: () => true,
+    minCount: (min) => productIds.length >= min,
   }),
 });
 

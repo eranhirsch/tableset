@@ -25,6 +25,7 @@ const createPlayersDependencyMetaStep = ({
   query: (_, { playerIds }) => ({
     canResolveTo: (_: readonly PlayerId[]) => false,
     willResolve: () => playerIds.length > 0,
+    minCount: (min) => playerIds.length >= min,
   }),
 });
 

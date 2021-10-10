@@ -140,6 +140,7 @@ export function createVariant({
       canResolveTo: (value: boolean) =>
         value === (template[baseStep.id] != null),
       willResolve: () => template[baseStep.id] != null,
+      minCount: () => false,
     }),
   };
 }

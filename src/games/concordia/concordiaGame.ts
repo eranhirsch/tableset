@@ -35,13 +35,13 @@ export const concordiaGame = Object.freeze({
   } as Record<ConcordiaProductId, Product>),
 
   steps: [
-    mapStep,
-    salsaVariantStep,
-    cityTilesStep,
+    mapStep, // Templatable
+    salsaVariantStep, // Templatable
+    cityTilesStep, // Templatable
     bonusTilesStep,
-    germaniaRomanCastlesStep,
+    germaniaRomanCastlesStep, // Templatable
     marketCardsStep,
-    marketDisplayStep,
+    marketDisplayStep, // Templatable
     marketDeckStep,
     createGameStep({
       id: "concordiaCard",
@@ -53,13 +53,13 @@ export const concordiaGame = Object.freeze({
       InstanceManualComponent:
         "Form a pile of coins as the bank near the board.",
     }),
-    playOrderStep,
-    createPlayerColorsStep(["black", "blue", "green", "red", "yellow"]),
+    playOrderStep, // Templatable
+    createPlayerColorsStep(["black", "blue", "green", "red", "yellow"]), // Templatable
     playerComponentsStep,
     startingColonistsStep,
-    noStartingResourcesVariant,
+    noStartingResourcesVariant, // Templatable
     startingResourcesStep,
-    firstPlayerStep,
+    firstPlayerStep, // Templatable
     startingMoneyStep,
     praefectusMagnusStep,
   ] as readonly GameStepBase[],
