@@ -14,6 +14,7 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import GrammaticalList from "games/core/ux/GrammaticalList";
 import HeaderAndSteps from "games/core/ux/HeaderAndSteps";
 import React, { useMemo } from "react";
+import { ConcordiaProductId } from "../concordiaGame";
 import GermaniaCastlesEncoder, {
   EXPECTED_REMAINING_RESOURCES_COUNT,
   LOCATIONS,
@@ -34,8 +35,11 @@ export default createRandomGameStep({
     value == null || typeof value === "string",
 
   dependencies: [
-    createProductDependencyMetaStep("britanniaGermania"),
-    mapStep,
+    [
+      createProductDependencyMetaStep<ConcordiaProductId>(),
+      "britanniaGermania",
+    ],
+    [mapStep, "germania"],
     salsaVariantStep,
     cityTilesStep,
   ],
