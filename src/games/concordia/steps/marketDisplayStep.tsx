@@ -14,10 +14,14 @@ export default createRandomGameStep({
   id: "marketDisplay",
   labelOverride: "Cards Display",
 
+  dependencies: [],
+
   InstanceVariableComponent,
   InstanceManualComponent,
 
   random: () => MarketDisplayEncoder.randomHash(),
+
+  isTemplatable: () => true,
 });
 
 function InstanceVariableComponent({

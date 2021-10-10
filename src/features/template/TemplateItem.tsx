@@ -1,3 +1,4 @@
+import CasinoIcon from "@mui/icons-material/Casino";
 import {
   Collapse,
   ListItemButton,
@@ -7,21 +8,19 @@ import {
 } from "@mui/material";
 import { ReactUtils } from "common";
 import { StepLabel } from "features/game/StepLabel";
-import { Strategy } from "features/template/Strategy";
 import { StepId } from "model/Game";
 import { ItemLabel } from "./ItemLabel";
 import StepDetailsPane from "./StepDetailsPane";
-import StrategyIcon from "./StrategyIcon";
 import { templateSelectors } from "./templateSlice";
 
 export default function TemplateItem({
   stepId,
-  expanded,
+  selected = false,
   onClick,
 }: {
   stepId: StepId;
-  expanded: boolean;
-  onClick: (isExpanded: boolean) => void;
+  selected?: boolean;
+  onClick: () => void;
 }): JSX.Element | null {
   const element = ReactUtils.useAppEntityIdSelectorNullable(
     templateSelectors,
@@ -34,16 +33,16 @@ export default function TemplateItem({
   }
 
   return (
-    <Paper sx={{ marginBottom: 1 }} elevation={expanded ? 1 : 0} component="li">
-      <ListItemButton onClick={() => onClick(expanded)}>
+    <Paper sx={{ marginBottom: 1 }} elevation={selected ? 1 : 0}>
+      <ListItemButton onClick={onClick}>
         <ListItemIcon>
-          <StrategyIcon strategy={element?.strategy ?? Strategy.OFF} />
+          <CasinoIcon />
         </ListItemIcon>
         <ListItemText secondary={<ItemLabel stepId={stepId} />}>
           <StepLabel stepId={stepId} />
         </ListItemText>
       </ListItemButton>
-      <Collapse in={expanded} unmountOnExit>
+      <Collapse in={selected} unmountOnExit>
         <StepDetailsPane stepId={stepId} />
       </Collapse>
     </Paper>

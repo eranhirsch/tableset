@@ -73,6 +73,26 @@ function union_by<Ta, Tb, Ts>(
   return [...out, ...V.map(remaining, ([orig]) => orig)];
 }
 
+const contained_in = <Ta, Tb>(a: readonly Ta[], b: readonly Tb[]): boolean =>
+  contained_in_by(a, b, (x) => x);
+
+function contained_in_by<Ta, Tb, Ts>(
+  a: readonly Ta[],
+  b: readonly Tb[],
+  scalarFunc: (value: Ta | Tb) => Ts
+): boolean {
+  let remaining = [...V.map(b, scalarFunc)];
+  for (const item of a) {
+    const i = remaining.indexOf(scalarFunc(item));
+    if (i > -1) {
+      remaining.splice(i, 1);
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+
 export const Vec = {
   diff,
   diff_by,
@@ -80,4 +100,6 @@ export const Vec = {
   intersect_by,
   union,
   union_by,
+  contained_in,
+  contained_in_by,
 } as const;

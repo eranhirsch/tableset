@@ -50,6 +50,8 @@ export default createRandomGameStep({
 
   skip: (_: string | null, [products, map, citiesHash]) =>
     products == null || (map != null && map !== "germania"),
+
+  isTemplatable: () => true,
 });
 
 function InstanceVariableComponent({

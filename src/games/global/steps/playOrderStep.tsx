@@ -87,6 +87,8 @@ export default createRandomGameStep({
       return currentRefreshed.concat(missing);
     },
   },
+
+  isTemplatable: () => true,
 });
 
 function InstanceVariableComponent({

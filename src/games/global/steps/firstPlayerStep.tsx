@@ -47,6 +47,8 @@ export default createRandomGameStep({
     refresh: (current, { playerIds }) =>
       playerIds.includes(current) ? current : undefined,
   },
+
+  isTemplatable: () => true,
 });
 
 function InstanceVariableComponent({

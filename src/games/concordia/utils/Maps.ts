@@ -247,3 +247,8 @@ export const mapsForProducts = (
       providedIn.some((productId) => activeProducts.includes(productId))
     )
   );
+
+export const productsWithMaps = (): readonly ConcordiaProductId[] =>
+  Vec.unique(
+    Vec.flatten(Vec.map_with_key(MAPS, (_, { providedIn }) => providedIn))
+  );

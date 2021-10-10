@@ -94,5 +94,10 @@ export function createVariant<
 
     TemplateFixedValueLabel: "Enabled",
     initialFixedValue: () => true,
+
+    query: (template) => ({
+      canResolveTo: (value: boolean) =>
+        value === (template[baseStep.id] != null),
+    }),
   };
 }

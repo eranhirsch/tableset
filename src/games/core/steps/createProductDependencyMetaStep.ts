@@ -1,3 +1,4 @@
+import { Vec } from "common";
 import { ProductId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
 
@@ -17,6 +18,11 @@ const createProductDependencyMetaStep = <Pid extends ProductId>(
     requiredProducts.some((productId) => productIds.includes(productId)),
 
   extractInstanceValue: ({ productIds }) => productIds as readonly Pid[],
+
+  query: (_, { productIds }) => ({
+    canResolveTo: (requestedProductIds: readonly Pid[]) =>
+      Vec.contained_in(requestedProductIds, productIds),
+  }),
 });
 
 export default createProductDependencyMetaStep;

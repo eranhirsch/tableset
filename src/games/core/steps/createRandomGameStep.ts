@@ -1,6 +1,7 @@
 import { nullthrows, type_invariant, Vec } from "common";
 import { SetupStep } from "features/instance/instanceSlice";
 import { Strategy } from "features/template/Strategy";
+import { Templatable } from "features/template/Templatable";
 import { TemplateElement } from "features/template/templateSlice";
 import { StepId } from "model/Game";
 import { Skippable } from "model/Skippable";
@@ -23,7 +24,10 @@ export interface InstanceContext extends ContextBase {
   instance: readonly SetupStep[];
 }
 
-export interface RandomGameStep<T = unknown> extends VariableGameStep<T>, Skippable {
+export interface RandomGameStep<T = unknown>
+  extends VariableGameStep<T>,
+    Skippable,
+    Templatable {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
   resolveRandom(context: InstanceContext): T;
   strategies(context: TemplateContext): readonly Strategy[];
@@ -66,6 +70,20 @@ interface FixedOptions<
   renderSelector?(props: { current: T }): JSX.Element;
 }
 
+export interface Query<T> {
+  canResolveTo(value: T): boolean;
+  // willResolve(): boolean;
+  // canResolveTo(item: T): boolean;
+  // willResolveTo(item: T): boolean;
+}
+
+export interface Queryable<T> {
+  query(
+    template: Parameters<Templatable["canBeTemplated"]>[0],
+    context: ContextBase
+  ): Query<T>;
+}
+
 type Options<
   T,
   D1 = never,
@@ -79,7 +97,7 @@ type Options<
   D9 = never,
   D10 = never
 > = CreateGameStepOptions &
-  Partial<StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>> & {
+  StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> & {
     isType?(value: unknown): value is T;
 
     InstanceVariableComponent(
@@ -98,6 +116,18 @@ type Options<
       dependency9: D9,
       dependency10: D10
     ): T;
+    isTemplatable(
+      query1: Query<D1>,
+      query2: Query<D2>,
+      query3: Query<D3>,
+      query4: Query<D4>,
+      query5: Query<D5>,
+      query6: Query<D6>,
+      query7: Query<D7>,
+      query8: Query<D8>,
+      query9: Query<D9>,
+      query10: Query<D10>
+    ): boolean;
     recommended?(context: InstanceContext): T | undefined;
     fixed?: FixedOptions<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>;
     skip?(
@@ -138,6 +168,7 @@ interface OptionsInternal<T>
     unknown
   > {
   random(...dependencies: unknown[]): T;
+  isTemplatable(...queries: Query<unknown>[]): boolean;
   fixed?: FixedOptionsInternal<T>;
 }
 
@@ -158,6 +189,7 @@ export function createRandomGameStep<
 ): Readonly<RandomGameStep<T>>;
 export function createRandomGameStep<T>({
   dependencies,
+  isTemplatable,
   isType,
   InstanceVariableComponent,
   random,
@@ -241,6 +273,24 @@ export function createRandomGameStep<T>({
 
     strategies: (context) =>
       strategies(context, dependencies ?? [], fixed?.initializer, recommended),
+
+    canBeTemplated: (template, context) =>
+      isTemplatable(
+        ...dependencies.map((dependency) => dependency.query(template, context))
+      ),
+
+    query: (template, _) => ({
+      canResolveTo(value: T) {
+        const element = template[baseStep.id];
+        if (element == null) {
+          return false;
+        }
+        if (element.strategy !== Strategy.FIXED) {
+          return true;
+        }
+        return element.value === value;
+      },
+    }),
   };
 
   if (recommended != null) {

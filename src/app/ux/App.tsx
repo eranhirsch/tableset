@@ -5,7 +5,7 @@ import { expansionsActions } from "features/expansions/expansionsSlice";
 import Instance from "features/instance/Instance";
 import Players from "features/players/Players";
 import { playersActions } from "features/players/playersSlice";
-import Template from "features/template/Template";
+import { Template } from "features/template/Template";
 import { useEffect, useState } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useAppDispatch } from "../hooks";

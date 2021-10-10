@@ -18,13 +18,9 @@ import { DictLike, ValueOf } from "../_private/typeUtils";
 /**
  * @returns an array containing only non-null values of the given array.
  */
-function filter_nulls<Tv>(
-  arr: readonly (Tv | null | undefined)[]
-): readonly Tv[] {
-  // The best way to filter nulls in TS? (August 2021)
-  const filtered = arr.flatMap((x) => (x == null ? [] : [x]));
-  return filtered.length < arr.length ? filtered : (arr as Tv[]);
-}
+const filter_nulls = <T>(
+  arr: readonly (T | null | undefined)[]
+): readonly T[] => filter(arr, (x: T | null | undefined): x is T => x != null);
 
 /**
  * @returns a new array containing only the values for which the given
@@ -44,25 +40,6 @@ const filter_with_key = <T extends DictLike>(
   // the input, and we want to handle Partial Records as any other Record
   // when sent to `map`. For now we just cast it and hope it doesn't break.
   values(Dict.filter_with_keys(dict, predicate));
-
-/**
- * @returns an array containing only the elements of the first array that
- * appear in all the other ones.
- *
- * Duplicate values are preserved.
- *
- * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.intersect/
- */
-function intersect<Tv>(
-  arr: readonly Tv[],
-  ...rest: readonly [readonly Tv[], ...(readonly Tv[])[]]
-): readonly Tv[] {
-  const intersection = arr.filter((item) =>
-    rest.every((otherArray) => otherArray.includes(item))
-  );
-  // Optimize for react, return the input array if all items intersected
-  return intersection.length < arr.length ? intersection : arr;
-}
 
 /**
  * @returns a new array containing the keys of the given mapper-object
@@ -225,15 +202,35 @@ function entries<T extends DictLike>(
   return Object.entries(dict) as [key: keyof T, value: ValueOf<T>][];
 }
 
+/**
+ * Our own version of filter to maintain both the styling of our STL and to
+ * return a `readonly` array instead of a mutable one as the native `filter`
+ * does.
+ */
+function filter<T, S extends T>(
+  arr: readonly T[],
+  typePredicate: (x: T) => x is S
+): readonly S[];
+function filter<T>(
+  arr: readonly T[],
+  predicate: (x: T) => boolean
+): readonly T[];
+function filter<T>(
+  arr: readonly T[],
+  predicate: (x: T) => boolean
+): readonly T[] {
+  return arr.filter(predicate);
+}
+
 export const Vec = {
+  entries,
   filter_nulls,
   filter_with_key,
-  intersect,
+  filter,
   keys,
   sample,
   take,
   unique_by,
   unique,
-  entries,
   values,
 } as const;

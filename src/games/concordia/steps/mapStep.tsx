@@ -14,7 +14,7 @@ import {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import { ConcordiaProductId } from "../concordiaGame";
-import { MapId, MAPS, mapsForProducts } from "../utils/Maps";
+import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 
 export default createRandomGameStep({
@@ -47,6 +47,9 @@ export default createRandomGameStep({
     renderTemplateLabel: TemplateLabel,
     renderSelector: Selector,
   },
+
+  isTemplatable: (productsQuery) =>
+    productsWithMaps().some((product) => productsQuery.canResolveTo([product])),
 });
 
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({

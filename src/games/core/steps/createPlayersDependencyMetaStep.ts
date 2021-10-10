@@ -21,6 +21,10 @@ const createPlayersDependencyMetaStep = ({
     playerIds.length >= min && playerIds.length <= max,
 
   extractInstanceValue: ({ playerIds }) => playerIds,
+
+  query: () => ({
+    canResolveTo: (_: readonly PlayerId[]) => false,
+  }),
 });
 
 export default createPlayersDependencyMetaStep;

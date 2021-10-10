@@ -38,6 +38,8 @@ export default createRandomGameStep({
 
   random: (mapId, withSalsa) =>
     CityResourcesEncoder.randomHash(mapId, withSalsa),
+
+  isTemplatable: () => true,
 });
 
 function InstanceVariableComponent({

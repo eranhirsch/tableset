@@ -78,6 +78,8 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
         );
       },
     },
+
+    isTemplatable: () => true,
   });
 export default createPlayerColorsStep;
 
