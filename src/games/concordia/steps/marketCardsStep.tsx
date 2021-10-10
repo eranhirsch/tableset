@@ -103,6 +103,7 @@ function CardSelectionStep({
     >
       {(Footnote) => (
         <>
+          {/* TODO: When playing with 5 players this step is redundant, we take ALL cards */}
           Take all cards with{" "}
           <GrammaticalList pluralize="numeral">
             {Vec.range(1, playerCount).map((i) => (

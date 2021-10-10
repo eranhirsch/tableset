@@ -48,7 +48,7 @@ function InstanceDerivedComponent({
   } else if (playerIds.length > 2) {
     stackingStep = (
       <>
-        Stack the decks facedown one on top of each other starting from deck{" "}
+        Stack the decks face down one on top of each other starting from deck{" "}
         <strong>{ROMAN_NUMERALS[playerIds.length]}</strong> then{" "}
         <GrammaticalList>
           {Vec.reverse(Vec.range(2, playerIds.length - 1)).map((deck) => (
@@ -104,7 +104,7 @@ function InstanceDerivedComponent({
         {(Footnote) => (
           <>
             Put the remaining card of deck <strong>I</strong>
-            <Footnote index={1} /> facedown on top of the market deck.
+            <Footnote index={1} /> face down on top of the market deck.
           </>
         )}
       </BlockWithFootnotes>
