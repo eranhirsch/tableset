@@ -1,11 +1,5 @@
 import { VariableGameStep } from "model/VariableGameStep";
 
-export type Dependency<D> =
-  | VariableGameStep<D>
-  | (D extends readonly (infer T)[]
-      ? [step: VariableGameStep<D>, ...values: (T | null)[]]
-      : [step: VariableGameStep<D>, ...values: (D | null)[]]);
-
 export interface StepWithDependencies<
   D1 = never,
   D2 = never,
@@ -19,66 +13,70 @@ export interface StepWithDependencies<
   D10 = never
 > {
   dependencies:
-    | []
-    | [Dependency<D1>]
-    | [Dependency<D1>, Dependency<D2>]
-    | [Dependency<D1>, Dependency<D2>, Dependency<D3>]
-    | [Dependency<D1>, Dependency<D2>, Dependency<D3>, Dependency<D4>]
+    | [VariableGameStep<D1>]
+    | [VariableGameStep<D1>, VariableGameStep<D2>]
+    | [VariableGameStep<D1>, VariableGameStep<D2>, VariableGameStep<D3>]
     | [
-        Dependency<D1>,
-        Dependency<D2>,
-        Dependency<D3>,
-        Dependency<D4>,
-        Dependency<D5>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>
       ]
     | [
-        Dependency<D1>,
-        Dependency<D2>,
-        Dependency<D3>,
-        Dependency<D4>,
-        Dependency<D5>,
-        Dependency<D6>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>
       ]
     | [
-        Dependency<D1>,
-        Dependency<D2>,
-        Dependency<D3>,
-        Dependency<D4>,
-        Dependency<D5>,
-        Dependency<D6>,
-        Dependency<D7>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>
       ]
     | [
-        Dependency<D1>,
-        Dependency<D2>,
-        Dependency<D3>,
-        Dependency<D4>,
-        Dependency<D5>,
-        Dependency<D6>,
-        Dependency<D7>,
-        Dependency<D8>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>
       ]
     | [
-        Dependency<D1>,
-        Dependency<D2>,
-        Dependency<D3>,
-        Dependency<D4>,
-        Dependency<D5>,
-        Dependency<D6>,
-        Dependency<D7>,
-        Dependency<D8>,
-        Dependency<D9>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>,
+        VariableGameStep<D8>
       ]
     | [
-        Dependency<D1>,
-        Dependency<D2>,
-        Dependency<D3>,
-        Dependency<D4>,
-        Dependency<D5>,
-        Dependency<D6>,
-        Dependency<D7>,
-        Dependency<D8>,
-        Dependency<D9>,
-        Dependency<D10>
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>,
+        VariableGameStep<D8>,
+        VariableGameStep<D9>
+      ]
+    | [
+        VariableGameStep<D1>,
+        VariableGameStep<D2>,
+        VariableGameStep<D3>,
+        VariableGameStep<D4>,
+        VariableGameStep<D5>,
+        VariableGameStep<D6>,
+        VariableGameStep<D7>,
+        VariableGameStep<D8>,
+        VariableGameStep<D9>,
+        VariableGameStep<D10>
       ];
 }

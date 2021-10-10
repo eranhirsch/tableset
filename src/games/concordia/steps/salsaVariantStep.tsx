@@ -9,9 +9,7 @@ import RomanTitle from "../ux/RomanTitle";
 export default createVariant({
   id: "salsa",
   name: "Salsa",
-  dependencies: [
-    [createProductDependencyMetaStep<ConcordiaProductId>(), "salsa"],
-  ],
+  dependencies: [createProductDependencyMetaStep<ConcordiaProductId>("salsa")],
   InstanceVariableComponent,
 });
 

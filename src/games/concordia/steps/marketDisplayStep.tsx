@@ -14,8 +14,6 @@ export default createRandomGameStep({
   id: "marketDisplay",
   labelOverride: "Cards Display",
 
-  dependencies: [],
-
   InstanceVariableComponent,
   InstanceManualComponent,
 
