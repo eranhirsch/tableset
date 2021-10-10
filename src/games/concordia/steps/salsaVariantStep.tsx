@@ -11,6 +11,7 @@ export default createVariant({
   name: "Salsa",
   dependencies: [createProductDependencyMetaStep<ConcordiaProductId>("salsa")],
   InstanceVariableComponent,
+  isTemplatable: (productsQuery) => productsQuery.canResolveTo(["salsa"]),
 });
 
 function InstanceVariableComponent(): JSX.Element {

@@ -8,7 +8,9 @@ import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 const noStartingResourcesVariant = createVariant({
   id: "noStartingResources",
   name: "No Starting Resources",
+  dependencies: [],
   InstanceVariableComponent,
+  isTemplatable: () => true,
 });
 export default noStartingResourcesVariant;
 
