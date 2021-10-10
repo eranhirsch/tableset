@@ -4,11 +4,8 @@ import { Templatable } from "features/template/Templatable";
 import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { createGameStep } from "./createGameStep";
-import {
-  InstanceContext,
-  Query,
-  TemplateContext,
-} from "./createRandomGameStep";
+import { InstanceContext, TemplateContext } from "./createRandomGameStep";
+import { Query } from "./Query";
 import { StepWithDependencies } from "./StepWithDependencies";
 
 interface Options<

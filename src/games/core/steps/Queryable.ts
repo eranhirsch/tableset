@@ -1,0 +1,10 @@
+import { Templatable } from "features/template/Templatable";
+import { ContextBase } from "../../../model/ContextBase";
+import { Query } from "./Query";
+
+export interface Queryable<T> {
+  query(
+    template: Parameters<Templatable["canBeTemplated"]>[0],
+    context: ContextBase
+  ): Query<T>;
+}

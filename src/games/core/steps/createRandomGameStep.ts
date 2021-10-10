@@ -10,6 +10,7 @@ import { ContextBase } from "../../../model/ContextBase";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
 import { DepsTuple } from "./DepsTuple";
+import { Query } from "./Query";
 import { StepWithDependencies } from "./StepWithDependencies";
 
 export interface VariableStepInstanceComponentProps<T> {
@@ -68,23 +69,6 @@ interface FixedOptions<
   refresh?(current: T, context: ContextBase): T | undefined;
   renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
   renderSelector?(props: { current: T }): JSX.Element;
-}
-
-export interface Query<T> {
-  canResolveTo(value: T): boolean;
-  maxCount(max: number): boolean;
-  minCount(min: number): boolean;
-  willResolve(): boolean;
-  // willResolve(): boolean;
-  // canResolveTo(item: T): boolean;
-  // willResolveTo(item: T): boolean;
-}
-
-export interface Queryable<T> {
-  query(
-    template: Parameters<Templatable["canBeTemplated"]>[0],
-    context: ContextBase
-  ): Query<T>;
 }
 
 type Options<

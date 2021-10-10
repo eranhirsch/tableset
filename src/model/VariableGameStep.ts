@@ -1,8 +1,8 @@
 import {
   InstanceContext,
-  Queryable,
   TemplateContext,
 } from "games/core/steps/createRandomGameStep";
+import { Queryable } from "games/core/steps/Queryable";
 import { GameStepBase } from "./GameStepBase";
 
 export interface VariableGameStep<T = unknown>

@@ -1,5 +1,5 @@
 import { VariableGameStep } from "model/VariableGameStep";
-import { Queryable } from "./createRandomGameStep";
+import { Queryable } from "./Queryable";
 
 type Dependency<T> = VariableGameStep<T> & Queryable<T>;
 
