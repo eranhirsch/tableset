@@ -141,6 +141,7 @@ export function createVariant({
         value === (template[baseStep.id] != null),
       willResolve: () => template[baseStep.id] != null,
       minCount: () => false,
+      maxCount: () => false,
     }),
   };
 }

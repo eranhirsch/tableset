@@ -79,7 +79,8 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
       },
     },
 
-    isTemplatable: () => true,
+    isTemplatable: (playersQuery) =>
+      playersQuery.minCount(1) && playersQuery.maxCount(availableColors.length),
   });
 export default createPlayerColorsStep;
 

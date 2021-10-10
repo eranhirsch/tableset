@@ -71,9 +71,10 @@ interface FixedOptions<
 }
 
 export interface Query<T> {
+  canResolveTo(value: T): boolean;
+  maxCount(max: number): boolean;
   minCount(min: number): boolean;
   willResolve(): boolean;
-  canResolveTo(value: T): boolean;
   // willResolve(): boolean;
   // canResolveTo(item: T): boolean;
   // willResolveTo(item: T): boolean;
@@ -296,6 +297,7 @@ export function createRandomGameStep<T>({
       willResolve: () => template[baseStep.id] != null,
 
       minCount: () => false,
+      maxCount: () => false,
     }),
   };
 

@@ -26,6 +26,7 @@ const createPlayersDependencyMetaStep = ({
     canResolveTo: (_: readonly PlayerId[]) => false,
     willResolve: () => playerIds.length > 0,
     minCount: (min) => playerIds.length >= min,
+    maxCount: (max) => playerIds.length <= max,
   }),
 });
 
