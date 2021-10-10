@@ -48,7 +48,9 @@ export default createRandomGameStep({
       playerIds.includes(current) ? current : undefined,
   },
 
-  isTemplatable: () => true,
+  isTemplatable: (playersQuery) =>
+    // Solo games don't need a first player
+    playersQuery.minCount(2),
 });
 
 function InstanceVariableComponent({
