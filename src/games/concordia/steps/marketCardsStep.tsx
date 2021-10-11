@@ -11,6 +11,7 @@ import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
 import { ROMAN_NUMERALS } from "../utils/ROMAN_NUMERALS";
+import RomanTitle from "../ux/RomanTitle";
 
 const CARDS_PER_DECK = [
   // the array is 0-indexed
@@ -87,6 +88,34 @@ function CardSelectionStep({
 
   const playerCount = playerIds.length;
 
+  if (playerCount === MAX_PLAYER_COUNT) {
+    return (
+      <BlockWithFootnotes
+        footnotes={[
+          <>
+            Numerals{" "}
+            <GrammaticalList>
+              {React.Children.toArray(
+                Vec.map(Vec.range(1, 5), (num) => (
+                  <strong>
+                    <RomanTitle>{ROMAN_NUMERALS[num]}</RomanTitle>
+                  </strong>
+                ))
+              )}
+            </GrammaticalList>
+          </>,
+        ]}
+      >
+        {(Footnote) => (
+          <>
+            Take all cards with numerals on their back
+            <Footnote index={1} />.
+          </>
+        )}
+      </BlockWithFootnotes>
+    );
+  }
+
   return (
     <BlockWithFootnotes
       footnotes={Vec.filter_nulls(
@@ -103,7 +132,6 @@ function CardSelectionStep({
     >
       {(Footnote) => (
         <>
-          {/* TODO: When playing with 5 players this step is redundant, we take ALL cards */}
           Take all cards with{" "}
           <GrammaticalList pluralize="numeral">
             {Vec.range(1, playerCount).map((i) => (
@@ -113,26 +141,21 @@ function CardSelectionStep({
               </React.Fragment>
             ))}
           </GrammaticalList>{" "}
-          on their back
-          {playerCount < MAX_PLAYER_COUNT && (
-            <>
-              ;{" "}
-              <em>
-                leaving cards with{" "}
-                <GrammaticalList pluralize="numeral">
-                  {Vec.range(playerCount + 1, CARDS_PER_DECK.length - 1).map(
-                    (x) => (
-                      <React.Fragment key={`leave_in_box_deck_${x}`}>
-                        <strong>{ROMAN_NUMERALS[x]!}</strong>
-                        <Footnote index={x} />
-                      </React.Fragment>
-                    )
-                  )}
-                </GrammaticalList>{" "}
-                on their back in the box (they won't be needed)
-              </em>
-            </>
-          )}
+          on their back;{" "}
+          <em>
+            leaving cards with{" "}
+            <GrammaticalList pluralize="numeral">
+              {Vec.range(playerCount + 1, CARDS_PER_DECK.length - 1).map(
+                (x) => (
+                  <React.Fragment key={`leave_in_box_deck_${x}`}>
+                    <strong>{ROMAN_NUMERALS[x]!}</strong>
+                    <Footnote index={x} />
+                  </React.Fragment>
+                )
+              )}
+            </GrammaticalList>{" "}
+            on their back in the box (they won't be needed)
+          </em>
           .
         </>
       )}
