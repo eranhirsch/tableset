@@ -1,6 +1,6 @@
 import { Chip, Stack } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { nullthrows, ReactUtils } from "common";
+import { ReactUtils } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { gameStepSelector } from "features/game/gameSlice";
 import { Strategy } from "features/template/Strategy";
@@ -8,39 +8,22 @@ import { strategyLabel } from "features/template/strategyLabel";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { ProductId, StepId } from "model/Game";
 import { PlayerId } from "model/Player";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { playersSelectors } from "../players/playersSlice";
-import {
-  templateActions,
-  TemplateElement,
-  templateSelectors,
-} from "./templateSlice";
+import { templateActions, templateSelectors } from "./templateSlice";
 
 export function StrategiesSelector({
   stepId,
 }: {
   stepId: StepId;
 }): JSX.Element {
-  const gameStep = useAppSelector(gameStepSelector(stepId)) as RandomGameStep;
-  const playerIds = useAppSelector(
-    playersSelectors.selectIds
-  ) as readonly PlayerId[];
-  const productIds = useAppSelector(
-    allExpansionIdsSelector
-  ) as readonly ProductId[];
-  const template = useAppSelector(templateSelectors.selectEntities) as Readonly<
-    Record<StepId, Readonly<TemplateElement>>
-  >;
-  const strategies = useMemo(
-    () =>
-      nullthrows(
-        gameStep.strategies,
-        `Missing strategies method for step ${stepId}`
-      )({ template, playerIds, productIds }),
-    [gameStep.strategies, playerIds, productIds, stepId, template]
-  );
+  const step = useAppSelector(gameStepSelector(stepId)) as RandomGameStep;
+  const strategies = [Strategy.OFF, Strategy.RANDOM];
+  if (step.initialFixedValue != null) {
+    strategies.push(Strategy.FIXED);
+  }
 
-  const templateElement = ReactUtils.useAppEntityIdSelectorNullable(
+  const element = ReactUtils.useAppEntityIdSelectorNullable(
     templateSelectors,
     stepId
   );
@@ -52,7 +35,8 @@ export function StrategiesSelector({
           <StrategyChip
             strategy={strategy}
             isSelected={
-              (templateElement?.strategy ?? Strategy.OFF) === strategy
+              (element == null && strategy === Strategy.OFF) ||
+              element?.strategy === strategy
             }
             stepId={stepId}
           />
