@@ -21,8 +21,9 @@ const createProductDependencyMetaStep = <Pid extends ProductId>(
 
   query: (_, { productIds: currentProductIds }) =>
     buildQuery(PRODUCTS_DEPENDENCY_META_STEP_ID, {
-      willContain: currentProductIds.includes,
-      willContainAny: (products) => products.some(currentProductIds.includes),
+      willContain: (pid) => currentProductIds.includes(pid),
+      willContainAny: (products) =>
+        products.some((pid) => currentProductIds.includes(pid)),
     }),
 });
 
