@@ -1,7 +1,5 @@
 import { createGameStep } from "games/core/steps/createGameStep";
-import { Game } from "model/Game";
-import { GameStepBase } from "model/GameStepBase";
-import { Product } from "model/Product";
+import { createGame } from "model/Game";
 import createPlayerColorsStep from "../global/steps/createPlayerColorsStep";
 import firstPlayerStep from "../global/steps/firstPlayerStep";
 import playOrderStep from "../global/steps/playOrderStep";
@@ -23,8 +21,8 @@ import startingResourcesStep from "./steps/startingResourcesStep";
 
 export type ConcordiaProductId = "base" | "britanniaGermania" | "salsa";
 
-export const concordiaGame = Object.freeze({
-  products: Object.freeze({
+export const concordiaGame = createGame({
+  products: {
     base: { isBase: true, name: "Concordia", bggId: 124361, year: 2013 },
     britanniaGermania: {
       name: "Britannia / Germania",
@@ -32,7 +30,7 @@ export const concordiaGame = Object.freeze({
       year: 2014,
     },
     salsa: { name: "Salsa", bggId: 181084, year: 2015 },
-  } as Record<ConcordiaProductId, Product>),
+  },
 
   steps: [
     mapStep, // Templatable
@@ -62,5 +60,5 @@ export const concordiaGame = Object.freeze({
     firstPlayerStep, // Templatable
     startingMoneyStep,
     praefectusMagnusStep,
-  ] as readonly GameStepBase[],
-} as Game);
+  ],
+});

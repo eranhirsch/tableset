@@ -33,7 +33,7 @@ export default createSlice({
         context: ContextBase
       ) => ({
         payload: Vec.filter(
-          game.steps,
+          Vec.values(game.steps),
           (x: GameStepBase): x is RandomGameStep =>
             (x as Partial<RandomGameStep>).resolveRandom != null
         ).reduce((ongoing, step) => {

@@ -5,8 +5,8 @@ import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { createGameStep } from "./createGameStep";
 import { InstanceContext, TemplateContext } from "./createRandomGameStep";
+import { OptionsWithDependencies } from "./OptionsWithDependencies";
 import { buildQuery, Query } from "./Query";
-import { StepWithDependencies } from "./StepWithDependencies";
 
 interface Options<
   D1 = never,
@@ -19,7 +19,7 @@ interface Options<
   D8 = never,
   D9 = never,
   D10 = never
-> extends StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> {
+> extends OptionsWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> {
   id: string;
   name: String;
   isTemplatable(

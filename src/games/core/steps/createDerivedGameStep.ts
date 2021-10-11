@@ -2,7 +2,7 @@ import { DerivedGameStep } from "model/DerivedGameStep";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
 import { DepsTuple } from "./DepsTuple";
-import { StepWithDependencies } from "./StepWithDependencies";
+import { OptionsWithDependencies } from "./OptionsWithDependencies";
 
 export interface DerivedStepInstanceComponentProps<
   D1 = never,
@@ -31,7 +31,7 @@ interface Options<
   D9 = never,
   D10 = never
 > extends Omit<CreateGameStepOptions, "InstanceManualComponent">,
-    StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> {
+    OptionsWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> {
   InstanceDerivedComponent(
     props: DerivedStepInstanceComponentProps<
       D1,

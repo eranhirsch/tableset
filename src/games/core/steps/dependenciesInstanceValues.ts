@@ -1,7 +1,7 @@
 import { nullthrows, tuple } from "common";
 import { VariableGameStep } from "model/VariableGameStep";
 import { InstanceContext } from "./createRandomGameStep";
-import { StepWithDependencies } from "./StepWithDependencies";
+import { OptionsWithDependencies } from "./OptionsWithDependencies";
 
 export const dependenciesInstanceValues = <
   D1 = never,
@@ -16,7 +16,7 @@ export const dependenciesInstanceValues = <
   D10 = never
 >(
   context: InstanceContext,
-  dependencies: StepWithDependencies<
+  dependencies: OptionsWithDependencies<
     D1,
     D2,
     D3,

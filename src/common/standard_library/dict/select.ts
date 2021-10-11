@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/select.php
  */
 import { Dict as D, tuple, Vec } from "common";
-import { DictLike, ValueOf } from "../_private/typeUtils";
+import { DictLike, RemappedDict, ValueOf } from "../_private/typeUtils";
 
 const diff_by_key = <T extends DictLike>(
   base: Readonly<T>,
@@ -35,10 +35,20 @@ const drop = <T extends DictLike>(dict: Readonly<T>, n: number): Readonly<T> =>
  * way.
  * @see `Dict.filter_async()` to use an async predicate.
  */
-const filter = <T extends DictLike>(
+function filter<T extends DictLike, S extends ValueOf<T>>(
+  dict: Readonly<T>,
+  typePredicate: (value: ValueOf<T>) => value is S
+): Readonly<RemappedDict<T, S>>;
+function filter<T extends DictLike>(
+  dict: Readonly<T>,
+  predicate: (value: ValueOf<T>) => boolean
+): Readonly<T>;
+function filter<T extends DictLike>(
   dict: Readonly<T>,
   predicate: (value: ValueOf<T>) => boolean = Boolean
-): Readonly<T> => filter_with_keys(dict, (_, value) => predicate(value));
+): Readonly<T> {
+  return filter_with_keys(dict, (_, value) => predicate(value));
+}
 
 /**
  * Just like filter, but your predicate can include the key as well as

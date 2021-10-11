@@ -29,10 +29,10 @@ export const gameStepsSelector = createSelector(
 );
 export const gameStepSelector = (stepId: StepId) => (state: RootState) =>
   nullthrows(
-    gameStepsSelector(state).find(({ id }) => id === stepId),
+    gameStepsSelector(state)[stepId],
     `Step ${stepId} in game ${state.game.id} could not be found!`
   );
 export const gameStepsSelectorByType =
   <T extends GameStepBase>(typePredicate: (x: GameStepBase) => x is T) =>
   (state: RootState) =>
-    Vec.filter(gameStepsSelector(state), typePredicate);
+    Vec.filter(Vec.values(gameStepsSelector(state)), typePredicate);

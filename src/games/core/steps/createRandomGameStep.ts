@@ -10,8 +10,8 @@ import { ContextBase } from "../../../model/ContextBase";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
 import { DepsTuple } from "./DepsTuple";
+import { OptionsWithDependencies } from "./OptionsWithDependencies";
 import { buildQuery, Query } from "./Query";
-import { StepWithDependencies } from "./StepWithDependencies";
 
 export interface VariableStepInstanceComponentProps<T> {
   value: T;
@@ -33,7 +33,6 @@ export interface RandomGameStep<T = unknown>
   resolveRandom(context: InstanceContext): T;
   strategies(context: TemplateContext): readonly Strategy[];
 
-  dependencies?: [...VariableGameStep<unknown>[]];
   resolveDefault?(context: InstanceContext): T;
   TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
   TemplateFixedValueSelector?(props: { current: T }): JSX.Element;
@@ -84,7 +83,7 @@ type Options<
   D9 = never,
   D10 = never
 > = CreateGameStepOptions &
-  StepWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> & {
+  OptionsWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> & {
     isType?(value: unknown): value is T;
 
     InstanceVariableComponent(

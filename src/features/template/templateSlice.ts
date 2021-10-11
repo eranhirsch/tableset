@@ -5,14 +5,17 @@ import {
   PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
-import { Dict, nullthrows, Vec } from "common";
+import { Dict, nullthrows, type_invariant, Vec } from "common";
+import { expansionsActions } from "features/expansions/expansionsSlice";
 import { playersActions } from "features/players/playersSlice";
 import { Strategy } from "features/template/Strategy";
 import { GameId, GAMES } from "games/core/GAMES";
 import { PLAYERS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createPlayersDependencyMetaStep";
+import { PRODUCTS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createProductDependencyMetaStep";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { ContextBase } from "model/ContextBase";
 import { StepId } from "model/Game";
+import { isWithDependencies } from "./Templatable";
 
 type ConstantTemplateElement = Readonly<{
   strategy: Strategy.FIXED;
@@ -74,11 +77,8 @@ const templateSlice = createSlice({
           id: stepId,
           strategy: Strategy.FIXED,
           isStale: false,
-          value: (
-            GAMES[state.gameId].steps.find(
-              ({ id }) => stepId === id
-            ) as RandomGameStep<unknown>
-          ).initialFixedValue!({ ...context, instance: [] }),
+          value: (GAMES[state.gameId].steps[stepId] as RandomGameStep<unknown>)
+            .initialFixedValue!({ ...context, instance: [] }),
         });
 
         markDownstreamElementsStale(stepId, state);
@@ -106,7 +106,7 @@ const templateSlice = createSlice({
     },
 
     refresh: (state, { payload: context }: PayloadAction<ContextBase>) => {
-      GAMES[state.gameId].steps
+      Vec.values(GAMES[state.gameId].steps)
         .filter((step): step is RandomGameStep<unknown> => "strategies" in step)
         .forEach((step) => {
           const element = state.entities[step.id];
@@ -155,6 +155,9 @@ const templateSlice = createSlice({
       )
       .addCase(playersActions.removed, (state) =>
         markDownstreamElementsStale(PLAYERS_DEPENDENCY_META_STEP_ID, state)
+      )
+      .addCase(expansionsActions.toggled, (state) =>
+        markDownstreamElementsStale(PRODUCTS_DEPENDENCY_META_STEP_ID, state)
       );
   },
 });
@@ -186,11 +189,32 @@ function markDownstreamElementsStale(
   changedElementId: StepId,
   { gameId, entities }: RootState["template"]
 ): void {
-  const downstreamSteps = GAMES[gameId].steps
-    .filter((x): x is RandomGameStep<unknown> => "dependencies" in x)
-    .filter((x) => x.dependencies?.some(({ id }) => id === changedElementId));
-  const downstreamElements = Vec.filter_nulls(
-    downstreamSteps.map(({ id }) => entities[id])
-  );
-  downstreamElements.forEach((element) => (element.isStale = true));
+  filterDownstreamSteps(
+    // We need the cast because `Dictionary` (the RTK-defined type) is funky
+    entities as Record<StepId, TemplateElement>,
+    gameId,
+    changedElementId
+  ).forEach((element) => (element.isStale = true));
 }
+
+const filterDownstreamSteps = (
+  entities: Record<StepId, TemplateElement>,
+  gameId: GameId,
+  changedElementId: StepId
+): readonly TemplateElement[] =>
+  Vec.map_with_key(
+    Dict.filter(
+      // The inner join is the cleanest way to filter both dicts on each-other's
+      // keys.
+      Dict.inner_join(entities, GAMES[gameId].steps),
+      ([_, step]) =>
+        // We `type_invariant` here instead of using a TS compile-time cast just
+        // to be extra safe. All `Templatable` steps should also be
+        // `WithDependencies`, and all steps in the template should be
+        // `Templatable` already
+        type_invariant(step, isWithDependencies)
+          // We look for the changed element in the dependencies for the step.
+          .dependencies.some(({ id }) => id === changedElementId)
+    ),
+    (_, [element]) => element
+  );

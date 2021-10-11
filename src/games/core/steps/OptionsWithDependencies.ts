@@ -3,7 +3,7 @@ import { Queryable } from "./Queryable";
 
 type Dependency<T> = VariableGameStep<T> & Queryable<T>;
 
-export interface StepWithDependencies<
+export interface OptionsWithDependencies<
   D1 = never,
   D2 = never,
   D3 = never,
