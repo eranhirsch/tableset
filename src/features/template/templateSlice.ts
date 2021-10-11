@@ -33,7 +33,7 @@ interface GlobalTemplateState {
 
 const INITIAL_GLOBAL_STATE: GlobalTemplateState = { gameId: "concordia" };
 
-const templateSlice = createSlice({
+export const templateSlice = createSlice({
   name: "template",
   initialState: templateAdapter.getInitialState(INITIAL_GLOBAL_STATE),
   reducers: {
@@ -120,7 +120,6 @@ const templateSlice = createSlice({
       );
   },
 });
-export default templateSlice;
 
 export const templateSelectors = templateAdapter.getSelectors<RootState>(
   (state) => state.template

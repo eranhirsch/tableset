@@ -6,15 +6,15 @@ import {
   templateActions,
   templateValue,
 } from "features/template/templateSlice";
-import GenericItemsFixedTemplateLabel from "games/core/ux/GenericItemsFixedTemplateLabel";
-import GenericItemsListPanel from "games/core/ux/GenericItemsListPanel";
+import { GenericItemsFixedTemplateLabel } from "games/core/ux/GenericItemsFixedTemplateLabel";
+import { GenericItemsListPanel } from "games/core/ux/GenericItemsListPanel";
 import React from "react";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
-import GrammaticalList from "../../core/ux/GrammaticalList";
+import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";

@@ -6,7 +6,7 @@ import { StepId } from "model/Game";
 import { useMemo, useState } from "react";
 import { useAppSelector } from "../../app/hooks";
 import { isTemplatable } from "./Templatable";
-import TemplateItem from "./TemplateItem";
+import { TemplateItem } from "./TemplateItem";
 import { templateSelectors } from "./templateSlice";
 
 export function TemplateList(): JSX.Element {

@@ -1,6 +1,6 @@
 import { Children, ReactChild, ReactFragment, ReactPortal } from "react";
 
-export default function GrammaticalList({
+export function GrammaticalList({
   children,
   pluralize,
   finalConjunction = "and",

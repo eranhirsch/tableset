@@ -1,6 +1,4 @@
-export default function GenericItemsFixedTemplateLabel<
-  T extends string = string
->({
+export function GenericItemsFixedTemplateLabel<T extends string = string>({
   onLabelForItem,
   selectedId,
 }: {

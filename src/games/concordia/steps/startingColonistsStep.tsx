@@ -6,7 +6,7 @@ import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
-import GrammaticalList from "../../core/ux/GrammaticalList";
+import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { MapId, MAPS, mapsForProducts } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";

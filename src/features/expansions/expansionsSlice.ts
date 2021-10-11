@@ -8,7 +8,7 @@ interface State {
 
 const initialState: State = { expansions: [] };
 
-const expansionsSlice = createSlice({
+export const expansionsSlice = createSlice({
   name: "expansions",
   initialState,
   reducers: {
@@ -24,7 +24,6 @@ const expansionsSlice = createSlice({
     },
   },
 });
-export default expansionsSlice;
 
 export const expansionsActions = expansionsSlice.actions;
 

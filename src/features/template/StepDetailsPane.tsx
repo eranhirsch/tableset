@@ -9,11 +9,7 @@ import { useMemo } from "react";
 import { StrategiesSelector } from "./StrategiesSelector";
 import { templateSelectors } from "./templateSlice";
 
-export default function StepDetailsPane({
-  stepId,
-}: {
-  stepId: StepId;
-}): JSX.Element {
+export function StepDetailsPane({ stepId }: { stepId: StepId }): JSX.Element {
   const gameStep = useAppSelector(gameStepSelector(stepId)) as RandomGameStep;
   const templateElement = ReactUtils.useAppEntityIdSelectorNullable(
     templateSelectors,

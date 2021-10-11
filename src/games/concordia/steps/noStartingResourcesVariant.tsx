@@ -1,7 +1,7 @@
 import { Dict, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
-import GrammaticalList from "games/core/ux/GrammaticalList";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { createVariant } from "../../core/steps/createVariant";
 import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 

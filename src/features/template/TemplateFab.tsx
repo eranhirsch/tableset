@@ -4,7 +4,7 @@ import { gameSelector } from "features/game/gameSlice";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import instanceSlice from "../instance/instanceSlice";
+import { instanceSlice } from "../instance/instanceSlice";
 import { templateIsStaleSelector, templateSelectors } from "./templateSlice";
 
 export function TemplateFab(): JSX.Element {

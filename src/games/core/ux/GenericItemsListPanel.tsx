@@ -2,7 +2,7 @@ import { Chip } from "@mui/material";
 import { Action } from "@reduxjs/toolkit";
 import { useAppDispatch } from "../../../app/hooks";
 
-export default function GenericItemsListPanel<T extends string = string>({
+export function GenericItemsListPanel<T extends string = string>({
   itemIds,
   onLabelForItem,
   onUpdateItem,

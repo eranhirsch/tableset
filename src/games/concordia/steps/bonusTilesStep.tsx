@@ -6,8 +6,8 @@ import {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
-import GrammaticalList from "../../core/ux/GrammaticalList";
-import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
+import { GrammaticalList } from "../../core/ux/GrammaticalList";
+import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder from "../utils/CityResourcesEncoder";
 import { MapId, MAPS } from "../utils/Maps";
 import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";

@@ -70,7 +70,7 @@ function InstanceItemContent({
   // TODO: Kill this, make InstanceManualComponent non nullable
   return <div>Manual Section</div>;
 }
-export default function Instance(): JSX.Element | null {
+export function Instance(): JSX.Element | null {
   const location = useLocation();
   const history = useHistory();
 

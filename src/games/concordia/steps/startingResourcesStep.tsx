@@ -7,7 +7,7 @@ import {
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import React from "react";
-import GrammaticalList from "../../core/ux/GrammaticalList";
+import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { Resource, RESOURCE_NAME } from "../utils/resource";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
 import salsaVariantStep from "./salsaVariantStep";

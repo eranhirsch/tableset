@@ -3,7 +3,7 @@ import PanToolIcon from "@mui/icons-material/PanTool";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import { Strategy } from "features/template/Strategy";
 
-export default function StrategyIcon({
+export function StrategyIcon({
   strategy,
 }: {
   strategy: Strategy;

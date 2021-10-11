@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import { playersActions } from "./playersSlice";
 
-export default function NewPlayerInput(): JSX.Element | null {
+export function NewPlayerInput(): JSX.Element | null {
   const dispatch = useAppDispatch();
 
   const [newPlayerName, setNewPlayerName] = useState("");

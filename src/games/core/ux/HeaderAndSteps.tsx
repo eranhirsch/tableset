@@ -1,7 +1,7 @@
 import { Stack, Typography, useTheme } from "@mui/material";
 import React, { PropsWithChildren } from "react";
 
-export default function HeaderAndSteps({
+export function HeaderAndSteps({
   synopsis,
   children,
 }: PropsWithChildren<{

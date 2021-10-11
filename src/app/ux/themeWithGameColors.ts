@@ -10,7 +10,7 @@
  */
 import { createTheme, PaletteColor, PaletteColorOptions } from "@mui/material";
 import { blue, green, grey, pink, red, yellow } from "@mui/material/colors";
-import GamePiecesColor from "model/GamePiecesColor";
+import { GamePiecesColor } from "model/GamePiecesColor";
 
 /**
  * These names would be used in contexts where we need to describe the color
@@ -103,6 +103,6 @@ declare module "@mui/material/Chip" {
   interface ChipPropsColorOverrides extends ColorOverrides {}
 }
 
-export default createTheme({
+export const themeWithGameColors = createTheme({
   palette: colorDefs,
 });

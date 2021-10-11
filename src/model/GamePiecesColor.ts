@@ -5,7 +5,7 @@
  * Note that you can add multiple variations of the same color, these are just
  * symbols for the colors, the names are defined separately.
  */
-type GamePiecesColor =
+export type GamePiecesColor =
   | "black"
   | "blue"
   | "green"
@@ -13,4 +13,3 @@ type GamePiecesColor =
   | "red"
   | "white"
   | "yellow";
-export default GamePiecesColor;

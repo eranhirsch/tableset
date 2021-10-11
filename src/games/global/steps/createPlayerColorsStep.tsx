@@ -12,7 +12,7 @@ import { colorName } from "app/ux/themeWithGameColors";
 import { Dict, invariant_violation, Shape, Vec } from "common";
 import { templateActions } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
-import GamePiecesColor from "model/GamePiecesColor";
+import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import {
@@ -30,7 +30,7 @@ import {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
-import GrammaticalList from "../../core/ux/GrammaticalList";
+import { GrammaticalList } from "../../core/ux/GrammaticalList";
 
 export type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
 

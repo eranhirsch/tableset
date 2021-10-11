@@ -10,7 +10,7 @@ import {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
-import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
+import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import firstPlayerStep from "../../global/steps/firstPlayerStep";
 import playOrderStep from "../../global/steps/playOrderStep";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";

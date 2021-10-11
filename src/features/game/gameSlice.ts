@@ -11,12 +11,11 @@ interface GameState {
 
 const initialState: GameState = { id: "concordia" };
 
-const gameSlice = createSlice({
+export const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {},
 });
-export default gameSlice;
 
 const gameIdSelector = (state: RootState) => state.game.id;
 export const gameSelector = createSelector(

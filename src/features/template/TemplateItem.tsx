@@ -10,10 +10,10 @@ import { ReactUtils } from "common";
 import { StepLabel } from "features/game/StepLabel";
 import { StepId } from "model/Game";
 import { ItemLabel } from "./ItemLabel";
-import StepDetailsPane from "./StepDetailsPane";
+import { StepDetailsPane } from "./StepDetailsPane";
 import { templateSelectors } from "./templateSlice";
 
-export default function TemplateItem({
+export function TemplateItem({
   stepId,
   selected = false,
   onClick,

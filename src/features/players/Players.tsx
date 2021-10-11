@@ -1,12 +1,12 @@
-import { useAppSelector } from "../../app/hooks";
-import { playersSelectors } from "./playersSlice";
-import NewPlayerInput from "./NewPlayerInput";
-import { PlayerListItem } from "./PlayerListItem";
 import { Divider, List } from "@mui/material";
-import React from "react";
 import { PlayerId } from "model/Player";
+import React from "react";
+import { useAppSelector } from "../../app/hooks";
+import { NewPlayerInput } from "./NewPlayerInput";
+import { PlayerListItem } from "./PlayerListItem";
+import { playersSelectors } from "./playersSlice";
 
-export default function Players(): JSX.Element | null {
+export function Players(): JSX.Element | null {
   const playerIds = useAppSelector(
     playersSelectors.selectIds
   ) as readonly PlayerId[];

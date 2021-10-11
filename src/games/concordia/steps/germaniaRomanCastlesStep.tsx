@@ -11,8 +11,8 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
-import GrammaticalList from "games/core/ux/GrammaticalList";
-import HeaderAndSteps from "games/core/ux/HeaderAndSteps";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import React, { useMemo } from "react";
 import GermaniaCastlesEncoder, {
   EXPECTED_REMAINING_RESOURCES_COUNT,

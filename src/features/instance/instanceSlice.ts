@@ -22,7 +22,7 @@ const instanceAdapter = createEntityAdapter<SetupStep>({
   selectId: (step) => step.id,
 });
 
-export default createSlice({
+export const instanceSlice = createSlice({
   name: "instance",
   initialState: instanceAdapter.getInitialState(),
   reducers: {

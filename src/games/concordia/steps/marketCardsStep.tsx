@@ -7,8 +7,8 @@ import {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
-import GrammaticalList from "../../core/ux/GrammaticalList";
-import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
+import { GrammaticalList } from "../../core/ux/GrammaticalList";
+import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
 import { ROMAN_NUMERALS } from "../utils/ROMAN_NUMERALS";
 

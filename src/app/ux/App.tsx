@@ -1,9 +1,9 @@
 import { Container, ThemeProvider } from "@mui/material";
-import themeWithGameColors from "app/ux/themeWithGameColors";
+import { themeWithGameColors } from "app/ux/themeWithGameColors";
 import { Expansions } from "features/expansions/Expansions";
 import { expansionsActions } from "features/expansions/expansionsSlice";
-import Instance from "features/instance/Instance";
-import Players from "features/players/Players";
+import { Instance } from "features/instance/Instance";
+import { Players } from "features/players/Players";
 import { playersActions } from "features/players/playersSlice";
 import { Template } from "features/template/Template";
 import { useEffect, useState } from "react";

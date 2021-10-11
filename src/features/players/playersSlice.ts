@@ -12,7 +12,7 @@ const playersAdapter = createEntityAdapter<Player>({
   sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
-const playersSlice = createSlice({
+export const playersSlice = createSlice({
   name: "players",
   initialState: playersAdapter.getInitialState(),
   reducers: {
@@ -25,7 +25,6 @@ const playersSlice = createSlice({
     removed: playersAdapter.removeOne,
   },
 });
-export default playersSlice;
 
 export const playersSelectors = playersAdapter.getSelectors<RootState>(
   (state) => state.players

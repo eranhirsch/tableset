@@ -13,8 +13,8 @@ import {
   VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
-import GrammaticalList from "../../core/ux/GrammaticalList";
-import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
+import { GrammaticalList } from "../../core/ux/GrammaticalList";
+import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder, {
   CITY_TILES,
   REGULAR_MAPS_SALT_ALTERNATIVE,
