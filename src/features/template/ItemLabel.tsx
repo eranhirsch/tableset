@@ -17,7 +17,7 @@ export function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element | null {
   ) as RandomGameStep;
 
   if (templateElement == null) {
-    return <>{strategyLabel(Strategy.OFF)}</>;
+    return <>Disabled</>;
   }
 
   if (templateElement.strategy !== Strategy.FIXED) {

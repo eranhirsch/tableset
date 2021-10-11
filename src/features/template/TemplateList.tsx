@@ -13,6 +13,8 @@ export function TemplateList(): JSX.Element {
   const stepIds = useActiveTemplateStepIds();
   const [selectedStepId, setSelectedStepId] = useState<StepId>();
 
+  console.log("c", selectedStepId);
+
   return (
     <List>
       {Vec.map(stepIds, (stepId) => (
@@ -20,11 +22,13 @@ export function TemplateList(): JSX.Element {
           key={stepId}
           stepId={stepId}
           selected={stepId === selectedStepId}
-          onClick={() =>
-            setSelectedStepId((current) =>
-              stepId === current ? undefined : stepId
-            )
-          }
+          onClick={() => {
+            console.log("a", stepId);
+            setSelectedStepId((current) => {
+              console.log("b", current, stepId);
+              return stepId === current ? undefined : stepId;
+            });
+          }}
         />
       ))}
     </List>

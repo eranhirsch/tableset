@@ -16,32 +16,30 @@ export function StrategiesSelector({
   stepId,
 }: {
   stepId: StepId;
-}): JSX.Element {
+}): JSX.Element | null {
   const step = useAppSelector(gameStepSelector(stepId)) as RandomGameStep;
-  const strategies = [Strategy.OFF, Strategy.RANDOM];
-  if (step.initialFixedValue != null) {
-    strategies.push(Strategy.FIXED);
-  }
 
   const element = ReactUtils.useAppEntityIdSelectorNullable(
     templateSelectors,
     stepId
   );
 
+  if (step.initialFixedValue == null) {
+    return null;
+  }
+
   return (
     <Stack direction="row" spacing={0.5}>
-      {React.Children.toArray(
-        strategies.map((strategy) => (
-          <StrategyChip
-            strategy={strategy}
-            isSelected={
-              (element == null && strategy === Strategy.OFF) ||
-              element?.strategy === strategy
-            }
-            stepId={stepId}
-          />
-        ))
-      )}
+      <StrategyChip
+        strategy={Strategy.RANDOM}
+        isSelected={element?.strategy === Strategy.RANDOM}
+        stepId={stepId}
+      />
+      <StrategyChip
+        strategy={Strategy.FIXED}
+        isSelected={element?.strategy === Strategy.FIXED}
+        stepId={stepId}
+      />
     </Stack>
   );
 }
@@ -74,8 +72,6 @@ function StrategyChip({
               playerIds,
               productIds,
             })
-          : strategy === Strategy.OFF
-          ? templateActions.disabled(stepId)
           : templateActions.enabled(stepId)
       ),
     [dispatch, playerIds, productIds, stepId, strategy]
