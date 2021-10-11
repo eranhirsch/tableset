@@ -32,7 +32,7 @@ import {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 
-export type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
+type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
 
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
   createRandomGameStep<PlayerColors, readonly PlayerId[]>({

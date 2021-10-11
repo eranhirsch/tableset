@@ -2,13 +2,12 @@ import { Typography } from "@mui/material";
 import { Str } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
+import { firstPlayerStep, playOrderStep } from "games/global";
 import { PlayerId } from "../../../model/Player";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
-import firstPlayerStep from "../../global/steps/firstPlayerStep";
-import playOrderStep from "../../global/steps/playOrderStep";
 
 export default createDerivedGameStep({
   id: "praefectusMagnus",

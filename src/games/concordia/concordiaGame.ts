@@ -1,8 +1,10 @@
 import { createGameStep } from "games/core/steps/createGameStep";
+import {
+  createPlayerColorsStep,
+  firstPlayerStep,
+  playOrderStep,
+} from "games/global";
 import { createGame } from "model/Game";
-import createPlayerColorsStep from "../global/steps/createPlayerColorsStep";
-import firstPlayerStep from "../global/steps/firstPlayerStep";
-import playOrderStep from "../global/steps/playOrderStep";
 import bonusTilesStep from "./steps/bonusTilesStep";
 import cityTilesStep from "./steps/cityTilesStep";
 import germaniaRomanCastlesStep from "./steps/germaniaRomanCastlesStep";

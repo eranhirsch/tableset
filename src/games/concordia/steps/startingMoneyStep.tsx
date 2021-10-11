@@ -3,6 +3,7 @@ import { Str, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
+import { firstPlayerStep, playOrderStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {
@@ -11,8 +12,6 @@ import {
 } from "../../core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
-import firstPlayerStep from "../../global/steps/firstPlayerStep";
-import playOrderStep from "../../global/steps/playOrderStep";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
 
 const STARTING_MONEY_BASE = 5;
