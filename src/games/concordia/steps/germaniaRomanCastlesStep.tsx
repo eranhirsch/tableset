@@ -52,10 +52,10 @@ export default createRandomGameStep({
   skip: (_: string | null, [products, map, citiesHash]) =>
     products == null || (map != null && map !== "germania"),
 
-  isTemplatable: (productQuery, mapQuery, _, citiesQuery) =>
-    productQuery.willContainAny(["britanniaGermania"]) &&
-    mapQuery.canResolveTo("germania") &&
-    citiesQuery.willResolve(),
+  isTemplatable: (products, map, _, cities) =>
+    products.willContain("britanniaGermania") &&
+    map.canResolveTo("germania") &&
+    cities.willResolve(),
 });
 
 function InstanceVariableComponent({

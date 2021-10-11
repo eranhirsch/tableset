@@ -39,8 +39,7 @@ export default createRandomGameStep({
     renderSelector: Selector,
   },
 
-  isTemplatable: (productsQuery) =>
-    productsQuery.willContainAny(productsWithMaps()),
+  isTemplatable: (products) => products.willContainAny(productsWithMaps()),
 });
 
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({

@@ -15,6 +15,10 @@ export interface Query<T> {
    */
   willContainAny(values: T): boolean;
   /**
+   * Use when the step returns an array of values.
+   */
+  willContain(value: T extends readonly (infer E)[] ? E : never): boolean;
+  /**
    * Will the step resolve to any non-null value.
    */
   willResolve(): boolean;
