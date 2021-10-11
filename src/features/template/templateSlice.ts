@@ -17,16 +17,9 @@ import { ContextBase } from "model/ContextBase";
 import { StepId } from "model/Game";
 import { isWithDependencies } from "./Templatable";
 
-type ConstantTemplateElement = Readonly<{
-  strategy: Strategy.FIXED;
-  value: unknown;
-}>;
-
-export type TemplateElement = { id: StepId; isStale: boolean } & (
-  | ConstantTemplateElement
-  | Readonly<{
-      strategy: Exclude<Strategy, Strategy.FIXED>;
-    }>
+export type TemplateElement = { id: StepId; isStale?: true } & (
+  | { strategy: Strategy.FIXED; value: unknown }
+  | { strategy: Strategy.RANDOM }
 );
 
 const templateAdapter = createEntityAdapter<TemplateElement>({
@@ -43,16 +36,12 @@ const templateSlice = createSlice({
   name: "template",
   initialState: templateAdapter.getInitialState(INITIAL_GLOBAL_STATE),
   reducers: {
-    enabled: (
-      state,
-      action: PayloadAction<
-        TemplateElement & {
-          strategy: Strategy.RANDOM;
-        }
-      >
-    ) => {
-      templateAdapter.upsertOne(state, action);
-      markDownstreamElementsStale(action.payload.id, state);
+    enabled: (state, { payload: stepId }: PayloadAction<StepId>) => {
+      templateAdapter.upsertOne(state, {
+        id: stepId,
+        strategy: Strategy.RANDOM,
+      });
+      markDownstreamElementsStale(stepId, state);
     },
 
     disabled(state, action: PayloadAction<StepId>) {
@@ -61,8 +50,8 @@ const templateSlice = createSlice({
     },
 
     enabledConstantValue: {
-      prepare: (id: StepId, context: ContextBase) => ({
-        payload: id,
+      prepare: (stepId: StepId, context: ContextBase) => ({
+        payload: stepId,
         meta: context,
       }),
 
@@ -76,7 +65,6 @@ const templateSlice = createSlice({
         templateAdapter.upsertOne(state, {
           id: stepId,
           strategy: Strategy.FIXED,
-          isStale: false,
           value: (GAMES[state.gameId].steps[stepId] as RandomGameStep<unknown>)
             .initialFixedValue!({ ...context, instance: [] }),
         });
@@ -139,7 +127,7 @@ const templateSlice = createSlice({
             const newValue = step.refreshFixedValue(element.value, context);
             if (newValue != null) {
               element.value = newValue;
-              element.isStale = false;
+              element.isStale = undefined;
             } else {
               templateAdapter.removeOne(state, step.id);
             }

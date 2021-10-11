@@ -92,10 +92,7 @@ function StrategyChip({
             })
           : strategy === Strategy.OFF
           ? templateActions.disabled(stepId)
-          : templateActions.enabled({
-              id: stepId,
-              strategy,
-            })
+          : templateActions.enabled(stepId)
       ),
     [dispatch, playerIds, productIds, stepId, strategy]
   );
