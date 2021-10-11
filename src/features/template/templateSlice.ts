@@ -47,7 +47,7 @@ const templateSlice = createSlice({
       state,
       action: PayloadAction<
         TemplateElement & {
-          strategy: Strategy.RANDOM | Strategy.DEFAULT | Strategy.ASK;
+          strategy: Strategy.RANDOM;
         }
       >
     ) => {

@@ -15,14 +15,6 @@ export function templateElementResolver<T>(
     case Strategy.RANDOM:
       return gameStep.resolveRandom(context);
 
-    case Strategy.DEFAULT:
-      if (gameStep.resolveDefault == null) {
-        invariant_violation(
-          `Element ${JSON.stringify(element)} does not have a default resolver`
-        );
-      }
-      return gameStep.resolveDefault(context);
-
     case Strategy.FIXED:
       // Just copy the value
       return element.value as any;

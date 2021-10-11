@@ -114,7 +114,6 @@ type Options<
       query9: Query<D9>,
       query10: Query<D10>
     ): boolean;
-    recommended?(context: InstanceContext): T | undefined;
     fixed?: FixedOptions<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>;
     skip?(
       value: T | null,
@@ -179,7 +178,6 @@ export function createRandomGameStep<T>({
   isType,
   InstanceVariableComponent,
   random,
-  recommended,
   fixed,
   skip,
   ...baseOptions
@@ -258,7 +256,7 @@ export function createRandomGameStep<T>({
       ),
 
     strategies: (context) =>
-      strategies(context, dependencies ?? [], fixed?.initializer, recommended),
+      strategies(context, dependencies ?? [], fixed?.initializer),
 
     canBeTemplated: (template, context) =>
       isTemplatable(
@@ -278,14 +276,6 @@ export function createRandomGameStep<T>({
         willResolve: () => template[baseStep.id] != null,
       }),
   };
-
-  if (recommended != null) {
-    variableStep.resolveDefault = (context) =>
-      nullthrows(
-        recommended(context),
-        `Trying to derive the 'recommended' item when it shouldn't be allowed for id ${baseStep.id}`
-      );
-  }
 
   if (fixed != null) {
     variableStep.TemplateFixedValueLabel = fixed.renderTemplateLabel;
@@ -311,23 +301,11 @@ export function createRandomGameStep<T>({
 function strategies(
   context: TemplateContext,
   dependencies: readonly VariableGameStep<unknown>[],
-  fixedInitializer?: (...dependencies: unknown[]) => unknown | undefined,
-  recommended?: (context: InstanceContext) => unknown | undefined
+  fixedInitializer?: (...dependencies: unknown[]) => unknown | undefined
 ) {
   const strategies = [];
 
   const fakeInstanceContext = { ...context, instance: [] };
-
-  if (recommended != null) {
-    // TODO: We use an empty instance here, this is problematic because it
-    // doesn't allow us to catch cases where the instance is required to
-    // calculate the recommended value (e.g. if it relies on the value of
-    // a previous step)
-    const value = recommended(fakeInstanceContext);
-    if (value != null) {
-      strategies.push(Strategy.DEFAULT);
-    }
-  }
 
   const fulfilledDependencies =
     dependencies != null
@@ -348,7 +326,7 @@ function strategies(
     }
 
     if (fixedValue != null) {
-      strategies.push(Strategy.FIXED, Strategy.ASK);
+      strategies.push(Strategy.FIXED);
     }
   }
 

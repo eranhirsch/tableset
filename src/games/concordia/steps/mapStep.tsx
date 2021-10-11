@@ -32,15 +32,6 @@ export default createRandomGameStep({
     return availableMaps[Random.index(availableMaps)];
   },
 
-  recommended: ({ playerIds }) =>
-    playerIds.length <= 1
-      ? undefined
-      : playerIds.length <= 3
-      ? "italia"
-      : playerIds.length <= 5
-      ? "imperium"
-      : undefined,
-
   fixed: {
     initializer: (productIds) => mapsForProducts(productIds)[0],
 
