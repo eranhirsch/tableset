@@ -22,12 +22,9 @@ const REGULAR_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
 };
 
 const SALSA_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
+  ...REGULAR_STARTING_RESOURCES,
   salt: 1,
-  cloth: 1,
-  wine: 1,
-  tools: 1,
   food: 1,
-  bricks: 1,
 };
 
 export default createDerivedGameStep({
