@@ -1,4 +1,4 @@
-import { nullthrows, type_invariant, Vec } from "common";
+import { nullthrows, type_invariant } from "common";
 import { SetupStep } from "features/instance/instanceSlice";
 import { Strategy } from "features/template/Strategy";
 import { Templatable } from "features/template/Templatable";
@@ -31,7 +31,6 @@ export interface RandomGameStep<T = unknown>
     Templatable<T> {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
   resolveRandom(context: InstanceContext): T;
-  strategies(context: TemplateContext): readonly Strategy[];
 
   resolveDefault?(context: InstanceContext): T;
   TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
@@ -268,9 +267,6 @@ export function createRandomGameStep<T>({
         ) ?? [])
       ),
 
-    strategies: (context) =>
-      strategies(context, dependencies ?? [], fixed?.initializer),
-
     canBeTemplated: (template, context) =>
       isTemplatable(
         ...dependencies.map((dependency) => dependency.query(template, context))
@@ -314,47 +310,4 @@ export function createRandomGameStep<T>({
   }
 
   return variableStep;
-}
-
-function strategies(
-  context: TemplateContext,
-  dependencies: readonly VariableGameStep<unknown>[],
-  fixedInitializer?: (...dependencies: unknown[]) => unknown | undefined
-) {
-  const strategies = [];
-
-  const fakeInstanceContext = { ...context, instance: [] };
-
-  const fulfilledDependencies =
-    dependencies != null
-      ? Vec.map(dependencies, (dependency) =>
-          dependency.extractInstanceValue!(fakeInstanceContext)
-        )
-      : [];
-  const fixedValue =
-    fixedInitializer != null
-      ? fixedInitializer(...fulfilledDependencies)
-      : undefined;
-  if (fixedInitializer == null || fixedValue != null) {
-    const areDependenciesFulfilled =
-      dependencies?.every((dependency) => dependency.hasValue!(context)) ??
-      true;
-    if (areDependenciesFulfilled) {
-      strategies.push(Strategy.RANDOM);
-    }
-
-    if (fixedValue != null) {
-      strategies.push(Strategy.FIXED);
-    }
-  }
-
-  if (strategies.length > 0) {
-    // Only if we have other strategies do we add the OFF strategy, otherwise
-    // we prefer returning an empty array instead of an array with just
-    // Strategy.OFF, this will allow us in the future to reconsider how we
-    // represent the OFF status.
-    strategies.unshift(Strategy.OFF);
-  }
-
-  return strategies;
 }
