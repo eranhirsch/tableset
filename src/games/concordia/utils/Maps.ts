@@ -1,5 +1,5 @@
 import { Dict, Vec } from "common";
-import { ConcordiaProductId } from "../concordiaGame";
+import { ConcordiaProductId } from "../steps/productsMetaStep";
 
 export type MapId =
   | "britannia"

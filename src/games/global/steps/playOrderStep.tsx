@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { Vec } from "common";
 import { templateActions } from "features/template/templateSlice";
+import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import React, { useCallback } from "react";
 import {
   DragDropContext,
@@ -23,7 +24,6 @@ import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNam
 import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerId } from "../../../model/Player";
-import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -34,10 +34,7 @@ export default createRandomGameStep({
   id: "playOrder",
   labelOverride: "Seating",
 
-  dependencies: [
-    // It's meaningless to talk about order with less than 3 players
-    createPlayersDependencyMetaStep({ min: 3 }),
-  ],
+  dependencies: [playersMetaStep],
 
   isType: (x): x is PlayerId[] =>
     Array.isArray(x) && x.every((y) => typeof y === "string"),

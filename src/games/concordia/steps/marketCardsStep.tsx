@@ -1,11 +1,11 @@
 import { Vec } from "common";
+import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
-import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
@@ -31,7 +31,7 @@ const MAX_PLAYER_COUNT = CARDS_PER_DECK.length - 1;
 
 export default createDerivedGameStep({
   id: "personalityCards",
-  dependencies: [createPlayersDependencyMetaStep({ max: MAX_PLAYER_COUNT })],
+  dependencies: [playersMetaStep],
   InstanceDerivedComponent,
 });
 

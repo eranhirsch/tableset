@@ -1,15 +1,14 @@
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
-import createProductDependencyMetaStep from "games/core/steps/createProductDependencyMetaStep";
 import { createVariant } from "games/core/steps/createVariant";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
-import { ConcordiaProductId } from "../concordiaGame";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
+import { productsMetaStep } from "./productsMetaStep";
 
 export default createVariant({
   id: "salsa",
   name: "Salsa",
-  dependencies: [createProductDependencyMetaStep<ConcordiaProductId>("salsa")],
+  dependencies: [productsMetaStep],
   InstanceVariableComponent,
   isTemplatable: (products) => products.willContain("salsa"),
 });
@@ -32,8 +31,9 @@ function InstanceVariableComponent(): JSX.Element {
     >
       {(Footnote) => (
         <>
-          Some cities now produce
-          <Footnote index={1} /> <strong>{RESOURCE_NAME.salt}</strong>
+          Some cities
+          <Footnote index={1} /> now produce{" "}
+          <strong>{RESOURCE_NAME.salt}</strong>
           <Footnote index={2} /> which could be used as any other resource
           <Footnote index={3} />.
         </>

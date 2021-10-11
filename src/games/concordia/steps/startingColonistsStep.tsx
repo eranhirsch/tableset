@@ -1,6 +1,5 @@
 import { Typography } from "@mui/material";
 import { Vec } from "common";
-import createProductDependencyMetaStep from "games/core/steps/createProductDependencyMetaStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import React from "react";
 import {
@@ -8,17 +7,14 @@ import {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import GrammaticalList from "../../core/ux/GrammaticalList";
-import { ConcordiaProductId } from "../concordiaGame";
 import { MapId, MAPS, mapsForProducts } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
+import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
 
 export default createDerivedGameStep({
   id: "startingColonists",
-  dependencies: [
-    mapStep,
-    createProductDependencyMetaStep<ConcordiaProductId>(),
-  ],
+  dependencies: [mapStep, productsMetaStep],
   InstanceDerivedComponent,
 });
 

@@ -10,11 +10,12 @@ import { expansionsActions } from "features/expansions/expansionsSlice";
 import { playersActions } from "features/players/playersSlice";
 import { Strategy } from "features/template/Strategy";
 import { GameId, GAMES } from "games/core/GAMES";
-import { PLAYERS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createPlayersDependencyMetaStep";
-import { PRODUCTS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createProductDependencyMetaStep";
+import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { ContextBase } from "model/ContextBase";
 import { StepId } from "model/Game";
+import { GameStepBase } from "model/GameStepBase";
+import { VariableGameStep } from "model/VariableGameStep";
 import { isTemplatable, Templatable } from "./Templatable";
 
 export type TemplateElement = { id: StepId; isStale?: true } & (
@@ -41,7 +42,7 @@ const templateSlice = createSlice({
         id: stepId,
         strategy: Strategy.RANDOM,
       });
-      markDownstreamElementsStale(stepId, state);
+      markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
     },
 
     disabled: (state, action: PayloadAction<StepId>): void => {
@@ -68,7 +69,7 @@ const templateSlice = createSlice({
             .initialFixedValue!({ ...context, instance: [] }),
         });
 
-        markDownstreamElementsStale(stepId, state);
+        markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
       },
     },
 
@@ -109,13 +110,13 @@ const templateSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(playersActions.added, (state) =>
-        markDownstreamElementsStale(PLAYERS_DEPENDENCY_META_STEP_ID, state)
+        markDownstreamElementsStale(playersMetaStep, state)
       )
       .addCase(playersActions.removed, (state) =>
-        markDownstreamElementsStale(PLAYERS_DEPENDENCY_META_STEP_ID, state)
+        markDownstreamElementsStale(playersMetaStep, state)
       )
       .addCase(expansionsActions.toggled, (state) =>
-        markDownstreamElementsStale(PRODUCTS_DEPENDENCY_META_STEP_ID, state)
+        markDownstreamElementsStale(GAMES[state.gameId].productsMetaStep, state)
       );
   },
 });
@@ -145,7 +146,7 @@ export const templateActions = templateSlice.actions;
 
 function disabledImpl(state: RootState["template"], stepId: StepId): void {
   templateAdapter.removeOne(state, stepId);
-  markDownstreamElementsStale(stepId, state);
+  markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
 }
 
 function constantValueChangedImpl(
@@ -166,7 +167,7 @@ function constantValueChangedImpl(
 
   element.value = value;
 
-  markDownstreamElementsStale(stepId, state);
+  markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
 }
 
 /**
@@ -202,23 +203,27 @@ const templateSteps = ({
       )
   );
 
+const isVariableGameStep = (step: GameStepBase): step is VariableGameStep =>
+  (step as Partial<VariableGameStep>).hasValue != null;
+
 function markDownstreamElementsStale(
-  changedElementId: StepId,
+  step: GameStepBase,
   state: RootState["template"]
 ): void {
-  filterDownstreamSteps(changedElementId, state).forEach(
-    (element) => (element.isStale = true)
-  );
+  filterDownstreamSteps(
+    type_invariant(step, isVariableGameStep),
+    state
+  ).forEach((element) => (element.isStale = true));
 }
 
 const filterDownstreamSteps = (
-  changedElementId: StepId,
+  step: VariableGameStep,
   state: RootState["template"]
 ): readonly TemplateElement[] =>
   Vec.map(
     Vec.filter(templateSteps(state), ([{ dependencies }]) =>
       // We look for the changed element in the dependencies for the step.
-      dependencies.some(({ id }) => id === changedElementId)
+      dependencies.includes(step)
     ),
     ([_, element]) => element
   );

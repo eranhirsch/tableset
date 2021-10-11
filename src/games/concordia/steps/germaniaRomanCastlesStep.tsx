@@ -6,7 +6,6 @@ import {
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { templateValue } from "features/template/templateSlice";
-import createProductDependencyMetaStep from "games/core/steps/createProductDependencyMetaStep";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -15,7 +14,6 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import GrammaticalList from "games/core/ux/GrammaticalList";
 import HeaderAndSteps from "games/core/ux/HeaderAndSteps";
 import React, { useMemo } from "react";
-import { ConcordiaProductId } from "../concordiaGame";
 import GermaniaCastlesEncoder, {
   EXPECTED_REMAINING_RESOURCES_COUNT,
   LOCATIONS,
@@ -26,6 +24,7 @@ import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
+import { productsMetaStep } from "./productsMetaStep";
 import salsaVariantStep from "./salsaVariantStep";
 
 export default createRandomGameStep({
@@ -35,12 +34,7 @@ export default createRandomGameStep({
   isType: (value): value is string | null =>
     value == null || typeof value === "string",
 
-  dependencies: [
-    createProductDependencyMetaStep<ConcordiaProductId>("britanniaGermania"),
-    mapStep,
-    salsaVariantStep,
-    cityTilesStep,
-  ],
+  dependencies: [productsMetaStep, mapStep, salsaVariantStep, cityTilesStep],
 
   InstanceVariableComponent,
   InstanceManualComponent,

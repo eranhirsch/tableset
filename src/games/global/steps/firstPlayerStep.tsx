@@ -8,11 +8,11 @@ import {
   templateSelectors,
   templateValue,
 } from "features/template/templateSlice";
+import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import { PlayerId } from "../../../model/Player";
-import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -21,10 +21,7 @@ import {
 export default createRandomGameStep({
   id: "firstPlayer",
 
-  dependencies: [
-    // Solo games don't need a first player
-    createPlayersDependencyMetaStep({ min: 2 }),
-  ],
+  dependencies: [playersMetaStep],
 
   isType: (x): x is PlayerId => typeof x === "string",
 

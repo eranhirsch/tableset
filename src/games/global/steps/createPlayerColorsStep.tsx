@@ -11,6 +11,7 @@ import { useAppDispatch } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
 import { Dict, invariant_violation, Shape, Vec } from "common";
 import { templateActions } from "features/template/templateSlice";
+import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import GamePiecesColor from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
@@ -19,15 +20,14 @@ import {
   Draggable,
   DraggableProvided,
   Droppable,
-  DropResult
+  DropResult,
 } from "react-beautiful-dnd";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "../../../features/players/PlayerShortName";
-import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
@@ -39,9 +39,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     id: "playerColors",
     labelOverride: "Colors",
 
-    dependencies: [
-      createPlayersDependencyMetaStep({ max: availableColors.length }),
-    ],
+    dependencies: [playersMetaStep],
 
     InstanceVariableComponent,
     InstanceManualComponent: () => InstanceManualComponent({ availableColors }),

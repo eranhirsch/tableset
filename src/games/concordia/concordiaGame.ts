@@ -13,13 +13,12 @@ import marketDisplayStep from "./steps/marketDisplayStep";
 import noStartingResourcesVariant from "./steps/noStartingResourcesVariant";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
+import { productsMetaStep } from "./steps/productsMetaStep";
 import resourcePilesStep from "./steps/resourcePilesStep";
 import salsaVariantStep from "./steps/salsaVariantStep";
 import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
-
-export type ConcordiaProductId = "base" | "britanniaGermania" | "salsa";
 
 export const concordiaGame = createGame({
   products: {
@@ -31,6 +30,8 @@ export const concordiaGame = createGame({
     },
     salsa: { name: "Salsa", bggId: 181084, year: 2015 },
   },
+
+  productsMetaStep,
 
   steps: [
     mapStep, // Templatable

@@ -2,13 +2,13 @@ import { Avatar, Grid, Typography } from "@mui/material";
 import { Str, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
-import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import firstPlayerStep from "../../global/steps/firstPlayerStep";
@@ -21,7 +21,7 @@ const NO_RESOURCES_VARIANT_EXTRA = 20;
 export default createDerivedGameStep({
   id: "startingMoney",
   dependencies: [
-    createPlayersDependencyMetaStep(),
+    playersMetaStep,
     playOrderStep,
     firstPlayerStep,
     noStartingResourcesVariant,

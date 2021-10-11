@@ -1,12 +1,12 @@
 import { Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
+import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
-import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
 import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
@@ -17,7 +17,7 @@ import marketDisplayStep from "./marketDisplayStep";
 export default createDerivedGameStep({
   id: "marketDeck",
 
-  dependencies: [createPlayersDependencyMetaStep({ max: 5 })],
+  dependencies: [playersMetaStep],
 
   InstanceDerivedComponent,
 });

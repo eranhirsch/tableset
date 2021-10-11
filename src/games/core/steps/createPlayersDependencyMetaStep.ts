@@ -2,34 +2,23 @@ import { VariableGameStep } from "model/VariableGameStep";
 import { PlayerId } from "../../../model/Player";
 import { buildQuery } from "./Query";
 
-export const PLAYERS_DEPENDENCY_META_STEP_ID = "__players";
+export const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> =
+  {
+    id: "__players",
+    label: "<Players>",
 
-const createPlayersDependencyMetaStep = ({
-  min = 1,
-  // Unlikely that someone would have more than this number of players
-  max = 9_999_999,
-}: {
-  min?: number;
-  max?: number;
-} = {}): Readonly<VariableGameStep<readonly PlayerId[]>> => ({
-  id: PLAYERS_DEPENDENCY_META_STEP_ID,
-  label: "<Players>",
+    // trivial impl, these steps are never part of the template.
+    coerceInstanceEntry: () => null,
 
-  // trivial impl, these steps are never part of the template.
-  coerceInstanceEntry: () => null,
+    hasValue: ({ playerIds }) => playerIds.length > 0,
 
-  hasValue: ({ playerIds }) =>
-    playerIds.length >= min && playerIds.length <= max,
+    extractInstanceValue: ({ playerIds }) => playerIds,
 
-  extractInstanceValue: ({ playerIds }) => playerIds,
-
-  query: (_, { playerIds }) =>
-    buildQuery(PLAYERS_DEPENDENCY_META_STEP_ID, {
-      count: ({ min, max }) =>
-        (min == null || playerIds.length >= min) &&
-        (max == null || playerIds.length <= max),
-      resolve: () => playerIds,
-    }),
-});
-
-export default createPlayersDependencyMetaStep;
+    query: (_, { playerIds }) =>
+      buildQuery("__players", {
+        count: ({ min, max }) =>
+          (min == null || playerIds.length >= min) &&
+          (max == null || playerIds.length <= max),
+        resolve: () => playerIds,
+      }),
+  };

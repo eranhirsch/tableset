@@ -6,7 +6,6 @@ import {
   templateActions,
   templateValue,
 } from "features/template/templateSlice";
-import createProductDependencyMetaStep from "games/core/steps/createProductDependencyMetaStep";
 import GenericItemsFixedTemplateLabel from "games/core/ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "games/core/ux/GenericItemsListPanel";
 import React from "react";
@@ -16,14 +15,14 @@ import {
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
-import { ConcordiaProductId } from "../concordiaGame";
 import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
+import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
 
 export default createRandomGameStep({
   id: "map",
 
-  dependencies: [createProductDependencyMetaStep<ConcordiaProductId>()],
+  dependencies: [productsMetaStep],
 
   isType: (x: string): x is MapId => x in MAPS,
 
