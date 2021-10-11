@@ -1,6 +1,7 @@
 import { invariant_violation, Random } from "common";
 import { Strategy } from "features/template/Strategy";
 import { Templatable } from "features/template/Templatable";
+import { templateValue } from "features/template/templateSlice";
 import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { createGameStep } from "./createGameStep";
@@ -108,6 +109,9 @@ export function createVariant({
       isTemplatable(
         ...dependencies.map((dependency) => dependency.query(template, context))
       ),
+    // The value can never be changed following changes in the template, it
+    // could only be disabled via `canBeTemplated`
+    refreshFixedValue: () => templateValue("unchanged"),
 
     coerceInstanceEntry: (entry) =>
       entry == null

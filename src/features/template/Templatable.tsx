@@ -12,7 +12,12 @@ export const isWithDependencies = (
 ): step is WithDependencies =>
   (step as Partial<WithDependencies>).dependencies != null;
 
-export interface Templatable extends WithDependencies {
+export interface Templatable<T = unknown> extends WithDependencies {
+  refreshFixedValue(
+    value: T,
+    entities: ReturnType<typeof templateSelectors["selectEntities"]>,
+    context: ContextBase
+  ): T;
   canBeTemplated(
     template: ReturnType<typeof templateSelectors["selectEntities"]>,
     context: ContextBase

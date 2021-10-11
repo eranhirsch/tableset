@@ -25,8 +25,10 @@ const createPlayersDependencyMetaStep = ({
 
   query: (_, { playerIds }) =>
     buildQuery(PLAYERS_DEPENDENCY_META_STEP_ID, {
-      count: ({ min = 1, max = 9_999_999 }) =>
-        playerIds.length >= min && playerIds.length <= max,
+      count: ({ min, max }) =>
+        (min == null || playerIds.length >= min) &&
+        (max == null || playerIds.length <= max),
+      resolve: () => playerIds,
     }),
 });
 

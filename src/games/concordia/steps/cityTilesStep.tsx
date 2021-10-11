@@ -4,12 +4,13 @@ import { Dict, MathUtils, Shape, Vec } from "common";
 import { hasExpansionSelector } from "features/expansions/expansionsSlice";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
+import { templateValue } from "features/template/templateSlice";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
@@ -17,7 +18,7 @@ import HeaderAndSteps from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder, {
   CITY_TILES,
   REGULAR_MAPS_SALT_ALTERNATIVE,
-  SALT_MAP_EXTRA_RESOURCE,
+  SALT_MAP_EXTRA_RESOURCE
 } from "../utils/CityResourcesEncoder";
 import { MapId, MAPS, Zone } from "../utils/Maps";
 import { RESOURCE_NAME } from "../utils/resource";
@@ -40,6 +41,7 @@ export default createRandomGameStep({
     CityResourcesEncoder.randomHash(mapId, withSalsa),
 
   isTemplatable: (map) => map.willResolve(),
+  refresh: () => templateValue("unchanged"),
 });
 
 function InstanceVariableComponent({

@@ -2,7 +2,10 @@ import { styled, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, Random, Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
-import { templateActions } from "features/template/templateSlice";
+import {
+  templateActions,
+  templateValue,
+} from "features/template/templateSlice";
 import createProductDependencyMetaStep from "games/core/steps/createProductDependencyMetaStep";
 import GenericItemsFixedTemplateLabel from "games/core/ux/GenericItemsFixedTemplateLabel";
 import GenericItemsListPanel from "games/core/ux/GenericItemsListPanel";
@@ -40,6 +43,7 @@ export default createRandomGameStep({
   },
 
   isTemplatable: (products) => products.willContainAny(productsWithMaps()),
+  refresh: () => templateValue("unchanged"),
 });
 
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({

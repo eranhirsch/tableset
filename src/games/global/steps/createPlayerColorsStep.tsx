@@ -62,25 +62,25 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
         playerIds.length >= 1 && playerIds.length <= availableColors.length
           ? Dict.associate(playerIds, availableColors)
           : undefined,
-
-      refresh(current, { playerIds }) {
-        const stillActivePlayerColors = Dict.select_keys(current, playerIds);
-        const colorlessPlayers = Vec.diff(playerIds, Vec.keys(current));
-
-        return Dict.merge(
-          stillActivePlayerColors,
-          // Associate an available color for each player without a color
-          Dict.associate(
-            colorlessPlayers,
-            // Colors that aren't used by active players
-            Vec.diff(availableColors, Vec.values(stillActivePlayerColors))
-          )
-        );
-      },
     },
 
-    isTemplatable: (playersQuery) =>
-      playersQuery.count({ max: availableColors.length }),
+    isTemplatable: (players) => players.count({ max: availableColors.length }),
+
+    refresh(current, players) {
+      const playerIds = players.resolve();
+      const stillActivePlayerColors = Dict.select_keys(current, playerIds);
+      const colorlessPlayers = Vec.diff(playerIds, Vec.keys(current));
+
+      return Dict.merge(
+        stillActivePlayerColors,
+        // Associate an available color for each player without a color
+        Dict.associate(
+          colorlessPlayers,
+          // Colors that aren't used by active players
+          Vec.diff(availableColors, Vec.values(stillActivePlayerColors))
+        )
+      );
+    },
   });
 export default createPlayerColorsStep;
 

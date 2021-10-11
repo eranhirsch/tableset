@@ -11,6 +11,11 @@ export interface Query<T> {
    */
   count(limits: Partial<Record<"min" | "max", number>>): boolean;
   /**
+   * Call this method to get the actual value it would resolve to. Notice that
+   * if the element has random components this value is not deterministic.
+   */
+  resolve(): T;
+  /**
    * Use when the step returns an array of values.
    */
   willContainAny(values: T): boolean;

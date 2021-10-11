@@ -24,6 +24,7 @@ const createProductDependencyMetaStep = <Pid extends ProductId>(
       willContain: (pid) => currentProductIds.includes(pid),
       willContainAny: (products) =>
         products.some((pid) => currentProductIds.includes(pid)),
+      resolve: () => currentProductIds as readonly Pid[],
     }),
 });
 

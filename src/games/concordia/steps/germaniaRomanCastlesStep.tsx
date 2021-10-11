@@ -5,6 +5,7 @@ import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
+import { templateValue } from "features/template/templateSlice";
 import createProductDependencyMetaStep from "games/core/steps/createProductDependencyMetaStep";
 import {
   createRandomGameStep,
@@ -56,6 +57,7 @@ export default createRandomGameStep({
     products.willContain("britanniaGermania") &&
     map.canResolveTo("germania") &&
     cities.willResolve(),
+  refresh: () => templateValue("unchanged"),
 });
 
 function InstanceVariableComponent({

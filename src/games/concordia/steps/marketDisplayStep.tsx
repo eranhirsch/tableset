@@ -1,4 +1,5 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import { templateValue } from "features/template/templateSlice";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
   createRandomGameStep,
@@ -22,6 +23,7 @@ export default createRandomGameStep({
   random: () => MarketDisplayEncoder.randomHash(),
 
   isTemplatable: () => true,
+  refresh: () => templateValue("unchanged"),
 });
 
 function InstanceVariableComponent({

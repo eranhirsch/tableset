@@ -6,6 +6,7 @@ import { Strategy } from "features/template/Strategy";
 import {
   templateActions,
   templateSelectors,
+  templateValue,
 } from "features/template/templateSlice";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
@@ -43,16 +44,17 @@ export default createRandomGameStep({
 
       return playerIds[0];
     },
-
-    refresh: (current, { playerIds }) =>
-      playerIds.includes(current) ? current : undefined,
   },
 
-  isTemplatable: (playersQuery) =>
-    playersQuery.count({
+  isTemplatable: (players) =>
+    players.count({
       // Solo games don't need a first player
       min: 2,
     }),
+  refresh: (current, players) =>
+    templateValue(
+      players.resolve().includes(current) ? "unchanged" : "unfixable"
+    ),
 });
 
 function InstanceVariableComponent({

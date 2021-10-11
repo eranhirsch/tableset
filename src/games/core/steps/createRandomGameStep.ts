@@ -28,7 +28,7 @@ export interface InstanceContext extends ContextBase {
 export interface RandomGameStep<T = unknown>
   extends VariableGameStep<T>,
     Skippable,
-    Templatable {
+    Templatable<T> {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
   resolveRandom(context: InstanceContext): T;
   strategies(context: TemplateContext): readonly Strategy[];
@@ -37,7 +37,6 @@ export interface RandomGameStep<T = unknown>
   TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
   TemplateFixedValueSelector?(props: { current: T }): JSX.Element;
   initialFixedValue?(context: InstanceContext): T;
-  refreshFixedValue?(current: T, context: ContextBase): T | undefined;
 }
 
 interface FixedOptions<
@@ -65,7 +64,6 @@ interface FixedOptions<
     dependency9: D9,
     dependency10: D10
   ): T | undefined;
-  refresh?(current: T, context: ContextBase): T | undefined;
   renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
   renderSelector?(props: { current: T }): JSX.Element;
 }
@@ -114,6 +112,19 @@ type Options<
       query9: Query<D9>,
       query10: Query<D10>
     ): boolean;
+    refresh(
+      current: T,
+      query1: Query<D1>,
+      query2: Query<D2>,
+      query3: Query<D3>,
+      query4: Query<D4>,
+      query5: Query<D5>,
+      query6: Query<D6>,
+      query7: Query<D7>,
+      query8: Query<D8>,
+      query9: Query<D9>,
+      query10: Query<D10>
+    ): T | undefined;
     fixed?: FixedOptions<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>;
     skip?(
       value: T | null,
@@ -154,6 +165,7 @@ interface OptionsInternal<T>
   > {
   random(...dependencies: unknown[]): T;
   isTemplatable(...queries: Query<unknown>[]): boolean;
+  refresh(current: T, ...dependencies: Query<unknown>[]): T;
   fixed?: FixedOptionsInternal<T>;
 }
 
@@ -174,11 +186,12 @@ export function createRandomGameStep<
 ): Readonly<RandomGameStep<T>>;
 export function createRandomGameStep<T>({
   dependencies,
+  fixed,
+  InstanceVariableComponent,
   isTemplatable,
   isType,
-  InstanceVariableComponent,
   random,
-  fixed,
+  refresh,
   skip,
   ...baseOptions
 }: OptionsInternal<T>): Readonly<RandomGameStep<T>> {
@@ -263,6 +276,12 @@ export function createRandomGameStep<T>({
         ...dependencies.map((dependency) => dependency.query(template, context))
       ),
 
+    refreshFixedValue: (current, template, context) =>
+      refresh(
+        current,
+        ...dependencies.map((dependency) => dependency.query(template, context))
+      ),
+
     query: (template, _) =>
       buildQuery(baseStep.id, {
         canResolveTo(value: T) {
@@ -292,7 +311,6 @@ export function createRandomGameStep<T>({
           `Trying to derive the 'initial fixed' item when it shouldn't be allowed for id ${baseStep.id}`
         )
       );
-    variableStep.refreshFixedValue = fixed.refresh;
   }
 
   return variableStep;

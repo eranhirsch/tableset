@@ -5,7 +5,7 @@ import {
   PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
-import { Dict, nullthrows, type_invariant, Vec } from "common";
+import { Dict, nullthrows, tuple, type_invariant, Vec } from "common";
 import { expansionsActions } from "features/expansions/expansionsSlice";
 import { playersActions } from "features/players/playersSlice";
 import { Strategy } from "features/template/Strategy";
@@ -15,7 +15,7 @@ import { PRODUCTS_DEPENDENCY_META_STEP_ID } from "games/core/steps/createProduct
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { ContextBase } from "model/ContextBase";
 import { StepId } from "model/Game";
-import { isWithDependencies } from "./Templatable";
+import { isTemplatable, Templatable } from "./Templatable";
 
 export type TemplateElement = { id: StepId; isStale?: true } & (
   | { strategy: Strategy.FIXED; value: unknown }
@@ -44,9 +44,8 @@ const templateSlice = createSlice({
       markDownstreamElementsStale(stepId, state);
     },
 
-    disabled(state, action: PayloadAction<StepId>) {
-      templateAdapter.removeOne(state, action);
-      markDownstreamElementsStale(action.payload, state);
+    disabled: (state, action: PayloadAction<StepId>): void => {
+      disabledImpl(state, action.payload);
     },
 
     enabledConstantValue: {
@@ -77,62 +76,33 @@ const templateSlice = createSlice({
       state,
       { payload: { id, value } }: PayloadAction<{ id: StepId; value: unknown }>
     ) {
-      const element = nullthrows(
-        state.entities[id],
-        `Couldn't find step: ${id}, This action is only supported on elements which are already in the template`
-      );
-
-      if (element.strategy !== Strategy.FIXED) {
-        throw new Error(
-          `Trying to set fixed value when strategy isn't fixed for step: ${id}`
-        );
-      }
-
-      element.value = value;
-
-      markDownstreamElementsStale(id, state);
+      constantValueChangedImpl(state, id, value);
     },
 
-    refresh: (state, { payload: context }: PayloadAction<ContextBase>) => {
-      Vec.values(GAMES[state.gameId].steps)
-        .filter((step): step is RandomGameStep<unknown> => "strategies" in step)
-        .forEach((step) => {
-          const element = state.entities[step.id];
-          if (element == null) {
-            // Nothing to update
-            return;
-          }
+    refresh: {
+      prepare: (context: ContextBase) => ({
+        payload: undefined,
+        meta: context,
+      }),
+      reducer(
+        state,
+        { meta: context }: PayloadAction<unknown, string, ContextBase>
+      ) {
+        // Note that we don't perform these checks as part of a prior filter
+        // step; this is because as we disable elements other elements
+        // downstream might become stale and become untemplatable. If we
+        // filtered first we would miss those cases.
+        templateSteps(state).forEach(([{ id, canBeTemplated }, { isStale }]) =>
+          removeUntemplatableStep(state, id, isStale, canBeTemplated, context)
+        );
 
-          if (!element.isStale) {
-            return;
-          }
-
-          const strategies = step.strategies({
-            ...context,
-            template: state.entities as Readonly<
-              Record<StepId, Readonly<TemplateElement>>
-            >,
-          });
-
-          if (!strategies.includes(element.strategy)) {
-            // The step is no longer valid in it's current configuration
-            templateAdapter.removeOne(state, step.id);
-            return;
-          }
-
-          if (
-            element.strategy === Strategy.FIXED &&
-            step.refreshFixedValue != null
-          ) {
-            const newValue = step.refreshFixedValue(element.value, context);
-            if (newValue != null) {
-              element.value = newValue;
-              element.isStale = undefined;
-            } else {
-              templateAdapter.removeOne(state, step.id);
-            }
-          }
-        });
+        // These steps are stale after removing all untemplatable ones, that
+        // means we need to check their value to make sure it isn't invalid with
+        // the new template and/or context.
+        templateSteps(state).forEach(([{ refreshFixedValue }, element]) =>
+          refreshStep(state, element, refreshFixedValue, context)
+        );
+      },
     },
   },
 
@@ -173,36 +143,156 @@ export const fullTemplateSelector = createSelector(
 
 export const templateActions = templateSlice.actions;
 
+function disabledImpl(state: RootState["template"], stepId: StepId): void {
+  templateAdapter.removeOne(state, stepId);
+  markDownstreamElementsStale(stepId, state);
+}
+
+function constantValueChangedImpl(
+  state: RootState["template"],
+  stepId: StepId,
+  value: unknown
+): void {
+  const element = nullthrows(
+    state.entities[stepId],
+    `Couldn't find step: ${stepId}, This action is only supported on elements which are already in the template`
+  );
+
+  if (element.strategy !== Strategy.FIXED) {
+    throw new Error(
+      `Trying to set fixed value when strategy isn't fixed for step: ${stepId}`
+    );
+  }
+
+  element.value = value;
+
+  markDownstreamElementsStale(stepId, state);
+}
+
+/**
+ * Returns a tuple with both the template element and the Templatable
+ * definition, while maintaining the original game order (order is important
+ * because step dependencies are acyclic, so traversing the steps in order would
+ * mean we always see a parent dependency before the downstream step that
+ * depends on it)
+ */
+const templateSteps = ({
+  gameId,
+  entities,
+}: RootState["template"]): readonly [Templatable, TemplateElement][] =>
+  Vec.map_with_key(
+    // The inner join is the cleanest way to filter both dicts on each-other's
+    // keys.
+    Dict.inner_join(
+      GAMES[gameId].steps,
+      // We need the cast because `Dictionary` (the RTK-defined type) is funky
+      Dict.filter_nulls(entities) as Record<StepId, TemplateElement>
+    ),
+    (_, [step, elem]) =>
+      tuple(
+        // We `type_invariant` here instead of using a TS compile-time cast just
+        // to be extra safe. All steps in the template should be `Templatable`, so
+        // nothing here should throw
+        type_invariant(
+          step,
+          isTemplatable,
+          `Step ${step.id} is present in the template but is not Templatable!`
+        ),
+        elem
+      )
+  );
+
 function markDownstreamElementsStale(
   changedElementId: StepId,
-  { gameId, entities }: RootState["template"]
+  state: RootState["template"]
 ): void {
-  filterDownstreamSteps(
-    // We need the cast because `Dictionary` (the RTK-defined type) is funky
-    entities as Record<StepId, TemplateElement>,
-    gameId,
-    changedElementId
-  ).forEach((element) => (element.isStale = true));
+  filterDownstreamSteps(changedElementId, state).forEach(
+    (element) => (element.isStale = true)
+  );
 }
 
 const filterDownstreamSteps = (
-  entities: Record<StepId, TemplateElement>,
-  gameId: GameId,
-  changedElementId: StepId
+  changedElementId: StepId,
+  state: RootState["template"]
 ): readonly TemplateElement[] =>
-  Vec.map_with_key(
-    Dict.filter(
-      // The inner join is the cleanest way to filter both dicts on each-other's
-      // keys.
-      Dict.inner_join(entities, GAMES[gameId].steps),
-      ([_, step]) =>
-        // We `type_invariant` here instead of using a TS compile-time cast just
-        // to be extra safe. All `Templatable` steps should also be
-        // `WithDependencies`, and all steps in the template should be
-        // `Templatable` already
-        type_invariant(step, isWithDependencies)
-          // We look for the changed element in the dependencies for the step.
-          .dependencies.some(({ id }) => id === changedElementId)
+  Vec.map(
+    Vec.filter(templateSteps(state), ([{ dependencies }]) =>
+      // We look for the changed element in the dependencies for the step.
+      dependencies.some(({ id }) => id === changedElementId)
     ),
-    (_, [element]) => element
+    ([_, element]) => element
   );
+
+function removeUntemplatableStep(
+  state: RootState["template"],
+  id: StepId,
+  isStale: true | undefined,
+  canBeTemplated: Templatable["canBeTemplated"],
+  context: ContextBase
+): void {
+  if (isStale == null) {
+    // Nothing to do
+    return;
+  }
+  if (canBeTemplated(state.entities, context)) {
+    return;
+  }
+
+  disabledImpl(state, id);
+}
+
+class UnfixableTemplateValue extends Error {}
+class UnchangedTemplateValue extends Error {}
+
+export function templateValue(special: "unfixable" | "unchanged"): never {
+  switch (special) {
+    case "unchanged":
+      throw new UnchangedTemplateValue();
+    case "unfixable":
+      throw new UnfixableTemplateValue();
+  }
+}
+
+function refreshStep(
+  state: RootState["template"],
+  element: TemplateElement,
+  refreshFixedValue: Templatable["refreshFixedValue"],
+  context: ContextBase
+): void {
+  if (element.isStale == null) {
+    // Nothing to do
+    return;
+  }
+
+  // Reset the isStale flag
+  element.isStale = undefined;
+
+  if (element.strategy !== Strategy.FIXED) {
+    // Element is Random, it doesn't have anything to update
+    return;
+  }
+
+  // The element has a fixed strategy, we need to go over the value
+  // and update it to match the new context and other template
+  // elements.
+  try {
+    const newValue = refreshFixedValue(element.value, state.entities, context);
+    constantValueChangedImpl(state, element.id, newValue);
+  } catch (e: unknown) {
+    if (e instanceof UnfixableTemplateValue) {
+      // The template value is unfixable, we need to reset it in order to make
+      // the template valid again.
+      disabledImpl(state, element.id);
+      return;
+    }
+
+    if (e instanceof UnchangedTemplateValue) {
+      // The value is unchanged, nothing left to do
+      return;
+    }
+
+    // This should never happen so we just rethrow the error to let it bubble
+    // up
+    throw e;
+  }
+}
