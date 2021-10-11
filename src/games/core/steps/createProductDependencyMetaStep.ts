@@ -1,6 +1,6 @@
-import { Vec } from "common";
 import { ProductId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
+import { buildQuery } from "./Query";
 
 export const PRODUCTS_DEPENDENCY_META_STEP_ID = "__product";
 
@@ -19,13 +19,11 @@ const createProductDependencyMetaStep = <Pid extends ProductId>(
 
   extractInstanceValue: ({ productIds }) => productIds as readonly Pid[],
 
-  query: (_, { productIds }) => ({
-    canResolveTo: (requestedProductIds: readonly Pid[]) =>
-      Vec.contained_in(requestedProductIds, productIds),
-    willResolve: () => true,
-    minCount: (min) => productIds.length >= min,
-    maxCount: (max) => productIds.length <= max,
-  }),
+  query: (_, { productIds: currentProductIds }) =>
+    buildQuery(PRODUCTS_DEPENDENCY_META_STEP_ID, {
+      willContainAny: (products) =>
+        products.some((pid) => currentProductIds.includes(pid)),
+    }),
 });
 
 export default createProductDependencyMetaStep;

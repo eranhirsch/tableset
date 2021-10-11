@@ -10,7 +10,7 @@ import { ContextBase } from "../../../model/ContextBase";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
 import { DepsTuple } from "./DepsTuple";
-import { Query } from "./Query";
+import { buildQuery, Query } from "./Query";
 import { StepWithDependencies } from "./StepWithDependencies";
 
 export interface VariableStepInstanceComponentProps<T> {
@@ -266,23 +266,18 @@ export function createRandomGameStep<T>({
         ...dependencies.map((dependency) => dependency.query(template, context))
       ),
 
-    query: (template, _) => ({
-      canResolveTo(value: T) {
-        const element = template[baseStep.id];
-        if (element == null) {
-          return false;
-        }
-        if (element.strategy !== Strategy.FIXED) {
-          return true;
-        }
-        return element.value === value;
-      },
+    query: (template, _) =>
+      buildQuery(baseStep.id, {
+        canResolveTo(value: T) {
+          const element = template[baseStep.id];
+          return (
+            element != null &&
+            (element.strategy !== Strategy.FIXED || element.value === value)
+          );
+        },
 
-      willResolve: () => template[baseStep.id] != null,
-
-      minCount: () => false,
-      maxCount: () => false,
-    }),
+        willResolve: () => template[baseStep.id] != null,
+      }),
   };
 
   if (recommended != null) {

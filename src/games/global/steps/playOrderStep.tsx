@@ -88,8 +88,11 @@ export default createRandomGameStep({
     },
   },
 
-  // It's meaningless to talk about order with less than 3 players
-  isTemplatable: (playersQuery) => playersQuery.minCount(3),
+  isTemplatable: (playersQuery) =>
+    playersQuery.count({
+      // It's meaningless to talk about order with less than 3 players
+      min: 3,
+    }),
 });
 
 function InstanceVariableComponent({

@@ -1,5 +1,6 @@
 import { VariableGameStep } from "model/VariableGameStep";
 import { PlayerId } from "../../../model/Player";
+import { buildQuery } from "./Query";
 
 export const PLAYERS_DEPENDENCY_META_STEP_ID = "__players";
 
@@ -22,12 +23,11 @@ const createPlayersDependencyMetaStep = ({
 
   extractInstanceValue: ({ playerIds }) => playerIds,
 
-  query: (_, { playerIds }) => ({
-    canResolveTo: (_: readonly PlayerId[]) => false,
-    willResolve: () => playerIds.length > 0,
-    minCount: (min) => playerIds.length >= min,
-    maxCount: (max) => playerIds.length <= max,
-  }),
+  query: (_, { playerIds }) =>
+    buildQuery(PLAYERS_DEPENDENCY_META_STEP_ID, {
+      count: ({ min = 1, max = 9_999_999 }) =>
+        playerIds.length >= min && playerIds.length <= max,
+    }),
 });
 
 export default createPlayersDependencyMetaStep;

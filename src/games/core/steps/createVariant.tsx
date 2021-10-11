@@ -5,7 +5,7 @@ import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { createGameStep } from "./createGameStep";
 import { InstanceContext, TemplateContext } from "./createRandomGameStep";
-import { Query } from "./Query";
+import { buildQuery, Query } from "./Query";
 import { StepWithDependencies } from "./StepWithDependencies";
 
 interface Options<
@@ -133,12 +133,11 @@ export function createVariant({
     TemplateFixedValueLabel: "Enabled",
     initialFixedValue: () => true,
 
-    query: (template) => ({
-      canResolveTo: (value: boolean) =>
-        value === (template[baseStep.id] != null),
-      willResolve: () => template[baseStep.id] != null,
-      minCount: () => false,
-      maxCount: () => false,
-    }),
+    query: (template) =>
+      buildQuery(baseStep.id, {
+        canResolveTo: (value: boolean) =>
+          value === (template[baseStep.id] != null),
+        willResolve: () => template[baseStep.id] != null,
+      }),
   };
 }

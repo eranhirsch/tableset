@@ -19,7 +19,7 @@ import {
   Draggable,
   DraggableProvided,
   Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
@@ -27,7 +27,7 @@ import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import createPlayersDependencyMetaStep from "../../core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import GrammaticalList from "../../core/ux/GrammaticalList";
@@ -80,7 +80,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     },
 
     isTemplatable: (playersQuery) =>
-      playersQuery.minCount(1) && playersQuery.maxCount(availableColors.length),
+      playersQuery.count({ max: availableColors.length }),
   });
 export default createPlayerColorsStep;
 

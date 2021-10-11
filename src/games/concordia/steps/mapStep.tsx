@@ -49,7 +49,7 @@ export default createRandomGameStep({
   },
 
   isTemplatable: (productsQuery) =>
-    productsWithMaps().some((product) => productsQuery.canResolveTo([product])),
+    productsQuery.willContainAny(productsWithMaps()),
 });
 
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({

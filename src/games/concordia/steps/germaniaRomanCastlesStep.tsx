@@ -53,7 +53,7 @@ export default createRandomGameStep({
     products == null || (map != null && map !== "germania"),
 
   isTemplatable: (productQuery, mapQuery, _, citiesQuery) =>
-    productQuery.canResolveTo(["britanniaGermania"]) &&
+    productQuery.willContainAny(["britanniaGermania"]) &&
     mapQuery.canResolveTo("germania") &&
     citiesQuery.willResolve(),
 });
