@@ -20,7 +20,9 @@
     "shortner",
     "Templatable",
     "Tkin",
-    "Tkout"
+    "Tkout",
+    "Unfixable",
+    "Untemplatable"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
 }
