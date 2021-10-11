@@ -1,5 +1,4 @@
 import { invariant_violation, Random } from "common";
-import { Strategy } from "features/template/Strategy";
 import { Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Skippable } from "model/Skippable";
@@ -60,7 +59,6 @@ export interface VariantGameStep
     Templatable {
   InstanceVariableComponent(props: { value: boolean }): JSX.Element;
   resolveRandom(context: InstanceContext): true | null;
-  strategies(context: TemplateContext): readonly Strategy[];
 
   dependencies: [...VariableGameStep<unknown>[]];
 
@@ -127,12 +125,6 @@ export function createVariant({
     hasValue: (_: TemplateContext | InstanceContext) => true,
 
     resolveRandom: () => (Random.coin_flip(0.5) ? true : null),
-
-    strategies: (context) =>
-      dependencies == null ||
-      dependencies.every((dependency) => dependency.hasValue!(context))
-        ? [Strategy.OFF, Strategy.RANDOM, Strategy.FIXED]
-        : [],
 
     TemplateFixedValueLabel: "Enabled",
     initialFixedValue: () => true,
