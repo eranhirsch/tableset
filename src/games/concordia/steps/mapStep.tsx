@@ -1,11 +1,20 @@
-import { Chip, styled, Typography } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  Chip,
+  FormControlLabel,
+  Stack,
+  styled,
+  Typography,
+} from "@mui/material";
 import { Dict, Vec } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
-import React from "react";
+import { Query } from "games/core/steps/Query";
+import React, { useMemo } from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -33,7 +42,7 @@ export default createRandomGameStep({
       : Vec.sample(mapsForProducts(productIds!), 1),
 
   initialConfig: (products) => ({
-    fixed: mapsForProducts(products.resolve())[0],
+    fixed: defaultMap(products),
   }),
   // TODO: Make sure we don't have a config which uses maps which aren't
   // included anymore
@@ -47,6 +56,9 @@ export default createRandomGameStep({
   ConfigPanel,
 });
 
+const defaultMap = (products: Query<readonly ConcordiaProductId[]>): MapId =>
+  mapsForProducts(products.resolve())[0];
+
 function ConfigPanel({
   config,
   queries: [products],
@@ -55,35 +67,62 @@ function ConfigPanel({
   TemplateConfig,
   readonly ConcordiaProductId[]
 >): JSX.Element {
-  const selectedMapId =
-    config != null && "fixed" in config ? config.fixed : null;
+  const initialFixed = useMemo(() => defaultMap(products), [products]);
   return (
-    <>
+    <Stack>
+      <FixedSelector
+        mapIds={mapsForProducts(products.resolve())}
+        currentMapId={
+          config != null && "fixed" in config ? config.fixed : initialFixed
+        }
+        onChange={(mapId) => onChange({ fixed: mapId })}
+        disabled={config == null || "random" in config}
+      />
+      <FormControlLabel
+        sx={{ alignSelf: "center" }}
+        control={
+          <Checkbox
+            checked={config != null && "random" in config}
+            onChange={(_, checked) =>
+              onChange(checked ? { random: true } : { fixed: initialFixed })
+            }
+          />
+        }
+        label="Random"
+      />
+    </Stack>
+  );
+}
+
+function FixedSelector({
+  mapIds,
+  currentMapId,
+  onChange,
+  disabled,
+}: {
+  mapIds: readonly MapId[];
+  currentMapId: MapId;
+  onChange(newMapId: MapId): void;
+  disabled: boolean;
+}): JSX.Element {
+  return (
+    <Box sx={{ opacity: disabled ? 0.5 : 1.0 }} alignSelf="center">
       {React.Children.toArray(
-        Vec.map(mapsForProducts(products.resolve()), (mapId) => (
+        Vec.map(mapIds, (mapId) => (
           <Chip
             color="primary"
             label={<RomanTitle>{MAPS[mapId].name}</RomanTitle>}
-            variant={selectedMapId === mapId ? "filled" : "outlined"}
+            variant={currentMapId === mapId ? "filled" : "outlined"}
             size="small"
             onClick={
-              selectedMapId !== mapId
-                ? () => onChange({ fixed: mapId })
+              !disabled && currentMapId !== mapId
+                ? () => onChange(mapId)
                 : undefined
             }
           />
         ))
       )}
-      <Chip
-        color="primary"
-        label="Random"
-        variant={selectedMapId === null ? "filled" : "outlined"}
-        size="small"
-        onClick={
-          selectedMapId != null ? () => onChange({ random: true }) : undefined
-        }
-      />
-    </>
+    </Box>
   );
 }
 
