@@ -8,12 +8,16 @@ import {
   Paper,
   Switch,
 } from "@mui/material";
-import { useAppDispatch } from "app/hooks";
+import { useAppDispatch, useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
+import { gameStepSelector } from "features/game/gameSlice";
 import { StepLabel } from "features/game/StepLabel";
+import { useFeaturesContext } from "features/useFeaturesContext";
 import { StepId } from "model/Game";
+import { useCallback } from "react";
 import { ItemLabel } from "./ItemLabel";
-import { StepDetailsPane } from "./StepDetailsPane";
+import { StepConfigPanelWrapper } from "./StepConfigPanelWrapper";
+import { Templatable } from "./Templatable";
 import { templateActions, templateSelectors } from "./templateSlice";
 
 export function TemplateItem({
@@ -27,9 +31,28 @@ export function TemplateItem({
 }): JSX.Element {
   const dispatch = useAppDispatch();
 
+  const templatable = useAppSelector(gameStepSelector(stepId)) as Templatable;
+  const context = useFeaturesContext();
+
   const element = ReactUtils.useAppEntityIdSelectorNullable(
     templateSelectors,
     stepId
+  );
+
+  const onChange = useCallback(
+    (_, checked) => {
+      if (checked) {
+        if (!selected) {
+          // onclick is disabled on the whole button so we need to fake
+          // a click in the switch handler in that case.
+          onClick();
+        }
+        dispatch(templateActions.enabled(templatable, context));
+      } else {
+        dispatch(templateActions.disabled(stepId));
+      }
+    },
+    [context, dispatch, onClick, selected, stepId, templatable]
   );
 
   if (element?.isStale) {
@@ -47,26 +70,11 @@ export function TemplateItem({
           <StepLabel stepId={stepId} />
         </ListItemText>
         <ListItemSecondaryAction>
-          <Switch
-            edge="end"
-            checked={element != null}
-            onChange={(_, checked) => {
-              if (checked) {
-                if (!selected) {
-                  // onclick is disabled on the whole button so we need to fake
-                  // a click in the switch handler in that case.
-                  onClick();
-                }
-                dispatch(templateActions.enabled(stepId));
-              } else {
-                dispatch(templateActions.disabled(stepId));
-              }
-            }}
-          />
+          <Switch edge="end" checked={element != null} onChange={onChange} />
         </ListItemSecondaryAction>
       </ListItemButton>
       <Collapse in={element != null && selected} unmountOnExit>
-        <StepDetailsPane stepId={stepId} />
+        <StepConfigPanelWrapper templatable={templatable} />
       </Collapse>
     </Paper>
   );

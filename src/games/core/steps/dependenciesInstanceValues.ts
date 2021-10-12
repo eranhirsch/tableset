@@ -1,4 +1,4 @@
-import { nullthrows, tuple } from "common";
+import { Dict, nullthrows, tuple } from "common";
 import { VariableGameStep } from "model/VariableGameStep";
 import { InstanceContext } from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
@@ -43,7 +43,7 @@ export const dependenciesInstanceValues = <
   );
 
 export function maybeFulfillDependency<T>(
-  context: InstanceContext,
+  { instance, ...context }: InstanceContext,
   dependency: VariableGameStep<T> | undefined
 ): T | null | undefined {
   if (dependency == null) {
@@ -52,9 +52,12 @@ export function maybeFulfillDependency<T>(
 
   const { hasValue, extractInstanceValue } = dependency;
 
-  if (!nullthrows(hasValue)(context)) {
+  if (!nullthrows(hasValue)({ instance, ...context })) {
     return null;
   }
 
-  return nullthrows(extractInstanceValue)(context);
+  return nullthrows(extractInstanceValue)(
+    Dict.from_values(instance, ({ id }) => id),
+    context
+  );
 }

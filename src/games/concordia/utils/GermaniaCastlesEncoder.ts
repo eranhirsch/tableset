@@ -9,7 +9,7 @@ import {
 } from "common";
 import { PermutationsLazyArray } from "common/standard_library/math/permutationsLazyArray";
 import CityResourcesEncoder from "./CityResourcesEncoder";
-import { MapId, MAPS } from "./Maps";
+import { MAPS } from "./Maps";
 import { Resource } from "./resource";
 
 const DIVIDER = "/";
@@ -38,7 +38,6 @@ export const LOCATIONS = [
 type CastleResource = Readonly<Record<typeof LOCATIONS[number], Resource>>;
 
 const remainingResources = (
-  mapId: MapId,
   withSalsa: boolean,
   citiesHash: string
 ): readonly Resource[] =>
@@ -51,7 +50,11 @@ const remainingResources = (
     ),
     // Tiles used as bonus resources for provinces
     Vec.values(
-      CityResourcesEncoder.decodeProvinceBonuses(mapId, withSalsa, citiesHash)
+      CityResourcesEncoder.decodeProvinceBonuses(
+        "germania",
+        withSalsa,
+        citiesHash
+      )
     )
   );
 
@@ -65,8 +68,8 @@ export const NUM_LEFT_OVER =
   EXPECTED_REMAINING_RESOURCES_COUNT - LOCATIONS.length;
 
 export default {
-  randomHash(mapId: MapId, withSalsa: boolean, citiesHash: string): string {
-    const remaining = remainingResources(mapId, withSalsa, citiesHash);
+  randomHash(withSalsa: boolean, citiesHash: string): string {
+    const remaining = remainingResources(withSalsa, citiesHash);
 
     // Pick tiles in excess of the number of tiles we need to fulfil all
     // locations to be returned to the box
@@ -83,12 +86,11 @@ export default {
   },
 
   decode(
-    mapId: MapId,
     withSalsa: boolean,
     citiesHash: string,
     castlesHash: string
   ): CastleResource {
-    const remaining = remainingResources(mapId, withSalsa, citiesHash);
+    const remaining = remainingResources(withSalsa, citiesHash);
 
     const [resourcesHash, ...leftOversStr] = castlesHash.split(DIVIDER);
     const leftOvers = leftOversStr.filter(

@@ -27,6 +27,8 @@ import mapStep from "./mapStep";
 import { productsMetaStep } from "./productsMetaStep";
 import salsaVariantStep from "./salsaVariantStep";
 
+const RANDOM = Symbol("<random>");
+
 export default createRandomGameStep({
   id: "germaniaRomanCastles",
   labelOverride: "Roman Castles",
@@ -39,11 +41,6 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  random: (_, mapId, withSalsa, hash) =>
-    mapId === "germania"
-      ? GermaniaCastlesEncoder.randomHash(mapId, withSalsa, hash)
-      : null,
-
   skip: (_: string | null, [products, map, citiesHash]) =>
     products == null || (map != null && map !== "germania"),
 
@@ -51,6 +48,16 @@ export default createRandomGameStep({
     products.willContain("britanniaGermania") &&
     map.canResolveTo("germania") &&
     cities.willResolve(),
+  resolve: (_config: typeof RANDOM, _products, map, withSalsa, cities) =>
+    map === "germania"
+      ? GermaniaCastlesEncoder.randomHash(
+          withSalsa ?? false,
+          // We can force non-null because we make sure it will resolve in
+          // isTemplatable
+          cities!
+        )
+      : null,
+  initialConfig: () => RANDOM,
   refresh: () => templateValue("unchanged"),
 });
 
@@ -58,13 +65,12 @@ function InstanceVariableComponent({
   value,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
   // TODO: Move this to dependencies
-  const mapId = useRequiredInstanceValue(mapStep);
   const withSalsa = useRequiredInstanceValue(salsaVariantStep);
   const cityTilesHash = useRequiredInstanceValue(cityTilesStep);
 
   const resourceLocations = useMemo(
-    () => GermaniaCastlesEncoder.decode(mapId, withSalsa, cityTilesHash, value),
-    [cityTilesHash, mapId, value, withSalsa]
+    () => GermaniaCastlesEncoder.decode(withSalsa, cityTilesHash, value),
+    [cityTilesHash, value, withSalsa]
   );
 
   return (
@@ -104,14 +110,10 @@ function InstanceManualComponent(): JSX.Element {
     <HeaderAndSteps synopsis={<Header mapId={mapId} />}>
       <BlockWithFootnotes
         footnotes={[
-          mapId != null && citiesHash != null ? (
+          citiesHash != null ? (
             <>
               The remaining tiles would be:{" "}
-              <RemainingTiles
-                mapId={mapId}
-                withSalsa={withSalsa}
-                citiesHash={citiesHash}
-              />
+              <RemainingTiles withSalsa={withSalsa} citiesHash={citiesHash} />
             </>
           ) : (
             <>You should have {EXPECTED_REMAINING_RESOURCES_COUNT} tiles.</>
@@ -162,11 +164,9 @@ function Header({ mapId }: { mapId: MapId | null }): JSX.Element {
 }
 
 function RemainingTiles({
-  mapId,
   withSalsa,
   citiesHash,
 }: {
-  mapId: MapId;
   withSalsa: boolean;
   citiesHash: string;
 }): JSX.Element {
@@ -175,11 +175,7 @@ function RemainingTiles({
       {Vec.map_with_key(
         Dict.sort_by_key(
           Dict.count_values(
-            GermaniaCastlesEncoder.remainingResources(
-              mapId,
-              withSalsa,
-              citiesHash
-            )
+            GermaniaCastlesEncoder.remainingResources(withSalsa, citiesHash)
           ),
           (resource) => -RESOURCE_COST[resource]
         ),

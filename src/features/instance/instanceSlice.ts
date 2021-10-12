@@ -1,17 +1,13 @@
 import {
   createEntityAdapter,
   createSelector,
-  createSlice,
-  Dictionary,
+  createSlice
 } from "@reduxjs/toolkit";
-import { Dict, Vec } from "common";
-import { RandomGameStep } from "games/core/steps/createRandomGameStep";
+import { Dict } from "common";
+import { templateSteps } from "features/template/templateSteps";
 import { ContextBase } from "model/ContextBase";
-import { GameStepBase } from "model/GameStepBase";
 import { RootState } from "../../app/store";
-import { Game, StepId } from "../../model/Game";
-import { TemplateElement } from "../template/templateSlice";
-import { templateElementResolver } from "./templateElementResolver";
+import { StepId } from "../../model/Game";
 
 export type SetupStep = Readonly<{
   id: StepId;
@@ -28,33 +24,20 @@ export const instanceSlice = createSlice({
   reducers: {
     created: {
       prepare: (
-        game: Game,
-        template: Dictionary<TemplateElement>,
+        templatables: ReturnType<typeof templateSteps>,
         context: ContextBase
       ) => ({
-        payload: Vec.filter(
-          Vec.values(game.steps),
-          (x: GameStepBase): x is RandomGameStep =>
-            (x as Partial<RandomGameStep>).resolveRandom != null
-        ).reduce((ongoing, step) => {
-          const element = template[step.id];
-          if (element == null) {
-            return ongoing;
-          }
-
-          const value = templateElementResolver(step, element, {
-            ...context,
-            instance: ongoing,
-          });
+        payload: templatables.reduce((ongoing, [templatable, { config }]) => {
+          const value = templatable.resolve(config, ongoing, context);
 
           if (value != null) {
             // Null means ignore the step, it is a valid response in some cases
             // (like variants, modules, and expansions)
-            ongoing.push({ id: step.id, value });
+            ongoing[templatable.id] = { id: templatable.id, value };
           }
 
           return ongoing;
-        }, [] as SetupStep[]),
+        }, {} as Record<StepId, SetupStep>),
       }),
 
       reducer: instanceAdapter.setAll,

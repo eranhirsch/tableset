@@ -1,4 +1,7 @@
+import { SetupStep } from "features/instance/instanceSlice";
+import { Query } from "games/core/steps/Query";
 import { ContextBase } from "model/ContextBase";
+import { StepId } from "model/Game";
 import { GameStepBase } from "model/GameStepBase";
 import { VariableGameStep } from "model/VariableGameStep";
 import { templateSelectors } from "./templateSlice";
@@ -12,16 +15,30 @@ export const isWithDependencies = (
 ): step is WithDependencies =>
   (step as Partial<WithDependencies>).dependencies != null;
 
-export interface Templatable<T = unknown> extends WithDependencies {
-  refreshFixedValue(
-    value: T,
-    entities: ReturnType<typeof templateSelectors["selectEntities"]>,
+type Template = Readonly<
+  ReturnType<typeof templateSelectors["selectEntities"]>
+>;
+type DependencyQueries = readonly Query[];
+
+export interface Templatable<T = unknown, C = unknown>
+  extends WithDependencies {
+  resolve(
+    config: C,
+    upstreamInstance: Readonly<Record<StepId, SetupStep>>,
     context: ContextBase
-  ): T;
-  canBeTemplated(
-    template: ReturnType<typeof templateSelectors["selectEntities"]>,
-    context: ContextBase
-  ): boolean;
+  ): T | null;
+  initialConfig(template: Template, context: Readonly<ContextBase>): C;
+  ConfigPanel?: (props: {
+    config: C | undefined;
+    queries: DependencyQueries;
+    onChange(newConfig: C): void;
+  }) => JSX.Element;
+  refreshTemplateConfig(
+    config: C,
+    template: Template,
+    context: Readonly<ContextBase>
+  ): C;
+  canBeTemplated(template: Template, context: Readonly<ContextBase>): boolean;
 }
 
 export const isTemplatable = (x: GameStepBase): x is Templatable =>

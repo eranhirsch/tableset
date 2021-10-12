@@ -1,23 +1,18 @@
 import { styled, Typography } from "@mui/material";
-import { useAppSelector } from "app/hooks";
-import { Dict, Random, Vec } from "common";
-import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
+import { Dict, Vec } from "common";
 import {
-  templateActions,
-  templateValue,
+    templateValue
 } from "features/template/templateSlice";
-import { GenericItemsFixedTemplateLabel } from "games/core/ux/GenericItemsFixedTemplateLabel";
-import { GenericItemsListPanel } from "games/core/ux/GenericItemsListPanel";
 import React from "react";
 import {
-  createRandomGameStep,
-  VariableStepInstanceComponentProps,
+    createRandomGameStep,
+    VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
-import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
+import { productsMetaStep } from "./productsMetaStep";
 
 export default createRandomGameStep({
   id: "map",
@@ -29,19 +24,17 @@ export default createRandomGameStep({
   InstanceManualComponent,
   InstanceVariableComponent,
 
-  random(productIds) {
-    const availableMaps = mapsForProducts(productIds);
-    return availableMaps[Random.index(availableMaps)];
-  },
-
-  fixed: {
-    initializer: (productIds) => mapsForProducts(productIds)[0],
-
-    renderTemplateLabel: TemplateLabel,
-    renderSelector: Selector,
-  },
+  // TODO: Move to resolver
+  // random(productIds) {
+  //   const availableMaps = mapsForProducts(productIds);
+  //   return availableMaps[Random.index(availableMaps)];
+  // },
 
   isTemplatable: (products) => products.willContainAny(productsWithMaps()),
+  resolve: (config: MapId, productIds) => config,
+  initialConfig: (products) => mapsForProducts(products.resolve())[0],
+  // Make sure we don't have a config which uses maps which aren't included
+  // anymore
   refresh: () => templateValue("unchanged"),
 });
 
@@ -93,30 +86,26 @@ function InstanceManualComponent() {
   );
 }
 
-function TemplateLabel({ value }: { value: MapId }): JSX.Element {
-  return (
-    <GenericItemsFixedTemplateLabel
-      onLabelForItem={(id) => MAPS[id].name}
-      selectedId={value}
-    />
-  );
-}
+// function TemplateLabel({ value }: { value: MapId }): JSX.Element {
+//   return (
+//     <GenericItemsFixedTemplateLabel
+//       onLabelForItem={(id) => MAPS[id].name}
+//       selectedId={value}
+//     />
+//   );
+// }
 
-function Selector({ current }: { current: MapId }): JSX.Element {
-  const productIds = useAppSelector(
-    allExpansionIdsSelector
-  ) as readonly ConcordiaProductId[];
-  return (
-    <GenericItemsListPanel
-      itemIds={mapsForProducts(productIds)}
-      selectedId={current}
-      onLabelForItem={(id) => MAPS[id].name}
-      onUpdateItem={(itemId) =>
-        templateActions.constantValueChanged({
-          id: "map",
-          value: itemId,
-        })
-      }
-    />
-  );
-}
+// function Selector({ current }: { current: MapId }): JSX.Element {
+//   const productIds = useAppSelector(
+//     allExpansionIdsSelector
+//   ) as readonly ConcordiaProductId[];
+//   return (
+//     <GenericItemsListPanel
+//       itemIds={mapsForProducts(productIds)}
+//       selectedId={current}
+//       onLabelForItem={(id) => MAPS[id].name}
+//       // TODO: Fix this to use the proper action via ConfigPanel
+//       onUpdateItem={(itemId) => templateActions.disabled("map")}
+//     />
+//   );
+// }

@@ -13,7 +13,7 @@ export const createProductsMetaStep = <Pid extends ProductId>(): Readonly<
 
   hasValue: ({ productIds }) => true,
 
-  extractInstanceValue: ({ productIds }) => productIds as readonly Pid[],
+  extractInstanceValue: (_, { productIds }) => productIds as readonly Pid[],
 
   query: (_, { productIds: currentProductIds }) =>
     buildQuery("__product", {

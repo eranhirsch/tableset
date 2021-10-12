@@ -1,27 +1,8 @@
-import LockIcon from "@mui/icons-material/Lock";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import {
-  Avatar,
-  AvatarGroup,
-  Badge,
-  Box,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { Vec } from "common";
-import { templateActions } from "features/template/templateSlice";
+import { AvatarGroup, Box, Typography } from "@mui/material";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
-import React, { useCallback } from "react";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from "react-beautiful-dnd";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import React from "react";
+import { useAppSelector } from "../../../app/hooks";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
-import { PlayerNameShortAbbreviation } from "../../../features/players/PlayerNameShortAbbreviation";
-import { PlayerShortName } from "../../../features/players/PlayerShortName";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerId } from "../../../model/Player";
 import {
@@ -42,24 +23,10 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  random: (playerIds) =>
-    // We slice the first player because it acts as a pivot
-    Vec.shuffle(playerIds.slice(1)),
-
-  fixed: {
-    renderSelector: Selector,
-    renderTemplateLabel: TemplateLabel,
-
-    initializer(playerIds) {
-      if (playerIds.length < 3) {
-        // Play order is meaningless with 2 players
-        return;
-      }
-
-      const [, ...restOfPlayers] = playerIds;
-      return restOfPlayers;
-    },
-  },
+  // TODO: Move to the resolver
+  // random: (playerIds) =>
+  //   // We slice the first player because it acts as a pivot
+  //   Vec.shuffle(playerIds.slice(1)),
 
   isTemplatable: (players) =>
     players.count({
@@ -67,7 +34,11 @@ export default createRandomGameStep({
       min: 3,
     }),
 
-  refresh(current, players) {
+  resolve: (config: readonly PlayerId[], playerIds) => config,
+
+  initialConfig: (players) => players.resolve().slice(1),
+
+  refresh(current: readonly PlayerId[], players) {
     const playerIds = players.resolve();
     // Remove any deleted players from the current value.
     let currentRefreshed = current.filter((playerId) =>
@@ -135,132 +106,133 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function TemplateLabel({ value }: { value: readonly PlayerId[] }): JSX.Element {
-  const firstPlayerId = useAppSelector(firstPlayerIdSelector);
-  return (
-    <>
-      {React.Children.toArray(
-        [firstPlayerId].concat(value).map((playerId, idx) => (
-          <>
-            <PlayerShortName playerId={playerId} />
-            {idx < value.length && (
-              <NavigateNextIcon
-                fontSize="small"
-                sx={{ verticalAlign: "middle" }}
-              />
-            )}
-          </>
-        ))
-      )}
-    </>
-  );
-}
+// function TemplateLabel({ value }: { value: readonly PlayerId[] }): JSX.Element {
+//   const firstPlayerId = useAppSelector(firstPlayerIdSelector);
+//   return (
+//     <>
+//       {React.Children.toArray(
+//         [firstPlayerId].concat(value).map((playerId, idx) => (
+//           <>
+//             <PlayerShortName playerId={playerId} />
+//             {idx < value.length && (
+//               <NavigateNextIcon
+//                 fontSize="small"
+//                 sx={{ verticalAlign: "middle" }}
+//               />
+//             )}
+//           </>
+//         ))
+//       )}
+//     </>
+//   );
+// }
 
-function Selector({
-  current: order,
-}: {
-  current: readonly PlayerId[];
-}): JSX.Element {
-  const dispatch = useAppDispatch();
+// function Selector({
+//   current: order,
+// }: {
+//   current: readonly PlayerId[];
+// }): JSX.Element {
+//   const onDragEnd = useCallback(
+//     ({ reason, source, destination }: DropResult) => {
+//       if (reason === "CANCEL") {
+//         return;
+//       }
 
-  const onDragEnd = useCallback(
-    ({ reason, source, destination }: DropResult) => {
-      if (reason === "CANCEL") {
-        return;
-      }
+//       if (destination == null) {
+//         // Dropped out of the droppable
+//         return;
+//       }
 
-      if (destination == null) {
-        // Dropped out of the droppable
-        return;
-      }
+//       const value = moveItem(order, source.index, destination.index);
+//       console.log(value); // TODO: just to make the variable used
+//       // TODO: Modernize to ConfigPanel
+//       // dispatch(
+//       //   templateActions.constantValueChanged({
+//       //     id: "playOrder",
+//       //     value,
+//       //   })
+//       // );
+//     },
+//     [order]
+//   );
 
-      dispatch(
-        templateActions.constantValueChanged({
-          id: "playOrder",
-          value: moveItem(order, source.index, destination.index),
-        })
-      );
-    },
-    [dispatch, order]
-  );
+//   return (
+//     <Stack alignItems="center" direction="column" spacing={1}>
+//       <Stack direction="row" spacing={1}>
+//         <FirstAvatar />
+//         <DragDropContext onDragEnd={onDragEnd}>
+//           <Droppable droppableId="order" direction="horizontal">
+//             {(provided) => (
+//               <Stack
+//                 ref={provided.innerRef}
+//                 {...provided.droppableProps}
+//                 component="ol"
+//                 direction="row"
+//                 sx={{ padding: 0 }}
+//                 spacing={1}
+//               >
+//                 {order.map((playerId, idx) => (
+//                   <DraggablePlayer
+//                     key={playerId}
+//                     playerId={playerId}
+//                     index={idx}
+//                   />
+//                 ))}
+//                 {provided.placeholder}
+//               </Stack>
+//             )}
+//           </Droppable>
+//         </DragDropContext>
+//       </Stack>
+//       <Typography variant="caption">{"In clockwise order"}</Typography>
+//     </Stack>
+//   );
+// }
 
-  return (
-    <Stack alignItems="center" direction="column" spacing={1}>
-      <Stack direction="row" spacing={1}>
-        <FirstAvatar />
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="order" direction="horizontal">
-            {(provided) => (
-              <Stack
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                component="ol"
-                direction="row"
-                sx={{ padding: 0 }}
-                spacing={1}
-              >
-                {order.map((playerId, idx) => (
-                  <DraggablePlayer
-                    key={playerId}
-                    playerId={playerId}
-                    index={idx}
-                  />
-                ))}
-                {provided.placeholder}
-              </Stack>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </Stack>
-      <Typography variant="caption">{"In clockwise order"}</Typography>
-    </Stack>
-  );
-}
+// function moveItem<T>(
+//   items: readonly T[],
+//   itemIdx: number,
+//   targetIdx: number
+// ): T[] {
+//   const clone = items.slice();
+//   const [item] = clone.splice(itemIdx, 1);
+//   clone.splice(targetIdx, 0, item);
+//   return clone;
+// }
 
-function moveItem<T>(
-  items: readonly T[],
-  itemIdx: number,
-  targetIdx: number
-): T[] {
-  const clone = items.slice();
-  const [item] = clone.splice(itemIdx, 1);
-  clone.splice(targetIdx, 0, item);
-  return clone;
-}
+// function DraggablePlayer({
+//   playerId,
+//   index,
+// }: {
+//   playerId: PlayerId;
+//   index: number;
+//   badgeContent?: string;
+// }) {
+//   return (
+//     <Draggable draggableId={`${playerId}`} index={index}>
+//       {(provided) => (
+//         <Avatar
+//           component="li"
+//           ref={provided.innerRef}
+//           {...provided.dragHandleProps}
+//           {...provided.draggableProps}
+//         >
+//           <PlayerNameShortAbbreviation playerId={playerId} />
+//         </Avatar>
+//       )}
+//     </Draggable>
+//   );
+// }
 
-function DraggablePlayer({
-  playerId,
-  index,
-}: {
-  playerId: PlayerId;
-  index: number;
-  badgeContent?: string;
-}) {
-  return (
-    <Draggable draggableId={`${playerId}`} index={index}>
-      {(provided) => (
-        <Avatar
-          component="li"
-          ref={provided.innerRef}
-          {...provided.dragHandleProps}
-          {...provided.draggableProps}
-        >
-          <PlayerNameShortAbbreviation playerId={playerId} />
-        </Avatar>
-      )}
-    </Draggable>
-  );
-}
-
-function FirstAvatar() {
-  const playerId = useAppSelector(firstPlayerIdSelector);
-  return (
-    <Badge
-      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      overlap="circular"
-      badgeContent={<LockIcon color="primary" fontSize="small" />}
-    >
-      <PlayerAvatar playerId={playerId} />
-    </Badge>
-  );
-}
+// function FirstAvatar() {
+//   const playerId = useAppSelector(firstPlayerIdSelector);
+//   return (
+//     <Badge
+//       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+//       overlap="circular"
+//       badgeContent={<LockIcon color="primary" fontSize="small" />}
+//     >
+//       <PlayerAvatar playerId={playerId} />
+//     </Badge>
+//   );
+// }

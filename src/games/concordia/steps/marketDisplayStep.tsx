@@ -11,6 +11,8 @@ import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 import RomanTitle from "../ux/RomanTitle";
 import marketCardsStep from "./marketCardsStep";
 
+const RANDOM = Symbol("<random>");
+
 export default createRandomGameStep({
   id: "marketDisplay",
   labelOverride: "Cards Display",
@@ -20,9 +22,9 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  random: () => MarketDisplayEncoder.randomHash(),
-
   isTemplatable: () => true,
+  resolve: (_: typeof RANDOM) => MarketDisplayEncoder.randomHash(),
+  initialConfig: () => RANDOM,
   refresh: () => templateValue("unchanged"),
 });
 

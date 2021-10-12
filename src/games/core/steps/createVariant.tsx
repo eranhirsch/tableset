@@ -1,4 +1,4 @@
-import { invariant_violation, Random } from "common";
+import { Dict, invariant_violation, Random, Vec } from "common";
 import { Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Skippable } from "model/Skippable";
@@ -50,13 +50,13 @@ interface OptionsInternal
     unknown,
     unknown
   > {
-  isTemplatable(...queries: Query<unknown>[]): boolean;
+  isTemplatable(...queries: Query[]): boolean;
 }
 
 export interface VariantGameStep
   extends VariableGameStep<boolean>,
     Skippable,
-    Templatable {
+    Templatable<true, number> {
   InstanceVariableComponent(props: { value: boolean }): JSX.Element;
   resolveRandom(context: InstanceContext): true | null;
 
@@ -82,16 +82,17 @@ export function createVariant({
   id,
   name,
   dependencies,
-  isTemplatable,
   InstanceVariableComponent,
+  isTemplatable,
 }: OptionsInternal): VariantGameStep {
   const baseStep = createGameStep({
     id: `variant_${id}`,
     labelOverride: `Variant: ${name}`,
   });
 
-  const extractInstanceValue = ({ instance }: InstanceContext) =>
-    instance.some(({ id }) => id === baseStep.id);
+  const extractInstanceValue: VariantGameStep["extractInstanceValue"] = (
+    instance
+  ) => (instance[baseStep.id] != null ? true : null);
 
   return {
     ...baseStep,
@@ -101,16 +102,22 @@ export function createVariant({
     extractInstanceValue,
     InstanceVariableComponent,
 
-    skip: (context) => !extractInstanceValue(context),
+    skip: ({ instance, ...context }) =>
+      !extractInstanceValue(
+        Dict.from_values(instance, ({ id }) => id),
+        context
+      ),
 
     canBeTemplated: (template, context) =>
       isTemplatable(
-        ...dependencies.map((dependency) => dependency.query(template, context))
+        ...Vec.map(dependencies, (dependency) =>
+          dependency.query(template, context)
+        )
       ),
     // The value can never be changed following changes in the template, it
     // could only be disabled via `canBeTemplated`
-    refreshFixedValue: () => templateValue("unchanged"),
-
+    refreshTemplateConfig: () => templateValue("unchanged"),
+    initialConfig: () => 0.5,
     coerceInstanceEntry: (entry) =>
       entry == null
         ? false
@@ -125,6 +132,7 @@ export function createVariant({
     hasValue: (_: TemplateContext | InstanceContext) => true,
 
     resolveRandom: () => (Random.coin_flip(0.5) ? true : null),
+    resolve: () => (Random.coin_flip(0.5) ? true : null),
 
     TemplateFixedValueLabel: "Enabled",
     initialFixedValue: () => true,

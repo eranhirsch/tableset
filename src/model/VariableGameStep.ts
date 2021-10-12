@@ -1,8 +1,11 @@
+import { SetupStep } from "features/instance/instanceSlice";
 import {
   InstanceContext,
   TemplateContext,
 } from "games/core/steps/createRandomGameStep";
 import { Queryable } from "games/core/steps/Queryable";
+import { ContextBase } from "./ContextBase";
+import { StepId } from "./Game";
 import { GameStepBase } from "./GameStepBase";
 
 export interface VariableGameStep<T = unknown>
@@ -12,5 +15,8 @@ export interface VariableGameStep<T = unknown>
     instanceEntry: Readonly<{ id: string; value: unknown }> | undefined
   ): T | null;
   hasValue(context: TemplateContext | InstanceContext): boolean;
-  extractInstanceValue(context: InstanceContext): T | null;
+  extractInstanceValue(
+    upstreamInstance: Readonly<Record<StepId, SetupStep>>,
+    context: ContextBase
+  ): T | null;
 }

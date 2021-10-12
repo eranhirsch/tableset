@@ -5,23 +5,23 @@ import {
   PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
-import { Dict, nullthrows, tuple, type_invariant, Vec } from "common";
+import { Dict, nullthrows, type_invariant, Vec } from "common";
 import { expansionsActions } from "features/expansions/expansionsSlice";
 import { playersActions } from "features/players/playersSlice";
-import { Strategy } from "features/template/Strategy";
 import { GameId, GAMES } from "games/core/GAMES";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
-import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { ContextBase } from "model/ContextBase";
 import { StepId } from "model/Game";
 import { GameStepBase } from "model/GameStepBase";
 import { VariableGameStep } from "model/VariableGameStep";
 import { isTemplatable, Templatable } from "./Templatable";
+import { templateSteps } from "./templateSteps";
 
-export type TemplateElement = { id: StepId; isStale?: true } & (
-  | { strategy: Strategy.FIXED; value: unknown }
-  | { strategy: Strategy.RANDOM }
-);
+export type TemplateElement<C = unknown> = {
+  id: StepId;
+  isStale?: true;
+  config: C;
+};
 
 const templateAdapter = createEntityAdapter<TemplateElement>({
   selectId: (step) => step.id,
@@ -37,47 +37,44 @@ export const templateSlice = createSlice({
   name: "template",
   initialState: templateAdapter.getInitialState(INITIAL_GLOBAL_STATE),
   reducers: {
-    enabled: (state, { payload: stepId }: PayloadAction<StepId>) => {
-      templateAdapter.upsertOne(state, {
-        id: stepId,
-        strategy: Strategy.RANDOM,
-      });
-      markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
+    enabled: {
+      prepare: ({ id }: Templatable, context: ContextBase) => ({
+        payload: { id },
+        meta: { context },
+      }),
+      reducer(
+        state,
+        {
+          payload: { id },
+          meta: { context },
+        }: PayloadAction<{ id: StepId }, string, { context: ContextBase }>
+      ) {
+        const templatable = type_invariant(
+          GAMES[state.gameId].steps[id],
+          isTemplatable
+        );
+        const config = templatable.initialConfig(state.entities, context);
+        templateAdapter.addOne(state, { id, config });
+        markDownstreamElementsStale(templatable, state);
+      },
     },
 
     disabled: (state, action: PayloadAction<StepId>): void => {
       disabledImpl(state, action.payload);
     },
 
-    enabledConstantValue: {
-      prepare: (stepId: StepId, context: ContextBase) => ({
-        payload: stepId,
-        meta: context,
+    configUpdated: {
+      prepare: ({ id }: Templatable, config: unknown) => ({
+        payload: { id, config },
       }),
-
       reducer(
         state,
         {
-          payload: stepId,
-          meta: context,
-        }: PayloadAction<StepId, string, ContextBase>
+          payload: { id, config },
+        }: PayloadAction<{ id: StepId; config: unknown }>
       ) {
-        templateAdapter.upsertOne(state, {
-          id: stepId,
-          strategy: Strategy.FIXED,
-          value: (GAMES[state.gameId].steps[stepId] as RandomGameStep<unknown>)
-            .initialFixedValue!({ ...context, instance: [] }),
-        });
-
-        markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
+        configUpdatedImpl(state, id, config);
       },
-    },
-
-    constantValueChanged(
-      state,
-      { payload: { id, value } }: PayloadAction<{ id: StepId; value: unknown }>
-    ) {
-      constantValueChangedImpl(state, id, value);
     },
 
     refresh: {
@@ -100,8 +97,8 @@ export const templateSlice = createSlice({
         // These steps are stale after removing all untemplatable ones, that
         // means we need to check their value to make sure it isn't invalid with
         // the new template and/or context.
-        templateSteps(state).forEach(([{ refreshFixedValue }, element]) =>
-          refreshStep(state, element, refreshFixedValue, context)
+        templateSteps(state).forEach(([{ refreshTemplateConfig }, element]) =>
+          refreshStep(state, element, refreshTemplateConfig, context)
         );
       },
     },
@@ -121,22 +118,33 @@ export const templateSlice = createSlice({
   },
 });
 
+export const wholeTemplateSelector = (state: RootState) => state.template;
 export const templateSelectors = templateAdapter.getSelectors<RootState>(
-  (state) => state.template
+  wholeTemplateSelector
 );
+
+export const templateElementSelectorNullable =
+  ({ id }: Templatable) =>
+  (state: RootState) =>
+    templateSelectors.selectById(state, id);
+export const templateElementSelectorEnforce =
+  (templatable: Templatable) => (state: RootState) =>
+    nullthrows(
+      templateElementSelectorNullable(templatable)(state),
+      `Template missing element for step ${templatable.id}`
+    );
+
 export const templateIsStaleSelector = createSelector(
   templateSelectors.selectAll,
   (elements) => elements.some(({ isStale }) => isStale)
 );
+
 export const fullTemplateSelector = createSelector(
   templateSelectors.selectAll,
   (elements) =>
     Dict.pull(
       elements,
-      (element) =>
-        element.strategy === Strategy.FIXED
-          ? element.value
-          : `__strategy:${element.strategy}`,
+      (element) => JSON.stringify(element.config),
       ({ id }) => id
     )
 );
@@ -148,59 +156,17 @@ function disabledImpl(state: RootState["template"], stepId: StepId): void {
   markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
 }
 
-function constantValueChangedImpl(
+function configUpdatedImpl(
   state: RootState["template"],
-  stepId: StepId,
-  value: unknown
+  id: StepId,
+  config: unknown
 ): void {
-  const element = nullthrows(
-    state.entities[stepId],
-    `Couldn't find step: ${stepId}, This action is only supported on elements which are already in the template`
-  );
-
-  if (element.strategy !== Strategy.FIXED) {
-    throw new Error(
-      `Trying to set fixed value when strategy isn't fixed for step: ${stepId}`
-    );
-  }
-
-  element.value = value;
-
-  markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
+  templateAdapter.updateOne(state, {
+    id,
+    changes: { config },
+  });
+  markDownstreamElementsStale(GAMES[state.gameId].steps[id], state);
 }
-
-/**
- * Returns a tuple with both the template element and the Templatable
- * definition, while maintaining the original game order (order is important
- * because step dependencies are acyclic, so traversing the steps in order would
- * mean we always see a parent dependency before the downstream step that
- * depends on it)
- */
-const templateSteps = ({
-  gameId,
-  entities,
-}: RootState["template"]): readonly [Templatable, TemplateElement][] =>
-  Vec.map_with_key(
-    // The inner join is the cleanest way to filter both dicts on each-other's
-    // keys.
-    Dict.inner_join(
-      GAMES[gameId].steps,
-      // We need the cast because `Dictionary` (the RTK-defined type) is funky
-      Dict.filter_nulls(entities) as Record<StepId, TemplateElement>
-    ),
-    (_, [step, elem]) =>
-      tuple(
-        // We `type_invariant` here instead of using a TS compile-time cast just
-        // to be extra safe. All steps in the template should be `Templatable`, so
-        // nothing here should throw
-        type_invariant(
-          step,
-          isTemplatable,
-          `Step ${step.id} is present in the template but is not Templatable!`
-        ),
-        elem
-      )
-  );
 
 const isVariableGameStep = (step: GameStepBase): step is VariableGameStep =>
   (step as Partial<VariableGameStep>).hasValue != null;
@@ -260,7 +226,7 @@ export function templateValue(special: "unfixable" | "unchanged"): never {
 function refreshStep(
   state: RootState["template"],
   element: TemplateElement,
-  refreshFixedValue: Templatable["refreshFixedValue"],
+  refreshTemplateConfig: Templatable["refreshTemplateConfig"],
   context: ContextBase
 ): void {
   if (element.isStale == null) {
@@ -271,17 +237,16 @@ function refreshStep(
   // Reset the isStale flag
   element.isStale = undefined;
 
-  if (element.strategy !== Strategy.FIXED) {
-    // Element is Random, it doesn't have anything to update
-    return;
-  }
-
   // The element has a fixed strategy, we need to go over the value
   // and update it to match the new context and other template
   // elements.
   try {
-    const newValue = refreshFixedValue(element.value, state.entities, context);
-    constantValueChangedImpl(state, element.id, newValue);
+    const newValue = refreshTemplateConfig(
+      element.config,
+      state.entities,
+      context
+    );
+    configUpdatedImpl(state, element.id, newValue);
   } catch (e: unknown) {
     if (e instanceof UnfixableTemplateValue) {
       // The template value is unfixable, we need to reset it in order to make

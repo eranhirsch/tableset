@@ -1,6 +1,5 @@
-import { nullthrows, type_invariant } from "common";
+import { Dict, nullthrows, type_invariant, Vec } from "common";
 import { SetupStep } from "features/instance/instanceSlice";
-import { Strategy } from "features/template/Strategy";
 import { Templatable } from "features/template/Templatable";
 import { TemplateElement } from "features/template/templateSlice";
 import { StepId } from "model/Game";
@@ -25,50 +24,18 @@ export interface InstanceContext extends ContextBase {
   instance: readonly SetupStep[];
 }
 
-export interface RandomGameStep<T = unknown>
+export interface RandomGameStep<T = unknown, C = unknown>
   extends VariableGameStep<T>,
     Skippable,
-    Templatable<T> {
+    Templatable<T, C> {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
-  resolveRandom(context: InstanceContext): T;
 
-  resolveDefault?(context: InstanceContext): T;
   TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
-  TemplateFixedValueSelector?(props: { current: T }): JSX.Element;
-  initialFixedValue?(context: InstanceContext): T;
-}
-
-interface FixedOptions<
-  T,
-  D1 = never,
-  D2 = never,
-  D3 = never,
-  D4 = never,
-  D5 = never,
-  D6 = never,
-  D7 = never,
-  D8 = never,
-  D9 = never,
-  D10 = never
-> {
-  initializer(
-    dependency1: D1,
-    dependency2: D2,
-    dependency3: D3,
-    dependency4: D4,
-    dependency5: D5,
-    dependency6: D6,
-    dependency7: D7,
-    dependency8: D8,
-    dependency9: D9,
-    dependency10: D10
-  ): T | undefined;
-  renderTemplateLabel: ((props: { value: T }) => JSX.Element) | string;
-  renderSelector?(props: { current: T }): JSX.Element;
 }
 
 type Options<
   T,
+  C,
   D1 = never,
   D2 = never,
   D3 = never,
@@ -87,18 +54,6 @@ type Options<
       props: VariableStepInstanceComponentProps<T>
     ): JSX.Element;
 
-    random(
-      dependency1: D1,
-      dependency2: D2,
-      dependency3: D3,
-      dependency4: D4,
-      dependency5: D5,
-      dependency6: D6,
-      dependency7: D7,
-      dependency8: D8,
-      dependency9: D9,
-      dependency10: D10
-    ): T;
     isTemplatable(
       query1: Query<D1>,
       query2: Query<D2>,
@@ -111,8 +66,21 @@ type Options<
       query9: Query<D9>,
       query10: Query<D10>
     ): boolean;
+    resolve(
+      config: C,
+      dependency1: D1 | null,
+      dependency2: D2 | null,
+      dependency3: D3 | null,
+      dependency4: D4 | null,
+      dependency5: D5 | null,
+      dependency6: D6 | null,
+      dependency7: D7 | null,
+      dependency8: D8 | null,
+      dependency9: D9 | null,
+      dependency10: D10 | null
+    ): T | null;
     refresh(
-      current: T,
+      current: C,
       query1: Query<D1>,
       query2: Query<D2>,
       query3: Query<D3>,
@@ -123,34 +91,43 @@ type Options<
       query8: Query<D8>,
       query9: Query<D9>,
       query10: Query<D10>
-    ): T | undefined;
-    fixed?: FixedOptions<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>;
+    ): C;
+    canResolveTo?(
+      value: T,
+      config: C | undefined,
+      query1: Query<D1>,
+      query2: Query<D2>,
+      query3: Query<D3>,
+      query4: Query<D4>,
+      query5: Query<D5>,
+      query6: Query<D6>,
+      query7: Query<D7>,
+      query8: Query<D8>,
+      query9: Query<D9>,
+      query10: Query<D10>
+    ): boolean;
+    initialConfig(
+      query1: Query<D1>,
+      query2: Query<D2>,
+      query3: Query<D3>,
+      query4: Query<D4>,
+      query5: Query<D5>,
+      query6: Query<D6>,
+      query7: Query<D7>,
+      query8: Query<D8>,
+      query9: Query<D9>,
+      query10: Query<D10>
+    ): C;
     skip?(
       value: T | null,
       dependencies: DepsTuple<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
     ): boolean;
   };
 
-interface FixedOptionsInternal<T>
-  extends FixedOptions<
-    T,
-    unknown,
-    unknown,
-    unknown,
-    unknown,
-    unknown,
-    unknown,
-    unknown,
-    unknown,
-    unknown,
-    unknown
-  > {
-  initializer(...dependencies: unknown[]): T | undefined;
-}
-
-interface OptionsInternal<T>
+interface OptionsInternal<T, C>
   extends Options<
     T,
+    C,
     unknown,
     unknown,
     unknown,
@@ -162,14 +139,20 @@ interface OptionsInternal<T>
     unknown,
     unknown
   > {
-  random(...dependencies: unknown[]): T;
-  isTemplatable(...queries: Query<unknown>[]): boolean;
-  refresh(current: T, ...dependencies: Query<unknown>[]): T;
-  fixed?: FixedOptionsInternal<T>;
+  isTemplatable(...queries: Query[]): boolean;
+  resolve(config: C, ...dependencies: (unknown | null)[]): T | null;
+  refresh(current: C, ...dependencies: Query[]): C;
+  initialConfig(...queries: Query[]): C;
+  canResolveTo?(
+    value: T,
+    config: unknown | undefined,
+    ...queries: Query[]
+  ): boolean;
 }
 
 export function createRandomGameStep<
   T,
+  C,
   D1 = never,
   D2 = never,
   D3 = never,
@@ -181,36 +164,27 @@ export function createRandomGameStep<
   D9 = never,
   D10 = never
 >(
-  options: Options<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
-): Readonly<RandomGameStep<T>>;
-export function createRandomGameStep<T>({
+  options: Options<T, C, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
+): Readonly<RandomGameStep<T, C>>;
+export function createRandomGameStep<T, C>({
+  canResolveTo,
   dependencies,
-  fixed,
+  initialConfig,
   InstanceVariableComponent,
   isTemplatable,
   isType,
-  random,
   refresh,
+  resolve,
   skip,
   ...baseOptions
-}: OptionsInternal<T>): Readonly<RandomGameStep<T>> {
+}: OptionsInternal<T, C>): Readonly<RandomGameStep<T, C>> {
   const baseStep = createGameStep(baseOptions);
 
-  const extractInstanceValue = ({ instance }: InstanceContext) => {
-    const step = instance.find(({ id }) => id === baseStep.id);
-    return step == null
-      ? null
-      : type_invariant(
-          step.value,
-          nullthrows(
-            isType,
-            `Game step ${baseStep.id} does not have a type predicate defined`
-          ),
-          `Value ${step.value} couldn't be converted to the type defined by it's type ${baseStep.id}`
-        );
-  };
+  const extractInstanceValue: VariableGameStep<T>["extractInstanceValue"] = (
+    instance
+  ) => (instance[baseStep.id]?.value as T) ?? null;
 
-  const variableStep: RandomGameStep<T> = {
+  const variableStep: RandomGameStep<T, C> = {
     ...baseStep,
 
     coerceInstanceEntry: (entry) =>
@@ -231,12 +205,18 @@ export function createRandomGameStep<T>({
     extractInstanceValue,
     InstanceVariableComponent,
 
-    skip: (context) =>
+    skip: ({ instance, ...context }) =>
       skip != null
         ? skip(
-            extractInstanceValue(context),
+            extractInstanceValue(
+              Dict.from_values(instance, ({ id }) => id),
+              context
+            ),
             dependencies != null
-              ? dependenciesInstanceValues(context, dependencies)
+              ? dependenciesInstanceValues(
+                  { instance, ...context },
+                  dependencies
+                )
               : [
                   undefined,
                   undefined,
@@ -257,57 +237,52 @@ export function createRandomGameStep<T>({
         ? context.template[baseStep.id] != null
         : context.instance.some(({ id }) => id === baseStep.id),
 
-    resolveRandom: (context) =>
-      random(
-        ...(dependencies?.map((dependency) =>
-          nullthrows(
-            dependency.extractInstanceValue!(context),
-            `Unfulfilled dependency ${dependency.id} for ${baseStep.id}`
-          )
-        ) ?? [])
-      ),
-
     canBeTemplated: (template, context) =>
       isTemplatable(
-        ...dependencies.map((dependency) => dependency.query(template, context))
+        ...Vec.map(dependencies, (dependency) =>
+          dependency.query(template, context)
+        )
       ),
 
-    refreshFixedValue: (current, template, context) =>
+    refreshTemplateConfig: (current, template, context) =>
       refresh(
         current,
-        ...dependencies.map((dependency) => dependency.query(template, context))
+        ...Vec.map(dependencies, (dependency) =>
+          dependency.query(template, context)
+        )
       ),
 
-    query: (template, _) =>
-      buildQuery(baseStep.id, {
-        canResolveTo(value: T) {
-          const element = template[baseStep.id];
-          return (
-            element != null &&
-            (element.strategy !== Strategy.FIXED || element.value === value)
-          );
-        },
+    initialConfig: (template, context) =>
+      initialConfig(
+        ...Vec.map(dependencies, (dependency) =>
+          dependency.query(template, context)
+        )
+      ),
 
+    resolve: (config, upstreamInstance, context) =>
+      resolve(
+        config,
+        ...Vec.map(dependencies, (dependency) =>
+          dependency.extractInstanceValue(upstreamInstance, context)
+        )
+      ),
+
+    query: (template, context) =>
+      buildQuery(baseStep.id, {
+        canResolveTo:
+          canResolveTo == null
+            ? undefined
+            : (value) =>
+                canResolveTo(
+                  value,
+                  template[baseStep.id]?.config,
+                  ...Vec.map(dependencies, (dependency) =>
+                    dependency.query(template, context)
+                  )
+                ),
         willResolve: () => template[baseStep.id] != null,
       }),
   };
-
-  if (fixed != null) {
-    variableStep.TemplateFixedValueLabel = fixed.renderTemplateLabel;
-    variableStep.TemplateFixedValueSelector = fixed.renderSelector;
-    variableStep.initialFixedValue = (context) =>
-      nullthrows(
-        fixed.initializer(
-          ...(dependencies?.map((dependency) =>
-            nullthrows(
-              dependency.extractInstanceValue!(context),
-              `Unfulfilled dependency ${dependency.id} for ${baseStep.id}`
-            )
-          ) ?? []),
-          `Trying to derive the 'initial fixed' item when it shouldn't be allowed for id ${baseStep.id}`
-        )
-      );
-  }
 
   return variableStep;
 }

@@ -1,7 +1,7 @@
 import { invariant_violation, Vec } from "common";
 import { StepId } from "model/Game";
 
-export interface Query<T> {
+export interface Query<T = unknown> {
   /**
    * Check if the step could resolve to the single value passed through.
    */

@@ -26,6 +26,8 @@ import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 import salsaVariantStep from "./salsaVariantStep";
 
+const RANDOM = Symbol("<random>");
+
 export default createRandomGameStep({
   id: "cityTiles",
   labelOverride: "City Resources",
@@ -37,10 +39,15 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  random: (mapId, withSalsa) =>
-    CityResourcesEncoder.randomHash(mapId, withSalsa),
-
   isTemplatable: (map) => map.willResolve(),
+  resolve: (_: typeof RANDOM, mapId, withSalsa) =>
+    CityResourcesEncoder.randomHash(
+      // We can force mapId here with `!` because the element is only
+      // templatable when map will resolve (see isTemplatable)
+      mapId!,
+      withSalsa ?? false
+    ),
+  initialConfig: (map) => RANDOM,
   refresh: () => templateValue("unchanged"),
 });
 
