@@ -5,7 +5,6 @@ import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
-import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
@@ -14,6 +13,7 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { NoSettingsConfigPanel } from "games/core/ux/NoSettingsConfigPanel";
 import React, { useMemo } from "react";
 import GermaniaCastlesEncoder, {
   EXPECTED_REMAINING_RESOURCES_COUNT,
@@ -25,10 +25,8 @@ import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
-import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
+import { productsMetaStep } from "./productsMetaStep";
 import salsaVariantStep from "./salsaVariantStep";
-
-type TemplateConfig = { random: true };
 
 export default createRandomGameStep({
   id: "germaniaRomanCastles",
@@ -61,22 +59,8 @@ export default createRandomGameStep({
   initialConfig: () => ({ random: true }),
   refresh: () => templateValue("unchanged"),
 
-  ConfigPanel,
+  ConfigPanel: NoSettingsConfigPanel,
 });
-
-function ConfigPanel({
-  config,
-  queries,
-  onChange,
-}: ConfigPanelProps<
-  TemplateConfig,
-  readonly ConcordiaProductId[],
-  MapId,
-  true,
-  string
->): JSX.Element {
-  return <div>Hello World</div>;
-}
 
 function InstanceVariableComponent({
   value,
