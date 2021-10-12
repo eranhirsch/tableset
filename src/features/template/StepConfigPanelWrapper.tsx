@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { Templatable } from "./Templatable";
 import {
   templateActions,
-  templateElementSelectorEnforce,
+  templateElementSelectorNullable,
   templateSelectors,
 } from "./templateSlice";
 
@@ -19,7 +19,7 @@ export function StepConfigPanelWrapper({
 }): JSX.Element | null {
   const dispatch = useDispatch();
 
-  const element = useAppSelector(templateElementSelectorEnforce(templatable));
+  const element = useAppSelector(templateElementSelectorNullable(templatable));
   const dependencyQueries = useQueries(templatable.dependencies);
 
   const ConfigPanel = nullthrows(
@@ -29,7 +29,7 @@ export function StepConfigPanelWrapper({
 
   return (
     <ConfigPanel
-      config={element.config}
+      config={element?.config}
       onChange={(newConfig) =>
         dispatch(templateActions.configUpdated(templatable, newConfig))
       }
