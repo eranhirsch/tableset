@@ -5,7 +5,7 @@ import { templateValue } from "features/template/templateSlice";
 import React from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -35,8 +35,8 @@ export default createRandomGameStep({
   initialConfig: (products) => ({
     fixed: mapsForProducts(products.resolve())[0],
   }),
-  // Make sure we don't have a config which uses maps which aren't included
-  // anymore
+  // TODO: Make sure we don't have a config which uses maps which aren't
+  // included anymore
   refresh: () => templateValue("unchanged"),
 
   canResolveTo: (value, config, products) =>
@@ -140,21 +140,6 @@ function InstanceManualComponent() {
 //     <GenericItemsFixedTemplateLabel
 //       onLabelForItem={(id) => MAPS[id].name}
 //       selectedId={value}
-//     />
-//   );
-// }
-
-// function Selector({ current }: { current: MapId }): JSX.Element {
-//   const productIds = useAppSelector(
-//     allExpansionIdsSelector
-//   ) as readonly ConcordiaProductId[];
-//   return (
-//     <GenericItemsListPanel
-//       itemIds={mapsForProducts(productIds)}
-//       selectedId={current}
-//       onLabelForItem={(id) => MAPS[id].name}
-//       // TODO: Fix this to use the proper action via ConfigPanel
-//       onUpdateItem={(itemId) => templateActions.disabled("map")}
 //     />
 //   );
 // }
