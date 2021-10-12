@@ -1,5 +1,5 @@
 import { useAppSelector } from "app/hooks";
-import { invariant_violation, ReactUtils } from "common";
+import { ReactUtils } from "common";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { StepId } from "model/Game";
 import { gameStepSelector } from "../game/gameSlice";
@@ -16,10 +16,6 @@ export function ItemLabel({ stepId }: { stepId: StepId }): JSX.Element | null {
 
   if (templateElement == null) {
     return <>Disabled</>;
-  }
-
-  if (TemplateFixedValueLabel == null) {
-    invariant_violation(`No label component defined for step ${stepId}`);
   }
 
   if (typeof TemplateFixedValueLabel === "string") {
