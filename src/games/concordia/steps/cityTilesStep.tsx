@@ -4,10 +4,10 @@ import { Dict, MathUtils, Shape, Vec } from "common";
 import { hasExpansionSelector } from "features/expansions/expansionsSlice";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
-import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
+import { NoSettingsConfigPanel } from "games/core/ux/NoSettingsConfigPanel";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,
@@ -26,8 +26,6 @@ import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 import salsaVariantStep from "./salsaVariantStep";
-
-type TemplateConfig = { random: true };
 
 export default createRandomGameStep({
   id: "cityTiles",
@@ -51,16 +49,8 @@ export default createRandomGameStep({
   initialConfig: () => ({ random: true }),
   refresh: () => templateValue("unchanged"),
 
-  ConfigPanel,
+  ConfigPanel: NoSettingsConfigPanel,
 });
-
-function ConfigPanel({
-  config,
-  queries,
-  onChange,
-}: ConfigPanelProps<TemplateConfig, MapId, true>): JSX.Element {
-  return <div>Hello World</div>;
-}
 
 function InstanceVariableComponent({
   value: hash,
