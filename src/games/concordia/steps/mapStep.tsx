@@ -74,6 +74,15 @@ function ConfigPanel({
           />
         ))
       )}
+      <Chip
+        color="primary"
+        label="Random"
+        variant={selectedMapId === null ? "filled" : "outlined"}
+        size="small"
+        onClick={
+          selectedMapId != null ? () => onChange({ random: true }) : undefined
+        }
+      />
     </>
   );
 }
