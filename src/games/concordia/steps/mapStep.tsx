@@ -13,6 +13,8 @@ import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
 
+type TemplateConfig = { random: true } | { fixed: MapId };
+
 export default createRandomGameStep({
   id: "map",
 
@@ -23,15 +25,16 @@ export default createRandomGameStep({
   InstanceManualComponent,
   InstanceVariableComponent,
 
-  // TODO: Move to resolver
-  // random(productIds) {
-  //   const availableMaps = mapsForProducts(productIds);
-  //   return availableMaps[Random.index(availableMaps)];
-  // },
-
   isTemplatable: (products) => products.willContainAny(productsWithMaps()),
-  resolve: (config: MapId, productIds) => config,
-  initialConfig: (products) => mapsForProducts(products.resolve())[0],
+
+  resolve: (config, productIds) =>
+    "fixed" in config
+      ? config.fixed
+      : Vec.sample(mapsForProducts(productIds!), 1),
+
+  initialConfig: (products) => ({
+    fixed: mapsForProducts(products.resolve())[0],
+  }),
   // Make sure we don't have a config which uses maps which aren't included
   // anymore
   refresh: () => templateValue("unchanged"),
@@ -43,7 +46,10 @@ function ConfigPanel({
   config,
   queries,
   onChange,
-}: ConfigPanelProps<MapId, readonly ConcordiaProductId[]>): JSX.Element {
+}: ConfigPanelProps<
+  TemplateConfig,
+  readonly ConcordiaProductId[]
+>): JSX.Element {
   return <div>Hello World</div>;
 }
 

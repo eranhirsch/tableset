@@ -1,6 +1,9 @@
 import { AvatarGroup, Box, Typography } from "@mui/material";
+import { Vec } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
+import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
+import { Query } from "games/core/steps/Query";
 import React from "react";
 import { useAppSelector } from "../../../app/hooks";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
@@ -11,6 +14,8 @@ import {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
+
+type TemplateConfig = { random: true } | { fixed: readonly PlayerId[] };
 
 export default createRandomGameStep({
   id: "playOrder",
@@ -26,8 +31,6 @@ export default createRandomGameStep({
 
   // TODO: Move to the resolver
   // random: (playerIds) =>
-  //   // We slice the first player because it acts as a pivot
-  //   Vec.shuffle(playerIds.slice(1)),
 
   isTemplatable: (players) =>
     players.count({
@@ -35,34 +38,15 @@ export default createRandomGameStep({
       min: 3,
     }),
 
-  resolve: (config: readonly PlayerId[], playerIds) => config,
+  resolve: (config: TemplateConfig, playerIds) =>
+    "fixed" in config ? config.fixed : Vec.shuffle(playerIds!.slice(1)),
 
-  initialConfig: (players) => players.resolve().slice(1),
+  initialConfig: (players) => ({ fixed: players.resolve().slice(1) }),
 
-  refresh(current: readonly PlayerId[], players) {
-    const playerIds = players.resolve();
-    // Remove any deleted players from the current value.
-    let currentRefreshed = current.filter((playerId) =>
-      playerIds.includes(playerId)
-    );
-
-    const [newPivot, ...rest] = playerIds;
-
-    const newPivotIdx = currentRefreshed.indexOf(newPivot);
-    if (newPivotIdx > -1) {
-      // the current value can contain the pivot only if the previous pivot
-      // was removed so we need to re-pivot the current array
-
-      currentRefreshed = currentRefreshed
-        // First take all players after the new pivot
-        .slice(newPivotIdx + 1)
-        // Then add the players who were previously before the new pivot
-        .concat(currentRefreshed.slice(0, newPivotIdx));
-    }
-
-    const missing = rest.filter((playerId) => !current.includes(playerId));
-    return currentRefreshed.concat(missing);
-  },
+  refresh: (current, players) =>
+    "fixed" in current
+      ? { fixed: refreshFixedConfig(current.fixed, players) }
+      : templateValue("unchanged"),
 
   ConfigPanel,
 });
@@ -71,7 +55,7 @@ function ConfigPanel({
   config,
   queries,
   onChange,
-}: ConfigPanelProps<readonly PlayerId[], readonly PlayerId[]>): JSX.Element {
+}: ConfigPanelProps<TemplateConfig, readonly PlayerId[]>): JSX.Element {
   return <div>Hello World</div>;
 }
 
@@ -247,3 +231,31 @@ function InstanceManualComponent(): JSX.Element {
 //     </Badge>
 //   );
 // }
+
+function refreshFixedConfig(
+  current: readonly PlayerId[],
+  players: Query<readonly PlayerId[]>
+): readonly PlayerId[] {
+  const playerIds = players.resolve();
+  // Remove any deleted players from the current value.
+  let currentRefreshed = current.filter((playerId) =>
+    playerIds.includes(playerId)
+  );
+
+  const [newPivot, ...rest] = playerIds;
+
+  const newPivotIdx = currentRefreshed.indexOf(newPivot);
+  if (newPivotIdx > -1) {
+    // the current value can contain the pivot only if the previous pivot
+    // was removed so we need to re-pivot the current array
+
+    currentRefreshed = currentRefreshed
+      // First take all players after the new pivot
+      .slice(newPivotIdx + 1)
+      // Then add the players who were previously before the new pivot
+      .concat(currentRefreshed.slice(0, newPivotIdx));
+  }
+
+  const missing = rest.filter((playerId) => !current.includes(playerId));
+  return currentRefreshed.concat(missing);
+}

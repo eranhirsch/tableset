@@ -6,7 +6,9 @@ import {
 import { colorName } from "app/ux/themeWithGameColors";
 import { Dict, Vec } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
+import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
+import { Query } from "games/core/steps/Query";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
@@ -19,6 +21,8 @@ import { GrammaticalList } from "../../core/ux/GrammaticalList";
 
 type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
 
+type TemplateConfig = { random: true } | { fixed: PlayerColors };
+
 const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
   createRandomGameStep({
     id: "playerColors",
@@ -29,35 +33,26 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     InstanceVariableComponent,
     InstanceManualComponent: () => InstanceManualComponent({ availableColors }),
 
-    // TODO: Move this to the resolver
-    // random: (playerIds) =>
-    //   Dict.associate(
-    //     playerIds,
-    //     Vec.shuffle(Vec.sample(availableColors, playerIds.length))
-    //   ),
-
     isTemplatable: (players) => players.count({ max: availableColors.length }),
 
-    resolve: (config: PlayerColors, playerIds) => config,
+    resolve: (config, playerIds) =>
+      "fixed" in config
+        ? config.fixed
+        : Dict.associate(
+            playerIds!,
+            Vec.shuffle(Vec.sample(availableColors, playerIds!.length))
+          ),
 
-    initialConfig: (players) =>
-      Dict.associate(players.resolve(), availableColors),
+    initialConfig: (players) => ({
+      fixed: Dict.associate(players.resolve(), availableColors),
+    }),
 
-    refresh(current: PlayerColors, players) {
-      const playerIds = players.resolve();
-      const stillActivePlayerColors = Dict.select_keys(current, playerIds);
-      const colorlessPlayers = Vec.diff(playerIds, Vec.keys(current));
-
-      return Dict.merge(
-        stillActivePlayerColors,
-        // Associate an available color for each player without a color
-        Dict.associate(
-          colorlessPlayers,
-          // Colors that aren't used by active players
-          Vec.diff(availableColors, Vec.values(stillActivePlayerColors))
-        )
-      );
-    },
+    refresh: (current, players) =>
+      "fixed" in current
+        ? {
+            fixed: refreshFixedConfig(current.fixed, availableColors, players),
+          }
+        : templateValue("unchanged"),
 
     ConfigPanel,
   });
@@ -67,7 +62,7 @@ function ConfigPanel({
   config,
   queries,
   onChange,
-}: ConfigPanelProps<PlayerColors, readonly PlayerId[]>): JSX.Element {
+}: ConfigPanelProps<TemplateConfig, readonly PlayerId[]>): JSX.Element {
   return <div>Hello World</div>;
 }
 
@@ -343,3 +338,23 @@ function InstanceManualComponent({
 //     </Droppable>
 //   );
 // }
+
+function refreshFixedConfig(
+  current: PlayerColors,
+  availableColors: readonly GamePiecesColor[],
+  players: Query<readonly PlayerId[]>
+): PlayerColors {
+  const playerIds = players.resolve();
+  const stillActivePlayerColors = Dict.select_keys(current, playerIds);
+  const colorlessPlayers = Vec.diff(playerIds, Vec.keys(current));
+
+  return Dict.merge(
+    stillActivePlayerColors,
+    // Associate an available color for each player without a color
+    Dict.associate(
+      colorlessPlayers,
+      // Colors that aren't used by active players
+      Vec.diff(availableColors, Vec.values(stillActivePlayerColors))
+    )
+  );
+}

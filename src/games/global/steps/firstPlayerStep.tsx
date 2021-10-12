@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { C } from "common";
+import { C, Vec } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
@@ -9,6 +9,8 @@ import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
+
+type TemplateConfig = { random: true } | { fixed: PlayerId };
 
 export default createRandomGameStep({
   id: "firstPlayer",
@@ -20,19 +22,19 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent: "Choose which player goes first.",
 
-  // TODO: Move to the resolver
-  // random: (playerIds) => playerIds[Random.index(playerIds)],
-
   isTemplatable: (players) =>
     players.count({
       // Solo games don't need a first player
       min: 2,
     }),
-  resolve: (config: PlayerId, playerIds) => config,
-  initialConfig: (players) => C.firstx(players.resolve()),
-  refresh: (current: PlayerId, players) =>
+  resolve: (config, playerIds) =>
+    "fixed" in config ? config.fixed : Vec.sample(playerIds!, 1),
+  initialConfig: (players) => ({ fixed: C.firstx(players.resolve()) }),
+  refresh: (current, players) =>
     templateValue(
-      players.resolve().includes(current) ? "unchanged" : "unfixable"
+      "fixed" in current && !players.resolve().includes(current.fixed)
+        ? "unfixable"
+        : "unchanged"
     ),
 
   ConfigPanel,
@@ -42,7 +44,7 @@ function ConfigPanel({
   config,
   queries,
   onChange,
-}: ConfigPanelProps<PlayerId, readonly PlayerId[]>): JSX.Element {
+}: ConfigPanelProps<TemplateConfig, readonly PlayerId[]>): JSX.Element {
   return <div>Hello World</div>;
 }
 

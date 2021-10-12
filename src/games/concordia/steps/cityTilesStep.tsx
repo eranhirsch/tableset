@@ -27,7 +27,7 @@ import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 import salsaVariantStep from "./salsaVariantStep";
 
-const RANDOM = Symbol("<random>");
+type TemplateConfig = { random: true };
 
 export default createRandomGameStep({
   id: "cityTiles",
@@ -41,14 +41,14 @@ export default createRandomGameStep({
   InstanceManualComponent,
 
   isTemplatable: (map) => map.willResolve(),
-  resolve: (_: typeof RANDOM, mapId, withSalsa) =>
+  resolve: (_, mapId, withSalsa) =>
     CityResourcesEncoder.randomHash(
       // We can force mapId here with `!` because the element is only
       // templatable when map will resolve (see isTemplatable)
       mapId!,
       withSalsa ?? false
     ),
-  initialConfig: (map) => RANDOM,
+  initialConfig: () => ({ random: true }),
   refresh: () => templateValue("unchanged"),
 
   ConfigPanel,
@@ -58,7 +58,7 @@ function ConfigPanel({
   config,
   queries,
   onChange,
-}: ConfigPanelProps<typeof RANDOM, MapId, true>): JSX.Element {
+}: ConfigPanelProps<TemplateConfig, MapId, true>): JSX.Element {
   return <div>Hello World</div>;
 }
 

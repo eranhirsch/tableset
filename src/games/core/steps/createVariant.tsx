@@ -53,17 +53,13 @@ interface OptionsInternal
   isTemplatable(...queries: Query[]): boolean;
 }
 
+type TemplateConfig = { ratio: number };
+
 export interface VariantGameStep
   extends VariableGameStep<boolean>,
     Skippable,
-    Templatable<true, number> {
+    Templatable<true, TemplateConfig> {
   InstanceVariableComponent(props: { value: boolean }): JSX.Element;
-  resolveRandom(context: InstanceContext): true | null;
-
-  dependencies: [...VariableGameStep<unknown>[]];
-
-  TemplateFixedValueLabel: ((props: { value: true }) => JSX.Element) | string;
-  initialFixedValue(context: InstanceContext): true;
 }
 
 export function createVariant<
@@ -117,7 +113,7 @@ export function createVariant({
     // The value can never be changed following changes in the template, it
     // could only be disabled via `canBeTemplated`
     refreshTemplateConfig: () => templateValue("unchanged"),
-    initialConfig: () => 0.5,
+    initialConfig: () => ({ ratio: 0.5 }),
     coerceInstanceEntry: (entry) =>
       entry == null
         ? false
@@ -131,11 +127,7 @@ export function createVariant({
 
     hasValue: (_: TemplateContext | InstanceContext) => true,
 
-    resolveRandom: () => (Random.coin_flip(0.5) ? true : null),
-    resolve: () => (Random.coin_flip(0.5) ? true : null),
-
-    TemplateFixedValueLabel: "Enabled",
-    initialFixedValue: () => true,
+    resolve: (config) => (Random.coin_flip(config.ratio) ? true : null),
 
     query: (template) =>
       buildQuery(baseStep.id, {
@@ -151,7 +143,7 @@ export function createVariant({
 function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
   config,
 }: ConfigPanelProps<
-  number,
+  TemplateConfig,
   D0,
   D1,
   D2,
@@ -163,5 +155,5 @@ function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
   D8,
   D9
 >): JSX.Element {
-  return <div>{config}</div>;
+  return <div>{config?.ratio}</div>;
 }

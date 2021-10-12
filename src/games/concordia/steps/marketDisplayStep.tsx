@@ -12,7 +12,7 @@ import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 import RomanTitle from "../ux/RomanTitle";
 import marketCardsStep from "./marketCardsStep";
 
-const RANDOM = Symbol("<random>");
+type TemplateConfig = { random: true };
 
 export default createRandomGameStep({
   id: "marketDisplay",
@@ -24,8 +24,8 @@ export default createRandomGameStep({
   InstanceManualComponent,
 
   isTemplatable: () => true,
-  resolve: (_: typeof RANDOM) => MarketDisplayEncoder.randomHash(),
-  initialConfig: () => RANDOM,
+  resolve: () => MarketDisplayEncoder.randomHash(),
+  initialConfig: (): TemplateConfig => ({ random: true }),
   refresh: () => templateValue("unchanged"),
 
   ConfigPanel,
@@ -35,7 +35,7 @@ function ConfigPanel({
   config,
   queries,
   onChange,
-}: ConfigPanelProps<typeof RANDOM>): JSX.Element {
+}: ConfigPanelProps<TemplateConfig>): JSX.Element {
   return <div>Hello World</div>;
 }
 

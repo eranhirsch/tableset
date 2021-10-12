@@ -19,8 +19,8 @@ import { templateSteps } from "./templateSteps";
 
 export type TemplateElement<C = unknown> = {
   id: StepId;
-  isStale?: true;
   config: C;
+  isStale?: true;
 };
 
 const templateAdapter = createEntityAdapter<TemplateElement>({
@@ -144,7 +144,7 @@ export const fullTemplateSelector = createSelector(
   (elements) =>
     Dict.pull(
       elements,
-      (element) => JSON.stringify(element.config),
+      ({ config }) => config,
       ({ id }) => id
     )
 );

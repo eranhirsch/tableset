@@ -28,7 +28,7 @@ import mapStep from "./mapStep";
 import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
 import salsaVariantStep from "./salsaVariantStep";
 
-const RANDOM = Symbol("<random>");
+type TemplateConfig = { random: true };
 
 export default createRandomGameStep({
   id: "germaniaRomanCastles",
@@ -49,7 +49,7 @@ export default createRandomGameStep({
     products.willContain("britanniaGermania") &&
     map.canResolveTo("germania") &&
     cities.willResolve(),
-  resolve: (_config: typeof RANDOM, _products, map, withSalsa, cities) =>
+  resolve: (_config, _products, map, withSalsa, cities) =>
     map === "germania"
       ? GermaniaCastlesEncoder.randomHash(
           withSalsa ?? false,
@@ -58,7 +58,7 @@ export default createRandomGameStep({
           cities!
         )
       : null,
-  initialConfig: () => RANDOM,
+  initialConfig: () => ({ random: true }),
   refresh: () => templateValue("unchanged"),
 
   ConfigPanel,
@@ -69,7 +69,7 @@ function ConfigPanel({
   queries,
   onChange,
 }: ConfigPanelProps<
-  typeof RANDOM,
+  TemplateConfig,
   readonly ConcordiaProductId[],
   MapId,
   true,

@@ -57,7 +57,7 @@ const keys = <T extends DictLike>(dict: Readonly<T>): readonly (keyof T)[] =>
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.sample/
  */
-function sample<Tv>(arr: readonly Tv[], sampleSize: 1): readonly [Tv];
+function sample<Tv>(arr: readonly Tv[], sampleSize: 1): Tv;
 function sample<Tv>(arr: readonly Tv[], sampleSize: 2): readonly [Tv, Tv];
 function sample<Tv>(arr: readonly Tv[], sampleSize: 3): readonly [Tv, Tv, Tv];
 function sample<Tv>(
@@ -89,10 +89,17 @@ function sample<Tv>(
   sampleSize: 10
 ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
 function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[];
-function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[] {
+function sample<Tv>(
+  arr: readonly Tv[],
+  sampleSize: number
+): Tv | readonly Tv[] {
   if (sampleSize >= arr.length) {
     // Trivial solution
-    return arr;
+    return arr.length === 1 ? arr[0] : arr;
+  }
+
+  if (sampleSize === 1) {
+    return arr[Random.index(arr)];
   }
 
   // To optimize the selection we can toggle between an include and exclude
