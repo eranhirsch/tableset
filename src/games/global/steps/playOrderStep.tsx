@@ -4,10 +4,10 @@ import {
   AvatarGroup,
   Badge,
   Box,
+  Checkbox,
   FormControlLabel,
   Stack,
-  Switch,
-  Typography
+  Typography,
 } from "@mui/material";
 import { Vec } from "common";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
@@ -20,7 +20,7 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult
+  DropResult,
 } from "react-beautiful-dnd";
 import { useAppSelector } from "../../../app/hooks";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
@@ -28,7 +28,7 @@ import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerId } from "../../../model/Player";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 
@@ -87,7 +87,7 @@ function ConfigPanel({
       <FormControlLabel
         sx={{ alignSelf: "center" }}
         control={
-          <Switch
+          <Checkbox
             checked={config != null && "random" in config}
             onChange={(_, checked) =>
               onChange(checked ? { random: true } : { fixed: initialFixed })
