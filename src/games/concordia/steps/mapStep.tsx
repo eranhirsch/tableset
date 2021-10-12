@@ -1,4 +1,4 @@
-import { styled, Typography } from "@mui/material";
+import { Chip, styled, Typography } from "@mui/material";
 import { Dict, Vec } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -39,18 +39,43 @@ export default createRandomGameStep({
   // anymore
   refresh: () => templateValue("unchanged"),
 
+  canResolveTo: (value, config, products) =>
+    config != null &&
+    mapsForProducts(products.resolve()).includes(value) &&
+    ("random" in config || config.fixed === value),
+
   ConfigPanel,
 });
 
 function ConfigPanel({
   config,
-  queries,
+  queries: [products],
   onChange,
 }: ConfigPanelProps<
   TemplateConfig,
   readonly ConcordiaProductId[]
 >): JSX.Element {
-  return <div>Hello World</div>;
+  const selectedMapId =
+    config != null && "fixed" in config ? config.fixed : null;
+  return (
+    <>
+      {React.Children.toArray(
+        Vec.map(mapsForProducts(products.resolve()), (mapId) => (
+          <Chip
+            color="primary"
+            label={<RomanTitle>{MAPS[mapId].name}</RomanTitle>}
+            variant={selectedMapId === mapId ? "filled" : "outlined"}
+            size="small"
+            onClick={
+              selectedMapId !== mapId
+                ? () => onChange({ fixed: mapId })
+                : undefined
+            }
+          />
+        ))
+      )}
+    </>
+  );
 }
 
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({
