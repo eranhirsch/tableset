@@ -1,6 +1,6 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
-import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
+import { NoSettingsConfigPanel } from "games/core/ux/NoSettingsConfigPanel";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
   createRandomGameStep,
@@ -11,8 +11,6 @@ import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 import RomanTitle from "../ux/RomanTitle";
 import marketCardsStep from "./marketCardsStep";
-
-type TemplateConfig = { random: true };
 
 export default createRandomGameStep({
   id: "marketDisplay",
@@ -25,19 +23,11 @@ export default createRandomGameStep({
 
   isTemplatable: () => true,
   resolve: () => MarketDisplayEncoder.randomHash(),
-  initialConfig: (): TemplateConfig => ({ random: true }),
+  initialConfig: () => ({ random: true }),
   refresh: () => templateValue("unchanged"),
 
-  ConfigPanel,
+  ConfigPanel: NoSettingsConfigPanel,
 });
-
-function ConfigPanel({
-  config,
-  queries,
-  onChange,
-}: ConfigPanelProps<TemplateConfig>): JSX.Element {
-  return <div>Hello World</div>;
-}
 
 function InstanceVariableComponent({
   value: hash,
