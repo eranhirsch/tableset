@@ -1,4 +1,5 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
@@ -26,7 +27,17 @@ export default createRandomGameStep({
   resolve: (_: typeof RANDOM) => MarketDisplayEncoder.randomHash(),
   initialConfig: () => RANDOM,
   refresh: () => templateValue("unchanged"),
+
+  ConfigPanel,
 });
+
+function ConfigPanel({
+  config,
+  queries,
+  onChange,
+}: ConfigPanelProps<typeof RANDOM>): JSX.Element {
+  return <div>Hello World</div>;
+}
 
 function InstanceVariableComponent({
   value: hash,

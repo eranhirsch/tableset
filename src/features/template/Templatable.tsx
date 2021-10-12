@@ -18,7 +18,35 @@ export const isWithDependencies = (
 type Template = Readonly<
   ReturnType<typeof templateSelectors["selectEntities"]>
 >;
-type DependencyQueries = readonly Query[];
+
+export interface ConfigPanelProps<
+  C,
+  D0 = never,
+  D1 = never,
+  D2 = never,
+  D3 = never,
+  D4 = never,
+  D5 = never,
+  D6 = never,
+  D7 = never,
+  D8 = never,
+  D9 = never
+> {
+  config: C | null;
+  queries: readonly [
+    Query<D0>,
+    Query<D1>,
+    Query<D2>,
+    Query<D3>,
+    Query<D4>,
+    Query<D5>,
+    Query<D6>,
+    Query<D7>,
+    Query<D8>,
+    Query<D9>
+  ];
+  onChange(newConfig: C): void;
+}
 
 export interface Templatable<T = unknown, C = unknown>
   extends WithDependencies {
@@ -28,17 +56,18 @@ export interface Templatable<T = unknown, C = unknown>
     context: ContextBase
   ): T | null;
   initialConfig(template: Template, context: Readonly<ContextBase>): C;
-  ConfigPanel?: (props: {
-    config: C | undefined;
-    queries: DependencyQueries;
-    onChange(newConfig: C): void;
-  }) => JSX.Element;
   refreshTemplateConfig(
     config: C,
     template: Template,
     context: Readonly<ContextBase>
   ): C;
   canBeTemplated(template: Template, context: Readonly<ContextBase>): boolean;
+
+  ConfigPanel(props: {
+    config: C | null;
+    queries: readonly Query[];
+    onChange(newConfig: C): void;
+  }): JSX.Element;
 }
 
 export const isTemplatable = (x: GameStepBase): x is Templatable =>

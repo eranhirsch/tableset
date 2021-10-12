@@ -1,5 +1,5 @@
 import { Dict, invariant_violation, Random, Vec } from "common";
-import { Templatable } from "features/template/Templatable";
+import { ConfigPanelProps, Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
@@ -143,5 +143,25 @@ export function createVariant({
           value === (template[baseStep.id] != null),
         willResolve: () => template[baseStep.id] != null,
       }),
+
+    ConfigPanel,
   };
+}
+
+function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
+  config,
+}: ConfigPanelProps<
+  number,
+  D0,
+  D1,
+  D2,
+  D3,
+  D4,
+  D5,
+  D6,
+  D7,
+  D8,
+  D9
+>): JSX.Element {
+  return <div>{config}</div>;
 }

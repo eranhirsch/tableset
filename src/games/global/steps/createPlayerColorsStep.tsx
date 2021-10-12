@@ -5,13 +5,14 @@ import {
 } from "@mui/material";
 import { colorName } from "app/ux/themeWithGameColors";
 import { Dict, Vec } from "common";
+import { ConfigPanelProps } from "features/template/Templatable";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -57,8 +58,18 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
         )
       );
     },
+
+    ConfigPanel,
   });
 export default createPlayerColorsStep;
+
+function ConfigPanel({
+  config,
+  queries,
+  onChange,
+}: ConfigPanelProps<PlayerColors, readonly PlayerId[]>): JSX.Element {
+  return <div>Hello World</div>;
+}
 
 function InstanceVariableComponent({
   value: playerColor,

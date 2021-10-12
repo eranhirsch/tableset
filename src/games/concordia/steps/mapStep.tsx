@@ -1,18 +1,17 @@
 import { styled, Typography } from "@mui/material";
 import { Dict, Vec } from "common";
-import {
-    templateValue
-} from "features/template/templateSlice";
+import { ConfigPanelProps } from "features/template/Templatable";
+import { templateValue } from "features/template/templateSlice";
 import React from "react";
 import {
-    createRandomGameStep,
-    VariableStepInstanceComponentProps
+  createRandomGameStep,
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
-import { productsMetaStep } from "./productsMetaStep";
+import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
 
 export default createRandomGameStep({
   id: "map",
@@ -36,7 +35,17 @@ export default createRandomGameStep({
   // Make sure we don't have a config which uses maps which aren't included
   // anymore
   refresh: () => templateValue("unchanged"),
+
+  ConfigPanel,
 });
+
+function ConfigPanel({
+  config,
+  queries,
+  onChange,
+}: ConfigPanelProps<MapId, readonly ConcordiaProductId[]>): JSX.Element {
+  return <div>Hello World</div>;
+}
 
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({
   color: theme.palette.primary.main,

@@ -1,4 +1,5 @@
 import { AvatarGroup, Box, Typography } from "@mui/material";
+import { ConfigPanelProps } from "features/template/Templatable";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import React from "react";
 import { useAppSelector } from "../../../app/hooks";
@@ -62,7 +63,17 @@ export default createRandomGameStep({
     const missing = rest.filter((playerId) => !current.includes(playerId));
     return currentRefreshed.concat(missing);
   },
+
+  ConfigPanel,
 });
+
+function ConfigPanel({
+  config,
+  queries,
+  onChange,
+}: ConfigPanelProps<readonly PlayerId[], readonly PlayerId[]>): JSX.Element {
+  return <div>Hello World</div>;
+}
 
 function InstanceVariableComponent({
   value: playOrder,

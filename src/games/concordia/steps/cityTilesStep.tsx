@@ -6,11 +6,12 @@ import {
   useOptionalInstanceValue,
   useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
+import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -18,7 +19,7 @@ import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder, {
   CITY_TILES,
   REGULAR_MAPS_SALT_ALTERNATIVE,
-  SALT_MAP_EXTRA_RESOURCE
+  SALT_MAP_EXTRA_RESOURCE,
 } from "../utils/CityResourcesEncoder";
 import { MapId, MAPS, Zone } from "../utils/Maps";
 import { RESOURCE_NAME } from "../utils/resource";
@@ -49,7 +50,17 @@ export default createRandomGameStep({
     ),
   initialConfig: (map) => RANDOM,
   refresh: () => templateValue("unchanged"),
+
+  ConfigPanel,
 });
+
+function ConfigPanel({
+  config,
+  queries,
+  onChange,
+}: ConfigPanelProps<typeof RANDOM, MapId, true>): JSX.Element {
+  return <div>Hello World</div>;
+}
 
 function InstanceVariableComponent({
   value: hash,

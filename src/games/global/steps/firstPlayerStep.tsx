@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import { C } from "common";
+import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
@@ -33,7 +34,17 @@ export default createRandomGameStep({
     templateValue(
       players.resolve().includes(current) ? "unchanged" : "unfixable"
     ),
+
+  ConfigPanel,
 });
+
+function ConfigPanel({
+  config,
+  queries,
+  onChange,
+}: ConfigPanelProps<PlayerId, readonly PlayerId[]>): JSX.Element {
+  return <div>Hello World</div>;
+}
 
 function InstanceVariableComponent({
   value: playerId,

@@ -5,6 +5,7 @@ import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
+import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
@@ -24,7 +25,7 @@ import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
-import { productsMetaStep } from "./productsMetaStep";
+import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
 import salsaVariantStep from "./salsaVariantStep";
 
 const RANDOM = Symbol("<random>");
@@ -59,7 +60,23 @@ export default createRandomGameStep({
       : null,
   initialConfig: () => RANDOM,
   refresh: () => templateValue("unchanged"),
+
+  ConfigPanel,
 });
+
+function ConfigPanel({
+  config,
+  queries,
+  onChange,
+}: ConfigPanelProps<
+  typeof RANDOM,
+  readonly ConcordiaProductId[],
+  MapId,
+  true,
+  string
+>): JSX.Element {
+  return <div>Hello World</div>;
+}
 
 function InstanceVariableComponent({
   value,

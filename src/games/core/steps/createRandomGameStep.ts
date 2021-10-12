@@ -1,6 +1,6 @@
 import { Dict, nullthrows, type_invariant, Vec } from "common";
 import { SetupStep } from "features/instance/instanceSlice";
-import { Templatable } from "features/template/Templatable";
+import { ConfigPanelProps, Templatable } from "features/template/Templatable";
 import { TemplateElement } from "features/template/templateSlice";
 import { StepId } from "model/Game";
 import { Skippable } from "model/Skippable";
@@ -94,7 +94,7 @@ type Options<
     ): C;
     canResolveTo?(
       value: T,
-      config: C | undefined,
+      config: C | null,
       query1: Query<D1>,
       query2: Query<D2>,
       query3: Query<D3>,
@@ -122,6 +122,9 @@ type Options<
       value: T | null,
       dependencies: DepsTuple<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
     ): boolean;
+    ConfigPanel(
+      props: ConfigPanelProps<C, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
+    ): JSX.Element;
   };
 
 interface OptionsInternal<T, C>
@@ -143,11 +146,12 @@ interface OptionsInternal<T, C>
   resolve(config: C, ...dependencies: (unknown | null)[]): T | null;
   refresh(current: C, ...dependencies: Query[]): C;
   initialConfig(...queries: Query[]): C;
-  canResolveTo?(
-    value: T,
-    config: unknown | undefined,
-    ...queries: Query[]
-  ): boolean;
+  canResolveTo?(value: T, config: unknown | null, ...queries: Query[]): boolean;
+  ConfigPanel(props: {
+    config: C | null;
+    queries: readonly Query[];
+    onChange(newConfig: C): void;
+  }): JSX.Element;
 }
 
 export function createRandomGameStep<
@@ -168,6 +172,7 @@ export function createRandomGameStep<
 ): Readonly<RandomGameStep<T, C>>;
 export function createRandomGameStep<T, C>({
   canResolveTo,
+  ConfigPanel,
   dependencies,
   initialConfig,
   InstanceVariableComponent,
@@ -282,6 +287,8 @@ export function createRandomGameStep<T, C>({
                 ),
         willResolve: () => template[baseStep.id] != null,
       }),
+
+    ConfigPanel,
   };
 
   return variableStep;
