@@ -1,4 +1,4 @@
-import { Slider } from "@mui/material";
+import { Box, Slider } from "@mui/material";
 import { Dict, invariant_violation, Random, type_invariant, Vec } from "common";
 import { ConfigPanelProps, Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -165,22 +165,26 @@ function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
   }, [config?.percent, onChange]);
 
   return (
-    <Slider
-      disabled={config?.percent === 0}
-      value={config?.percent ?? 0}
-      min={0}
-      max={100}
-      step={5}
-      valueLabelDisplay="auto"
-      valueLabelFormat={(percent) => `${percent}%`}
-      onChange={(_, newValue) =>
-        newValue !== config?.percent
-          ? onChange({
-              percent: type_invariant(newValue, isNumber),
-            })
-          : undefined
-      }
-    />
+    <Box textAlign="center">
+      <Slider
+        sx={{ width: "75%" }}
+        disabled={config?.percent === 0}
+        value={config?.percent ?? 0}
+        min={0}
+        max={100}
+        step={5}
+        marks={[{ value: 50, label: "\u25B2" }]}
+        valueLabelDisplay="auto"
+        valueLabelFormat={(percent) => `${percent}%`}
+        onChange={(_, newValue) =>
+          newValue !== config?.percent
+            ? onChange({
+                percent: type_invariant(newValue, isNumber),
+              })
+            : undefined
+        }
+      />
+    </Box>
   );
 }
 
