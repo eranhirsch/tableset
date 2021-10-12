@@ -1,8 +1,10 @@
-import { Dict, invariant_violation, Random, Vec } from "common";
+import { Slider } from "@mui/material";
+import { Dict, invariant_violation, Random, type_invariant, Vec } from "common";
 import { ConfigPanelProps, Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
+import { useEffect } from "react";
 import { createGameStep } from "./createGameStep";
 import { InstanceContext, TemplateContext } from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
@@ -53,7 +55,7 @@ interface OptionsInternal
   isTemplatable(...queries: Query[]): boolean;
 }
 
-type TemplateConfig = { ratio: number };
+type TemplateConfig = { percent: number };
 
 export interface VariantGameStep
   extends VariableGameStep<boolean>,
@@ -113,7 +115,7 @@ export function createVariant({
     // The value can never be changed following changes in the template, it
     // could only be disabled via `canBeTemplated`
     refreshTemplateConfig: () => templateValue("unchanged"),
-    initialConfig: () => ({ ratio: 0.5 }),
+    initialConfig: () => ({ percent: 50 }),
     coerceInstanceEntry: (entry) =>
       entry == null
         ? false
@@ -127,7 +129,7 @@ export function createVariant({
 
     hasValue: (_: TemplateContext | InstanceContext) => true,
 
-    resolve: (config) => (Random.coin_flip(config.ratio) ? true : null),
+    resolve: (config) => (Random.coin_flip(config.percent / 100) ? true : null),
 
     query: (template) =>
       buildQuery(baseStep.id, {
@@ -142,6 +144,7 @@ export function createVariant({
 
 function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
   config,
+  onChange,
 }: ConfigPanelProps<
   TemplateConfig,
   D0,
@@ -155,5 +158,30 @@ function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
   D8,
   D9
 >): JSX.Element {
-  return <div>{config?.ratio}</div>;
+  useEffect(() => {
+    if (config?.percent === 0) {
+      onChange({ percent: 5 });
+    }
+  }, [config?.percent, onChange]);
+
+  return (
+    <Slider
+      disabled={config?.percent === 0}
+      value={config?.percent ?? 0}
+      min={0}
+      max={100}
+      step={5}
+      valueLabelDisplay="auto"
+      valueLabelFormat={(percent) => `${percent}%`}
+      onChange={(_, newValue) =>
+        newValue !== config?.percent
+          ? onChange({
+              percent: type_invariant(newValue, isNumber),
+            })
+          : undefined
+      }
+    />
+  );
 }
+
+const isNumber = (x: unknown): x is number => typeof x === "number";
