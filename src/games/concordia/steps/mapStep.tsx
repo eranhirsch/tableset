@@ -143,6 +143,7 @@ function StaticChips({
   onClick(clickedMapId: MapId): void;
 }): JSX.Element {
   const allMapIds = useMemo(() => mapsForProducts(products), [products]);
+
   const relevantMapIds = useMemo(
     () => relevantMapsForConfig(config, products, players),
     [config, players, products]
@@ -182,6 +183,7 @@ function DynamicChips({
   onClick(mode: TemplateConfigDynamicMode): void;
 }): JSX.Element {
   const allMapIds = useMemo(() => mapsForProducts(products), [products]);
+
   const recommendedMapIds = useMemo(
     () => recommendedForPlayerCount(players.length, allMapIds),
     [allMapIds, players]
@@ -189,32 +191,51 @@ function DynamicChips({
 
   return (
     <Grid item xs={5} padding={0.5} alignSelf="center" textAlign="center">
-      <Chip
+      <DynamicChip
+        config={config}
+        mode="any"
         label="Any"
-        color={"dynamic" in config ? "primary" : "default"}
-        variant={
-          ("dynamic" in config && config.dynamic === "any") ||
-          ("static" in config && config.static.length === allMapIds.length)
-            ? "filled"
-            : "outlined"
-        }
-        sx={{ width: "100%", marginY: 0.5 }}
+        equivalentStaticSet={allMapIds}
         onClick={() => onClick("any")}
       />
-      <Chip
+      <DynamicChip
+        config={config}
+        mode="recommended"
         label="Recommended"
-        color={"dynamic" in config ? "primary" : "default"}
-        variant={
-          ("dynamic" in config && config.dynamic === "recommended") ||
-          ("static" in config &&
-            Vec.equal_multiset(recommendedMapIds, config.static))
-            ? "filled"
-            : "outlined"
-        }
-        sx={{ width: "100%", marginY: 0.5 }}
+        equivalentStaticSet={recommendedMapIds}
         onClick={() => onClick("recommended")}
       />
     </Grid>
+  );
+}
+
+function DynamicChip({
+  config,
+  mode,
+  equivalentStaticSet,
+  onClick,
+  label,
+}: {
+  config: TemplateConfig;
+  mode: TemplateConfigDynamicMode;
+  equivalentStaticSet: readonly MapId[];
+  onClick(): void;
+  label: string;
+}): JSX.Element {
+  return (
+    <Chip
+      label={label}
+      color={"dynamic" in config ? "primary" : "default"}
+      variant={
+        ("dynamic" in config && config.dynamic === mode) ||
+        ("static" in config &&
+          Vec.equal_multiset(config.static, equivalentStaticSet))
+          ? "filled"
+          : "outlined"
+      }
+      sx={{ width: "100%", marginY: 0.5 }}
+      onClick={onClick}
+    />
   );
 }
 
