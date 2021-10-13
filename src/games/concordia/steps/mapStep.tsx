@@ -1,5 +1,5 @@
 import { Chip, Grid, styled, Typography } from "@mui/material";
-import { Dict, Vec } from "common";
+import { Dict, MathUtils, nullthrows, Vec } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
@@ -77,11 +77,60 @@ function relevantMapsForConfig(
   }
 }
 
+const TIGHTNESS_RATIO_BOUNDARIES = [
+  Infinity,
+  Infinity,
+  // solo?
+  Infinity,
+  // 2 players
+  1.7,
+  // 3 players
+  1.3,
+  // 4 players
+  0.85,
+  // 5 players
+  0.0,
+];
+
 function recommendedForPlayerCount(
   playerCount: number,
   availableMapIds: readonly MapId[]
 ): readonly MapId[] {
-  return [];
+  if (playerCount < 2 || playerCount > 5) {
+    // No recommended maps for player counts the game wasn't designed for
+    return [];
+  }
+
+  const [max, min] = TIGHTNESS_RATIO_BOUNDARIES.slice(
+    playerCount,
+    playerCount + 2
+  );
+
+  const mapIds = Vec.filter(
+    availableMapIds,
+    (mapId) =>
+      MAPS[mapId].tightnessScore <= max && MAPS[mapId].tightnessScore >= min
+  );
+
+  if (!Vec.is_empty(mapIds)) {
+    return mapIds;
+  }
+
+  // The range was empty, we can look for the map which was closest to the range
+  // from either side.
+  const closest = MathUtils.min_by(availableMapIds, (mapId) =>
+    Math.min(
+      ...Vec.map([max, min], (x) => Math.abs(MAPS[mapId].tightnessScore - x))
+    )
+  );
+  return [
+    nullthrows(
+      closest,
+      `Couldn't find closest value, availableMapsIds was probably empty: ${JSON.stringify(
+        availableMapIds
+      )}`
+    ),
+  ];
 }
 
 function ConfigPanel({
@@ -109,7 +158,7 @@ function ConfigPanel({
     [config, players, products]
   );
   return (
-    <Grid container xs paddingX={3} paddingY={1}>
+    <Grid container paddingX={3} paddingY={1}>
       <Grid
         item
         xs={9}
