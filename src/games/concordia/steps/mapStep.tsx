@@ -1,16 +1,7 @@
-import {
-  Checkbox,
-  Chip,
-  FormControlLabel,
-  Grid,
-  styled,
-  Typography,
-} from "@mui/material";
+import { Chip, Grid, styled, Typography } from "@mui/material";
 import { Dict, Vec } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
-import { templateValue } from "features/template/templateSlice";
-import { Query } from "games/core/steps/Query";
-import React, { useMemo } from "react";
+import React from "react";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -21,7 +12,7 @@ import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
 
-type TemplateConfig = { random: true } | { fixed: MapId };
+type TemplateConfig = { mapIds: readonly MapId[] };
 
 export default createRandomGameStep({
   id: "map",
@@ -35,33 +26,21 @@ export default createRandomGameStep({
 
   isTemplatable: (products) => products.willContainAny(productsWithMaps()),
 
-  resolve: (config, productIds) =>
-    "fixed" in config
-      ? config.fixed
-      : Vec.sample(mapsForProducts(productIds!), 1),
+  resolve: (config) => Vec.sample(config.mapIds, 1),
 
   initialConfig: (products) => ({
-    fixed: defaultMap(products),
+    mapIds: mapsForProducts(products.resolve()),
   }),
 
-  refresh: (config, products) =>
-    templateValue(
-      "random" in config ||
-        mapsForProducts(products.resolve()).includes(config.fixed)
-        ? "unchanged"
-        : "unfixable"
-    ),
+  refresh: (config, products) => ({
+    mapIds: Vec.intersect(config.mapIds, mapsForProducts(products.resolve())),
+  }),
 
-  canResolveTo: (value, config, products) =>
-    config != null &&
-    mapsForProducts(products.resolve()).includes(value) &&
-    ("random" in config || config.fixed === value),
+  canResolveTo: (value, config) =>
+    config != null && config.mapIds.includes(value),
 
   ConfigPanel,
 });
-
-const defaultMap = (products: Query<readonly ConcordiaProductId[]>): MapId =>
-  mapsForProducts(products.resolve())[0];
 
 function ConfigPanel({
   config,
@@ -71,7 +50,6 @@ function ConfigPanel({
   TemplateConfig,
   readonly ConcordiaProductId[]
 >): JSX.Element {
-  const initialFixed = useMemo(() => defaultMap(products), [products]);
   return (
     <Grid container xs paddingX={3} paddingY={1}>
       <Grid
@@ -82,66 +60,46 @@ function ConfigPanel({
         padding={1}
         sx={{ opacity: config == null || "random" in config ? 0.5 : 1.0 }}
       >
-        <FixedSelector
-          mapIds={mapsForProducts(products.resolve())}
-          currentMapId={
-            config == null || "random" in config ? null : config.fixed
-          }
-          onChange={(mapId) => onChange({ fixed: mapId })}
-          disabled={config == null || "random" in config}
-        />
+        {React.Children.toArray(
+          Vec.map(
+            Vec.sort_by(
+              mapsForProducts(products.resolve()),
+              // Sort the maps by tightness with tight maps first
+              (mapId) => -MAPS[mapId].tightnessScore
+            ),
+            (mapId) => (
+              <Chip
+                sx={{ margin: 0.25 }}
+                color="primary"
+                label={<RomanTitle>{MAPS[mapId].name}</RomanTitle>}
+                variant={
+                  config?.mapIds?.includes(mapId) ? "filled" : "outlined"
+                }
+                size="small"
+                onClick={() =>
+                  onChange({
+                    mapIds:
+                      config == null
+                        ? [mapId]
+                        : config.mapIds.includes(mapId)
+                        ? Vec.filter(config.mapIds, (x) => x !== mapId)
+                        : Vec.concat(config.mapIds, mapId),
+                  })
+                }
+              />
+            )
+          )
+        )}
       </Grid>
-      <Grid item xs={3} padding={1} alignSelf="center">
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={config != null && "random" in config}
-              onChange={(_, checked) =>
-                onChange(checked ? { random: true } : { fixed: initialFixed })
-              }
-            />
+      <Grid item xs={3} padding={1} alignSelf="center" textAlign="center">
+        <Chip
+          label="All"
+          onClick={() =>
+            onChange({ mapIds: mapsForProducts(products.resolve()) })
           }
-          label="Random"
         />
       </Grid>
     </Grid>
-  );
-}
-
-function FixedSelector({
-  mapIds,
-  currentMapId,
-  onChange,
-  disabled,
-}: {
-  mapIds: readonly MapId[];
-  currentMapId: MapId | null;
-  onChange(newMapId: MapId): void;
-  disabled: boolean;
-}): JSX.Element {
-  return (
-    <>
-      {React.Children.toArray(
-        Vec.map(
-          // Sort the maps by tightness with tight maps first
-          Vec.sort_by(mapIds, (mapId) => -MAPS[mapId].tightnessScore),
-          (mapId) => (
-            <Chip
-              sx={{ margin: "8px" }}
-              color="primary"
-              label={<RomanTitle>{MAPS[mapId].name}</RomanTitle>}
-              variant={currentMapId === mapId ? "filled" : "outlined"}
-              size="small"
-              onClick={
-                !disabled && currentMapId !== mapId
-                  ? () => onChange(mapId)
-                  : undefined
-              }
-            />
-          )
-        )
-      )}
-    </>
   );
 }
 
