@@ -2,9 +2,11 @@ import { Dict, Vec } from "common";
 import { ConcordiaProductId } from "../steps/productsMetaStep";
 
 export type MapId =
+  | "aegyptus"
   | "britannia"
   | "byzantium"
   | "corsica"
+  | "creta"
   | "gallia"
   | "germania"
   | "hispania"
@@ -207,7 +209,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
         Aegyptvs: ["Alexandria", "Gaza", "Petra"],
         Cappadocia: ["Attalia", "Caesarea", "Selevcia"],
         Libya: ["Cyrene", "Zygris"],
-        Phcenicia: ["Antiochia", "Salamis", "Tyrvs"],
+        Phoenicia: ["Antiochia", "Salamis", "Tyrvs"],
       },
     },
   },
@@ -290,6 +292,60 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
       D: {
         Orange: ["Favoni Portvs", "Praesidivm", "Vicvs"],
         Grey: ["Mariana", "Opinon"],
+      },
+    },
+  },
+
+  aegyptus: {
+    name: "Aegyptvs",
+    providedIn: ["aegyptusCreta"],
+    tightnessScore: 1.9,
+    startingColonists: [
+      { type: "land", locationName: "Memphis" },
+      { type: "sea", locationName: "Memphis" },
+    ],
+    provinces: {
+      A: {
+        Arabia: ["Aila", "Levke Kome", "Petra"],
+        Ivdaea: ["Gaza", "Jervsalem"],
+        Sinai: ["Klysma", "Rhaithov"],
+      },
+      C: {
+        "Aegyptvs Svperior": ["Syene", "Thebae"],
+        Kvsh: ["Meroe", "Napata"],
+        Litvs: ["Berenice", "Myos Hormos"],
+        Nvbia: ["Abv Simbel", "Kerma"],
+      },
+      D: {
+        "Aegyptvs Inferior": ["Alexandria", "Tamiathis"],
+        Oasis: ["Hibis", "Oasis Parva", "Trimithis"],
+      },
+    },
+  },
+
+  creta: {
+    name: "Creta",
+    providedIn: ["aegyptusCreta"],
+    tightnessScore: 2.2,
+    startingColonists: [
+      { type: "land", locationName: "Knosis" },
+      { type: "sea", locationName: "Knosis" },
+    ],
+    provinces: {
+      A: {
+        Red: ["Kydonia", "Phalasarna", "Polyrrhenia"],
+        Yellow: ["Biennos", "Elyros", "Tarrha"],
+        Brown: ["Gavdos"],
+      },
+      B: {
+        Green: ["Lappa", "Rhethymna"],
+        Purple: ["Elevtherna", "Psycheion"],
+        Blue: ["Gortyn", "Matalon"],
+        Orange: ["Hierapytna", "Inatos"],
+      },
+      D: {
+        Grey: ["Chersonasos", "Lyktos", "Olvs"],
+        Olive: ["Itanos", "Praisos"],
       },
     },
   },

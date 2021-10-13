@@ -80,7 +80,7 @@ function InstanceVariableComponent({
               </Typography>
             </Grid>
             {Vec.map_with_key(cities, (cityName, resource) => (
-              <Grid item key={cityName} xs={3} textAlign="center">
+              <Grid item key={cityName} xs={2} textAlign="center">
                 <Typography variant="caption">
                   {RESOURCE_NAME[resource]}
                 </Typography>
@@ -89,7 +89,9 @@ function InstanceVariableComponent({
                 </Typography>
               </Grid>
             ))}
-            {Dict.size(cities) === 2 && <Grid item xs={3} />}
+            {Dict.size(cities) < 4 && <Grid item xs={2} />}
+            {Dict.size(cities) < 3 && <Grid item xs={2} />}
+            {Dict.size(cities) < 2 && <Grid item xs={2} />}
           </React.Fragment>
         ))}
         <Typography

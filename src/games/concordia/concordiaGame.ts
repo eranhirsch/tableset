@@ -32,6 +32,12 @@ export const concordiaGame = createGame({
     },
     salsa: { name: "Salsa", bggId: 181084, year: 2015 },
     galliaCorsica: { name: "Gallia / Corsica", bggId: 208364, year: 2016 },
+    forumMini: {
+      name: "8 Forum Cards mini-expansion",
+      bggId: 209574,
+      year: 2016,
+    },
+    aegyptusCreta: { name: "Aegyptus / Creta", bggId: 232917, year: 2017 },
   },
 
   productsMetaStep,
