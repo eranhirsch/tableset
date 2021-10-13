@@ -1,9 +1,8 @@
 import {
-  Box,
   Checkbox,
   Chip,
   FormControlLabel,
-  Stack,
+  Grid,
   styled,
   Typography,
 } from "@mui/material";
@@ -74,28 +73,38 @@ function ConfigPanel({
 >): JSX.Element {
   const initialFixed = useMemo(() => defaultMap(products), [products]);
   return (
-    <Stack>
-      <FixedSelector
-        mapIds={mapsForProducts(products.resolve())}
-        currentMapId={
-          config != null && "fixed" in config ? config.fixed : initialFixed
-        }
-        onChange={(mapId) => onChange({ fixed: mapId })}
-        disabled={config == null || "random" in config}
-      />
-      <FormControlLabel
-        sx={{ alignSelf: "center" }}
-        control={
-          <Checkbox
-            checked={config != null && "random" in config}
-            onChange={(_, checked) =>
-              onChange(checked ? { random: true } : { fixed: initialFixed })
-            }
-          />
-        }
-        label="Random"
-      />
-    </Stack>
+    <Grid container xs paddingX={3} paddingY={1}>
+      <Grid
+        item
+        xs={9}
+        alignSelf="center"
+        textAlign="center"
+        padding={1}
+        sx={{ opacity: config == null || "random" in config ? 0.5 : 1.0 }}
+      >
+        <FixedSelector
+          mapIds={mapsForProducts(products.resolve())}
+          currentMapId={
+            config == null || "random" in config ? null : config.fixed
+          }
+          onChange={(mapId) => onChange({ fixed: mapId })}
+          disabled={config == null || "random" in config}
+        />
+      </Grid>
+      <Grid item xs={3} padding={1} alignSelf="center">
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={config != null && "random" in config}
+              onChange={(_, checked) =>
+                onChange(checked ? { random: true } : { fixed: initialFixed })
+              }
+            />
+          }
+          label="Random"
+        />
+      </Grid>
+    </Grid>
   );
 }
 
@@ -106,28 +115,33 @@ function FixedSelector({
   disabled,
 }: {
   mapIds: readonly MapId[];
-  currentMapId: MapId;
+  currentMapId: MapId | null;
   onChange(newMapId: MapId): void;
   disabled: boolean;
 }): JSX.Element {
   return (
-    <Box sx={{ opacity: disabled ? 0.5 : 1.0 }} alignSelf="center">
+    <>
       {React.Children.toArray(
-        Vec.map(mapIds, (mapId) => (
-          <Chip
-            color="primary"
-            label={<RomanTitle>{MAPS[mapId].name}</RomanTitle>}
-            variant={currentMapId === mapId ? "filled" : "outlined"}
-            size="small"
-            onClick={
-              !disabled && currentMapId !== mapId
-                ? () => onChange(mapId)
-                : undefined
-            }
-          />
-        ))
+        Vec.map(
+          // Sort the maps by tightness with tight maps first
+          Vec.sort_by(mapIds, (mapId) => -MAPS[mapId].tightnessScore),
+          (mapId) => (
+            <Chip
+              sx={{ margin: "8px" }}
+              color="primary"
+              label={<RomanTitle>{MAPS[mapId].name}</RomanTitle>}
+              variant={currentMapId === mapId ? "filled" : "outlined"}
+              size="small"
+              onClick={
+                !disabled && currentMapId !== mapId
+                  ? () => onChange(mapId)
+                  : undefined
+              }
+            />
+          )
+        )
       )}
-    </Box>
+    </>
   );
 }
 
