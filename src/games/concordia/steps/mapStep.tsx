@@ -44,9 +44,14 @@ export default createRandomGameStep({
   initialConfig: (products) => ({
     fixed: defaultMap(products),
   }),
-  // TODO: Make sure we don't have a config which uses maps which aren't
-  // included anymore
-  refresh: () => templateValue("unchanged"),
+
+  refresh: (config, products) =>
+    templateValue(
+      "random" in config ||
+        mapsForProducts(products.resolve()).includes(config.fixed)
+        ? "unchanged"
+        : "unfixable"
+    ),
 
   canResolveTo: (value, config, products) =>
     config != null &&
