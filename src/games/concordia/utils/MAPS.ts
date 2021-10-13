@@ -4,6 +4,8 @@ import { ConcordiaProductId } from "../steps/productsMetaStep";
 export type MapId =
   | "britannia"
   | "byzantium"
+  | "corsica"
+  | "gallia"
   | "germania"
   | "hispania"
   | "imperium"
@@ -234,6 +236,60 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
       D: {
         Italia: ["Caesena", "Genva", "Ostia"],
         "Mare Tyrrhenicvm": ["Aleria", "Carales", "Panormvs"],
+      },
+    },
+  },
+
+  gallia: {
+    name: "Gallia",
+    providedIn: ["galliaCorsica"],
+    tightnessScore: 1.4,
+    startingColonists: [
+      { type: "land", locationName: "Lvtetia" },
+      { type: "sea", locationName: "In the sea near Massilia and Genva" },
+    ],
+    provinces: {
+      A: {
+        Belgica: ["A. Treverorvm", "Bononia", "Civ. Remorvm"],
+        "Britannia Inferior": ["Branodvnvm", "Londinivm"],
+        "Britannia Svperior": ["Glevvm", "Isca Dvnm."],
+      },
+      B: {
+        Aqvitania: ["Avaricvm", "Bvrdigala", "Gergovia"],
+        "Gallia Narbonensis": ["Massilia", "Narbo Martivs", "Tolosa"],
+        Hispania: ["Flaviobriga", "Pompaelo"],
+      },
+      C: {
+        Aremorica: ["Condate", "Gesocribate", "Portvs Namnetvs"],
+        "Gallia Lvgdvnensis": ["Alesia", "Jvliobona", "Lvgdvnvm"],
+        Helvetia: ["Aventicvm", "Tvricvm"],
+        Italia: ["Vercellae", "Genva"],
+      },
+    },
+  },
+
+  corsica: {
+    name: "Corsica",
+    providedIn: ["galliaCorsica"],
+    tightnessScore: 2.1,
+    startingColonists: [
+      { type: "land", locationName: "Aleria" },
+      { type: "sea", locationName: "Aleria" },
+    ],
+    provinces: {
+      A: {
+        Blue: ["Kanelate", "Mantinon", "Vicvs Avrelianvs"],
+        Yellow: ["Castellvm", "Palania"],
+        Red: ["Talkinon", "Montanvs"],
+      },
+      B: {
+        Green: ["Adiacivm", "Alovka", "Saone"],
+        Cyan: ["Matisa", "Pavka", "Titianos"],
+        Brown: ["Albiana", "Palla"],
+      },
+      D: {
+        Orange: ["Favoni Portvs", "Praesidivm", "Vicvs"],
+        Grey: ["Mariana", "Opinon"],
       },
     },
   },

@@ -31,6 +31,7 @@ export const concordiaGame = createGame({
       year: 2014,
     },
     salsa: { name: "Salsa", bggId: 181084, year: 2015 },
+    galliaCorsica: { name: "Gallia / Corsica", bggId: 208364, year: 2016 },
   },
 
   productsMetaStep,
