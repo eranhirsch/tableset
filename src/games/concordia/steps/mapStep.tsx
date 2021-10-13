@@ -2,6 +2,8 @@ import { Chip, Grid, styled, Typography } from "@mui/material";
 import { Dict, Vec } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
+import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
+import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,
@@ -13,12 +15,14 @@ import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/Maps";
 import RomanTitle from "../ux/RomanTitle";
 import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
 
-type TemplateConfig = { static: readonly MapId[] } | { dynamic: "any" };
+type TemplateConfig =
+  | { static: readonly MapId[] }
+  | { dynamic: "any" | "recommended" };
 
 export default createRandomGameStep({
   id: "map",
 
-  dependencies: [productsMetaStep],
+  dependencies: [productsMetaStep, playersMetaStep],
 
   isType: (x: string): x is MapId => x in MAPS,
 
@@ -27,11 +31,8 @@ export default createRandomGameStep({
 
   isTemplatable: (products) => products.willContainAny(productsWithMaps()),
 
-  resolve: (config, products) =>
-    Vec.sample(
-      "static" in config ? config.static : mapsForProducts(products!),
-      1
-    ),
+  resolve: (config, products, players) =>
+    Vec.sample(relevantMapsForConfig(config, products!, players!), 1),
 
   initialConfig: (): TemplateConfig => ({ dynamic: "any" }),
 
@@ -45,23 +46,67 @@ export default createRandomGameStep({
         }
       : templateValue("unchanged"),
 
-  canResolveTo: (value, config) =>
-    config != null && ("dynamic" in config || config.static.includes(value)),
+  canResolveTo: (value, config, products, players) =>
+    config != null &&
+    relevantMapsForConfig(
+      config,
+      products.resolve(),
+      players.resolve()
+    ).includes(value),
 
   ConfigPanel,
 });
 
+function relevantMapsForConfig(
+  config: TemplateConfig,
+  products: readonly ConcordiaProductId[],
+  players: readonly PlayerId[]
+): readonly MapId[] {
+  if ("static" in config) {
+    return config.static;
+  }
+
+  const availableMapIds = mapsForProducts(products);
+
+  switch (config.dynamic) {
+    case "any":
+      return availableMapIds;
+
+    case "recommended":
+      return recommendedForPlayerCount(players.length, availableMapIds);
+  }
+}
+
+function recommendedForPlayerCount(
+  playerCount: number,
+  availableMapIds: readonly MapId[]
+): readonly MapId[] {
+  return [];
+}
+
 function ConfigPanel({
   config,
-  queries: [products],
+  queries: [products, players],
   onChange,
 }: ConfigPanelProps<
   TemplateConfig,
-  readonly ConcordiaProductId[]
+  readonly ConcordiaProductId[],
+  readonly PlayerId[]
 >): JSX.Element {
   const allMapIds = useMemo(
     () => mapsForProducts(products.resolve()),
     [products]
+  );
+  const recommendedMapIds = useMemo(
+    () => recommendedForPlayerCount(players.resolve().length, allMapIds),
+    [allMapIds, players]
+  );
+  const relevantMapIds = useMemo(
+    () =>
+      config == null
+        ? []
+        : relevantMapsForConfig(config, products.resolve(), players.resolve()),
+    [config, players, products]
   );
   return (
     <Grid container xs paddingX={3} paddingY={1}>
@@ -83,27 +128,16 @@ function ConfigPanel({
                 color={
                   config != null && "static" in config ? "primary" : "default"
                 }
-                variant={
-                  config != null &&
-                  (("dynamic" in config && config.dynamic === "any") ||
-                    ("static" in config && config.static.includes(mapId)))
-                    ? "filled"
-                    : "outlined"
-                }
+                variant={relevantMapIds.includes(mapId) ? "filled" : "outlined"}
                 size="small"
                 sx={{ margin: 0.25 }}
-                onClick={() =>
+                onClick={() => {
                   onChange({
-                    static:
-                      config == null
-                        ? [mapId]
-                        : "dynamic" in config
-                        ? Vec.filter(allMapIds, (x) => x !== mapId)
-                        : config.static.includes(mapId)
-                        ? Vec.filter(config.static, (x) => x !== mapId)
-                        : Vec.concat(config.static, mapId),
-                  })
-                }
+                    static: relevantMapIds.includes(mapId)
+                      ? Vec.filter(relevantMapIds, (x) => x !== mapId)
+                      : Vec.concat(relevantMapIds, mapId),
+                  });
+                }}
               />
             )
           )
@@ -115,15 +149,37 @@ function ConfigPanel({
           color={config != null && "dynamic" in config ? "primary" : "default"}
           variant={
             config != null &&
-            ("dynamic" in config || config.static.length === allMapIds.length)
+            (("dynamic" in config && config.dynamic === "any") ||
+              ("static" in config && config.static.length === allMapIds.length))
               ? "filled"
               : "outlined"
           }
           onClick={() =>
             onChange(
-              config != null && "dynamic" in config
+              config != null && "dynamic" in config && config.dynamic === "any"
                 ? { static: allMapIds }
                 : { dynamic: "any" }
+            )
+          }
+        />
+        <Chip
+          label="Recommended"
+          color={config != null && "dynamic" in config ? "primary" : "default"}
+          variant={
+            config != null &&
+            (("dynamic" in config && config.dynamic === "recommended") ||
+              ("static" in config &&
+                Vec.equal_multiset(recommendedMapIds, config.static)))
+              ? "filled"
+              : "outlined"
+          }
+          onClick={() =>
+            onChange(
+              config != null &&
+                "dynamic" in config &&
+                config.dynamic === "recommended"
+                ? { static: recommendedMapIds }
+                : { dynamic: "recommended" }
             )
           }
         />

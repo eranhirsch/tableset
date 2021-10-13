@@ -81,6 +81,10 @@ function contained_in_by<Ta, Tb, Ts>(
   b: readonly Tb[],
   scalarFunc: (value: Ta | Tb) => Ts
 ): boolean {
+  if (a.length > b.length) {
+    return false;
+  }
+
   let remaining = [...V.map(b, scalarFunc)];
   for (const item of a) {
     const i = remaining.indexOf(scalarFunc(item));
@@ -93,6 +97,31 @@ function contained_in_by<Ta, Tb, Ts>(
   return true;
 }
 
+const equal_multiset = <Ta, Tb>(a: readonly Ta[], b: readonly Tb[]): boolean =>
+  equal_multiset_by(a, b, (x) => x);
+
+function equal_multiset_by<Ta, Tb, Ts>(
+  a: readonly Ta[],
+  b: readonly Tb[],
+  scalarFunc: (value: Ta | Tb) => Ts
+): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  let remaining = [...V.map(b, scalarFunc)];
+  for (const item of a) {
+    const i = remaining.indexOf(scalarFunc(item));
+    if (i > -1) {
+      remaining.splice(i, 1);
+    } else {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export const Vec = {
   diff,
   diff_by,
@@ -102,4 +131,6 @@ export const Vec = {
   union_by,
   contained_in,
   contained_in_by,
+  equal_multiset,
+  equal_multiset_by,
 } as const;
