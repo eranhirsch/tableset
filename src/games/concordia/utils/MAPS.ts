@@ -9,8 +9,11 @@ export type MapId =
   | "creta"
   | "gallia"
   | "germania"
+  | "hellas"
   | "hispania"
   | "imperium"
+  | "ionium"
+  | "ioniumSmall"
   | "italia";
 
 export type Zone = "A" | "B" | "C" | "D";
@@ -349,6 +352,30 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
       },
     },
   },
+
+  ionium: {
+    name: "Ionivm",
+    providedIn: ["venus"],
+    tightnessScore: 0.9
+    startingColonistsStep: [],
+    provinces: {},
+  },
+
+  ioniumSmall: {
+    name: "Ionivm (Small)",
+    providedIn: ["venus"],
+    tightnessScore: 2.0,
+    startingColonists: [],
+    provinces: {},
+  },
+
+  hellas: {
+    name: "Hellas",
+    providedIn: ["venus"],
+    tightnessScore: 1.2,
+    startingColonists: [],
+    provinces: {},
+  }
 };
 
 export const mapsForProducts = (
