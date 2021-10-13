@@ -45,7 +45,7 @@ export interface ConfigPanelProps<
     Query<D8>,
     Query<D9>
   ];
-  onChange(newConfig: C | ((currentConfig: C) => C)): void;
+  onChange(newConfig: C | ((currentConfig: C | undefined) => C)): void;
 }
 
 export interface Templatable<T = unknown, C = unknown>
@@ -66,7 +66,7 @@ export interface Templatable<T = unknown, C = unknown>
   ConfigPanel(props: {
     config: C | null;
     queries: readonly Query[];
-    onChange(newConfig: C | ((currentConfig: C) => C)): void;
+    onChange(newConfig: C | ((currentConfig: C | undefined) => C)): void;
   }): JSX.Element | null;
 }
 

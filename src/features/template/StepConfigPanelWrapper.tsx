@@ -3,7 +3,7 @@ import { nullthrows, Vec } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { Query } from "games/core/steps/Query";
 import { VariableGameStep } from "model/VariableGameStep";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { Templatable } from "./Templatable";
 import {
@@ -27,19 +27,23 @@ export function StepConfigPanelWrapper({
     `Missing config panel for ${templatable.id}`
   );
 
+  const onChange = useCallback(
+    (newConfig) =>
+      dispatch(
+        templateActions.configUpdated(
+          templatable,
+          typeof newConfig === "function"
+            ? newConfig(element?.config)
+            : newConfig
+        )
+      ),
+    [dispatch, element?.config, templatable]
+  );
+
   return (
     <ConfigPanel
       config={element?.config}
-      onChange={(newConfig) =>
-        dispatch(
-          templateActions.configUpdated(
-            templatable,
-            typeof newConfig === "function"
-              ? newConfig(element?.config)
-              : newConfig
-          )
-        )
-      }
+      onChange={onChange}
       queries={dependencyQueries}
     />
   );

@@ -150,7 +150,7 @@ interface OptionsInternal<T, C>
   ConfigPanel(props: {
     config: C | null;
     queries: readonly Query[];
-    onChange(newConfig: C | ((currentConfig: C) => C)): void;
+    onChange(newConfig: C | ((currentConfig: C | undefined) => C)): void;
   }): JSX.Element | null;
 }
 
