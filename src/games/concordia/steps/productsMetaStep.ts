@@ -6,6 +6,11 @@ export type ConcordiaProductId =
   | "britanniaGermania"
   | "forumMini"
   | "galliaCorsica"
-  | "salsa";
+  | "salsa"
+  | "venus"
+  | "venusBase"
+  | "balearicaCyprus"
+  | "balearicaItalia"
+  | "solitaria";
 
 export const productsMetaStep = createProductsMetaStep<ConcordiaProductId>();

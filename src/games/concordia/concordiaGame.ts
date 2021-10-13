@@ -38,6 +38,11 @@ export const concordiaGame = createGame({
       year: 2016,
     },
     aegyptusCreta: { name: "Aegyptus / Creta", bggId: 232917, year: 2017 },
+    venus: { name: "Venus (Expansion)", bggId: 262711, year: 2018 },
+    venusBase: { name: "Concordia Venus", bggId: 256916, year: 2018 },
+    balearicaCyprus: { name: "Balearica / Cyprus", bggId: 283177, year: 2019 },
+    balearicaItalia: { name: "Balearica / Italia", bggId: 283362, year: 2019 },
+    solitaria: { name: "Solitaria", bggId: 325490, year: 2021 },
   },
 
   productsMetaStep,
