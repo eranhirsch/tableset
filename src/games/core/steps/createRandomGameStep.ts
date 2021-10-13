@@ -124,7 +124,7 @@ type Options<
     ): boolean;
     ConfigPanel(
       props: ConfigPanelProps<C, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
-    ): JSX.Element;
+    ): JSX.Element | null;
   };
 
 interface OptionsInternal<T, C>
@@ -151,7 +151,7 @@ interface OptionsInternal<T, C>
     config: C | null;
     queries: readonly Query[];
     onChange(newConfig: C): void;
-  }): JSX.Element;
+  }): JSX.Element | null;
 }
 
 export function createRandomGameStep<
