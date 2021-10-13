@@ -9,7 +9,7 @@ import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import CityResourcesEncoder from "../utils/CityResourcesEncoder";
-import { MapId, MAPS } from "../utils/Maps";
+import { MapId, MAPS } from "../utils/MAPS";
 import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";

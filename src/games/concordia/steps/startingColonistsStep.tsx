@@ -7,7 +7,7 @@ import {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
-import { MapId, MAPS, mapsForProducts } from "../utils/Maps";
+import { MapId, MAPS, mapsForProducts } from "../utils/MAPS";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";

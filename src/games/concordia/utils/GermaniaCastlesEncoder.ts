@@ -9,7 +9,7 @@ import {
 } from "common";
 import { PermutationsLazyArray } from "common/standard_library/math/permutationsLazyArray";
 import CityResourcesEncoder from "./CityResourcesEncoder";
-import { MAPS } from "./Maps";
+import { MAPS } from "./MAPS";
 import { Resource } from "./resource";
 
 const DIVIDER = "/";

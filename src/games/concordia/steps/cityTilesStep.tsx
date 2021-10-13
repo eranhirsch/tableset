@@ -21,7 +21,7 @@ import CityResourcesEncoder, {
   REGULAR_MAPS_SALT_ALTERNATIVE,
   SALT_MAP_EXTRA_RESOURCE,
 } from "../utils/CityResourcesEncoder";
-import { MapId, MAPS, Zone } from "../utils/Maps";
+import { MapId, MAPS, Zone } from "../utils/MAPS";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";

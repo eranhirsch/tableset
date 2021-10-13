@@ -9,7 +9,7 @@ import {
   tuple,
   Vec,
 } from "common";
-import { MapId, MAPS, Zone } from "./Maps";
+import { MapId, MAPS, Zone } from "./MAPS";
 import { Resource, RESOURCE_COST } from "./resource";
 
 const HASH_SEPARATOR = "-";

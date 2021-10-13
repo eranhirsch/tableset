@@ -11,7 +11,7 @@ import {
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
-import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/Maps";
+import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/MAPS";
 import RomanTitle from "../ux/RomanTitle";
 import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
 

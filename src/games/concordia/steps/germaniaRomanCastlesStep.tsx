@@ -20,7 +20,7 @@ import GermaniaCastlesEncoder, {
   LOCATIONS,
   NUM_LEFT_OVER,
 } from "../utils/GermaniaCastlesEncoder";
-import { MapId } from "../utils/Maps";
+import { MapId } from "../utils/MAPS";
 import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
