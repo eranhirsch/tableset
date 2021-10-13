@@ -4,7 +4,7 @@ import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { PlayerId } from "model/Player";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -98,8 +98,30 @@ function ConfigPanel({
   );
 
   if (config == null) {
-    return null;
+    // Disable the component while it folds away
+    config = { static: [] };
+    onChange = () => {};
   }
+
+  const dynamicOnClick = useCallback(
+    (mode) =>
+      onChange((current) =>
+        current != null && "dynamic" in current && current.dynamic === mode
+          ? { static: relevantMapIds }
+          : { dynamic: mode }
+      ),
+    [onChange, relevantMapIds]
+  );
+
+  const staticOnClick = useCallback(
+    (mapId) =>
+      onChange({
+        static: relevantMapIds.includes(mapId)
+          ? Vec.filter(relevantMapIds, (x) => x !== mapId)
+          : Vec.concat(relevantMapIds, mapId),
+      }),
+    [onChange, relevantMapIds]
+  );
 
   return (
     <Grid container paddingX={3} paddingY={0.5}>
@@ -107,25 +129,13 @@ function ConfigPanel({
         config={config}
         products={products}
         players={players}
-        onClick={(mapId) =>
-          onChange({
-            static: relevantMapIds.includes(mapId)
-              ? Vec.filter(relevantMapIds, (x) => x !== mapId)
-              : Vec.concat(relevantMapIds, mapId),
-          })
-        }
+        onClick={staticOnClick}
       />
       <DynamicChips
         config={config}
         products={products}
         players={players}
-        onClick={(mode) =>
-          onChange(
-            "dynamic" in config && config.dynamic === mode
-              ? { static: relevantMapIds }
-              : { dynamic: mode }
-          )
-        }
+        onClick={dynamicOnClick}
       />
     </Grid>
   );

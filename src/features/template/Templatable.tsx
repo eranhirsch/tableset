@@ -45,10 +45,11 @@ export interface ConfigPanelProps<
     Query<D8>,
     Query<D9>
   ];
-  onChange(newConfig: C): void;
+  onChange(newConfig: C | ((currentConfig: C) => C)): void;
 }
 
-export interface Templatable<T = unknown, C = unknown> extends WithDependencies {
+export interface Templatable<T = unknown, C = unknown>
+  extends WithDependencies {
   resolve(
     config: C,
     upstreamInstance: Readonly<Record<StepId, SetupStep>>,
@@ -65,7 +66,7 @@ export interface Templatable<T = unknown, C = unknown> extends WithDependencies 
   ConfigPanel(props: {
     config: C | null;
     queries: readonly Query[];
-    onChange(newConfig: C): void;
+    onChange(newConfig: C | ((currentConfig: C) => C)): void;
   }): JSX.Element | null;
 }
 

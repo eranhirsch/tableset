@@ -31,7 +31,14 @@ export function StepConfigPanelWrapper({
     <ConfigPanel
       config={element?.config}
       onChange={(newConfig) =>
-        dispatch(templateActions.configUpdated(templatable, newConfig))
+        dispatch(
+          templateActions.configUpdated(
+            templatable,
+            typeof newConfig === "function"
+              ? newConfig(element?.config)
+              : newConfig
+          )
+        )
       }
       queries={dependencyQueries}
     />
