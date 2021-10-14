@@ -95,15 +95,15 @@ function NoPlayers({
         sestertii.
       </>
       <BlockWithFootnotes
-        footnotes={[
+        footnote={
           <>
             e.g. in a 3 player game, the first player would get{" "}
             <strong>{STARTING_MONEY_BASE}</strong> sestertii, the second player
             would get <strong>{STARTING_MONEY_BASE + 1}</strong> sestertii, and
             the last player would get <strong>{STARTING_MONEY_BASE + 2}</strong>{" "}
             sestertii.
-          </>,
-        ]}
+          </>
+        }
       >
         {(Footnote) => (
           <>
@@ -116,12 +116,7 @@ function NoPlayers({
       </BlockWithFootnotes>
       {withExtraSestertii && (
         <BlockWithFootnotes
-          footnotes={[
-            <>
-              Due to playing with{" "}
-              <InstanceStepLink step={noStartingResourcesVariant} />.
-            </>,
-          ]}
+          footnote={<InstanceStepLink step={noStartingResourcesVariant} />}
         >
           {(Footnote) => (
             <>

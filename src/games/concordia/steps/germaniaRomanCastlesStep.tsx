@@ -110,7 +110,7 @@ function InstanceManualComponent(): JSX.Element {
   return (
     <HeaderAndSteps synopsis={<Header mapId={mapId} />}>
       <BlockWithFootnotes
-        footnotes={[
+        footnote={
           citiesHash != null ? (
             <>
               The remaining tiles would be:{" "}
@@ -118,8 +118,8 @@ function InstanceManualComponent(): JSX.Element {
             </>
           ) : (
             <>You should have {EXPECTED_REMAINING_RESOURCES_COUNT} tiles.</>
-          ),
-        ]}
+          )
+        }
       >
         {(Footnote) => (
           <>
@@ -140,7 +140,7 @@ function InstanceManualComponent(): JSX.Element {
 
 function Header({ mapId }: { mapId: MapId | null }): JSX.Element {
   return (
-    <BlockWithFootnotes footnotes={[<InstanceStepLink step={mapStep} />]}>
+    <BlockWithFootnotes footnote={<InstanceStepLink step={mapStep} />}>
       {(Footnote) => (
         <>
           {mapId == null ? (

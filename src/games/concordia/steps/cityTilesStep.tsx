@@ -165,9 +165,9 @@ function GatherStep(): JSX.Element {
 
   return (
     <BlockWithFootnotes
-      footnotes={[
-        <TilesCountFootnote withSalsa={withSalsaProduct} zones={usedZones} />,
-      ]}
+      footnote={
+        <TilesCountFootnote withSalsa={withSalsaProduct} zones={usedZones} />
+      }
     >
       {(Footnote) => (
         <>

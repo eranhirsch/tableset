@@ -7,7 +7,7 @@ import {
   FormControlLabel,
   Stack,
   Typography,
-  useTheme,
+  useTheme
 } from "@mui/material";
 import { colorName } from "app/ux/themeWithGameColors";
 import { Dict, invariant_violation, Shape, Vec } from "common";
@@ -24,12 +24,12 @@ import {
   Draggable,
   DraggableProvided,
   Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -359,7 +359,7 @@ function InstanceManualComponent({
 }): JSX.Element {
   return (
     <BlockWithFootnotes
-      footnotes={[
+      footnote={
         <>
           Available colors:{" "}
           <GrammaticalList>
@@ -373,8 +373,8 @@ function InstanceManualComponent({
               />
             ))}
           </GrammaticalList>
-        </>,
-      ]}
+        </>
+      }
     >
       {(Footnote) => (
         <>

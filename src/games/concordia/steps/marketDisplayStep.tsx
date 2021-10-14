@@ -36,11 +36,7 @@ function InstanceVariableComponent({
   return (
     <>
       <BlockWithFootnotes
-        footnotes={[
-          <>
-            Set aside previously in <InstanceStepLink step={marketCardsStep} />
-          </>,
-        ]}
+        footnote={<InstanceStepLink step={marketCardsStep} />}
       >
         {(Footnote) => (
           <Typography variant="body1">
@@ -72,11 +68,7 @@ function InstanceManualComponent(): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Fill the personality cards market display:">
       <BlockWithFootnotes
-        footnotes={[
-          <>
-            Set aside previously in <InstanceStepLink step={marketCardsStep} />
-          </>,
-        ]}
+        footnote={<InstanceStepLink step={marketCardsStep} />}
       >
         {(Footnote) => (
           <>

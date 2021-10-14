@@ -91,7 +91,7 @@ function CardSelectionStep({
   if (playerCount === MAX_PLAYER_COUNT) {
     return (
       <BlockWithFootnotes
-        footnotes={[
+        footnote={
           <>
             Numerals{" "}
             <GrammaticalList>
@@ -103,8 +103,8 @@ function CardSelectionStep({
                 ))
               )}
             </GrammaticalList>
-          </>,
-        ]}
+          </>
+        }
       >
         {(Footnote) => (
           <>
@@ -119,7 +119,8 @@ function CardSelectionStep({
   return (
     <BlockWithFootnotes
       footnotes={Vec.filter_nulls(
-        CARDS_PER_DECK.map(
+        Vec.map(
+          CARDS_PER_DECK,
           (count, index) =>
             count && (
               <>

@@ -19,7 +19,7 @@ function InstanceDerivedComponent({
 }: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
   return (
     <BlockWithFootnotes
-      footnotes={[
+      footnote={
         <>
           <GrammaticalList>
             {Vec.map_with_key(
@@ -31,8 +31,8 @@ function InstanceDerivedComponent({
             )}
           </GrammaticalList>
           .
-        </>,
-      ]}
+        </>
+      }
     >
       {(Footnote) => (
         <>

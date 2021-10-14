@@ -15,7 +15,7 @@ export default createDerivedGameStep({
 function InstanceDerivedComponent(): JSX.Element {
   return (
     <BlockWithFootnotes
-      footnotes={[
+      footnote={
         <>
           There are
           <GrammaticalList>
@@ -29,8 +29,8 @@ function InstanceDerivedComponent(): JSX.Element {
             )}
           </GrammaticalList>
           .
-        </>,
-      ]}
+        </>
+      }
     >
       {(Footnote) => (
         <>

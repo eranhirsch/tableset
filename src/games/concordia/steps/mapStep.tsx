@@ -276,7 +276,7 @@ function InstanceVariableComponent({
 function InstanceManualComponent() {
   return (
     <BlockWithFootnotes
-      footnotes={[
+      footnote={
         <>
           Available maps (a higher tightness score means fewer cities and fewer
           provinces; this increases player interaction making them more suited
@@ -292,8 +292,8 @@ function InstanceManualComponent() {
               )
             )}
           </GrammaticalList>
-        </>,
-      ]}
+        </>
+      }
     >
       {(Footnote) => (
         <Typography variant="body1">

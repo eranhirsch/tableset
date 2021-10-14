@@ -87,14 +87,14 @@ function IncompleteInstanceDerivedComponent({
       "Most provinces have 2 cities, and a few have 3 cities.";
     tileLocationsStep = (
       <BlockWithFootnotes
-        footnotes={[
+        footnote={
           <>
             The board would either have a minimap with lines stretching out to
             the bonus tile location for that province, or it would contain a
             section with province names, thumbnails of the provinces, and a flag
             with the province number - put the tile on the flag.
-          </>,
-        ]}
+          </>
+        }
       >
         {(Footnote) => (
           <>
@@ -113,7 +113,7 @@ function IncompleteInstanceDerivedComponent({
         mapSpecificCount ?? " province"
       }:`}
     >
-      <BlockWithFootnotes footnotes={[<>{provinceCityCountsFootnote}</>]}>
+      <BlockWithFootnotes footnote={<>{provinceCityCountsFootnote}</>}>
         {(Footnote) => (
           <>
             Find all cities in that province.

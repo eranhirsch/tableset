@@ -29,12 +29,12 @@ function InstanceDerivedComponent({
   if (playerIds == null) {
     stackingStep = (
       <BlockWithFootnotes
-        footnotes={[
+        footnote={
           <>
             e.g. In a 4 player game put deck IV on the bottom, then deck III,
             and finally deck II
-          </>,
-        ]}
+          </>
+        }
       >
         {(Footnote) => (
           <>
@@ -65,11 +65,7 @@ function InstanceDerivedComponent({
   return (
     <HeaderAndSteps synopsis="Form the personality cards deck:">
       <BlockWithFootnotes
-        footnotes={[
-          <>
-            Set aside previously in <InstanceStepLink step={marketCardsStep} />
-          </>,
-        ]}
+        footnote={<InstanceStepLink step={marketCardsStep} />}
       >
         {(Footnote) => (
           <>
@@ -95,11 +91,7 @@ function InstanceDerivedComponent({
       </BlockWithFootnotes>
       {stackingStep}
       <BlockWithFootnotes
-        footnotes={[
-          <>
-            As mentioned in <InstanceStepLink step={marketDisplayStep} />
-          </>,
-        ]}
+        footnote={<InstanceStepLink step={marketDisplayStep} />}
       >
         {(Footnote) => (
           <>

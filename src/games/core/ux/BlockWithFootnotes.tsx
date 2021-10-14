@@ -4,22 +4,38 @@ import {
   Divider,
   Link,
   Typography,
-  useTheme,
+  useTheme
 } from "@mui/material";
 import React, { useState } from "react";
 
+export function BlockWithFootnotes(props: {
+  footnotes: readonly JSX.Element[];
+  children: (
+    footnote: (props: { index: number }) => JSX.Element
+  ) => JSX.Element;
+}): JSX.Element;
+export function BlockWithFootnotes(props: {
+  footnote: JSX.Element;
+  children: (footnote: (props: {}) => JSX.Element) => JSX.Element;
+}): JSX.Element;
 export function BlockWithFootnotes({
   children: main,
+  footnote,
   footnotes,
 }: {
-  footnotes: readonly JSX.Element[];
+  footnotes?: readonly JSX.Element[];
+  footnote?: JSX.Element;
   children: (
     footnote: (props: { index?: number }) => JSX.Element
   ) => JSX.Element;
-}) {
+}): JSX.Element {
   const theme = useTheme();
 
   const [showFootnotes, setShowFootnotes] = useState(false);
+
+  if (footnotes == null) {
+    footnotes = [footnote!];
+  }
 
   return (
     <>

@@ -43,7 +43,7 @@ function InstanceManualComponent(): JSX.Element {
         A <strong>player aid</strong> card.
       </>
       <BlockWithFootnotes
-        footnotes={[
+        footnote={
           <>
             Cards:{" "}
             <GrammaticalList>
@@ -54,8 +54,8 @@ function InstanceManualComponent(): JSX.Element {
               ))}
             </GrammaticalList>
             .
-          </>,
-        ]}
+          </>
+        }
       >
         {(Footnote) => (
           <>

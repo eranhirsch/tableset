@@ -16,9 +16,7 @@ export default createDerivedGameStep({
 function InstanceDerivedComponent(): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Each player picks a starting forum Patrician tile:">
-      <BlockWithFootnotes
-        footnotes={[<InstanceStepLink step={forumDecksStep} />]}
-      >
+      <BlockWithFootnotes footnote={<InstanceStepLink step={forumDecksStep} />}>
         {(Footnote) => (
           <>
             Shuffle the Patricians deck
