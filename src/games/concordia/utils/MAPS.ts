@@ -3,10 +3,12 @@ import { ConcordiaProductId } from "../steps/productsMetaStep";
 
 export type MapId =
   | "aegyptus"
+  | "balearica"
   | "britannia"
   | "byzantium"
   | "corsica"
   | "creta"
+  | "cyprus"
   | "gallia"
   | "germania"
   | "hellas"
@@ -67,7 +69,7 @@ interface MapBoard {
 export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
   italia: {
     name: "Italia",
-    providedIn: ["base"],
+    providedIn: ["base", "balearicaItalia"],
     tightnessScore: 1.1,
     hasLegacyProvincesSection: true,
     startingColonists: [
@@ -97,7 +99,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
 
   imperium: {
     name: "Imperivm",
-    providedIn: ["base"],
+    providedIn: ["base", "venusBase"],
     tightnessScore: 0.8,
     hasLegacyProvincesSection: true,
     startingColonists: [
@@ -355,27 +357,149 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
 
   ionium: {
     name: "Ionivm",
-    providedIn: ["venus"],
-    tightnessScore: 0.9
-    startingColonistsStep: [],
-    provinces: {},
+    providedIn: ["venus", "venusBase"],
+    tightnessScore: 0.9,
+    startingColonists: [
+      { type: "land", locationName: "Athenae" },
+      { type: "sea", locationName: "Athenae" },
+    ],
+    provinces: {
+      A: {
+        Dardania: ["Philippopolis", "Scodra", "Scvpi"],
+        Epirvs: ["Ambrakia", "Apollonia"],
+        Macedonia: ["Larissa", "Thessalonica"],
+      },
+      B: {
+        Calabria: ["Brvndisivm", "Heraclea"],
+        Campania: ["Canvsivm", "Neapolis", "Terventvm"],
+        Sicilia: ["Croton", "Messana", "Syracvsae"],
+      },
+      C: {
+        Asia: ["Colossae", "Hadrianoi"],
+        Ionia: ["Dardanos", "Ephesvs", "Pergamon"],
+        Rhodos: ["Patara", "Rhodos"],
+        Thracia: ["Abdera", "Byzantivm", "Hadrianopolis"],
+      },
+      D: {
+        Achaia: ["Delphi", "Patrae"],
+        Sparta: ["Heraklion", "Lepreon", "Sparta"],
+      },
+    },
   },
 
   ioniumSmall: {
     name: "Ionivm (Small)",
-    providedIn: ["venus"],
+    providedIn: ["venus", "venusBase"],
     tightnessScore: 2.0,
-    startingColonists: [],
-    provinces: {},
+    startingColonists: [
+      { type: "land", locationName: "Athenae" },
+      { type: "sea", locationName: "Athenae" },
+    ],
+    provinces: {
+      A: {
+        Dardania: ["Philippopolis", "Scodra", "Scvpi"],
+        Epirvs: ["Ambrakia", "Apollonia"],
+        Macedonia: ["Larissa", "Thessalonica"],
+      },
+      C: {
+        Asia: ["Colossae", "Hadrianoi"],
+        Ionia: ["Dardanos", "Ephesvs", "Pergamon"],
+        Rhodos: ["Patara", "Rhodos"],
+        Thracia: ["Abdera", "Byzantivm", "Hadrianopolis"],
+      },
+      D: {
+        Achaia: ["Delphi", "Patrae"],
+        Sparta: ["Heraklion", "Lepreon", "Sparta"],
+      },
+    },
   },
 
   hellas: {
     name: "Hellas",
-    providedIn: ["venus"],
+    providedIn: ["venus", "venusBase"],
     tightnessScore: 1.2,
-    startingColonists: [],
-    provinces: {},
-  }
+    startingColonists: [
+      { type: "land", locationName: "Athenae" },
+      { type: "sea", locationName: "Athenae" },
+    ],
+    provinces: {
+      A: {
+        Epirvs: ["Kephallenia", "Nicopolis", "Zakhynthos"],
+        Locris: ["Delphi", "Thermos"],
+        Thessalia: ["Demetrias", "Metropolis"],
+      },
+      B: {
+        Cyclades: ["Melos", "Naxos", "Thera"],
+        Evboea: ["Chalcis", "Karystos", "Oreos"],
+        Sporades: ["Psyra", "Skyros"],
+      },
+      C: {
+        Attica: ["Corinthvs", "Thebae"],
+        Argolis: ["Argos", "Hermione"],
+        Achaia: ["Megalopolis", "Olympia", "Patrae"],
+        Laconia: ["Methone", "Sparta"],
+      },
+    },
+  },
+
+  balearica: {
+    name: "Balearica",
+    providedIn: ["balearicaCyprus", "balearicaItalia"],
+    tightnessScore: 1.5,
+    startingColonists: [
+      { type: "sea", locationName: "The boat near Ebvssvm" },
+      { type: "sea", locationName: "The boat near Minorica" },
+    ],
+    provinces: {
+      A: {
+        Brown: ["Andrachivm", "Palmaria"],
+        Green: ["Cvbvs", "Ebvssvs", "Frvmentaria"],
+        Yellow: ["Nigrvm", "Portvs Magnvs"],
+      },
+      C: {
+        Cyan: ["Selva", "Soller"],
+        Gray: ["Fenalicivm", "Sanctvs Agninvs", "Servariopolis"],
+        Olive: ["Lvcvs Maior", "Rapidvs"],
+        Orange: ["Arta", "Bocchoris", "Pollentia"],
+      },
+      D: {
+        Purple: ["Argentvm", "Mago"],
+        Red: ["Fornix", "Iamno", "Tvrris Solis"],
+      },
+    },
+  },
+
+  cyprus: {
+    name: "Cypurs",
+    providedIn: ["balearicaCyprus", "venusBase"],
+    tightnessScore: 0.7,
+    startingColonists: [
+      { type: "land", locationName: "Antiochia" },
+      { type: "sea", locationName: "Antiochia" },
+    ],
+    provinces: {
+      A: {
+        Cyan: ["Paphos", "Soloi"],
+        Red: ["Karpasia", "Keryneia", "Salamis"],
+        Yellow: ["Amathovs", "Kition"],
+      },
+      B: {
+        Blue: ["Germanikeia", "Samosata", "Zevgma"],
+        Maroon: ["Anazarbvs", "Mallvs", "Tarsvs"],
+        Orange: ["Alexandria A.I.", "Cyrrhvs"],
+      },
+      C: {
+        Gold: ["Palmyra", "Resafa", "Seriane"],
+        Gray: ["Apamea", "Laodiceia"],
+        Green: ["Chalcis A.B.", "Hierapolis"],
+        Purple: ["Arados", "Hemesa", "Tripolis"],
+      },
+      D: {
+        Brown: ["Anemvrivm", "Germanicopolis", "Korakesion"],
+        Olive: ["Selevcia", "Tyana"],
+      },
+    },
+  },
 };
 
 export const mapsForProducts = (
