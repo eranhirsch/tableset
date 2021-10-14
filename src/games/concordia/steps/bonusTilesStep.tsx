@@ -100,7 +100,7 @@ function IncompleteInstanceDerivedComponent({
           <>
             Put a matching bonus tile, resource side up, on the location
             matching this province on the board.
-            <Footnote index={1} />
+            <Footnote />
           </>
         )}
       </BlockWithFootnotes>
@@ -117,7 +117,7 @@ function IncompleteInstanceDerivedComponent({
         {(Footnote) => (
           <>
             Find all cities in that province.
-            <Footnote index={1} />
+            <Footnote />
           </>
         )}
       </BlockWithFootnotes>

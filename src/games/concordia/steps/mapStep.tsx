@@ -298,7 +298,7 @@ function InstanceManualComponent() {
       {(Footnote) => (
         <Typography variant="body1">
           Pick a map board
-          <Footnote index={1} /> and place it at the center of the table.
+          <Footnote /> and place it at the center of the table.
         </Typography>
       )}
     </BlockWithFootnotes>

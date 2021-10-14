@@ -44,7 +44,7 @@ function InstanceDerivedComponent(): JSX.Element {
               </>
             ))}
           </GrammaticalList>
-          <Footnote index={1} />.
+          <Footnote />.
         </>
       )}
     </BlockWithFootnotes>

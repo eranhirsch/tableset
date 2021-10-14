@@ -173,7 +173,7 @@ function GatherStep(): JSX.Element {
         <>
           Gather all city tiles with letters{" "}
           <GrammaticalList>{usedZones}</GrammaticalList> on their back
-          <Footnote index={1} />
+          <Footnote />
           {!Vec.is_empty(unusedZones) && (
             <>
               ;{" "}

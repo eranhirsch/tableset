@@ -46,7 +46,7 @@ function InstanceVariableComponent({
           <Typography variant="body1">
             Fill the personality cards market display from left to right using
             the cards in deck <strong>I</strong>
-            <Footnote index={1} /> :
+            <Footnote /> :
           </Typography>
         )}
       </BlockWithFootnotes>
@@ -81,7 +81,7 @@ function InstanceManualComponent(): JSX.Element {
         {(Footnote) => (
           <>
             Shuffle the <strong>I</strong> personality cards deck
-            <Footnote index={1} />.
+            <Footnote />.
           </>
         )}
       </BlockWithFootnotes>

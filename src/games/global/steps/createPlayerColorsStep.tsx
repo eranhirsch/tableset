@@ -379,7 +379,7 @@ function InstanceManualComponent({
       {(Footnote) => (
         <>
           Each player picks a color
-          <Footnote index={1} />.
+          <Footnote />.
         </>
       )}
     </BlockWithFootnotes>

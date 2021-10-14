@@ -109,7 +109,7 @@ function CardSelectionStep({
         {(Footnote) => (
           <>
             Take all cards with numerals on their back
-            <Footnote index={1} />.
+            <Footnote />.
           </>
         )}
       </BlockWithFootnotes>

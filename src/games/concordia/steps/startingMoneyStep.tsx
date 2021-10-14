@@ -110,7 +110,7 @@ function NoPlayers({
             Go around the table giving each player 1 sestertii{" "}
             <strong>more</strong> than the amount given to the the player before
             them
-            <Footnote index={1} />.
+            <Footnote />.
           </>
         )}
       </BlockWithFootnotes>
@@ -127,7 +127,7 @@ function NoPlayers({
             <>
               Give each player an additional {NO_RESOURCES_VARIANT_EXTRA}{" "}
               sestertii
-              <Footnote index={1} />.
+              <Footnote />.
             </>
           )}
         </BlockWithFootnotes>

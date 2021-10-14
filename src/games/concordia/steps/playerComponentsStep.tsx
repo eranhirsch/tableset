@@ -60,7 +60,7 @@ function InstanceManualComponent(): JSX.Element {
         {(Footnote) => (
           <>
             {PLAYER_CARDS.length} <strong>personality cards</strong>
-            <Footnote index={1} />.
+            <Footnote />.
           </>
         )}
       </BlockWithFootnotes>

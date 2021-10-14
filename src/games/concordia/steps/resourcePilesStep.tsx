@@ -37,7 +37,7 @@ function InstanceDerivedComponent({
       {(Footnote) => (
         <>
           Separate the resources
-          <Footnote index={1} /> into piles near the board.
+          <Footnote /> into piles near the board.
         </>
       )}
     </BlockWithFootnotes>

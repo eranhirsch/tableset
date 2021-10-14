@@ -1,11 +1,9 @@
 import { Typography } from "@mui/material";
 import { Shape, Vec } from "common";
-import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
-import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import React from "react";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { Resource, RESOURCE_NAME } from "../utils/resource";
@@ -36,28 +34,8 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [withSalsa, isNoStartingResourcesVariantEnabled],
-}: DerivedStepInstanceComponentProps<boolean, boolean>): JSX.Element {
-  if (isNoStartingResourcesVariantEnabled) {
-    return (
-      <BlockWithFootnotes
-        footnotes={[
-          <>
-            Due to playing with{" "}
-            <InstanceStepLink step={noStartingResourcesVariant} />.
-          </>,
-        ]}
-      >
-        {(Footnote) => (
-          <>
-            Nothing to do
-            <Footnote index={1} />! Skip this step.
-          </>
-        )}
-      </BlockWithFootnotes>
-    );
-  }
-
+  dependencies: [withSalsa],
+}: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
   return (
     <Typography variant="body1">
       Each player takes{" "}

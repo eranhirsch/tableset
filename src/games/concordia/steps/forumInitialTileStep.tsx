@@ -22,7 +22,7 @@ function InstanceDerivedComponent(): JSX.Element {
         {(Footnote) => (
           <>
             Shuffle the Patricians deck
-            <Footnote index={1} />.
+            <Footnote />.
           </>
         )}
       </BlockWithFootnotes>

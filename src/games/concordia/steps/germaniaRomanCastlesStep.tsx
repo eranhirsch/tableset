@@ -124,7 +124,7 @@ function InstanceManualComponent(): JSX.Element {
         {(Footnote) => (
           <>
             Take all remaining bonus tiles
-            <Footnote index={1} />.
+            <Footnote />.
           </>
         )}
       </BlockWithFootnotes>
@@ -146,7 +146,7 @@ function Header({ mapId }: { mapId: MapId | null }): JSX.Element {
           {mapId == null ? (
             <>
               If playing on the <strong>Germania</strong> map
-              <Footnote index={1} /> assign
+              <Footnote /> assign
             </>
           ) : (
             "Assign"

@@ -254,7 +254,7 @@ function InstanceManualComponent(): JSX.Element {
       {(Footnote) => (
         <>
           Choose a seat around the table for each player
-          <Footnote index={1} />.
+          <Footnote />.
         </>
       )}
     </BlockWithFootnotes>
