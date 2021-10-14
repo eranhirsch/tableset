@@ -2,13 +2,14 @@ import { createGameStep } from "games/core/steps/createGameStep";
 import {
   createPlayerColorsStep,
   firstPlayerStep,
-  playOrderStep,
+  playOrderStep
 } from "games/global";
 import { createGame } from "model/Game";
 import bonusTilesStep from "./steps/bonusTilesStep";
 import cityTilesStep from "./steps/cityTilesStep";
 import forumDecksStep from "./steps/forumDecksStep";
 import forumDisplayStep from "./steps/forumDisplayStep";
+import forumInitialTileStep from "./steps/forumInitialTileStep";
 import forumVariantStep from "./steps/forumVariantStep";
 import germaniaRomanCastlesStep from "./steps/germaniaRomanCastlesStep";
 import mapStep from "./steps/mapStep";
@@ -86,5 +87,6 @@ export const concordiaGame = createGame({
     forumVariantStep, // Templatable
     forumDisplayStep,
     forumDecksStep,
+    forumInitialTileStep,
   ],
 });
