@@ -1,4 +1,4 @@
-import { Grid, Typography, useTheme } from "@mui/material";
+import { Divider, Grid, Stack, Typography, useTheme } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, MathUtils, Shape, Vec } from "common";
 import { hasExpansionSelector } from "features/expansions/expansionsSlice";
@@ -71,37 +71,43 @@ function InstanceVariableComponent({
       <Typography variant="body1">
         Place the matching city resource tile for each city on the map:
       </Typography>
-      <Grid container component="figure" sx={{ margin: 0 }}>
-        {Vec.map_with_key(provinces, (provinceName, cities) => (
-          <React.Fragment key={provinceName}>
-            <Grid item key={provinceName} xs={3} alignSelf="center">
-              <Typography variant="subtitle2">
-                <RomanTitle>{provinceName}</RomanTitle>
-              </Typography>
-            </Grid>
-            {Vec.map_with_key(cities, (cityName, resource) => (
-              <Grid item key={cityName} xs={2} textAlign="center">
-                <Typography variant="caption">
-                  {RESOURCE_NAME[resource]}
-                </Typography>
-                <Typography variant="body2">
-                  <RomanTitle>{cityName}</RomanTitle>
-                </Typography>
+      <Stack direction="column" spacing={1}>
+        {React.Children.toArray(
+          Vec.map_with_key(provinces, (provinceName, cities, index) => (
+            <>
+              {index > 0 && <Divider />}
+              <Grid container>
+                <Grid item xs={3} alignSelf="center">
+                  <Typography variant="subtitle2" textAlign="right">
+                    <RomanTitle>{provinceName}</RomanTitle>
+                  </Typography>
+                </Grid>
+                <Grid container item xs={9}>
+                  {React.Children.toArray(
+                    Vec.map_with_key(cities, (cityName, resource, index) => (
+                      <Grid item xs={6} textAlign="center">
+                        <Typography variant="caption">
+                          {RESOURCE_NAME[resource]}
+                        </Typography>
+                        <Typography variant="body2">
+                          <RomanTitle>{cityName}</RomanTitle>
+                        </Typography>
+                      </Grid>
+                    ))
+                  )}
+                  {
+                    // Fill the blanks
+                    Dict.size(cities) % 2 === 1 && <Grid item xs={6} />
+                  }
+                </Grid>
               </Grid>
-            ))}
-            {Dict.size(cities) < 4 && <Grid item xs={2} />}
-            {Dict.size(cities) < 3 && <Grid item xs={2} />}
-            {Dict.size(cities) < 2 && <Grid item xs={2} />}
-          </React.Fragment>
-        ))}
-        <Typography
-          component="figcaption"
-          variant="caption"
-          sx={{ marginTop: theme.spacing(2) }}
-        >
+            </>
+          ))
+        )}
+        <Typography variant="caption" sx={{ marginTop: theme.spacing(2) }}>
           <pre>Hash: {hash}</pre>
         </Typography>
-      </Grid>
+      </Stack>
     </>
   );
 }

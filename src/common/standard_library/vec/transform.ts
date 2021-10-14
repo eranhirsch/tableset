@@ -27,9 +27,9 @@ const fill = <Tv>(size: number, value: Tv): readonly Tv[] =>
  */
 const map_with_key = <T extends DictLike, Tv>(
   dict: Readonly<T>,
-  valueFunc: (key: keyof T, value: ValueOf<T>) => Tv
+  valueFunc: (key: keyof T, value: ValueOf<T>, index: number) => Tv
 ): readonly Tv[] =>
-  V.entries(dict).map(([key, value]) => valueFunc(key, value));
+  V.map(V.entries(dict), ([key, value], index) => valueFunc(key, value, index));
 
 /**
  * The typing for the ReadonlyArray's map method doesn't return a readonly array
