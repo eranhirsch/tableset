@@ -67,6 +67,7 @@ interface MapBoard {
 }
 
 export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
+  /* spell-checker: disable */
   italia: {
     name: "Italia",
     providedIn: ["base", "balearicaItalia"],
@@ -500,6 +501,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
       },
     },
   },
+  /* spell-checker: enable */
 };
 
 export const mapsForProducts = (
