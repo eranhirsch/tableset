@@ -116,8 +116,8 @@ function IncompleteInstanceDerivedComponent({
       <BlockWithFootnotes footnote={<>{provinceCityCountsFootnote}</>}>
         {(Footnote) => (
           <>
-            Find all cities in that province.
-            <Footnote />
+            Find all cities in that province
+            <Footnote />.
           </>
         )}
       </BlockWithFootnotes>
