@@ -88,5 +88,6 @@ export const concordiaGame = createGame({
     forumDisplayStep,
     forumDecksStep,
     forumInitialTileStep,
+    forumMarketStep,
   ],
 });
