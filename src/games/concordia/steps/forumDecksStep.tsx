@@ -2,51 +2,8 @@ import { Dict, Str, Vec } from "common";
 import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { FORUM_TILES } from "../utils/FORUM_TILES";
 import forumVariantStep from "./forumVariantStep";
-
-const TILES = {
-  citizen: {
-    color: "green",
-    tiles: [
-      /* spell-checker: disable */
-      "Mamercus",
-      "Mamilius",
-      "Marcus",
-      "Augustus",
-      "Commodus",
-      "Julius",
-      "Laurentius",
-      "Novius",
-      "Numerius",
-      "Publius",
-      "Quintus",
-      "Spurius",
-      "Tiberius",
-      "Victoria",
-      /* spell-checker: enable */
-    ],
-  },
-  patrician: {
-    color: "blue",
-    tiles: [
-      /* spell-checker: disable */
-      "Annaeus	Arcadius",
-      "Appius	Arcadius",
-      "Aulus	Arcadius",
-      "Faustus	Marcellus",
-      "Gaius	Marcellus",
-      "Servius	Marcellus",
-      "Claudius	Pompeius",
-      "Donatus	Pompeius",
-      "Lucius	Flavius",
-      "Cornelius	Scipio",
-      "Sextus	Pompeius",
-      "Titus	Valerius",
-      "Claudia	Agrippina",
-      /* spell-checker: enable */
-    ],
-  },
-} as const;
 
 export default createDerivedGameStep({
   id: "forumDecks",
@@ -63,7 +20,7 @@ function InstanceDerivedComponent(): JSX.Element {
           There are
           <GrammaticalList>
             {Vec.map_with_key(
-              Dict.map(TILES, ({ tiles }) => tiles.length),
+              Dict.map(FORUM_TILES, ({ tiles }) => tiles.length),
               (type, count) => (
                 <>
                   {count} <strong>{Str.capitalize(type)}</strong> tiles
@@ -77,10 +34,10 @@ function InstanceDerivedComponent(): JSX.Element {
     >
       {(Footnote) => (
         <>
-          Split the forum tiles into {Dict.size(TILES)} decks based on the color
-          of their name's background;{" "}
+          Split the forum tiles into {Dict.size(FORUM_TILES)} decks based on the
+          color of their name's background;{" "}
           <GrammaticalList>
-            {Vec.map_with_key(TILES, (type, { color }) => (
+            {Vec.map_with_key(FORUM_TILES, (type, { color }) => (
               <>
                 <em>{Str.capitalize(type)}</em>s have a <strong>{color}</strong>{" "}
                 background
