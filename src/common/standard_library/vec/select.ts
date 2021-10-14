@@ -12,7 +12,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/select.php
  */
 
-import { Dict, Random } from "common";
+import { Dict, Random, Vec as V } from "common";
 import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
@@ -115,8 +115,8 @@ function sample<Tv>(
   }
 
   return sampleSize <= arr.length - sampleSize
-    ? [...selectedIndices].sort().map((index) => arr[index])
-    : arr.filter((_, index) => !selectedIndices.has(index));
+    ? V.map(V.sort([...selectedIndices]), (index) => arr[index])
+    : V.filter(arr, (_, index) => !selectedIndices.has(index));
 }
 
 /**
@@ -216,15 +216,15 @@ function entries<T extends DictLike>(
  */
 function filter<T, S extends T>(
   arr: readonly T[],
-  typePredicate: (x: T) => x is S
+  typePredicate: (x: T, index: number) => x is S
 ): readonly S[];
 function filter<T>(
   arr: readonly T[],
-  predicate: (x: T) => boolean
+  predicate: (x: T, index: number) => boolean
 ): readonly T[];
 function filter<T>(
   arr: readonly T[],
-  predicate: (x: T) => boolean
+  predicate: (x: T, index: number) => boolean
 ): readonly T[] {
   return arr.filter(predicate);
 }
