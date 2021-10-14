@@ -9,6 +9,7 @@ import bonusTilesStep from "./steps/bonusTilesStep";
 import cityTilesStep from "./steps/cityTilesStep";
 import forumDecksStep from "./steps/forumDecksStep";
 import forumDisplayStep from "./steps/forumDisplayStep";
+import forumExpertAuctionVariant from "./steps/forumExpertAuctionVariant";
 import forumInitialTileStep from "./steps/forumInitialTileStep";
 import forumMarketStep from "./steps/forumMarketStep";
 import forumVariantStep from "./steps/forumVariantStep";
@@ -88,6 +89,7 @@ export const concordiaGame = createGame({
     forumVariantStep, // Templatable
     forumDisplayStep,
     forumDecksStep,
+    forumExpertAuctionVariant, // Templatable
     forumInitialTileStep,
     forumMarketStep,
   ],
