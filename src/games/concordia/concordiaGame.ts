@@ -7,6 +7,7 @@ import {
 import { createGame } from "model/Game";
 import bonusTilesStep from "./steps/bonusTilesStep";
 import cityTilesStep from "./steps/cityTilesStep";
+import forumVariantStep from "./steps/forumVariantStep";
 import germaniaRomanCastlesStep from "./steps/germaniaRomanCastlesStep";
 import mapStep from "./steps/mapStep";
 import marketCardsStep from "./steps/marketCardsStep";
@@ -80,5 +81,6 @@ export const concordiaGame = createGame({
     firstPlayerStep, // Templatable
     startingMoneyStep,
     praefectusMagnusStep,
+    forumVariantStep,
   ],
 });
