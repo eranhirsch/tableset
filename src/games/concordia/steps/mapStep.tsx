@@ -104,11 +104,9 @@ function ConfigPanel({
   }
 
   const dynamicOnClick = useCallback(
-    (mode) =>
-      onChange((current) =>
-        current != null && "dynamic" in current && current.dynamic === mode
-          ? { static: relevantMapIds }
-          : { dynamic: mode }
+    (mode: TemplateConfigDynamicMode | "static") =>
+      onChange(
+        mode === "static" ? { static: relevantMapIds } : { dynamic: mode }
       ),
     [onChange, relevantMapIds]
   );
@@ -167,8 +165,9 @@ function StaticChips({
           Vec.sort_by(allMapIds, (mapId) => -MAPS[mapId].tightnessScore),
           (mapId) => (
             <Chip
+              disabled={"dynamic" in config}
               label={<RomanTitle>{MAPS[mapId].name}</RomanTitle>}
-              color={"static" in config ? "primary" : "default"}
+              color="primary"
               variant={relevantMapIds.includes(mapId) ? "filled" : "outlined"}
               size="small"
               sx={{ margin: 0.25 }}
@@ -190,7 +189,7 @@ function DynamicChips({
   config: TemplateConfig;
   products: readonly ConcordiaProductId[];
   players: readonly PlayerId[];
-  onClick(mode: TemplateConfigDynamicMode): void;
+  onClick(mode: TemplateConfigDynamicMode | "static"): void;
 }): JSX.Element {
   const allMapIds = useMemo(() => mapsForProducts(products), [products]);
 
@@ -214,6 +213,14 @@ function DynamicChips({
         label="Recommended"
         equivalentStaticSet={recommendedMapIds}
         onClick={() => onClick("recommended")}
+      />
+      <Chip
+        label="<<< Static"
+        color={"dynamic" in config ? "primary" : "default"}
+        variant={"static" in config ? "filled" : "outlined"}
+        sx={{ width: "100%", marginY: 0.5 }}
+        disabled={"static" in config}
+        onClick={() => onClick("static")}
       />
     </Grid>
   );
