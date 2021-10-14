@@ -10,6 +10,7 @@ import cityTilesStep from "./steps/cityTilesStep";
 import forumDecksStep from "./steps/forumDecksStep";
 import forumDisplayStep from "./steps/forumDisplayStep";
 import forumInitialTileStep from "./steps/forumInitialTileStep";
+import forumMarketStep from "./steps/forumMarketStep";
 import forumVariantStep from "./steps/forumVariantStep";
 import germaniaRomanCastlesStep from "./steps/germaniaRomanCastlesStep";
 import mapStep from "./steps/mapStep";
