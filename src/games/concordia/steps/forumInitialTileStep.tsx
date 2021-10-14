@@ -7,6 +7,7 @@ import forumVariantStep from "./forumVariantStep";
 
 export default createDerivedGameStep({
   id: "forumInitial",
+  labelOverride: "Forum Starting Tile",
   dependencies: [forumVariantStep],
   skip: ([forum]) => forum == null,
   InstanceDerivedComponent,
@@ -26,7 +27,7 @@ function InstanceDerivedComponent(): JSX.Element {
         )}
       </BlockWithFootnotes>
       <>
-        Player gets <strong>2</strong> Patrician tiles each.
+        Players get <strong>2</strong> Patrician tiles each.
       </>
       <>
         Each player picks <strong>1</strong> Patrician tile that they would

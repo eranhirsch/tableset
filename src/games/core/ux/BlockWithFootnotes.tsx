@@ -2,9 +2,9 @@ import {
   Box,
   Collapse,
   Divider,
+  Link,
   Typography,
   useTheme,
-  Link,
 } from "@mui/material";
 import React, { useState } from "react";
 
@@ -14,7 +14,7 @@ export function BlockWithFootnotes({
 }: {
   footnotes: readonly JSX.Element[];
   children: (
-    footnote: (props: { index: number }) => JSX.Element
+    footnote: (props: { index?: number }) => JSX.Element
   ) => JSX.Element;
 }) {
   const theme = useTheme();
@@ -23,7 +23,7 @@ export function BlockWithFootnotes({
 
   return (
     <>
-      {main(({ index }) => (
+      {main(({ index = 1 }) => (
         <Link
           component="sup"
           href="#"
