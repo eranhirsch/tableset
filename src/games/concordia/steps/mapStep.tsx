@@ -1,5 +1,7 @@
 import { Chip, Grid, styled, Typography } from "@mui/material";
+import { useAppSelector } from "app/hooks";
 import { Dict, MathUtils, nullthrows, Vec } from "common";
+import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
@@ -274,6 +276,11 @@ function InstanceVariableComponent({
 }
 
 function InstanceManualComponent() {
+  // TODO: Have this data passed through the API and not have the component
+  // fetch it itself.
+  const products = useAppSelector(
+    allExpansionIdsSelector
+  ) as readonly ConcordiaProductId[];
   return (
     <BlockWithFootnotes
       footnote={
@@ -283,8 +290,11 @@ function InstanceManualComponent() {
           for lower player counts):{" "}
           <GrammaticalList>
             {Vec.map_with_key(
-              // Put tighter maps first
-              Dict.sort_by(MAPS, ({ tightnessScore }) => -tightnessScore),
+              Dict.sort_by(
+                Dict.select_keys(MAPS, mapsForProducts(products)),
+                // Put tighter maps first
+                ({ tightnessScore }) => -tightnessScore
+              ),
               (mapId, { name, tightnessScore }) => (
                 <React.Fragment key={mapId}>
                   <RomanTitle>{name}</RomanTitle> ({tightnessScore})
