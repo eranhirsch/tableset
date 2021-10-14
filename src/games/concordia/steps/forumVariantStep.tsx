@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { createVariant } from "games/core/steps/createVariant";
-import { productsMetaStep } from "./productsMetaStep";
+import productsMetaStep from "./productsMetaStep";
 
 export default createVariant({
   id: "forum",

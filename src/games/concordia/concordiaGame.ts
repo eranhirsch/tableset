@@ -18,7 +18,7 @@ import marketDisplayStep from "./steps/marketDisplayStep";
 import noStartingResourcesVariant from "./steps/noStartingResourcesVariant";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
-import { productsMetaStep } from "./steps/productsMetaStep";
+import productsMetaStep from "./steps/productsMetaStep";
 import resourcePilesStep from "./steps/resourcePilesStep";
 import salsaVariantStep from "./steps/salsaVariantStep";
 import startingColonistsStep from "./steps/startingColonistsStep";

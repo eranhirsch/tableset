@@ -25,7 +25,7 @@ import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
-import { productsMetaStep } from "./productsMetaStep";
+import productsMetaStep from "./productsMetaStep";
 import salsaVariantStep from "./salsaVariantStep";
 
 export default createRandomGameStep({

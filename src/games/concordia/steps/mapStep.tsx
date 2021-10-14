@@ -11,9 +11,10 @@ import {
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
+import { ConcordiaProductId } from "../ConcordiaProductId";
 import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/MAPS";
 import RomanTitle from "../ux/RomanTitle";
-import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
+import productsMetaStep from "./productsMetaStep";
 
 /**
  * This array defines the tightness scores (see MAPS definition) we pick from

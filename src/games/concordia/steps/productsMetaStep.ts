@@ -1,16 +1,4 @@
 import { createProductsMetaStep } from "games/core/steps/createProductDependencyMetaStep";
+import { ConcordiaProductId } from "../ConcordiaProductId";
 
-export type ConcordiaProductId =
-  | "aegyptusCreta"
-  | "base"
-  | "britanniaGermania"
-  | "forumMini"
-  | "galliaCorsica"
-  | "salsa"
-  | "venus"
-  | "venusBase"
-  | "balearicaCyprus"
-  | "balearicaItalia"
-  | "solitaria";
-
-export const productsMetaStep = createProductsMetaStep<ConcordiaProductId>();
+export default createProductsMetaStep<ConcordiaProductId>();

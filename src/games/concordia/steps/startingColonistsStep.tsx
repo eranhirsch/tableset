@@ -7,10 +7,11 @@ import {
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
+import { ConcordiaProductId } from "../ConcordiaProductId";
 import { MapId, MAPS, mapsForProducts } from "../utils/MAPS";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
-import { ConcordiaProductId, productsMetaStep } from "./productsMetaStep";
+import productsMetaStep from "./productsMetaStep";
 
 export default createDerivedGameStep({
   id: "startingColonists",

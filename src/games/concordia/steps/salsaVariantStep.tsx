@@ -3,7 +3,7 @@ import { createVariant } from "games/core/steps/createVariant";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
-import { productsMetaStep } from "./productsMetaStep";
+import productsMetaStep from "./productsMetaStep";
 
 export default createVariant({
   id: "salsa",
