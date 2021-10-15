@@ -4,6 +4,7 @@ import { gameSlice } from "features/game/gameSlice";
 import { instanceSlice } from "features/instance/instanceSlice";
 import { playersSlice } from "features/players/playersSlice";
 import { templateSlice } from "features/template/templateSlice";
+import { loadStateFromLocalStorage, storeStateInLocalStorage } from "./persist";
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +14,10 @@ export const store = configureStore({
     [gameSlice.name]: gameSlice.reducer,
     [expansionsSlice.name]: expansionsSlice.reducer,
   },
+  preloadedState: loadStateFromLocalStorage(),
 });
+
+store.subscribe(() => storeStateInLocalStorage(store));
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
