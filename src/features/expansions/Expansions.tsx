@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemText, Switch } from "@mui/material";
+import { Checkbox, List, ListItem, ListItemText } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { Vec } from "common";
 import { gameSelector } from "features/game/gameSlice";
@@ -21,10 +21,9 @@ export function ExpansionListItem({
   return (
     <ListItem disablePadding>
       <ListItemText primary={product.name} />
-      <Switch
+      <Checkbox
         edge="end"
         checked={isEnabled}
-        disabled={product.isBase}
         onChange={() => dispatch(expansionsActions.toggled(productId))}
       />
     </ListItem>
