@@ -14,7 +14,15 @@ export function TemplateList(): JSX.Element {
   const [selectedStepId, setSelectedStepId] = useState<StepId>();
 
   return (
-    <List sx={{ maxHeight: "100%", overflow: "auto" }}>
+    <List
+      sx={{
+        maxHeight: "100%",
+        overflow: "auto",
+        msOverflowStyle: "none",
+        scrollbarWidth: "none",
+        "&::-webkit-scrollbar": { display: "none" },
+      }}
+    >
       {Vec.map(stepIds, (stepId) => (
         <TemplateItem
           key={stepId}
