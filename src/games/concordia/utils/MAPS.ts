@@ -254,7 +254,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     tightnessScore: 1.4,
     startingColonists: [
       { type: "land", locationName: "Lvtetia" },
-      { type: "sea", locationName: "In the sea near Massilia and Genva" },
+      { type: "sea", locationName: "in the sea near Massilia and Genva" },
     ],
     provinces: {
       A: {
@@ -448,8 +448,8 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     providedIn: ["balearicaCyprus", "balearicaItalia"],
     tightnessScore: 1.5,
     startingColonists: [
-      { type: "sea", locationName: "The boat near Ebvssvm" },
-      { type: "sea", locationName: "The boat near Minorica" },
+      { type: "sea", locationName: "the boat near Ebvssvm" },
+      { type: "sea", locationName: "the boat near Minorica" },
     ],
     provinces: {
       A: {
