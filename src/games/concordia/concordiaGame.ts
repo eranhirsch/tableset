@@ -23,7 +23,7 @@ import playerComponentsStep from "./steps/playerComponentsStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import resourcePilesStep from "./steps/resourcePilesStep";
-import salsaVariantStep from "./steps/salsaVariantStep";
+import saltVariantStep from "./steps/saltVariantStep";
 import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
@@ -60,7 +60,7 @@ export const concordiaGame = createGame({
 
   steps: [
     mapStep, // Templatable
-    salsaVariantStep, // Templatable
+    saltVariantStep, // Templatable
     cityTilesStep, // Templatable
     bonusTilesStep,
     germaniaRomanCastlesStep, // Templatable

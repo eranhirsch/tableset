@@ -8,7 +8,7 @@ import React from "react";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { Resource, RESOURCE_NAME } from "../utils/resource";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
-import salsaVariantStep from "./salsaVariantStep";
+import saltVariantStep from "./saltVariantStep";
 
 const REGULAR_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
   salt: 0,
@@ -19,7 +19,7 @@ const REGULAR_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
   bricks: 1,
 };
 
-const SALSA_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
+const SALT_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
   ...REGULAR_STARTING_RESOURCES,
   salt: 1,
   food: 1,
@@ -27,14 +27,14 @@ const SALSA_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
 
 export default createDerivedGameStep({
   id: "startingResources",
-  dependencies: [salsaVariantStep, noStartingResourcesVariant],
+  dependencies: [saltVariantStep, noStartingResourcesVariant],
   InstanceDerivedComponent,
   skip: ([_, noStartingResources]) =>
     noStartingResources != null && noStartingResources,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [withSalsa],
+  dependencies: [withSalt],
 }: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
   return (
     <Typography variant="body1">
@@ -42,7 +42,7 @@ function InstanceDerivedComponent({
       <GrammaticalList>
         {Vec.map_with_key(
           Shape.filter(
-            withSalsa ? SALSA_STARTING_RESOURCES : REGULAR_STARTING_RESOURCES,
+            withSalt ? SALT_STARTING_RESOURCES : REGULAR_STARTING_RESOURCES,
             (count) => count > 0
           ),
           (resource, count) => (

@@ -25,13 +25,13 @@ import { MapId, MAPS, Zone } from "../utils/MAPS";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
-import salsaVariantStep from "./salsaVariantStep";
+import saltVariantStep from "./saltVariantStep";
 
 export default createRandomGameStep({
   id: "cityTiles",
   labelOverride: "City Resources",
 
-  dependencies: [mapStep, salsaVariantStep],
+  dependencies: [mapStep, saltVariantStep],
 
   isType: (x): x is string => typeof x === "string",
 
@@ -39,12 +39,12 @@ export default createRandomGameStep({
   InstanceManualComponent,
 
   isTemplatable: (map) => map.willResolve(),
-  resolve: (_, mapId, withSalsa) =>
+  resolve: (_, mapId, withSalt) =>
     CityResourcesEncoder.randomHash(
       // We can force mapId here with `!` because the element is only
       // templatable when map will resolve (see isTemplatable)
       mapId!,
-      withSalsa ?? false
+      withSalt ?? false
     ),
   initialConfig: () => ({ random: true }),
   refresh: () => templateValue("unchanged"),
@@ -59,11 +59,11 @@ function InstanceVariableComponent({
 
   // TODO: Move this to dependencies
   const mapId = useRequiredInstanceValue(mapStep);
-  const withSalsa = useRequiredInstanceValue(salsaVariantStep);
+  const withSalt = useRequiredInstanceValue(saltVariantStep);
 
   const provinces = useMemo(
-    () => CityResourcesEncoder.decodeCityResources(mapId, withSalsa, hash),
-    [hash, mapId, withSalsa]
+    () => CityResourcesEncoder.decodeCityResources(mapId, withSalt, hash),
+    [hash, mapId, withSalt]
   );
 
   return (
@@ -116,17 +116,17 @@ function InstanceManualComponent() {
   const mapId = useOptionalInstanceValue(mapStep);
 
   const withSalsaProduct = useAppSelector(hasExpansionSelector("salsa"));
-  const withSalsa = useRequiredInstanceValue(salsaVariantStep);
+  const withSalt = useRequiredInstanceValue(saltVariantStep);
 
   return (
     <HeaderAndSteps synopsis="Set up the city resource tiles on the board:">
       <GatherStep />
-      {withSalsaProduct && maybeRenderSalsaPreStep(mapId, withSalsa)}
+      {withSalsaProduct && maybeRenderSaltPreStep(mapId, withSalt)}
       <>Set all tiles on the table so that their letter is showing.</>
       <>Shuffle the tiles.</>
       <>Cover each city with a tile of the same letter as the city.</>
       <>Flip all tiles so that their resource is showing.</>
-      {withSalsaProduct && !withSalsa && maybeRenderSalsaPostStep(mapId)}
+      {withSalsaProduct && !withSalt && maybeRenderSaltPostStep(mapId)}
     </HeaderAndSteps>
   );
 }
@@ -190,9 +190,9 @@ function GatherStep(): JSX.Element {
   );
 }
 
-function maybeRenderSalsaPreStep(
+function maybeRenderSaltPreStep(
   mapId: MapId | null,
-  withSalsa: boolean
+  withSalt: boolean
 ): JSX.Element | null {
   if (mapId != null && MAPS[mapId].isSaltMap) {
     // This step is only relevant for non-salt maps
@@ -220,7 +220,7 @@ function maybeRenderSalsaPreStep(
         <>R</>
       )}
       eturn{" "}
-      {withSalsa ? (
+      {withSalt ? (
         <GrammaticalList>
           {React.Children.toArray(
             Vec.map_with_key(
@@ -250,7 +250,7 @@ function maybeRenderSalsaPreStep(
   );
 }
 
-function maybeRenderSalsaPostStep(mapId: MapId | null): JSX.Element | null {
+function maybeRenderSaltPostStep(mapId: MapId | null): JSX.Element | null {
   if (mapId != null && MAPS[mapId].isSaltMap == null) {
     // This step is only relevant for salt maps
     return null;

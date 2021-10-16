@@ -14,37 +14,37 @@ import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
-import salsaVariantStep from "./salsaVariantStep";
+import saltVariantStep from "./saltVariantStep";
 
 export default createDerivedGameStep({
   id: "bonusTiles",
   labelOverride: "Province Bonuses",
 
-  dependencies: [mapStep, salsaVariantStep, cityTilesStep],
+  dependencies: [mapStep, saltVariantStep, cityTilesStep],
 
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [mapId, withSalsa, hash],
+  dependencies: [mapId, withSalt, hash],
 }: DerivedStepInstanceComponentProps<MapId, boolean, string>): JSX.Element {
   return mapId != null && hash != null ? (
     <ComputedInstanceComponent
       mapId={mapId}
-      withSalsa={withSalsa ?? false}
+      withSalt={withSalt ?? false}
       hash={hash}
     />
   ) : (
-    <IncompleteInstanceDerivedComponent mapId={mapId} withSalsa={withSalsa} />
+    <IncompleteInstanceDerivedComponent mapId={mapId} withSalt={withSalt} />
   );
 }
 
 function IncompleteInstanceDerivedComponent({
   mapId,
-  withSalsa,
+  withSalt,
 }: {
   mapId: MapId | null | undefined;
-  withSalsa: boolean | null | undefined;
+  withSalt: boolean | null | undefined;
 }): JSX.Element {
   let mapSpecificCount;
   let provinceCityCountsFootnote;
@@ -139,7 +139,7 @@ function IncompleteInstanceDerivedComponent({
                 (_, [name]) => name
               )}
             </GrammaticalList>
-            {withSalsa && (
+            {withSalt && (
               <>
                 ; <em>Ignoring {RESOURCE_NAME.salt}</em>
               </>
@@ -169,16 +169,16 @@ function IncompleteInstanceDerivedComponent({
 
 function ComputedInstanceComponent({
   mapId,
-  withSalsa,
+  withSalt,
   hash,
 }: {
   mapId: MapId;
-  withSalsa: boolean;
+  withSalt: boolean;
   hash: string;
 }): JSX.Element | null {
   const provinceResource = useMemo(
-    () => CityResourcesEncoder.decodeProvinceBonuses(mapId, withSalsa, hash),
-    [hash, mapId, withSalsa]
+    () => CityResourcesEncoder.decodeProvinceBonuses(mapId, withSalt, hash),
+    [hash, mapId, withSalt]
   );
 
   return (

@@ -7,7 +7,7 @@ import productsMetaStep from "./productsMetaStep";
 
 export default createVariant({
   id: "salsa",
-  name: "Salsa",
+  name: "Salt",
   dependencies: [productsMetaStep],
   InstanceVariableComponent,
   isTemplatable: (products) => products.willContain("salsa"),

@@ -1,21 +1,21 @@
 import { Shape, Vec } from "common";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps,
+  DerivedStepInstanceComponentProps
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { RESOURCE_NAME } from "../utils/resource";
-import salsaVariantStep from "./salsaVariantStep";
+import saltVariantStep from "./saltVariantStep";
 
 export default createDerivedGameStep({
   id: "resourcePiles",
-  dependencies: [salsaVariantStep],
+  dependencies: [saltVariantStep],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [withSalsa],
+  dependencies: [withSalt],
 }: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
   return (
     <BlockWithFootnotes
@@ -25,7 +25,7 @@ function InstanceDerivedComponent({
             {Vec.map_with_key(
               Shape.diff_by_key(
                 RESOURCE_NAME,
-                withSalsa ? {} : { salt: undefined }
+                withSalt ? {} : { salt: undefined }
               ),
               (_, name) => name
             )}
