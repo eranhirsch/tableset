@@ -14,7 +14,7 @@ export function TemplateList(): JSX.Element {
   const [selectedStepId, setSelectedStepId] = useState<StepId>();
 
   return (
-    <List>
+    <List sx={{ maxHeight: "100%", overflow: "auto" }}>
       {Vec.map(stepIds, (stepId) => (
         <TemplateItem
           key={stepId}
