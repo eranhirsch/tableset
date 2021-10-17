@@ -1,4 +1,4 @@
-import { Grid, Paper } from "@mui/material";
+import { Grid, Paper, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
@@ -15,8 +15,8 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { firstPlayerStep, fullPlayOrder, playOrderStep } from "games/global";
 import { PlayerId } from "model/Player";
-import React from "react";
-import { FORUM_TILES } from "../utils/FORUM_TILES";
+import React, { useMemo } from "react";
+import ForumTilesEncoder from "../utils/ForumTilesEncoder";
 import RomanTitle from "../ux/RomanTitle";
 import forumDecksStep from "./forumDecksStep";
 import forumExpertAuctionVariant from "./forumExpertAuctionVariant";
@@ -30,7 +30,7 @@ export default createRandomGameStep({
   isTemplatable: (_, auction) => auction.canResolveTo(true),
   resolve: (_config, _isForum, isAuction, players) =>
     isAuction != null && isAuction
-      ? Vec.sample(FORUM_TILES.patrician.tiles, players!.length + 1)
+      ? ForumTilesEncoder.randomHash(players!.length)
       : null,
   InstanceVariableComponent,
   InstanceManualComponent,
@@ -39,9 +39,9 @@ export default createRandomGameStep({
 });
 
 function InstanceVariableComponent({
-  value: patricians,
-}: VariableStepInstanceComponentProps<readonly string[]>): JSX.Element {
-  return <AuctionMode patricians={patricians} />;
+  value: forumHash,
+}: VariableStepInstanceComponentProps<string>): JSX.Element {
+  return <AuctionMode forumHash={forumHash} />;
 }
 
 function InstanceManualComponent(): JSX.Element {
@@ -65,11 +65,7 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function AuctionMode({
-  patricians,
-}: {
-  patricians?: readonly string[];
-}): JSX.Element {
+function AuctionMode({ forumHash }: { forumHash?: string }): JSX.Element {
   const playerIds = useAppSelector(
     playersSelectors.selectIds
   ) as readonly PlayerId[];
@@ -78,12 +74,15 @@ function AuctionMode({
 
   return (
     <HeaderAndSteps synopsis="Players bid points from their final score to win a forum card:">
-      {patricians == null ? (
+      {forumHash == null ? (
         <ShufflePatricians />
       ) : (
-        <InstancePatricians patricians={patricians} />
+        <InstancePatricians
+          forumHash={forumHash}
+          playerCount={playerIds.length}
+        />
       )}
-      {patricians == null && (
+      {forumHash == null && (
         <>
           Draw {playerIds.length + 1} tiles from the deck and lay them on the
           table.
@@ -165,10 +164,16 @@ function ShufflePatricians(): JSX.Element {
 }
 
 function InstancePatricians({
-  patricians,
+  forumHash,
+  playerCount,
 }: {
-  patricians: readonly string[];
+  forumHash: string;
+  playerCount: number;
 }): JSX.Element {
+  const patricians = useMemo(
+    () => ForumTilesEncoder.decode(playerCount, forumHash),
+    [forumHash, playerCount]
+  );
   return (
     <>
       Find the following Patrician forum tiles and lay them out on the table:{" "}
@@ -188,6 +193,9 @@ function InstancePatricians({
         {patricians.length % 3 > 0 && <Grid item xs={4} />}
         {patricians.length % 3 === 1 && <Grid item xs={4} />}
       </Grid>
+      <Typography variant="caption">
+        <pre>Hash: {forumHash}</pre>
+      </Typography>
     </>
   );
 }

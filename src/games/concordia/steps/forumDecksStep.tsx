@@ -2,7 +2,7 @@ import { Dict, Str, Vec } from "common";
 import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
-import { FORUM_TILES } from "../utils/FORUM_TILES";
+import { FORUM_TILES } from "../utils/ForumTilesEncoder";
 import forumVariantStep from "./forumVariantStep";
 
 export default createDerivedGameStep({
