@@ -262,15 +262,25 @@ function DynamicChip({
 
 function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
   if ("static" in config) {
+    if (config.static.length <= 3) {
+      return (
+        <GrammaticalList finalConjunction="or">
+          {Vec.map_with_key(
+            Dict.select_keys(MAPS, config.static),
+            (_, { name }) => (
+              <RomanTitle>{name}</RomanTitle>
+            )
+          )}
+        </GrammaticalList>
+      );
+    }
+
+    const sample = Vec.sample(config.static, 2);
     return (
-      <GrammaticalList finalConjunction="or">
-        {Vec.map_with_key(
-          Dict.select_keys(MAPS, config.static),
-          (_, { name }) => (
-            <RomanTitle>{name}</RomanTitle>
-          )
-        )}
-      </GrammaticalList>
+      <>
+        {MAPS[sample[0]].name}, {MAPS[sample[1]].name}, and{" "}
+        {config.static.length - 2} other maps
+      </>
     );
   }
 
