@@ -13,7 +13,7 @@ import marketCardsStep from "./marketCardsStep";
 
 export default createRandomGameStep({
   id: "marketDisplay",
-  labelOverride: "Cards Display",
+  labelOverride: "Initial Cards in Market",
 
   dependencies: [],
 

@@ -12,25 +12,41 @@ import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 import productsMetaStep from "./productsMetaStep";
+import wineMarketVariant from "./wineMarketVariant";
 
 export default createDerivedGameStep({
   id: "marketBoard",
-  dependencies: [productsMetaStep, mapStep],
-  skip: ([products, mapId]) =>
-    mapId == null
+  dependencies: [productsMetaStep, mapStep, wineMarketVariant],
+  skip: ([products, mapId, isWine]) =>
+    !isWine &&
+    (mapId == null
       ? Vec.is_empty(mapsWithoutMarket(products!))
-      : MAPS[mapId].hasIntegratedCardsMarket ?? false,
+      : MAPS[mapId].hasIntegratedCardsMarket ?? false),
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [products, mapId],
+  dependencies: [products, mapId, isWine],
 }: DerivedStepInstanceComponentProps<
   readonly ConcordiaProductId[],
   MapId
 >): JSX.Element {
   const nearMap = `the market board near the map`;
-  const boardSide = `with the side showing prices only in ${RESOURCE_NAME.cloth} facing up`;
+  const boardSide = (
+    <>
+      with the side showing prices{" "}
+      {isWine ? (
+        <>
+          in <strong>{RESOURCE_NAME.wine}</strong>
+        </>
+      ) : (
+        <>
+          <em>just</em> in <strong>{RESOURCE_NAME.cloth}</strong>
+        </>
+      )}{" "}
+      facing up
+    </>
+  );
   const ionium = (
     <>
       the market board on top of the map, hiding the <strong>B</strong> cities
@@ -70,7 +86,7 @@ function InstanceDerivedComponent({
   }
 
   invariant(
-    MAPS[mapId].hasIntegratedCardsMarket == null,
+    isWine || MAPS[mapId].hasIntegratedCardsMarket == null,
     `The map ${mapId} was expected to not have an integrated cards market but it did, did our skip logic break?`
   );
   return (
