@@ -4,7 +4,6 @@ import { ConfigPanelProps, Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
-import { useEffect } from "react";
 import { createGameStep } from "./createGameStep";
 import { InstanceContext, TemplateContext } from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
@@ -159,18 +158,11 @@ function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
   D8,
   D9
 >): JSX.Element {
-  useEffect(() => {
-    if (config?.percent === 0) {
-      onChange({ percent: 5 });
-    }
-  }, [config?.percent, onChange]);
-
   return (
     <Box textAlign="center">
       <Slider
         sx={{ width: "75%" }}
-        disabled={config?.percent === 0}
-        value={config?.percent ?? 0}
+        value={config?.percent}
         min={0}
         max={100}
         step={5}
@@ -178,7 +170,7 @@ function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
         valueLabelDisplay="auto"
         valueLabelFormat={(percent) => `${percent}%`}
         onChange={(_, newValue) =>
-          newValue !== config?.percent
+          newValue !== 0 && newValue !== config?.percent
             ? onChange({
                 percent: type_invariant(newValue, isNumber),
               })
@@ -194,7 +186,7 @@ function ConfigPanelTLDR({
 }: {
   config: TemplateConfig;
 }): JSX.Element {
-  return percent === 100 ? <>Always</> : <em>{percent}% chance</em>;
+  return percent === 100 ? <>Always</> : <>{percent}% chance</>;
 }
 
 const isNumber = (x: unknown): x is number => typeof x === "number";
