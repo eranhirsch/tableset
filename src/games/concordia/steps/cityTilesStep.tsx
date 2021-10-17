@@ -6,7 +6,7 @@ import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
-import { NoConfigPanel } from "games/core/ux/NoConfigPanel";
+import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,

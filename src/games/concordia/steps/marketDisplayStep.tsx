@@ -1,5 +1,5 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
-import { NoConfigPanel } from "games/core/ux/NoConfigPanel";
+import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
   createRandomGameStep,

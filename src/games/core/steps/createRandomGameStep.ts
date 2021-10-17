@@ -33,7 +33,7 @@ export interface RandomGameStep<T = unknown, C = unknown>
   TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
 }
 
-export type Options<
+type Options<
   T,
   C,
   D1 = never,

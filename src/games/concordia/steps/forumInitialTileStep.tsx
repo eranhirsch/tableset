@@ -10,9 +10,9 @@ import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
+import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { NoConfigPanel } from "games/core/ux/NoConfigPanel";
 import { firstPlayerStep, fullPlayOrder, playOrderStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React from "react";
