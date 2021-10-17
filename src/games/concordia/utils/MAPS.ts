@@ -64,6 +64,13 @@ interface MapBoard {
    * need to mark these maps so we can special-case them in that step.
    */
   isSaltMap?: true;
+
+  /**
+   * Does the map have a personality cards market printed directly on the board.
+   * All legacy maps had this, only new maps in Venus and in one map expansion
+   * don't have the market and instead provide an external market board.
+   */
+  hasIntegratedCardsMarket?: true;
 }
 
 export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
@@ -73,6 +80,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     providedIn: ["base", "balearicaItalia"],
     tightnessScore: 1.1,
     hasLegacyProvincesSection: true,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { locationName: "Roma", type: "land" },
       { locationName: "Roma", type: "sea" },
@@ -103,6 +111,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     providedIn: ["base", "venusBase"],
     tightnessScore: 0.8,
     hasLegacyProvincesSection: true,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { locationName: "Roma", type: "land" },
       { locationName: "Roma", type: "sea" },
@@ -135,6 +144,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     name: "Britannia",
     providedIn: ["britanniaGermania"],
     tightnessScore: 1.45,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { locationName: "Londinivm", type: "land" },
       { locationName: "Portvs Itivs", type: "sea" },
@@ -163,6 +173,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     name: "Germania",
     providedIn: ["britanniaGermania"],
     tightnessScore: 0.5,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { locationName: "Basilia", type: "land" },
       { locationName: "Colonia Agr.", type: "sea" },
@@ -195,6 +206,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     name: "Byzantivm",
     providedIn: ["salsa"],
     tightnessScore: 1.0,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { locationName: "Byzantivm", type: "land" },
       { locationName: "Byzantivm", type: "sea" },
@@ -224,6 +236,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     name: "Hispania",
     providedIn: ["salsa"],
     tightnessScore: 1.4,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { locationName: "Sagvntvm", type: "land" },
       { locationName: "Sagvntvm", type: "sea" },
@@ -252,6 +265,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     name: "Gallia",
     providedIn: ["galliaCorsica"],
     tightnessScore: 1.4,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { type: "land", locationName: "Lvtetia" },
       { type: "sea", locationName: "in the sea near Massilia and Genva" },
@@ -280,6 +294,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     name: "Corsica",
     providedIn: ["galliaCorsica"],
     tightnessScore: 2.1,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { type: "land", locationName: "Aleria" },
       { type: "sea", locationName: "Aleria" },
@@ -419,6 +434,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     name: "Hellas",
     providedIn: ["venus", "venusBase"],
     tightnessScore: 1.2,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { type: "land", locationName: "Athenae" },
       { type: "sea", locationName: "Athenae" },
@@ -447,6 +463,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
     name: "Balearica",
     providedIn: ["balearicaCyprus", "balearicaItalia"],
     tightnessScore: 1.5,
+    hasIntegratedCardsMarket: true,
     startingColonists: [
       { type: "sea", locationName: "the boat near Ebvssvm" },
       { type: "sea", locationName: "the boat near Minorica" },
@@ -471,7 +488,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
   },
 
   cyprus: {
-    name: "Cypurs",
+    name: "Cyprus",
     providedIn: ["balearicaCyprus", "venusBase"],
     tightnessScore: 0.7,
     startingColonists: [

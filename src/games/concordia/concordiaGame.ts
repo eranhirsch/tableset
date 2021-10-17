@@ -15,6 +15,7 @@ import forumMarketStep from "./steps/forumMarketStep";
 import forumVariantStep from "./steps/forumVariantStep";
 import germaniaRomanCastlesStep from "./steps/germaniaRomanCastlesStep";
 import mapStep from "./steps/mapStep";
+import marketBoardStep from "./steps/marketBoardStep";
 import marketCardsStep from "./steps/marketCardsStep";
 import marketDeckStep from "./steps/marketDeckStep";
 import marketDisplayStep from "./steps/marketDisplayStep";
@@ -61,6 +62,7 @@ export const concordiaGame = createGame({
   steps: [
     mapStep, // Templatable
     saltVariantStep, // Templatable
+    marketBoardStep,
     cityTilesStep, // Templatable
     bonusTilesStep,
     germaniaRomanCastlesStep, // Templatable
