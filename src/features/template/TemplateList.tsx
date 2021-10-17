@@ -1,5 +1,5 @@
 import { List } from "@mui/material";
-import { Vec } from "common";
+import { ReactUtils, Vec } from "common";
 import { gameStepsSelectorByType } from "features/game/gameSlice";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { StepId } from "model/Game";
@@ -17,10 +17,7 @@ export function TemplateList(): JSX.Element {
     <List
       sx={{
         maxHeight: "100%",
-        overflow: "auto",
-        msOverflowStyle: "none",
-        scrollbarWidth: "none",
-        "&::-webkit-scrollbar": { display: "none" },
+        ...ReactUtils.SX_SCROLL_WITHOUT_SCROLLBARS,
       }}
     >
       {Vec.map(stepIds, (stepId) => (
