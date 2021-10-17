@@ -5,7 +5,6 @@ import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
-import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -13,10 +12,7 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import {
-  NoSettingsConfigPanel,
-  NoSettingsConfigPanelTLDR,
-} from "games/core/ux/NoSettingsConfigPanel";
+import { NoConfigPanel } from "games/core/ux/NoConfigPanel";
 import React, { useMemo } from "react";
 import GermaniaCastlesEncoder, {
   EXPECTED_REMAINING_RESOURCES_COUNT,
@@ -59,11 +55,8 @@ export default createRandomGameStep({
           cities!
         )
       : null,
-  initialConfig: () => ({ random: true }),
-  refresh: () => templateValue("unchanged"),
 
-  ConfigPanel: NoSettingsConfigPanel,
-  ConfigPanelTLDR: NoSettingsConfigPanelTLDR,
+  ...NoConfigPanel,
 });
 
 function InstanceVariableComponent({

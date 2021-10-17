@@ -1,9 +1,5 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
-import { templateValue } from "features/template/templateSlice";
-import {
-  NoSettingsConfigPanel,
-  NoSettingsConfigPanelTLDR,
-} from "games/core/ux/NoSettingsConfigPanel";
+import { NoConfigPanel } from "games/core/ux/NoConfigPanel";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
   createRandomGameStep,
@@ -26,11 +22,8 @@ export default createRandomGameStep({
 
   isTemplatable: () => true,
   resolve: () => MarketDisplayEncoder.randomHash(),
-  initialConfig: () => ({ random: true }),
-  refresh: () => templateValue("unchanged"),
 
-  ConfigPanel: NoSettingsConfigPanel,
-  ConfigPanelTLDR: NoSettingsConfigPanelTLDR,
+  ...NoConfigPanel,
 });
 
 function InstanceVariableComponent({

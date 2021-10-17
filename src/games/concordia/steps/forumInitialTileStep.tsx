@@ -5,7 +5,6 @@ import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { playersSelectors } from "features/players/playersSlice";
-import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
@@ -13,10 +12,7 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import {
-  NoSettingsConfigPanel,
-  NoSettingsConfigPanelTLDR,
-} from "games/core/ux/NoSettingsConfigPanel";
+import { NoConfigPanel } from "games/core/ux/NoConfigPanel";
 import { firstPlayerStep, fullPlayOrder, playOrderStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React from "react";
@@ -32,16 +28,14 @@ export default createRandomGameStep({
   dependencies: [forumVariantStep, forumExpertAuctionVariant, playersMetaStep],
   skip: (_, [forum]) => forum == null,
   isTemplatable: (_, auction) => auction.canResolveTo(true),
-  initialConfig: (): true => true,
   resolve: (_config, _isForum, isAuction, players) =>
     isAuction != null && isAuction
       ? Vec.sample(FORUM_TILES.patrician.tiles, players!.length + 1)
       : null,
-  refresh: () => templateValue("unchanged"),
   InstanceVariableComponent,
   InstanceManualComponent,
-  ConfigPanel: NoSettingsConfigPanel,
-  ConfigPanelTLDR: NoSettingsConfigPanelTLDR,
+
+  ...NoConfigPanel,
 });
 
 function InstanceVariableComponent({
