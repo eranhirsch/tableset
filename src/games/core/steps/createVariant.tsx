@@ -139,6 +139,7 @@ export function createVariant({
       }),
 
     ConfigPanel,
+    ConfigPanelTLDR,
   };
 }
 
@@ -186,6 +187,14 @@ function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
       />
     </Box>
   );
+}
+
+function ConfigPanelTLDR({
+  config: { percent },
+}: {
+  config: TemplateConfig;
+}): JSX.Element {
+  return percent === 100 ? <>Always</> : <em>{percent}% chance</em>;
 }
 
 const isNumber = (x: unknown): x is number => typeof x === "number";

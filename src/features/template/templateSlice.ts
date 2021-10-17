@@ -39,15 +39,15 @@ export const templateSlice = createSlice({
   reducers: {
     enabled: {
       prepare: ({ id }: Templatable, context: ContextBase) => ({
-        payload: { id },
+        payload: id,
         meta: { context },
       }),
       reducer(
         state,
         {
-          payload: { id },
+          payload: id,
           meta: { context },
-        }: PayloadAction<{ id: StepId }, string, { context: ContextBase }>
+        }: PayloadAction<StepId, string, { context: ContextBase }>
       ) {
         const templatable = type_invariant(
           GAMES[state.gameId].steps[id],
@@ -59,8 +59,11 @@ export const templateSlice = createSlice({
       },
     },
 
-    disabled: (state, action: PayloadAction<StepId>): void => {
-      disabledImpl(state, action.payload);
+    disabled: {
+      prepare: ({ id }: Templatable) => ({ payload: id }),
+      reducer(state, action: PayloadAction<StepId>): void {
+        disabledImpl(state, action.payload);
+      },
     },
 
     configUpdated: {

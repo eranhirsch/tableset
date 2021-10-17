@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { C, Vec } from "common";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
+import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
@@ -48,6 +49,7 @@ export default createRandomGameStep({
     ),
 
   ConfigPanel,
+  ConfigPanelTLDR,
 });
 
 const defaultFirstPlayer = (players: Query<readonly PlayerId[]>): PlayerId =>
@@ -150,6 +152,10 @@ function InstanceVariableComponent({
   );
 }
 
-// function TemplateLabel({ value }: { value: PlayerId }): JSX.Element {
-//   return <PlayerShortName playerId={value} />;
-// }
+function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
+  return "random" in config ? (
+    <>Random</>
+  ) : (
+    <PlayerShortName playerId={config.fixed} />
+  );
+}

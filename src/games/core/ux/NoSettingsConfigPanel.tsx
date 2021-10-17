@@ -9,3 +9,7 @@ export function NoSettingsConfigPanel(): JSX.Element {
     </Typography>
   );
 }
+
+export function NoSettingsConfigPanelTLDR(): JSX.Element {
+  return <>Random</>;
+}

@@ -12,24 +12,25 @@ import {
 import { colorName } from "app/ux/themeWithGameColors";
 import { Dict, invariant_violation, Shape, Vec } from "common";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
+import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { Query } from "games/core/steps/Query";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
-import { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   DragDropContext,
   Draggable,
   DraggableProvided,
   Droppable,
-  DropResult
+  DropResult,
 } from "react-beautiful-dnd";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -72,6 +73,7 @@ const createPlayerColorsStep = (availableColors: readonly GamePiecesColor[]) =>
     ConfigPanel: (
       props: ConfigPanelProps<TemplateConfig, readonly PlayerId[]>
     ) => <ConfigPanel availableColors={availableColors} {...props} />,
+    ConfigPanelTLDR,
   });
 export default createPlayerColorsStep;
 
@@ -386,22 +388,26 @@ function InstanceManualComponent({
   );
 }
 
-// function TemplateLabel({ value }: { value: PlayerColors }): JSX.Element {
-//   return (
-//     <GrammaticalList>
-//       {React.Children.toArray(
-//         Vec.map_with_key(value, (playerId, color) => (
-//           <Chip
-//             component="span"
-//             size="small"
-//             color={color}
-//             label={<PlayerShortName playerId={playerId} />}
-//           />
-//         ))
-//       )}
-//     </GrammaticalList>
-//   );
-// }
+function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
+  if ("random" in config) {
+    return <>Random</>;
+  }
+
+  return (
+    <GrammaticalList>
+      {React.Children.toArray(
+        Vec.map_with_key(config.fixed, (playerId, color) => (
+          <Chip
+            component="span"
+            size="small"
+            color={color}
+            label={<PlayerShortName playerId={playerId} />}
+          />
+        ))
+      )}
+    </GrammaticalList>
+  );
+}
 
 function refreshFixedConfig(
   current: PlayerColors,

@@ -1,4 +1,5 @@
 import LockIcon from "@mui/icons-material/Lock";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import {
   Avatar,
   AvatarGroup,
@@ -7,10 +8,11 @@ import {
   Checkbox,
   FormControlLabel,
   Stack,
-  Typography,
+  Typography
 } from "@mui/material";
 import { Vec } from "common";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
+import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
@@ -20,7 +22,7 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
 import { useAppSelector } from "../../../app/hooks";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
@@ -28,7 +30,7 @@ import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
 import { PlayerId } from "../../../model/Player";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 
@@ -63,6 +65,7 @@ export default createRandomGameStep({
       : templateValue("unchanged"),
 
   ConfigPanel,
+  ConfigPanelTLDR,
 });
 
 const defaultPlayOrder = (
@@ -261,26 +264,31 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-// function TemplateLabel({ value }: { value: readonly PlayerId[] }): JSX.Element {
-//   const firstPlayerId = useAppSelector(firstPlayerIdSelector);
-//   return (
-//     <>
-//       {React.Children.toArray(
-//         [firstPlayerId].concat(value).map((playerId, idx) => (
-//           <>
-//             <PlayerShortName playerId={playerId} />
-//             {idx < value.length && (
-//               <NavigateNextIcon
-//                 fontSize="small"
-//                 sx={{ verticalAlign: "middle" }}
-//               />
-//             )}
-//           </>
-//         ))
-//       )}
-//     </>
-//   );
-// }
+function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
+  const firstPlayerId = useAppSelector(firstPlayerIdSelector);
+
+  if ("random" in config) {
+    return <>Random</>;
+  }
+
+  return (
+    <>
+      {React.Children.toArray(
+        [firstPlayerId].concat(config.fixed).map((playerId, idx) => (
+          <>
+            {idx > 0 && (
+              <NavigateNextIcon
+                fontSize="small"
+                sx={{ verticalAlign: "middle" }}
+              />
+            )}
+            <PlayerShortName playerId={playerId} />
+          </>
+        ))
+      )}
+    </>
+  );
+}
 
 function refreshFixedConfig(
   current: readonly PlayerId[],

@@ -7,7 +7,10 @@ import {
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { templateValue } from "features/template/templateSlice";
-import { NoSettingsConfigPanel } from "games/core/ux/NoSettingsConfigPanel";
+import {
+  NoSettingsConfigPanel,
+  NoSettingsConfigPanelTLDR,
+} from "games/core/ux/NoSettingsConfigPanel";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,
@@ -50,6 +53,7 @@ export default createRandomGameStep({
   refresh: () => templateValue("unchanged"),
 
   ConfigPanel: NoSettingsConfigPanel,
+  ConfigPanelTLDR: NoSettingsConfigPanelTLDR,
 });
 
 function InstanceVariableComponent({

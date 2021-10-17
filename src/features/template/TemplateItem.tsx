@@ -9,50 +9,45 @@ import {
   Switch,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { ReactUtils } from "common";
-import { gameStepSelector } from "features/game/gameSlice";
 import { StepLabel } from "features/game/StepLabel";
 import { useFeaturesContext } from "features/useFeaturesContext";
-import { StepId } from "model/Game";
-import { useCallback } from "react";
-import { ItemLabel } from "./ItemLabel";
+import React, { ChangeEvent, useCallback } from "react";
 import { StepConfigPanelWrapper } from "./StepConfigPanelWrapper";
 import { Templatable } from "./Templatable";
-import { templateActions, templateSelectors } from "./templateSlice";
+import {
+  templateActions,
+  TemplateElement,
+  templateElementSelectorNullable,
+} from "./templateSlice";
 
 export function TemplateItem({
-  stepId,
+  templatable,
   selected = false,
-  onClick,
+  onExpand,
+  onCollapse,
 }: {
-  stepId: StepId;
+  templatable: Templatable;
   selected?: boolean;
-  onClick: () => void;
+  onExpand(): void;
+  onCollapse(): void;
 }): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const templatable = useAppSelector(gameStepSelector(stepId)) as Templatable;
   const context = useFeaturesContext();
 
-  const element = ReactUtils.useAppEntityIdSelectorNullable(
-    templateSelectors,
-    stepId
-  );
+  const element = useAppSelector(templateElementSelectorNullable(templatable));
 
   const onChange = useCallback(
-    (_, checked) => {
+    (_: ChangeEvent, checked: boolean) => {
       if (checked) {
-        if (!selected) {
-          // onclick is disabled on the whole button so we need to fake
-          // a click in the switch handler in that case.
-          onClick();
-        }
+        onExpand();
         dispatch(templateActions.enabled(templatable, context));
       } else {
-        dispatch(templateActions.disabled(stepId));
+        onCollapse();
+        dispatch(templateActions.disabled(templatable));
       }
     },
-    [context, dispatch, onClick, selected, stepId, templatable]
+    [context, dispatch, onCollapse, onExpand, templatable]
   );
 
   if (element?.isStale) {
@@ -62,12 +57,18 @@ export function TemplateItem({
 
   return (
     <Paper sx={{ marginBottom: 1 }} elevation={selected ? 1 : 0}>
-      <ListItemButton onClick={element != null ? onClick : undefined}>
+      <ListItemButton
+        onClick={
+          element != null ? (selected ? onCollapse : onExpand) : undefined
+        }
+      >
         <ListItemIcon>
           <CasinoIcon />
         </ListItemIcon>
-        <ListItemText secondary={<ItemLabel stepId={stepId} />}>
-          <StepLabel stepId={stepId} />
+        <ListItemText
+          secondary={<ItemLabel templatable={templatable} element={element} />}
+        >
+          <StepLabel stepId={templatable.id} />
         </ListItemText>
         <ListItemSecondaryAction>
           <Switch edge="end" checked={element != null} onChange={onChange} />
@@ -79,3 +80,20 @@ export function TemplateItem({
     </Paper>
   );
 }
+
+const ItemLabel = React.memo(
+  ({
+    templatable: { ConfigPanelTLDR },
+    element,
+  }: {
+    templatable: Templatable;
+    element: TemplateElement | undefined;
+  }): JSX.Element | null =>
+    element == null ? (
+      <>Disabled</>
+    ) : typeof ConfigPanelTLDR === "string" ? (
+      <>{ConfigPanelTLDR}</>
+    ) : (
+      <ConfigPanelTLDR config={element.config} />
+    )
+);

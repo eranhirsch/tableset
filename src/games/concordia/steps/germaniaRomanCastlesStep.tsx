@@ -13,7 +13,10 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { NoSettingsConfigPanel } from "games/core/ux/NoSettingsConfigPanel";
+import {
+  NoSettingsConfigPanel,
+  NoSettingsConfigPanelTLDR,
+} from "games/core/ux/NoSettingsConfigPanel";
 import React, { useMemo } from "react";
 import GermaniaCastlesEncoder, {
   EXPECTED_REMAINING_RESOURCES_COUNT,
@@ -60,6 +63,7 @@ export default createRandomGameStep({
   refresh: () => templateValue("unchanged"),
 
   ConfigPanel: NoSettingsConfigPanel,
+  ConfigPanelTLDR: NoSettingsConfigPanelTLDR,
 });
 
 function InstanceVariableComponent({

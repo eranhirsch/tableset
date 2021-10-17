@@ -1,6 +1,9 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
 import { templateValue } from "features/template/templateSlice";
-import { NoSettingsConfigPanel } from "games/core/ux/NoSettingsConfigPanel";
+import {
+  NoSettingsConfigPanel,
+  NoSettingsConfigPanelTLDR,
+} from "games/core/ux/NoSettingsConfigPanel";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
   createRandomGameStep,
@@ -27,6 +30,7 @@ export default createRandomGameStep({
   refresh: () => templateValue("unchanged"),
 
   ConfigPanel: NoSettingsConfigPanel,
+  ConfigPanelTLDR: NoSettingsConfigPanelTLDR,
 });
 
 function InstanceVariableComponent({

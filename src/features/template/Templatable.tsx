@@ -48,8 +48,7 @@ export interface ConfigPanelProps<
   onChange(newConfig: C | ((currentConfig: C | undefined) => C)): void;
 }
 
-export interface Templatable<T = unknown, C = unknown>
-  extends WithDependencies {
+export interface Templatable<T = unknown, C = unknown> extends WithDependencies {
   resolve(
     config: C,
     upstreamInstance: Readonly<Record<StepId, SetupStep>>,
@@ -68,6 +67,7 @@ export interface Templatable<T = unknown, C = unknown>
     queries: readonly Query[];
     onChange(newConfig: C | ((currentConfig: C | undefined) => C)): void;
   }): JSX.Element | null;
+  ConfigPanelTLDR(props: { config: C }): JSX.Element;
 }
 
 export const isTemplatable = (x: GameStepBase): x is Templatable =>

@@ -33,7 +33,7 @@ export interface RandomGameStep<T = unknown, C = unknown>
   TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
 }
 
-type Options<
+export type Options<
   T,
   C,
   D1 = never,
@@ -125,6 +125,7 @@ type Options<
     ConfigPanel(
       props: ConfigPanelProps<C, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
     ): JSX.Element | null;
+    ConfigPanelTLDR(props: { config: C }): JSX.Element;
   };
 
 interface OptionsInternal<T, C>
@@ -173,6 +174,7 @@ export function createRandomGameStep<
 export function createRandomGameStep<T, C>({
   canResolveTo,
   ConfigPanel,
+  ConfigPanelTLDR,
   dependencies,
   initialConfig,
   InstanceVariableComponent,
@@ -289,6 +291,7 @@ export function createRandomGameStep<T, C>({
       }),
 
     ConfigPanel,
+    ConfigPanelTLDR,
   };
 
   return variableStep;

@@ -13,7 +13,10 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { NoSettingsConfigPanel } from "games/core/ux/NoSettingsConfigPanel";
+import {
+  NoSettingsConfigPanel,
+  NoSettingsConfigPanelTLDR,
+} from "games/core/ux/NoSettingsConfigPanel";
 import { firstPlayerStep, fullPlayOrder, playOrderStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React from "react";
@@ -29,7 +32,7 @@ export default createRandomGameStep({
   dependencies: [forumVariantStep, forumExpertAuctionVariant, playersMetaStep],
   skip: (_, [forum]) => forum == null,
   isTemplatable: (_, auction) => auction.canResolveTo(true),
-  initialConfig: () => ({ random: true }),
+  initialConfig: (): true => true,
   resolve: (_config, _isForum, isAuction, players) =>
     isAuction != null && isAuction
       ? Vec.sample(FORUM_TILES.patrician.tiles, players!.length + 1)
@@ -38,6 +41,7 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
   ConfigPanel: NoSettingsConfigPanel,
+  ConfigPanelTLDR: NoSettingsConfigPanelTLDR,
 });
 
 function InstanceVariableComponent({

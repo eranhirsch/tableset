@@ -5,12 +5,12 @@ import { useFeaturesContext } from "features/useFeaturesContext";
 import { StepId } from "model/Game";
 import { useMemo, useState } from "react";
 import { useAppSelector } from "../../app/hooks";
-import { isTemplatable } from "./Templatable";
+import { isTemplatable, Templatable } from "./Templatable";
 import { TemplateItem } from "./TemplateItem";
 import { templateSelectors } from "./templateSlice";
 
 export function TemplateList(): JSX.Element {
-  const stepIds = useActiveTemplateStepIds();
+  const templatables = useActiveTemplateSteps();
   const [selectedStepId, setSelectedStepId] = useState<StepId>();
 
   return (
@@ -20,23 +20,20 @@ export function TemplateList(): JSX.Element {
         ...ReactUtils.SX_SCROLL_WITHOUT_SCROLLBARS,
       }}
     >
-      {Vec.map(stepIds, (stepId) => (
+      {Vec.map(templatables, (templatable) => (
         <TemplateItem
-          key={stepId}
-          stepId={stepId}
-          selected={stepId === selectedStepId}
-          onClick={() => {
-            setSelectedStepId((current) =>
-              stepId === current ? undefined : stepId
-            );
-          }}
+          key={templatable.id}
+          templatable={templatable}
+          selected={templatable.id === selectedStepId}
+          onExpand={() => setSelectedStepId(templatable.id)}
+          onCollapse={() => setSelectedStepId(undefined)}
         />
       ))}
     </List>
   );
 }
 
-function useActiveTemplateStepIds(): readonly StepId[] {
+function useActiveTemplateSteps(): readonly Templatable[] {
   const templatableSteps = useAppSelector(
     gameStepsSelectorByType(isTemplatable)
   );
@@ -44,11 +41,8 @@ function useActiveTemplateStepIds(): readonly StepId[] {
   const context = useFeaturesContext();
   return useMemo(
     () =>
-      Vec.map(
-        Vec.filter(templatableSteps, (step) =>
-          step.canBeTemplated(template, context)
-        ),
-        ({ id }) => id
+      Vec.filter(templatableSteps, (step) =>
+        step.canBeTemplated(template, context)
       ),
     [context, templatableSteps, template]
   );

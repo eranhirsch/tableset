@@ -80,6 +80,7 @@ export default createRandomGameStep({
     ).includes(value),
 
   ConfigPanel,
+  ConfigPanelTLDR,
 });
 
 function ConfigPanel({
@@ -259,6 +260,29 @@ function DynamicChip({
   );
 }
 
+function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
+  if ("static" in config) {
+    return (
+      <GrammaticalList finalConjunction="or">
+        {Vec.map_with_key(
+          Dict.select_keys(MAPS, config.static),
+          (_, { name }) => (
+            <RomanTitle>{name}</RomanTitle>
+          )
+        )}
+      </GrammaticalList>
+    );
+  }
+
+  const { dynamic } = config;
+  switch (dynamic) {
+    case "any":
+      return <>Any available map</>;
+    case "recommended":
+      return <>A suitable map for the current player count.</>;
+  }
+}
+
 const ChosenMapName = styled(RomanTitle)(({ theme }) => ({
   color: theme.palette.primary.main,
   fontSize: "150%",
@@ -314,15 +338,6 @@ function InstanceManualComponent() {
     </BlockWithFootnotes>
   );
 }
-
-// function TemplateLabel({ value }: { value: MapId }): JSX.Element {
-//   return (
-//     <GenericItemsFixedTemplateLabel
-//       onLabelForItem={(id) => MAPS[id].name}
-//       selectedId={value}
-//     />
-//   );
-// }
 
 function relevantMapsForConfig(
   config: TemplateConfig,
