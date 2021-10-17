@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid, Stack, Typography } from "@mui/material";
 import { Dict, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
@@ -60,15 +60,15 @@ export default createRandomGameStep({
 });
 
 function InstanceVariableComponent({
-  value,
+  value: castlesHash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
   // TODO: Move this to dependencies
   const withSalt = useRequiredInstanceValue(saltVariantStep);
   const cityTilesHash = useRequiredInstanceValue(cityTilesStep);
 
   const resourceLocations = useMemo(
-    () => GermaniaCastlesEncoder.decode(withSalt, cityTilesHash, value),
-    [cityTilesHash, value, withSalt]
+    () => GermaniaCastlesEncoder.decode(withSalt, cityTilesHash, castlesHash),
+    [castlesHash, cityTilesHash, withSalt]
   );
 
   return (
@@ -77,24 +77,29 @@ function InstanceVariableComponent({
         Place the matching resource tiles, resource side up, on the Roman Castle
         in the following locations:
       </Typography>
-      <Grid container component="figure" spacing={1}>
-        {React.Children.toArray(
-          Vec.map_with_key(resourceLocations, (location, resource) => (
-            <>
-              <Grid item xs={4} textAlign="right">
-                <Typography variant="subtitle1">
-                  <RomanTitle>{location}</RomanTitle>
-                </Typography>
-              </Grid>
-              <Grid item xs={8}>
-                <Typography variant="caption">
-                  {RESOURCE_NAME[resource]}
-                </Typography>
-              </Grid>
-            </>
-          ))
-        )}
-      </Grid>
+      <Stack>
+        <Grid container component="figure" spacing={1}>
+          {React.Children.toArray(
+            Vec.map_with_key(resourceLocations, (location, resource) => (
+              <>
+                <Grid item xs={4} textAlign="right">
+                  <Typography variant="subtitle1">
+                    <RomanTitle>{location}</RomanTitle>
+                  </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography variant="caption">
+                    {RESOURCE_NAME[resource]}
+                  </Typography>
+                </Grid>
+              </>
+            ))
+          )}
+        </Grid>
+        <Typography variant="caption">
+          <pre>Hash: {castlesHash}</pre>
+        </Typography>
+      </Stack>
     </>
   );
 }
