@@ -10,7 +10,7 @@ type TemplateConfig = { percent: number };
 
 export default createRandomGameStep({
   id: "variant_forumAuction",
-  labelOverride: "Forum Expert Auction",
+  labelOverride: "Variant: Forum Expert Auction",
   dependencies: [forumVariantStep],
   isTemplatable: (forum) => forum.canResolveTo(true),
   initialConfig: () => ({ percent: 50 }),
