@@ -1,10 +1,19 @@
-import { Grid, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Dict, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
+import { ConfigPanelProps } from "features/template/Templatable";
+import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -14,6 +23,7 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import React, { useMemo } from "react";
+import { ConcordiaProductId } from "../ConcordiaProductId";
 import GermaniaCastlesEncoder, {
   EXPECTED_REMAINING_RESOURCES_COUNT,
   LOCATIONS,
@@ -26,6 +36,8 @@ import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
 import productsMetaStep from "./productsMetaStep";
 import saltVariantStep from "./saltVariantStep";
+
+type TemplateConfig = { useSalsaTiles?: false };
 
 export default createRandomGameStep({
   id: "germaniaRomanCastles",
@@ -46,18 +58,69 @@ export default createRandomGameStep({
     products.willContain("britanniaGermania") &&
     map.canResolveTo("germania") &&
     cities.willResolve(),
-  resolve: (_config, _products, map, withSalt, cities) =>
+  resolve: (config, products, map, withSalt, cities) =>
     map === "germania"
       ? GermaniaCastlesEncoder.randomHash(
           withSalt ?? false,
           // We can force non-null because we make sure it will resolve in
           // isTemplatable
-          cities!
+          cities!,
+          config.useSalsaTiles ?? products!.includes("salsa")
         )
       : null,
 
-  ...NoConfigPanel,
+  initialConfig: (): TemplateConfig => ({}),
+  refresh: (config, products) =>
+    config.useSalsaTiles == null || products.willContain("salsa")
+      ? templateValue("unchanged")
+      : {},
+  ConfigPanel,
+  ConfigPanelTLDR,
 });
+
+function ConfigPanel({
+  config,
+  queries: [products],
+  onChange,
+}: ConfigPanelProps<
+  TemplateConfig,
+  readonly ConcordiaProductId[],
+  MapId,
+  boolean,
+  string
+>): JSX.Element {
+  if (products.willContain("salsa")) {
+    return (
+      <Box textAlign="center">
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={config?.useSalsaTiles ?? true}
+              onChange={() =>
+                onChange((current) =>
+                  current == null || current.useSalsaTiles != null
+                    ? {}
+                    : { useSalsaTiles: false }
+                )
+              }
+            />
+          }
+          label="Include the extra tiles from the Salsa Box?"
+        />
+      </Box>
+    );
+  }
+
+  return <NoConfigPanel.ConfigPanel />;
+}
+
+function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
+  if (config.useSalsaTiles != null) {
+    return <>Random (w/o extra tiles)</>;
+  }
+
+  return <NoConfigPanel.ConfigPanelTLDR />;
+}
 
 function InstanceVariableComponent({
   value: castlesHash,
@@ -178,7 +241,16 @@ function RemainingTiles({
       {Vec.map_with_key(
         Dict.sort_by_key(
           Dict.count_values(
-            GermaniaCastlesEncoder.remainingResources(withSalt, citiesHash)
+            GermaniaCastlesEncoder.remainingResources(
+              withSalt,
+              citiesHash,
+              // TODO: We abuse the withSalt param here to guess that the user
+              // has the extra salsa tiles and that they want to use them.
+              // ideally we should either check for the product explicitly,
+              // or even tell the user about the extra tiles so they can decide
+              // themselves.
+              withSalt /* useSalsaTiles */
+            )
           ),
           (resource) => -RESOURCE_COST[resource]
         ),

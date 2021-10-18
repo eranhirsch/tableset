@@ -47,9 +47,38 @@ const reduce_with_key = <T extends DictLike, Ta>(
     initial
   );
 
+const some_with_key = <T extends DictLike>(
+  dict: Readonly<T>,
+  predicate: (key: keyof T, value: ValueOf<T>, index: number) => boolean
+): boolean =>
+  Vec.entries(dict).some(([key, value], index) => predicate(key, value, index));
+
+const some = <T extends DictLike>(
+  dict: Readonly<T>,
+  predicate: (value: ValueOf<T>, index: number) => boolean
+): boolean => some_with_key(dict, (_, value, index) => predicate(value, index));
+
+const every_with_key = <T extends DictLike>(
+  dict: Readonly<T>,
+  predicate: (key: keyof T, value: ValueOf<T>, index: number) => boolean
+): boolean =>
+  Vec.entries(dict).every(([key, value], index) =>
+    predicate(key, value, index)
+  );
+
+const every = <T extends DictLike>(
+  dict: Readonly<T>,
+  predicate: (value: ValueOf<T>, index: number) => boolean
+): boolean =>
+  every_with_key(dict, (_, value, index) => predicate(value, index));
+
 export const Dict = {
   size,
   equal,
   is_empty,
   reduce_with_key,
+  some,
+  some_with_key,
+  every,
+  every_with_key,
 } as const;
