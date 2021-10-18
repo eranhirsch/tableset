@@ -7,12 +7,13 @@ import {
   Random,
   Vec,
 } from "common";
+import { CombinationsLazyArray } from "common/standard_library/math/combinationsLazyArray";
 import { PermutationsLazyArray } from "common/standard_library/math/permutationsLazyArray";
 import CityResourcesEncoder from "./CityResourcesEncoder";
 import { MAPS } from "./MAPS";
 import { Resource } from "./resource";
 
-const DIVIDER = "/";
+const DIVIDER = "-";
 
 export const BONUS_TILES = Object.freeze({
   cloth: 4,
@@ -73,16 +74,18 @@ export default {
 
     // Pick tiles in excess of the number of tiles we need to fulfil all
     // locations to be returned to the box
-    const leftOvers = Vec.sample(remaining, NUM_LEFT_OVER);
+    const leftoverCombinations = leftoverTilesCombinations(remaining);
+    const leftoversIndex = leftoverCombinations.asCanonicalIndex(
+      Random.index(leftoverCombinations)
+    );
 
+    const leftOvers = leftoverCombinations.at(leftoversIndex)!;
     const perms = castleTilesPermutations(remaining, leftOvers);
-    const resourcesHash = Num.encode_base32(Random.index(perms));
+    const resourcesIndex = Random.index(perms);
 
-    return [
-      resourcesHash,
-      // To normalize the leftovers array we sort it
-      ...Vec.sort(leftOvers),
-    ].join(DIVIDER);
+    return Vec.map([resourcesIndex, leftoversIndex], Num.encode_base32).join(
+      DIVIDER
+    );
   },
 
   decode(
@@ -90,21 +93,22 @@ export default {
     citiesHash: string,
     castlesHash: string
   ): CastleResource {
-    const remaining = remainingResources(withSalsa, citiesHash);
-
-    const [resourcesHash, ...leftOversStr] = castlesHash.split(DIVIDER);
-    const leftOvers = leftOversStr.filter(
-      (resourceStr): resourceStr is Resource => resourceStr in BONUS_TILES
+    const [resourcesIndex, leftoversIndex] = Vec.map(
+      castlesHash.split(DIVIDER, 2),
+      Num.decode_base32
     );
-    invariant(
-      leftOvers.length === NUM_LEFT_OVER,
-      `Not enough left-overs found in hash ${castlesHash}`
+
+    const remaining = remainingResources(withSalsa, citiesHash);
+    const leftoverCombinations = leftoverTilesCombinations(remaining);
+    const leftOvers = nullthrows(
+      leftoverCombinations.at(leftoversIndex),
+      `Index ${leftoversIndex} from ${castlesHash} was out-of-range for combinations array ${leftoverCombinations}`
     );
 
     const perms = castleTilesPermutations(remaining, leftOvers);
     const resources = nullthrows(
-      perms.at(Num.decode_base32(resourcesHash)),
-      `Encountered issue when handling ${castlesHash}`
+      perms.at(resourcesIndex),
+      `Index ${resourcesIndex} from ${castlesHash} was out-of-range for permutations array ${perms}`
     );
 
     // We use Dict instead of Shape here intentionally, we know that the output
@@ -131,4 +135,13 @@ function castleTilesPermutations(
     )}`
   );
   return MathUtils.permutations_lazy_array(locationTiles);
+}
+
+function leftoverTilesCombinations(
+  remaining: readonly Resource[]
+): CombinationsLazyArray<Resource> {
+  return MathUtils.combinations_lazy_array_with_duplicates(
+    remaining,
+    NUM_LEFT_OVER
+  );
 }

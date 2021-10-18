@@ -3,18 +3,30 @@ import { invariant, MathUtils as MU, tuple, Vec } from "common";
 const combinations_lazy_array = <T>(
   pool: readonly T[],
   k: number
-): CombinationsLazyArray<T> => new CombinationsLazyArray(pool, k);
+): Omit<CombinationsLazyArray<T>, "asCanonicalIndex"> =>
+  new CombinationsLazyArray(pool, k);
+
+const combinations_lazy_array_with_duplicates = <T>(
+  pool: readonly T[],
+  k: number
+): CombinationsLazyArray<T> =>
+  new CombinationsLazyArray(pool, k, true /* withDuplicates */);
 
 export class CombinationsLazyArray<T> {
   private readonly pool: readonly T[];
 
-  constructor(pool: readonly T[], public readonly k: number) {
+  constructor(
+    pool: readonly T[],
+    public readonly k: number,
+    private readonly withDuplicates: boolean = false
+  ) {
     // We normalize the item definition for use in our algorithm
     this.pool = Vec.sort(pool);
 
     invariant(
-      !this.pool.some((item, index) => item === this.pool[index + 1]),
-      `Pool ${pool} contains duplicates so isn't supported`
+      withDuplicates ||
+        !this.pool.some((item, index) => item === this.pool[index + 1]),
+      `Pool ${pool} contains duplicates, use '_with_duplicates' instead to ignore them`
     );
   }
 
@@ -147,6 +159,15 @@ export class CombinationsLazyArray<T> {
     return index;
   }
 
+  asCanonicalIndex(index: number): number {
+    invariant(
+      this.withDuplicates,
+      `Canonical indexes are only defined for combinations with duplicates!`
+    );
+    const atIndex = this.at(index);
+    return atIndex == null ? index : this.indexOf(atIndex);
+  }
+
   toString(): string {
     return `${this.constructor.name}${JSON.stringify(this.pool)}`;
   }
@@ -154,4 +175,5 @@ export class CombinationsLazyArray<T> {
 
 export const MathUtils = {
   combinations_lazy_array,
+  combinations_lazy_array_with_duplicates,
 } as const;
