@@ -1,9 +1,10 @@
-import { Box, Slider } from "@mui/material";
-import { Dict, invariant_violation, Random, type_invariant, Vec } from "common";
+import { Box } from "@mui/material";
+import { Dict, invariant_violation, Random, Vec } from "common";
 import { ConfigPanelProps, Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
+import { PercentSlider } from "../ux/PercentSlider";
 import { createGameStep } from "./createGameStep";
 import { InstanceContext, TemplateContext } from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
@@ -160,22 +161,10 @@ function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
 >): JSX.Element {
   return (
     <Box textAlign="center">
-      <Slider
-        sx={{ width: "75%" }}
-        value={config?.percent}
-        min={0}
-        max={100}
-        step={5}
-        marks={[{ value: 50, label: "\u25B2" }]}
-        valueLabelDisplay="auto"
-        valueLabelFormat={(percent) => `${percent}%`}
-        onChange={(_, newValue) =>
-          newValue !== 0 && newValue !== config?.percent
-            ? onChange({
-                percent: type_invariant(newValue, isNumber),
-              })
-            : undefined
-        }
+      <PercentSlider
+        percent={config?.percent}
+        onChange={(percent) => onChange({ percent })}
+        preventZero
       />
     </Box>
   );
@@ -188,5 +177,3 @@ function ConfigPanelTLDR({
 }): JSX.Element {
   return percent === 100 ? <>Always</> : <>{percent}% chance</>;
 }
-
-const isNumber = (x: unknown): x is number => typeof x === "number";

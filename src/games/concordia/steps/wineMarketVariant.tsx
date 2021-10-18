@@ -14,13 +14,8 @@ import saltVariantStep from "./saltVariantStep";
 
 type TemplateConfig = { percent: number; saltPercent?: number };
 
-export default createRandomGameStep<
-  boolean,
-  TemplateConfig,
-  readonly ConcordiaProductId[],
-  boolean
->({
-  id: "wineMarket",
+export default createRandomGameStep({
+  id: "variant_wineMarket",
   labelOverride: "Prices in Wine (Cards Market)",
   dependencies: [productsMetaStep, saltVariantStep],
   isTemplatable: (products) =>
@@ -52,7 +47,7 @@ export default createRandomGameStep<
 
 function ConfigPanel({
   config,
-  queries: [products, withSalt],
+  queries: [_, withSalt],
   onChange,
 }: ConfigPanelProps<
   TemplateConfig,
