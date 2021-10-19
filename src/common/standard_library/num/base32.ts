@@ -13,13 +13,16 @@ const REPLACEMENTS = [
 
 const encode_base32 = (x: number): string =>
   REPLACEMENTS.reduce(
-    (out, [from, to]) => out.replace(from, to),
+    (out, [from, to]) => out.replace(new RegExp(from, "g"), to),
     x.toString(32).toUpperCase()
   );
 
 const decode_base32 = (x: string): number =>
   Number.parseInt(
-    REPLACEMENTS.reduce((out, [to, from]) => out.replace(from, to), x),
+    REPLACEMENTS.reduce(
+      (out, [to, from]) => out.replace(new RegExp(from, "g"), to),
+      x
+    ),
     32
   );
 
