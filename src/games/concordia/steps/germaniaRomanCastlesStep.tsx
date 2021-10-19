@@ -41,7 +41,7 @@ type TemplateConfig = { useSalsaTiles?: false };
 
 export default createRandomGameStep({
   id: "germaniaRomanCastles",
-  labelOverride: "Roman Castles",
+  labelOverride: "Germania: Roman Castles",
 
   isType: (value): value is string | null =>
     value == null || typeof value === "string",
