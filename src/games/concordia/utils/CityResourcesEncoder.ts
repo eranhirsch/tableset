@@ -52,7 +52,7 @@ type ProvinceCityResources = Readonly<
   Record<string /* provinceName */, CityResources>
 >;
 type ProvinceBonusResource = Readonly<
-  Record<string /* provinceName */, Resource>
+  Record<string /* provinceName */, Resource | null>
 >;
 
 export default {
@@ -69,20 +69,30 @@ export default {
 
   decodeCityResources,
 
-  decodeProvinceBonuses: (
+  decodeProvinceBonuses(
     mapId: MapId,
     withSalsa: boolean,
     hash: string
-  ): ProvinceBonusResource =>
-    Dict.map(decodeCityResources(mapId, withSalsa, hash), (cityResources) =>
-      nullthrows(
-        MathUtils.max_by(
-          Vec.values(cityResources).filter((resource) => resource !== "salt"),
-          (resource) => RESOURCE_COST[resource]
-        ),
-        `Empty city resources encountered for ${mapId} and ${hash}`
-      )
-    ),
+  ): ProvinceBonusResource {
+    const bonusTiles = Dict.map(
+      decodeCityResources(mapId, withSalsa, hash),
+      (cityResources) =>
+        nullthrows(
+          MathUtils.max_by(
+            Vec.values(cityResources).filter((resource) => resource !== "salt"),
+            (resource) => RESOURCE_COST[resource]
+          ),
+          `Empty city resources encountered for ${mapId} and ${hash}`
+        )
+    );
+
+    if (mapId === "creta") {
+      // In Creta we leave the brown province (with Gavdos) blank
+      return { ...bonusTiles, Brown: null };
+    }
+
+    return bonusTiles;
+  },
 } as const;
 
 function decodeCityResources(

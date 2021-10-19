@@ -201,7 +201,11 @@ function ComputedInstanceComponent({
             </Grid>
             <Grid item xs={8}>
               <Typography variant="caption">
-                {RESOURCE_NAME[resource]}
+                {resource != null ? (
+                  RESOURCE_NAME[resource]
+                ) : (
+                  <em>(leave empty, see next step)</em>
+                )}
               </Typography>
             </Grid>
           </React.Fragment>

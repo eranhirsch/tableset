@@ -42,11 +42,11 @@ function InstanceDerivedComponent({
         <>P</>
       )}
       ut 1 tile of each resource type near the minimap. These will be used when
-      producing in the province with{" "}
+      producing in the brown province (with{" "}
       <RomanTitle>
         {/* spell-checker: disable */}Gavdos{/* spell-checker: enable */}
       </RomanTitle>
-      ; <em>Otherwise skip this step</em>.
+      ); <em>Otherwise skip this step</em>.
     </Typography>
   );
 }
