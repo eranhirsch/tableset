@@ -9,39 +9,65 @@ import {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
+import { ConcordiaProductId } from "../ConcordiaProductId";
 import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
 import { ROMAN_NUMERALS } from "../utils/ROMAN_NUMERALS";
 import RomanTitle from "../ux/RomanTitle";
+import productsMetaStep from "./productsMetaStep";
+import venusScoringVariant from "./venusScoringVariant";
 
-const CARDS_PER_DECK = [
-  // the array is 0-indexed
-  undefined,
-  // I: ...
-  MARKET_DECK_I.length,
-  // II: Architect, Prefect, Mercator, Colonist, Consul, Vintner, Weaver
-  7,
-  // III: Architect, Prefect, Mercator, Colonist, Diplomat, Consul
-  6,
-  // IV: Architect, Prefect, Colonist, Diplomat, Consul
-  5,
-  // V: Prefect, Mercator, Diplomat, Consul
-  4,
-] as const;
+const CARDS_PER_DECK = {
+  base: [
+    // the array is 0-indexed
+    undefined,
+    // I: ...
+    MARKET_DECK_I.base.length,
+    // II: Architect, Prefect, Mercator, Colonist, Consul, Vintner, Weaver
+    7,
+    // III: Architect, Prefect, Mercator, Colonist, Diplomat, Consul
+    6,
+    // IV: Architect, Prefect, Colonist, Diplomat, Consul
+    5,
+    // V: Prefect, Mercator, Diplomat, Consul
+    4,
+  ],
+  venus: [
+    // the array is 0-indexed
+    undefined,
+    // I: ...
+    MARKET_DECK_I.venus.length,
+    // II: Mason, Architect/Mercator, Prefect, Mercator, Colonist, Consul, Vintner, Weaver
+    8,
+    // III: Architect, Prefect, Prefect/Mercator, Colonist, Diplomat, Consul
+    6,
+    // IV: Architect/Mercator, Prefect, Colonist, Diplomat, Consul
+    5,
+    // V: Prefect, Mercator, Diplomat, Consul
+    4,
+  ],
+} as const;
 
-const MAX_PLAYER_COUNT = CARDS_PER_DECK.length - 1;
+const MAX_PLAYER_COUNT = CARDS_PER_DECK.base.length - 1;
 
 export default createDerivedGameStep({
   id: "personalityCards",
-  dependencies: [playersMetaStep],
+  dependencies: [playersMetaStep, productsMetaStep, venusScoringVariant],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds],
-}: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
+  dependencies: [playerIds, products, venusScoring],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  readonly ConcordiaProductId[],
+  boolean
+>): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Prepare the personality cards decks:">
-      <CardSelectionStep playerIds={playerIds} />
+      <CardSelectionStep
+        playerIds={playerIds}
+        venusScoring={venusScoring ?? false}
+      />
       <>Create a separate deck for each numeral.</>
     </HeaderAndSteps>
   );
@@ -49,8 +75,10 @@ function InstanceDerivedComponent({
 
 function CardSelectionStep({
   playerIds,
+  venusScoring,
 }: {
   playerIds: readonly PlayerId[] | null | undefined;
+  venusScoring: boolean;
 }): JSX.Element {
   if (playerIds == null) {
     // The player count dependency failed, this could be either that the number
@@ -120,7 +148,7 @@ function CardSelectionStep({
     <BlockWithFootnotes
       footnotes={Vec.filter_nulls(
         Vec.map(
-          CARDS_PER_DECK,
+          CARDS_PER_DECK[venusScoring ? "venus" : "base"],
           (count, index) =>
             count && (
               <>
@@ -146,14 +174,12 @@ function CardSelectionStep({
           <em>
             leaving cards with{" "}
             <GrammaticalList pluralize="numeral">
-              {Vec.range(playerCount + 1, CARDS_PER_DECK.length - 1).map(
-                (x) => (
-                  <React.Fragment key={`leave_in_box_deck_${x}`}>
-                    <strong>{ROMAN_NUMERALS[x]!}</strong>
-                    <Footnote index={x} />
-                  </React.Fragment>
-                )
-              )}
+              {Vec.range(playerCount + 1, MAX_PLAYER_COUNT).map((x) => (
+                <React.Fragment key={`leave_in_box_deck_${x}`}>
+                  <strong>{ROMAN_NUMERALS[x]!}</strong>
+                  <Footnote index={x} />
+                </React.Fragment>
+              ))}
             </GrammaticalList>{" "}
             on their back in the box (they won't be needed)
           </em>

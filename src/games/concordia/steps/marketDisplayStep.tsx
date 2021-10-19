@@ -1,5 +1,7 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { useMemo } from "react";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
   createRandomGameStep,
@@ -10,18 +12,20 @@ import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 import RomanTitle from "../ux/RomanTitle";
 import marketCardsStep from "./marketCardsStep";
+import venusScoringVariant from "./venusScoringVariant";
 
 export default createRandomGameStep({
   id: "marketDisplay",
   labelOverride: "Initial Cards in Market",
 
-  dependencies: [],
+  dependencies: [venusScoringVariant],
 
   InstanceVariableComponent,
   InstanceManualComponent,
 
   isTemplatable: () => true,
-  resolve: () => MarketDisplayEncoder.randomHash(),
+  resolve: (_, venusScoring) =>
+    MarketDisplayEncoder.randomHash(venusScoring ?? false),
 
   ...NoConfigPanel,
 });
@@ -29,7 +33,13 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: hash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
-  const market = MarketDisplayEncoder.decode(hash);
+  const venusScoring = useOptionalInstanceValue(venusScoringVariant);
+
+  const market = useMemo(
+    () => MarketDisplayEncoder.decode(venusScoring ?? false, hash),
+    [hash, venusScoring]
+  );
+
   return (
     <>
       <BlockWithFootnotes
@@ -62,6 +72,8 @@ function InstanceVariableComponent({
 }
 
 function InstanceManualComponent(): JSX.Element {
+  const venusScoring = useOptionalInstanceValue(venusScoringVariant);
+
   return (
     <HeaderAndSteps synopsis="Fill the personality cards market display:">
       <BlockWithFootnotes
@@ -75,8 +87,13 @@ function InstanceManualComponent(): JSX.Element {
         )}
       </BlockWithFootnotes>
       <>
-        Deal cards from the deck placing them one-by-one into the market slots;{" "}
-        <em>the deck should have 1 card remaining.</em>
+        Deal cards from the deck placing them one-by-one into the market slots
+        {!venusScoring && (
+          <>
+            ; <em>the deck should have 1 card remaining</em>
+          </>
+        )}
+        .
       </>
     </HeaderAndSteps>
   );

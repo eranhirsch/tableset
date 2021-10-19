@@ -1,27 +1,44 @@
+import { MathUtils, nullthrows, Num, Random } from "common";
 import { asReadonlyArray } from "common/asReadonlyArray";
-import { nullthrows, Random, Num, MathUtils } from "common";
 
-export const MARKET_DECK_I = [
-  "Architect",
-  "Prefect",
-  "Mercator",
-  "Colonist",
-  "Diplomat",
-  "Mason",
-  "Farmer",
-  "Smith",
-] as const;
+export const MARKET_DECK_I = {
+  base: [
+    "Architect",
+    "Prefect",
+    "Mercator",
+    "Colonist",
+    "Diplomat",
+    "Mason",
+    "Farmer",
+    "Smith",
+  ],
+  venus: [
+    "Architect",
+    "Prefect/Architect",
+    "Mercator",
+    "Colonist",
+    "Diplomat",
+    "Farmer",
+    "Smith",
+  ],
+} as const;
 
 export default {
-  randomHash: (): string =>
+  randomHash: (venusScoring: boolean): string =>
     Num.encode_base32(
-      Random.index(MathUtils.permutations_lazy_array(MARKET_DECK_I))
+      Random.index(
+        MathUtils.permutations_lazy_array(
+          MARKET_DECK_I[venusScoring ? "venus" : "base"]
+        )
+      )
     ),
 
-  decode: (hash: string): readonly string[] =>
+  decode: (venusScoring: boolean, hash: string): readonly string[] =>
     nullthrows(
-      asReadonlyArray(MathUtils.permutations_lazy_array(MARKET_DECK_I))[
-        Num.decode_base32(hash)
-      ]
+      asReadonlyArray(
+        MathUtils.permutations_lazy_array(
+          MARKET_DECK_I[venusScoring ? "venus" : "base"]
+        )
+      )[Num.decode_base32(hash)]
     ).slice(0, 7),
 } as const;

@@ -13,18 +13,22 @@ import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import { ROMAN_NUMERALS } from "../utils/ROMAN_NUMERALS";
 import marketCardsStep from "./marketCardsStep";
 import marketDisplayStep from "./marketDisplayStep";
+import venusScoringVariant from "./venusScoringVariant";
 
 export default createDerivedGameStep({
   id: "marketDeck",
 
-  dependencies: [playersMetaStep],
+  dependencies: [playersMetaStep, venusScoringVariant],
 
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds],
-}: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
+  dependencies: [playerIds, venusScoring],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
   let stackingStep = null;
   if (playerIds == null) {
     stackingStep = (
@@ -90,16 +94,18 @@ function InstanceDerivedComponent({
         )}
       </BlockWithFootnotes>
       {stackingStep}
-      <BlockWithFootnotes
-        footnote={<InstanceStepLink step={marketDisplayStep} />}
-      >
-        {(Footnote) => (
-          <>
-            Put the remaining card of deck <strong>I</strong>
-            <Footnote /> face down on top of the market deck.
-          </>
-        )}
-      </BlockWithFootnotes>
+      {!venusScoring && (
+        <BlockWithFootnotes
+          footnote={<InstanceStepLink step={marketDisplayStep} />}
+        >
+          {(Footnote) => (
+            <>
+              Put the remaining card of deck <strong>I</strong>
+              <Footnote /> face down on top of the market deck.
+            </>
+          )}
+        </BlockWithFootnotes>
+      )}
       <>Place the market deck close to the market display.</>
     </HeaderAndSteps>
   );
