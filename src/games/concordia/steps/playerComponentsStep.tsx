@@ -1,26 +1,46 @@
-import { createGameStep } from "games/core/steps/createGameStep";
+import { Vec } from "common";
+import {
+  createDerivedGameStep,
+  DerivedStepInstanceComponentProps,
+} from "games/core/steps/createDerivedGameStep";
 import React from "react";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import RomanTitle from "../ux/RomanTitle";
+import venusScoringVariant from "./venusScoringVariant";
 
-const PLAYER_CARDS = [
-  "Architect",
-  "Diplomat",
-  "Mercator",
-  "Prefect",
-  "Prefect",
-  "Senator",
-  "Tribune",
-] as const;
+const PLAYER_CARDS = {
+  base: [
+    "Architect",
+    "Diplomat",
+    "Mercator",
+    "Prefect",
+    "Prefect",
+    "Senator",
+    "Tribune",
+  ],
+  venus: [
+    "Architect",
+    "Diplomat",
+    "Mercator",
+    "Prefect",
+    "Prefect",
+    "Senator",
+    "Tribune",
+    "Magister",
+  ],
+} as const;
 
-export default createGameStep({
+export default createDerivedGameStep({
   id: "playerComponents",
-  InstanceManualComponent,
+  dependencies: [venusScoringVariant],
+  InstanceDerivedComponent,
 });
 
-function InstanceManualComponent(): JSX.Element {
+function InstanceDerivedComponent({
+  dependencies: [venusScoring],
+}: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Each player takes all player components in their color:">
       <>
@@ -47,11 +67,14 @@ function InstanceManualComponent(): JSX.Element {
           <>
             Cards:{" "}
             <GrammaticalList>
-              {PLAYER_CARDS.map((card) => (
-                <React.Fragment key={card}>
-                  <RomanTitle>{card}</RomanTitle>
-                </React.Fragment>
-              ))}
+              {Vec.map(
+                PLAYER_CARDS[venusScoring ? "venus" : "base"],
+                (card) => (
+                  <React.Fragment key={card}>
+                    <RomanTitle>{card}</RomanTitle>
+                  </React.Fragment>
+                )
+              )}
             </GrammaticalList>
             .
           </>
@@ -59,7 +82,8 @@ function InstanceManualComponent(): JSX.Element {
       >
         {(Footnote) => (
           <>
-            {PLAYER_CARDS.length} <strong>personality cards</strong>
+            {PLAYER_CARDS[venusScoring ? "venus" : "base"].length}{" "}
+            <strong>personality cards</strong>
             <Footnote />.
           </>
         )}
