@@ -30,6 +30,7 @@ import saltVariantStep from "./steps/saltVariant";
 import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
+import venusScoringVariant from "./steps/venusScoringVariant";
 import wineMarketVariant from "./steps/wineMarketVariant";
 
 export const concordiaGame = createGame({
@@ -72,6 +73,7 @@ export const concordiaGame = createGame({
     aegyptusStep,
     cretaStep,
     germaniaRomanCastlesStep, // Templatable
+    venusScoringVariant, // Templatable
     marketCardsStep,
     marketDisplayStep, // Templatable
     marketDeckStep,
