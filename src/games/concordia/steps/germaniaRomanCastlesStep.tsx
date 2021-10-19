@@ -35,7 +35,7 @@ import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
 import productsMetaStep from "./productsMetaStep";
-import saltVariantStep from "./saltVariantStep";
+import saltVariantStep from "./saltVariant";
 
 type TemplateConfig = { useSalsaTiles?: false };
 

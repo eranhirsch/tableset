@@ -20,7 +20,7 @@ import ForumTilesEncoder from "../utils/ForumTilesEncoder";
 import RomanTitle from "../ux/RomanTitle";
 import forumDecksStep from "./forumDecksStep";
 import forumExpertAuctionVariant from "./forumExpertAuctionVariant";
-import forumVariantStep from "./forumVariantStep";
+import forumVariantStep from "./forumVariant";
 
 export default createRandomGameStep({
   id: "forumInitial",

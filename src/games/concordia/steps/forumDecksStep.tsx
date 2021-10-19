@@ -3,7 +3,7 @@ import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { FORUM_TILES } from "../utils/ForumTilesEncoder";
-import forumVariantStep from "./forumVariantStep";
+import forumVariantStep from "./forumVariant";
 
 export default createDerivedGameStep({
   id: "forumDecks",

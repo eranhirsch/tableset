@@ -1,6 +1,6 @@
 import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import forumVariantStep from "./forumVariantStep";
+import forumVariantStep from "./forumVariant";
 
 export default createDerivedGameStep({
   id: "forumMarket",

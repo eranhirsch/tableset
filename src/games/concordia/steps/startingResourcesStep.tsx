@@ -8,7 +8,7 @@ import React from "react";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { Resource, RESOURCE_NAME } from "../utils/resource";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
-import saltVariantStep from "./saltVariantStep";
+import saltVariantStep from "./saltVariant";
 
 const REGULAR_STARTING_RESOURCES: Readonly<Record<Resource, number>> = {
   salt: 0,

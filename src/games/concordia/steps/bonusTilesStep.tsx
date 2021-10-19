@@ -14,7 +14,7 @@ import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
 import mapStep from "./mapStep";
-import saltVariantStep from "./saltVariantStep";
+import saltVariantStep from "./saltVariant";
 
 export default createDerivedGameStep({
   id: "bonusTiles",

@@ -24,7 +24,7 @@ import { MapId, MAPS, Zone } from "../utils/MAPS";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
-import saltVariantStep from "./saltVariantStep";
+import saltVariantStep from "./saltVariant";
 
 export default createRandomGameStep({
   id: "cityTiles",

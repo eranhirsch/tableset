@@ -6,7 +6,7 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { RESOURCE_NAME } from "../utils/resource";
-import saltVariantStep from "./saltVariantStep";
+import saltVariantStep from "./saltVariant";
 
 export default createDerivedGameStep({
   id: "resourcePiles",

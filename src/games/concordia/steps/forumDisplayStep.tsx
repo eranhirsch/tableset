@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
 import RomanTitle from "../ux/RomanTitle";
-import forumVariantStep from "./forumVariantStep";
+import forumVariantStep from "./forumVariant";
 
 export default createDerivedGameStep({
   id: "forumDisplay",

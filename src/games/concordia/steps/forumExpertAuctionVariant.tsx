@@ -4,7 +4,7 @@ import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { createRandomGameStep } from "games/core/steps/createRandomGameStep";
 import { PercentSlider } from "games/core/ux/PercentSlider";
-import forumVariantStep from "./forumVariantStep";
+import forumVariantStep from "./forumVariant";
 
 type TemplateConfig = { percent: number };
 

@@ -10,7 +10,7 @@ import { ConcordiaProductId } from "../ConcordiaProductId";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import productsMetaStep from "./productsMetaStep";
-import saltVariantStep from "./saltVariantStep";
+import saltVariantStep from "./saltVariant";
 
 type TemplateConfig = { percent: number; saltPercent?: number };
 
