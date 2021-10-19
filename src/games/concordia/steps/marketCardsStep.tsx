@@ -340,21 +340,28 @@ function AddReplacementCardsStep({
     <BlockWithFootnotes footnotes={footnotes}>
       {(Footnote) => (
         <>
-          Exchange the returned cards with cards that have{" "}
-          <strong>neither</strong> <em>a pillar icon</em> (on the bottom left
-          corner) or <em>an interlocking circles icon</em> (on the bottom right
-          corner)
+          Exchange the returned cards with{" "}
+          {playerIds != null && playerIds.length >= venusCards.length && (
+            <em>all </em>
+          )}
+          cards that have <strong>neither</strong> <em>a pillar icon</em> (on
+          the bottom left corner) or <em>an interlocking circles icon</em> (on
+          the bottom right corner)
           {playerIds != null ? (
-            <>
-              {" "}
-              and with numerals{" "}
-              <GrammaticalList>
-                {Vec.map(venusCards, (_, index) => (
-                  <strong>{ROMAN_NUMERALS[index + 1]}</strong>
-                ))}
-              </GrammaticalList>{" "}
-              on the back
-            </>
+            playerIds.length >= venusCards.length ? (
+              ""
+            ) : (
+              <>
+                {" "}
+                and with numerals{" "}
+                <GrammaticalList>
+                  {Vec.map(venusCards, (_, index) => (
+                    <strong>{ROMAN_NUMERALS[index + 1]}</strong>
+                  ))}
+                </GrammaticalList>{" "}
+                on the back
+              </>
+            )
           ) : (
             <>
               ; matching the roman numeral
@@ -410,7 +417,7 @@ function AllCardsCountsFootnote({
             (count, index) =>
               count != null ? (
                 <>
-                  {count} cards with numeral
+                  {count} cards with numeral{" "}
                   <strong>
                     <RomanTitle>{ROMAN_NUMERALS[index]}</RomanTitle>
                   </strong>
