@@ -131,7 +131,10 @@ function CardSelectionStep({
 
   const playerCount = playerIds.length;
   return playerCount >= MAX_PLAYER_COUNT ? (
-    <MaxPlayerCount />
+    <MaxPlayerCount
+      venusScoring={venusScoring}
+      relevantProducts={relevantProducts}
+    />
   ) : (
     <PartialPlayerCount playerCount={playerCount} venusScoring={venusScoring} />
   );
@@ -146,29 +149,27 @@ function UnknownPlayerCount({
 }): JSX.Element {
   return (
     <BlockWithFootnotes
-      footnote={
+      footnotes={[
         <>
           e.g. for a 3 player game take all cards with numerals I, II, and III
           and leave cards with numerals IV and V in the box.
-        </>
-      }
+        </>,
+        <AllCardsCountsFootnote venusScoring={venusScoring} />,
+      ]}
     >
       {(Footnote) => (
         <>
           Take all cards with{" "}
+          <CardBackDescription
+            venusScoring={venusScoring}
+            relevantProducts={relevantProducts}
+          />{" "}
           {relevantProducts === "base" ? (
-            "roman numerals on the back with value"
+            "with value"
           ) : relevantProducts === "venus" && !venusScoring ? (
-            <>
-              <strong>CONCORDIA</strong> and <em>a roman numeral</em> on the
-              back, where the numeral value is
-            </>
+            <>, where the numeral value is</>
           ) : (
-            <>
-              <strong>VENVS</strong>, <em>a roman numeral</em>, and{" "}
-              <em>a small pillar icon</em> (at the bottom left corner), all on
-              the back of the card, and where the numeral value is
-            </>
+            <>, and where the numeral value is</>
           )}{" "}
           up to and including the number of players;{" "}
           <em>
@@ -181,34 +182,32 @@ function UnknownPlayerCount({
               } and with `}
             higher values in the box (they won't be needed)
           </em>
-          <Footnote />.
+          <Footnote index={1} />
+          <Footnote index={2} />.
         </>
       )}
     </BlockWithFootnotes>
   );
 }
 
-function MaxPlayerCount(): JSX.Element {
+function MaxPlayerCount({
+  venusScoring,
+  relevantProducts,
+}: {
+  venusScoring: boolean;
+  relevantProducts: "base" | "venus" | "venusBase";
+}): JSX.Element {
   return (
     <BlockWithFootnotes
-      footnote={
-        <>
-          Numerals{" "}
-          <GrammaticalList>
-            {React.Children.toArray(
-              Vec.map(Vec.range(1, 5), (num) => (
-                <strong>
-                  <RomanTitle>{ROMAN_NUMERALS[num]}</RomanTitle>
-                </strong>
-              ))
-            )}
-          </GrammaticalList>
-        </>
-      }
+      footnote={<AllCardsCountsFootnote venusScoring={venusScoring} />}
     >
       {(Footnote) => (
         <>
-          Take all cards with numerals on the back
+          Take all cards with{" "}
+          <CardBackDescription
+            venusScoring={venusScoring}
+            relevantProducts={relevantProducts}
+          />
           <Footnote />.
         </>
       )}
@@ -296,9 +295,9 @@ function RemoveVenusCardsStep({
     >
       {(Footnote) => (
         <>
-          Return to the box all {playerIds != null && `${venusCards.length} `}
-          cards with double-roles and green <strong>VENVS</strong> scoring on
-          the front
+          Return to the box{" "}
+          {playerIds != null ? `the ${venusCards.length}` : "all"} cards with
+          double-roles and green <strong>VENVS</strong> scoring on the front
           <Footnote />.
         </>
       )}
@@ -343,7 +342,7 @@ function AddReplacementCardsStep({
         <>
           Exchange the returned cards with cards that have{" "}
           <strong>neither</strong> <em>a pillar icon</em> (on the bottom left
-          corner) or <em>interlocking circles icon</em> (on the bottom right
+          corner) or <em>an interlocking circles icon</em> (on the bottom right
           corner)
           {playerIds != null ? (
             <>
@@ -366,5 +365,61 @@ function AddReplacementCardsStep({
         </>
       )}
     </BlockWithFootnotes>
+  );
+}
+
+function CardBackDescription({
+  venusScoring,
+  relevantProducts,
+}: {
+  venusScoring: boolean;
+  relevantProducts: "base" | "venus" | "venusBase";
+}): JSX.Element {
+  if (relevantProducts === "base") {
+    return <>roman numerals on the back</>;
+  }
+
+  if (relevantProducts === "venus" && !venusScoring) {
+    return (
+      <>
+        <strong>CONCORDIA</strong> and <em>a roman numeral</em> on the back
+      </>
+    );
+  }
+
+  return (
+    <>
+      <strong>VENVS</strong>, <em>a roman numeral</em>, and{" "}
+      <em>a small pillar icon</em> (at the bottom left corner), all on the back
+      of the card
+    </>
+  );
+}
+
+function AllCardsCountsFootnote({
+  venusScoring,
+}: {
+  venusScoring: boolean;
+}): JSX.Element {
+  return (
+    <>
+      <GrammaticalList>
+        {Vec.filter_nulls(
+          Vec.map(
+            CARDS_PER_DECK[venusScoring ? "venus" : "base"],
+            (count, index) =>
+              count != null ? (
+                <>
+                  {count} cards with numeral
+                  <strong>
+                    <RomanTitle>{ROMAN_NUMERALS[index]}</RomanTitle>
+                  </strong>
+                </>
+              ) : null
+          )
+        )}
+      </GrammaticalList>
+      .
+    </>
   );
 }
