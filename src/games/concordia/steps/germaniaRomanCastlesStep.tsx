@@ -29,7 +29,7 @@ import GermaniaCastlesEncoder, {
   LOCATIONS,
   NUM_LEFT_OVER,
 } from "../utils/GermaniaCastlesEncoder";
-import { MapId } from "../utils/MAPS";
+import { MapId, MAPS } from "../utils/MAPS";
 import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
@@ -41,7 +41,7 @@ type TemplateConfig = { useSalsaTiles?: false };
 
 export default createRandomGameStep({
   id: "germaniaRomanCastles",
-  labelOverride: "Germania: Roman Castles",
+  labelOverride: `${MAPS.germania.name}: Roman Castles`,
 
   isType: (value): value is string | null =>
     value == null || typeof value === "string",
@@ -210,8 +210,11 @@ function Header({ mapId }: { mapId: MapId | null }): JSX.Element {
         <>
           {mapId == null ? (
             <>
-              If playing on the <strong>Germania</strong> map
-              <Footnote /> assign
+              <em>
+                If playing on the <strong>Germania</strong> map
+                <Footnote />
+              </em>{" "}
+              : assign
             </>
           ) : (
             "Assign"

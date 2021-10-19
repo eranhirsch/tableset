@@ -5,6 +5,7 @@ import {
   playOrderStep
 } from "games/global";
 import { createGame } from "model/Game";
+import aegyptusStep from "./steps/aegyptusStep";
 import bonusTilesStep from "./steps/bonusTilesStep";
 import cityTilesStep from "./steps/cityTilesStep";
 import cretaStep from "./steps/cretaStep";
@@ -68,6 +69,7 @@ export const concordiaGame = createGame({
     marketBoardStep,
     cityTilesStep, // Templatable
     bonusTilesStep,
+    aegyptusStep,
     cretaStep,
     germaniaRomanCastlesStep, // Templatable
     marketCardsStep,

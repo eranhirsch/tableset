@@ -5,16 +5,17 @@ import {
 } from "games/core/steps/createDerivedGameStep";
 import { ConcordiaProductId } from "../ConcordiaProductId";
 import { MapId, MAPS } from "../utils/MAPS";
+import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
 import productsMetaStep from "./productsMetaStep";
 
 export default createDerivedGameStep({
-  id: "cretaBonusTiles",
-  labelOverride: `${MAPS.creta.name}: Bonus Tiles`,
+  id: "aegyptusNileFood",
+  labelOverride: `${MAPS.aegyptus.name}: Nile Flooding Tile`,
   dependencies: [productsMetaStep, mapStep],
   skip: ([products, mapId]) =>
-    (mapId != null && mapId !== "creta") ||
+    (mapId != null && mapId !== "aegyptus") ||
     (mapId == null && !products!.includes("aegyptusCreta")),
   InstanceDerivedComponent,
 });
@@ -32,7 +33,7 @@ function InstanceDerivedComponent({
           <em>
             If playing on the{" "}
             <strong>
-              <RomanTitle>{MAPS.creta.name}</RomanTitle>
+              <RomanTitle>{MAPS.aegyptus.name}</RomanTitle>
             </strong>{" "}
             map
           </em>
@@ -41,12 +42,11 @@ function InstanceDerivedComponent({
       ) : (
         "P"
       )}
-      ut 1 tile of each resource type (5 total), resource side up, near the
-      minimap. These will be used when producing in the brown province (with{" "}
-      <RomanTitle>
-        {/* spell-checker: disable */}Gavdos{/* spell-checker: enable */}
-      </RomanTitle>
-      ); <em>Otherwise skip this step</em>.
+      ut a <strong>{RESOURCE_NAME.food}</strong> tile in the province{" "}
+      <strong>
+        <RomanTitle>Kush</RomanTitle>
+      </strong>
+      , resource side up; <em>Otherwise skip this step</em>.
     </Typography>
   );
 }
