@@ -5,6 +5,7 @@ import { Random, type_invariant } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { createRandomGameStep } from "games/core/steps/createRandomGameStep";
+import { PercentSlider } from "games/core/ux/PercentSlider";
 import { useEffect, useState } from "react";
 import { ConcordiaProductId } from "../ConcordiaProductId";
 import { RESOURCE_NAME } from "../utils/resource";
@@ -16,7 +17,7 @@ type TemplateConfig = { percent: number; saltPercent?: number };
 
 export default createRandomGameStep({
   id: "variant_wineMarket",
-  labelOverride: "Prices in Wine (Cards Market)",
+  labelOverride: "Variant: Prices in Wine (Cards Market)",
   dependencies: [productsMetaStep, saltVariantStep],
   isTemplatable: (products) =>
     products.willContainAny(["aegyptusCreta", "venus", "venusBase"]),
@@ -56,7 +57,7 @@ function ConfigPanel({
 >): JSX.Element {
   if (!withSalt.willResolve()) {
     return (
-      <Box width="75%" textAlign="center">
+      <Box textAlign="center">
         <ConfigPanelSlider value={config?.percent} onChange={onChange} />
       </Box>
     );
@@ -75,22 +76,12 @@ function ConfigPanelSlider({
   ): void;
 }): JSX.Element {
   return (
-    <Slider
-      value={value}
-      min={0}
-      max={100}
-      step={5}
-      marks={[{ value: 50, label: "\u25B2" }]}
-      valueLabelDisplay="auto"
-      valueLabelFormat={(percent) => `${percent}%`}
-      onChange={(_, newValue) =>
-        newValue !== 0 && newValue !== value
-          ? onChange((current) => ({
-              percent: type_invariant(newValue, isNumber),
-              saltPercent: current?.saltPercent,
-            }))
-          : undefined
+    <PercentSlider
+      percent={value}
+      onChange={(percent) =>
+        onChange((current) => ({ percent, saltPercent: current?.saltPercent }))
       }
+      preventZero
     />
   );
 }
