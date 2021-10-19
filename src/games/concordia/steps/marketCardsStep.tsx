@@ -1,4 +1,4 @@
-import { Vec } from "common";
+import { invariant, Vec } from "common";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { PlayerId } from "model/Player";
 import React from "react";
@@ -47,6 +47,14 @@ const CARDS_PER_DECK = {
   ],
 } as const;
 
+type REPLACEMENT = [base: string, venus: string];
+const VENUS_REPLACEMENTS: readonly REPLACEMENT[] = [
+  ["Prefect", "Prefect/Architect"],
+  ["Architect", "Architect/Mercator"],
+  ["Mercator", "Prefect/Mercator"],
+  ["Architect", "Architect/Mercator"],
+];
+
 const MAX_PLAYER_COUNT = CARDS_PER_DECK.base.length - 1;
 
 export default createDerivedGameStep({
@@ -62,13 +70,35 @@ function InstanceDerivedComponent({
   readonly ConcordiaProductId[],
   boolean
 >): JSX.Element {
+  const relevantProducts = products!.includes("base")
+    ? products!.includes("venus")
+      ? "venus"
+      : "base"
+    : "venusBase";
+
   return (
     <HeaderAndSteps synopsis="Prepare the personality cards decks:">
       <CardSelectionStep
         playerIds={playerIds}
+        relevantProducts={relevantProducts}
         venusScoring={venusScoring ?? false}
       />
+      {!venusScoring && relevantProducts === "venusBase" && (
+        <RemoveVenusCardsStep playerIds={playerIds} />
+      )}
+      {!venusScoring && relevantProducts === "venusBase" && (
+        <AddReplacementCardsStep playerIds={playerIds} />
+      )}
       <>Create a separate deck for each numeral.</>
+      {!venusScoring && relevantProducts === "venusBase" && (
+        <>
+          Move the{" "}
+          <strong>
+            <RomanTitle>Mason</RomanTitle>
+          </strong>{" "}
+          card from deck <strong>II</strong> to deck <strong>I</strong>.
+        </>
+      )}
     </HeaderAndSteps>
   );
 }
@@ -76,74 +106,123 @@ function InstanceDerivedComponent({
 function CardSelectionStep({
   playerIds,
   venusScoring,
+  relevantProducts,
 }: {
   playerIds: readonly PlayerId[] | null | undefined;
   venusScoring: boolean;
+  relevantProducts: "base" | "venus" | "venusBase";
 }): JSX.Element {
+  invariant(
+    // This protects us from the only meaningless case which is that venus
+    // scoring is turned on when there are no venus products. We need this here
+    // because we handle each combination of product and scoring separately.
+    !(relevantProducts === "base" && venusScoring),
+    `Trying to setup a venus scoring game when no venus product is enabled`
+  );
+
   if (playerIds == null) {
-    // The player count dependency failed, this could be either that the number
-    // of players is too high to be meaningful for concordia, or too low (0)
     return (
-      <>
-        <BlockWithFootnotes
-          footnotes={[
-            <>
-              e.g. for a 3 player game take all cards with numerals I, II, and
-              III.
-            </>,
-            <>
-              e.g. for a 3 player game leave cards with numerals IV and V in the
-              box.
-            </>,
-          ]}
-        >
-          {(Footnote) => (
-            <>
-              Take all cards with numerals on their back with value up to and
-              including the number of players
-              <Footnote index={1} />;{" "}
-              <em>
-                leaving cards with higher values
-                <Footnote index={2} /> in the box (they won't be needed)
-              </em>
-              .
-            </>
-          )}
-        </BlockWithFootnotes>
-      </>
+      <UnknownPlayerCount
+        venusScoring={venusScoring}
+        relevantProducts={relevantProducts}
+      />
     );
   }
 
   const playerCount = playerIds.length;
+  return playerCount >= MAX_PLAYER_COUNT ? (
+    <MaxPlayerCount />
+  ) : (
+    <PartialPlayerCount playerCount={playerCount} venusScoring={venusScoring} />
+  );
+}
 
-  if (playerCount === MAX_PLAYER_COUNT) {
-    return (
-      <BlockWithFootnotes
-        footnote={
-          <>
-            Numerals{" "}
-            <GrammaticalList>
-              {React.Children.toArray(
-                Vec.map(Vec.range(1, 5), (num) => (
-                  <strong>
-                    <RomanTitle>{ROMAN_NUMERALS[num]}</RomanTitle>
-                  </strong>
-                ))
-              )}
-            </GrammaticalList>
-          </>
-        }
-      >
-        {(Footnote) => (
-          <>
-            Take all cards with numerals on their back
-            <Footnote />.
-          </>
-        )}
-      </BlockWithFootnotes>
-    );
-  }
+function UnknownPlayerCount({
+  venusScoring,
+  relevantProducts,
+}: {
+  venusScoring: boolean;
+  relevantProducts: "base" | "venus" | "venusBase";
+}): JSX.Element {
+  return (
+    <BlockWithFootnotes
+      footnote={
+        <>
+          e.g. for a 3 player game take all cards with numerals I, II, and III
+          and leave cards with numerals IV and V in the box.
+        </>
+      }
+    >
+      {(Footnote) => (
+        <>
+          Take all cards with{" "}
+          {relevantProducts === "base" ? (
+            "roman numerals on the back with value"
+          ) : relevantProducts === "venus" && !venusScoring ? (
+            <>
+              <strong>CONCORDIA</strong> and <em>a roman numeral</em> on the
+              back, where the numeral value is
+            </>
+          ) : (
+            <>
+              <strong>VENVS</strong>, <em>a roman numeral</em>, and{" "}
+              <em>a small pillar icon</em> (at the bottom left corner), all on
+              the back of the card, and where the numeral value is
+            </>
+          )}{" "}
+          up to and including the number of players;{" "}
+          <em>
+            leaving cards with{" "}
+            {relevantProducts !== "base" &&
+              `${
+                relevantProducts === "venus" && !venusScoring
+                  ? "VENVS"
+                  : "CONCORDIA"
+              } and with `}
+            higher values in the box (they won't be needed)
+          </em>
+          <Footnote />.
+        </>
+      )}
+    </BlockWithFootnotes>
+  );
+}
 
+function MaxPlayerCount(): JSX.Element {
+  return (
+    <BlockWithFootnotes
+      footnote={
+        <>
+          Numerals{" "}
+          <GrammaticalList>
+            {React.Children.toArray(
+              Vec.map(Vec.range(1, 5), (num) => (
+                <strong>
+                  <RomanTitle>{ROMAN_NUMERALS[num]}</RomanTitle>
+                </strong>
+              ))
+            )}
+          </GrammaticalList>
+        </>
+      }
+    >
+      {(Footnote) => (
+        <>
+          Take all cards with numerals on the back
+          <Footnote />.
+        </>
+      )}
+    </BlockWithFootnotes>
+  );
+}
+
+function PartialPlayerCount({
+  playerCount,
+  venusScoring,
+}: {
+  playerCount: number;
+  venusScoring: boolean;
+}): JSX.Element {
   return (
     <BlockWithFootnotes
       footnotes={Vec.filter_nulls(
@@ -170,7 +249,7 @@ function CardSelectionStep({
               </React.Fragment>
             ))}
           </GrammaticalList>{" "}
-          on their back;{" "}
+          on the back;{" "}
           <em>
             leaving cards with{" "}
             <GrammaticalList pluralize="numeral">
@@ -181,9 +260,109 @@ function CardSelectionStep({
                 </React.Fragment>
               ))}
             </GrammaticalList>{" "}
-            on their back in the box (they won't be needed)
+            on the back in the box (they won't be needed)
           </em>
           .
+        </>
+      )}
+    </BlockWithFootnotes>
+  );
+}
+
+function RemoveVenusCardsStep({
+  playerIds,
+}: {
+  playerIds: readonly PlayerId[] | null | undefined;
+}): JSX.Element {
+  const venusCards =
+    playerIds == null
+      ? VENUS_REPLACEMENTS
+      : Vec.take(VENUS_REPLACEMENTS, playerIds.length - 1);
+
+  return (
+    <BlockWithFootnotes
+      footnote={
+        <>
+          <GrammaticalList>
+            {Vec.map(venusCards, ([_, card], index) => (
+              <>
+                {ROMAN_NUMERALS[index + 1]}: <RomanTitle>{card}</RomanTitle>
+              </>
+            ))}
+          </GrammaticalList>
+          .
+        </>
+      }
+    >
+      {(Footnote) => (
+        <>
+          Return to the box all {playerIds != null && `${venusCards.length} `}
+          cards with double-roles and green <strong>VENVS</strong> scoring on
+          the front
+          <Footnote />.
+        </>
+      )}
+    </BlockWithFootnotes>
+  );
+}
+
+function AddReplacementCardsStep({
+  playerIds,
+}: {
+  playerIds: readonly PlayerId[] | null | undefined;
+}): JSX.Element {
+  const venusCards =
+    playerIds == null
+      ? VENUS_REPLACEMENTS
+      : Vec.take(VENUS_REPLACEMENTS, playerIds.length - 1);
+
+  const footnotes = Vec.concat(
+    [
+      <>
+        <GrammaticalList>
+          {Vec.map(venusCards, ([card, _], index) => (
+            <>
+              {ROMAN_NUMERALS[index + 1]}: <RomanTitle>{card}</RomanTitle>
+            </>
+          ))}
+        </GrammaticalList>
+        .
+      </>,
+    ],
+    // We only need the other footnote when the player count isn't known
+    playerIds == null ? (
+      <>e.g. for a 3 player game take cards I, II, and III.</>
+    ) : (
+      []
+    )
+  );
+
+  return (
+    <BlockWithFootnotes footnotes={footnotes}>
+      {(Footnote) => (
+        <>
+          Exchange the returned cards with cards that have{" "}
+          <strong>neither</strong> <em>a pillar icon</em> (on the bottom left
+          corner) or <em>interlocking circles icon</em> (on the bottom right
+          corner)
+          {playerIds != null ? (
+            <>
+              {" "}
+              and with numerals{" "}
+              <GrammaticalList>
+                {Vec.map(venusCards, (_, index) => (
+                  <strong>{ROMAN_NUMERALS[index + 1]}</strong>
+                ))}
+              </GrammaticalList>{" "}
+              on the back
+            </>
+          ) : (
+            <>
+              ; matching the roman numeral
+              <Footnote index={2} />
+            </>
+          )}
+          <Footnote index={1} />.
         </>
       )}
     </BlockWithFootnotes>

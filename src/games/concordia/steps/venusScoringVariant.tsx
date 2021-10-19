@@ -16,9 +16,7 @@ function InstanceVariableComponent(): JSX.Element {
     <Typography variant="body1">
       Cards with the goddess{" "}
       <strong>
-        <RomanTitle>
-          {/* spell-checker: disable */}Venvs{/* spell-checker: enable */}
-        </RomanTitle>
+        <RomanTitle>VENVS</RomanTitle>
       </strong>{" "}
       are added to the game; paired with a new role{" "}
       <em>
