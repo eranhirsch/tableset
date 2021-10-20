@@ -70,7 +70,7 @@ function InstanceDerivedComponent({
   readonly ConcordiaProductId[],
   boolean
 >): JSX.Element {
-  const relevantProducts = products!.includes("base")
+  const relevantProduct = products!.includes("base")
     ? products!.includes("venus")
       ? "venus"
       : "base"
@@ -80,17 +80,17 @@ function InstanceDerivedComponent({
     <HeaderAndSteps synopsis="Prepare the personality cards decks:">
       <CardSelectionStep
         playerIds={playerIds}
-        relevantProducts={relevantProducts}
+        relevantProduct={relevantProduct}
         venusScoring={venusScoring ?? false}
       />
-      {!venusScoring && relevantProducts === "venusBase" && (
+      {!venusScoring && relevantProduct === "venusBase" && (
         <RemoveVenusCardsStep playerIds={playerIds} />
       )}
-      {!venusScoring && relevantProducts === "venusBase" && (
+      {!venusScoring && relevantProduct === "venusBase" && (
         <AddReplacementCardsStep playerIds={playerIds} />
       )}
       <>Create a separate deck for each numeral.</>
-      {!venusScoring && relevantProducts === "venusBase" && (
+      {!venusScoring && relevantProduct === "venusBase" && (
         <>
           Move the{" "}
           <strong>
@@ -106,17 +106,17 @@ function InstanceDerivedComponent({
 function CardSelectionStep({
   playerIds,
   venusScoring,
-  relevantProducts,
+  relevantProduct,
 }: {
   playerIds: readonly PlayerId[] | null | undefined;
   venusScoring: boolean;
-  relevantProducts: "base" | "venus" | "venusBase";
+  relevantProduct: "base" | "venus" | "venusBase";
 }): JSX.Element {
   invariant(
     // This protects us from the only meaningless case which is that venus
     // scoring is turned on when there are no venus products. We need this here
     // because we handle each combination of product and scoring separately.
-    !(relevantProducts === "base" && venusScoring),
+    !(relevantProduct === "base" && venusScoring),
     `Trying to setup a venus scoring game when no venus product is enabled`
   );
 
@@ -124,7 +124,7 @@ function CardSelectionStep({
     return (
       <UnknownPlayerCount
         venusScoring={venusScoring}
-        relevantProducts={relevantProducts}
+        relevantProduct={relevantProduct}
       />
     );
   }
@@ -133,23 +133,23 @@ function CardSelectionStep({
   return playerCount >= MAX_PLAYER_COUNT ? (
     <MaxPlayerCount
       venusScoring={venusScoring}
-      relevantProducts={relevantProducts}
+      relevantProduct={relevantProduct}
     />
   ) : (
     <PartialPlayerCount
       playerCount={playerCount}
       venusScoring={venusScoring}
-      relevantProducts={relevantProducts}
+      relevantProduct={relevantProduct}
     />
   );
 }
 
 function UnknownPlayerCount({
   venusScoring,
-  relevantProducts,
+  relevantProduct,
 }: {
   venusScoring: boolean;
-  relevantProducts: "base" | "venus" | "venusBase";
+  relevantProduct: "base" | "venus" | "venusBase";
 }): JSX.Element {
   return (
     <BlockWithFootnotes
@@ -166,15 +166,15 @@ function UnknownPlayerCount({
           Take all cards with{" "}
           <CardBackDescription
             venusScoring={venusScoring}
-            relevantProducts={relevantProducts}
+            relevantProduct={relevantProduct}
           />
-          {relevantProducts === "base"
+          {relevantProduct === "base"
             ? " with value "
             : ", and where the numeral value is "}
           up to and including the number of players;{" "}
           <em>
-            leaving {relevantProducts === "venus" && "all "}cards with{" "}
-            {relevantProducts === "venus" &&
+            leaving {relevantProduct === "venus" && "all "}cards with{" "}
+            {relevantProduct === "venus" &&
               `${!venusScoring ? "VENVS" : "CONCORDIA"}, and cards with `}
             higher values in the box (they won't be needed)
           </em>
@@ -188,10 +188,10 @@ function UnknownPlayerCount({
 
 function MaxPlayerCount({
   venusScoring,
-  relevantProducts,
+  relevantProduct,
 }: {
   venusScoring: boolean;
-  relevantProducts: "base" | "venus" | "venusBase";
+  relevantProduct: "base" | "venus" | "venusBase";
 }): JSX.Element {
   return (
     <BlockWithFootnotes
@@ -202,7 +202,7 @@ function MaxPlayerCount({
           Take all cards with{" "}
           <CardBackDescription
             venusScoring={venusScoring}
-            relevantProducts={relevantProducts}
+            relevantProduct={relevantProduct}
           />
           <Footnote />.
         </>
@@ -214,11 +214,11 @@ function MaxPlayerCount({
 function PartialPlayerCount({
   playerCount,
   venusScoring,
-  relevantProducts,
+  relevantProduct,
 }: {
   playerCount: number;
   venusScoring: boolean;
-  relevantProducts: "base" | "venus" | "venusBase";
+  relevantProduct: "base" | "venus" | "venusBase";
 }): JSX.Element {
   return (
     <BlockWithFootnotes
@@ -229,16 +229,16 @@ function PartialPlayerCount({
           Take all cards with{" "}
           <CardBackDescription
             venusScoring={venusScoring}
-            relevantProducts={relevantProducts}
+            relevantProduct={relevantProduct}
           />
-          {relevantProducts !== "venusBase" ? ", and with " : " with "}
+          {relevantProduct !== "venusBase" ? ", and with " : " with "}
           <GrammaticalList pluralize="value">
             {Vec.range(1, playerCount).map((i) => (
               <strong>{ROMAN_NUMERALS[i]}</strong>
             ))}
           </GrammaticalList>
-          ; leaving {relevantProducts !== "venusBase" && "all "}cards with{" "}
-          {relevantProducts === "venus" &&
+          ; leaving {relevantProduct !== "venusBase" && "all "}cards with{" "}
+          {relevantProduct === "venus" &&
             `${!venusScoring ? "VENVS" : "CONCORDIA"}, and cards with `}
           <GrammaticalList pluralize="numeral">
             {Vec.range(playerCount + 1, MAX_PLAYER_COUNT).map((x) => (
@@ -360,16 +360,16 @@ function AddReplacementCardsStep({
 
 function CardBackDescription({
   venusScoring,
-  relevantProducts,
+  relevantProduct,
 }: {
   venusScoring: boolean;
-  relevantProducts: "base" | "venus" | "venusBase";
+  relevantProduct: "base" | "venus" | "venusBase";
 }): JSX.Element {
-  if (relevantProducts === "base") {
+  if (relevantProduct === "base") {
     return <>roman numerals on the back</>;
   }
 
-  if (relevantProducts === "venus") {
+  if (relevantProduct === "venus") {
     if (!venusScoring) {
       return (
         <>
