@@ -115,7 +115,7 @@ function InstanceDerivedComponent({
         ? ionium
         : MAPS[mapId].hasIntegratedCardsMarket
         ? "the market board on top of the printed market section"
-        : { nearMap }}
+        : nearMap}
       , {boardSide}.
     </Typography>
   );
