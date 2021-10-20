@@ -7,15 +7,17 @@ function name_parts(fullName: string): readonly [string, string | undefined] {
   return tuple(first, last);
 }
 
-export const shortest_unique_abbreviation = (
+export function shortest_unique_abbreviation(
   fullName: string,
   allNames: readonly string[]
-): string =>
-  as_unique(
-    fullName,
-    Vec.filter(allNames, (name) => name !== fullName),
-    first_letter
-  ) ?? abbreviated(fullName);
+): string {
+  const others = Vec.filter(allNames, (name) => name !== fullName);
+  return (
+    as_unique(fullName, others, first_letter) ??
+    as_unique(fullName, others, abbreviated) ??
+    hashed(fullName)
+  );
+}
 
 export function shortest_unique_name(
   fullName: string,
@@ -52,6 +54,11 @@ function as_unique(
 const first_letter = (fullName: string): string => name_parts(fullName)[0][0];
 
 function abbreviated(fullName: string): string {
+  const [first, last] = name_parts(fullName);
+  return first[0] + (last != null ? last[0] : first[1]);
+}
+
+function hashed(fullName: string): string {
   const [first, last] = name_parts(fullName);
   return (
     first[0] + (last != null ? last[0] : `${Num.javaHashCode(fullName) % 10}`)
