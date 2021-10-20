@@ -66,7 +66,7 @@ export interface Templatable<T = unknown, C = unknown> extends WithDependencies 
     config: C | null;
     queries: readonly Query[];
     onChange(newConfig: C | ((currentConfig: C | undefined) => C)): void;
-  }): JSX.Element | null;
+  }): JSX.Element;
   ConfigPanelTLDR(props: { config: C }): JSX.Element;
 }
 

@@ -91,7 +91,7 @@ function ConfigPanel({
   TemplateConfig,
   readonly ConcordiaProductId[],
   readonly PlayerId[]
->): JSX.Element | null {
+>): JSX.Element {
   const products = productsQuery.resolve();
   const players = playersQuery.resolve();
 
