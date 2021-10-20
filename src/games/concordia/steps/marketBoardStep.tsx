@@ -65,20 +65,39 @@ function InstanceDerivedComponent({
       >
         {(Footnote) => (
           <>
-            <em>
-              If the map you are playing on doesn't have a cards market section
-              printed on it
-              <Footnote />:
-            </em>{" "}
-            place {nearMap}, {boardSide};{" "}
+            {isWine ? (
+              <>
+                <em>
+                  If the map you are playing on doesn't have a cards market
+                  section printed on it
+                </em>
+                <Footnote /> place {nearMap}; <em>otherwise</em> cover it with
+                the board
+              </>
+            ) : (
+              <>
+                <em>
+                  If the map you are playing on doesn't have a cards market
+                  section printed on it
+                </em>
+                <Footnote />: Place {nearMap}
+              </>
+            )}
+            , {boardSide};{" "}
             <em>
               If playing on the{" "}
               <strong>
                 <RomanTitle>{MAPS.ionium.name}</RomanTitle>
               </strong>{" "}
               map and you want to have a tighter game
-            </em>
-            : place {ionium}; <em>Otherwise skip this step.</em>
+            </em>{" "}
+            place {ionium}
+            {!isWine && (
+              <>
+                ; <em>Otherwise skip this step</em>
+              </>
+            )}
+            .
           </>
         )}
       </BlockWithFootnotes>
@@ -91,7 +110,13 @@ function InstanceDerivedComponent({
   );
   return (
     <Typography variant="body1">
-      Place {mapId === "ioniumSmall" ? ionium : nearMap}, {boardSide}.
+      Place{" "}
+      {mapId === "ioniumSmall"
+        ? ionium
+        : MAPS[mapId].hasIntegratedCardsMarket
+        ? "the market board on top of the printed market section"
+        : { nearMap }}
+      , {boardSide}.
     </Typography>
   );
 }
