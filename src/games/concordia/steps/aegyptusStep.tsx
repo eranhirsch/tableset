@@ -46,7 +46,13 @@ function InstanceDerivedComponent({
       <strong>
         <RomanTitle>Kush</RomanTitle>
       </strong>
-      , resource side up; <em>Otherwise skip this step</em>.
+      , resource side up
+      {mapId == null && (
+        <>
+          ; <em>Otherwise skip this step</em>
+        </>
+      )}
+      .
     </Typography>
   );
 }
