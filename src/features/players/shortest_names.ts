@@ -1,4 +1,4 @@
-import { Str, tuple } from "common";
+import { Num, Str, tuple, Vec } from "common";
 
 function name_parts(fullName: string): readonly [string, string | undefined] {
   const [first, last] = Str.capitalize_words(
@@ -7,17 +7,19 @@ function name_parts(fullName: string): readonly [string, string | undefined] {
   return tuple(first, last);
 }
 
-export function shortest_unique_abbreviation(
+export const shortest_unique_abbreviation = (
   fullName: string,
-  allNames: string[]
-): string {
-  const others = allNames.filter((name) => name !== fullName);
-  return as_unique(fullName, others, first_letter) ?? abbreviated(fullName);
-}
+  allNames: readonly string[]
+): string =>
+  as_unique(
+    fullName,
+    Vec.filter(allNames, (name) => name !== fullName),
+    first_letter
+  ) ?? abbreviated(fullName);
 
 export function shortest_unique_name(
   fullName: string,
-  allNames: string[]
+  allNames: readonly string[]
 ): string {
   const others = allNames.filter((name) => name !== fullName);
 
@@ -32,7 +34,7 @@ export function shortest_unique_name(
 
 function as_unique(
   fullName: string,
-  others: string[],
+  others: readonly string[],
   shortner: (name: string) => string | undefined
 ): string | undefined | null {
   const short = shortner(fullName);
@@ -51,7 +53,9 @@ const first_letter = (fullName: string): string => name_parts(fullName)[0][0];
 
 function abbreviated(fullName: string): string {
   const [first, last] = name_parts(fullName);
-  return first[0] + (last != null ? last[0] : "?");
+  return (
+    first[0] + (last != null ? last[0] : `${Num.javaHashCode(fullName) % 10}`)
+  );
 }
 
 const first_name = (fullName: string): string => name_parts(fullName)[0];
