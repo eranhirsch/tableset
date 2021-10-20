@@ -136,7 +136,11 @@ function CardSelectionStep({
       relevantProducts={relevantProducts}
     />
   ) : (
-    <PartialPlayerCount playerCount={playerCount} venusScoring={venusScoring} />
+    <PartialPlayerCount
+      playerCount={playerCount}
+      venusScoring={venusScoring}
+      relevantProducts={relevantProducts}
+    />
   );
 }
 
@@ -163,23 +167,15 @@ function UnknownPlayerCount({
           <CardBackDescription
             venusScoring={venusScoring}
             relevantProducts={relevantProducts}
-          />{" "}
-          {relevantProducts === "base" ? (
-            "with value"
-          ) : relevantProducts === "venus" && !venusScoring ? (
-            <>, where the numeral value is</>
-          ) : (
-            <>, and where the numeral value is</>
-          )}{" "}
+          />
+          {relevantProducts === "base"
+            ? " with value "
+            : ", and where the numeral value is "}
           up to and including the number of players;{" "}
           <em>
-            leaving cards with{" "}
-            {relevantProducts !== "base" &&
-              `${
-                relevantProducts === "venus" && !venusScoring
-                  ? "VENVS"
-                  : "CONCORDIA"
-              } and with `}
+            leaving {relevantProducts === "venus" && "all "}cards with{" "}
+            {relevantProducts === "venus" &&
+              `${!venusScoring ? "VENVS" : "CONCORDIA"}, and cards with `}
             higher values in the box (they won't be needed)
           </em>
           <Footnote index={1} />
@@ -218,50 +214,39 @@ function MaxPlayerCount({
 function PartialPlayerCount({
   playerCount,
   venusScoring,
+  relevantProducts,
 }: {
   playerCount: number;
   venusScoring: boolean;
+  relevantProducts: "base" | "venus" | "venusBase";
 }): JSX.Element {
   return (
     <BlockWithFootnotes
-      footnotes={Vec.filter_nulls(
-        Vec.map(
-          CARDS_PER_DECK[venusScoring ? "venus" : "base"],
-          (count, index) =>
-            count && (
-              <>
-                {count} cards with numeral{" "}
-                <strong>{ROMAN_NUMERALS[index]}</strong>.
-              </>
-            )
-        )
-      )}
+      footnote={<AllCardsCountsFootnote venusScoring={venusScoring} />}
     >
       {(Footnote) => (
         <>
           Take all cards with{" "}
-          <GrammaticalList pluralize="numeral">
+          <CardBackDescription
+            venusScoring={venusScoring}
+            relevantProducts={relevantProducts}
+          />
+          {relevantProducts !== "venusBase" ? ", and with " : " with "}
+          <GrammaticalList pluralize="value">
             {Vec.range(1, playerCount).map((i) => (
-              <React.Fragment key={`deck_${i}`}>
-                <strong>{ROMAN_NUMERALS[i]}</strong>
-                <Footnote index={i} />
-              </React.Fragment>
+              <strong>{ROMAN_NUMERALS[i]}</strong>
+            ))}
+          </GrammaticalList>
+          ; leaving {relevantProducts !== "venusBase" && "all "}cards with{" "}
+          {relevantProducts === "venus" &&
+            `${!venusScoring ? "VENVS" : "CONCORDIA"}, and cards with `}
+          <GrammaticalList pluralize="numeral">
+            {Vec.range(playerCount + 1, MAX_PLAYER_COUNT).map((x) => (
+              <strong>{ROMAN_NUMERALS[x]!}</strong>
             ))}
           </GrammaticalList>{" "}
-          on the back;{" "}
-          <em>
-            leaving cards with{" "}
-            <GrammaticalList pluralize="numeral">
-              {Vec.range(playerCount + 1, MAX_PLAYER_COUNT).map((x) => (
-                <React.Fragment key={`leave_in_box_deck_${x}`}>
-                  <strong>{ROMAN_NUMERALS[x]!}</strong>
-                  <Footnote index={x} />
-                </React.Fragment>
-              ))}
-            </GrammaticalList>{" "}
-            on the back in the box (they won't be needed)
-          </em>
-          .
+          in the box (they won't be needed)
+          <Footnote />.
         </>
       )}
     </BlockWithFootnotes>
@@ -297,7 +282,7 @@ function RemoveVenusCardsStep({
         <>
           Return to the box{" "}
           {playerIds != null ? `the ${venusCards.length}` : "all"} cards with
-          double-roles and green <strong>VENVS</strong> scoring on the front
+          double-roles and green <strong>VENVS</strong> scoring
           <Footnote />.
         </>
       )}
@@ -341,14 +326,13 @@ function AddReplacementCardsStep({
       {(Footnote) => (
         <>
           Exchange the returned cards with{" "}
-          {playerIds != null && playerIds.length >= venusCards.length && (
-            <em>all </em>
-          )}
-          cards that have <strong>neither</strong> <em>a pillar icon</em> (on
-          the bottom left corner) or <em>an interlocking circles icon</em> (on
-          the bottom right corner)
+          {playerIds != null &&
+            playerIds.length >= VENUS_REPLACEMENTS.length && <em>all </em>}
+          cards that have <strong>neither</strong> <em>a pillar icon</em> nor{" "}
+          <em>an interlocking circles icon</em> (on the bottom corners, on the
+          back of the card)
           {playerIds != null ? (
-            playerIds.length >= venusCards.length ? (
+            playerIds.length >= VENUS_REPLACEMENTS.length ? (
               ""
             ) : (
               <>
@@ -358,8 +342,7 @@ function AddReplacementCardsStep({
                   {Vec.map(venusCards, (_, index) => (
                     <strong>{ROMAN_NUMERALS[index + 1]}</strong>
                   ))}
-                </GrammaticalList>{" "}
-                on the back
+                </GrammaticalList>
               </>
             )
           ) : (
@@ -386,19 +369,27 @@ function CardBackDescription({
     return <>roman numerals on the back</>;
   }
 
-  if (relevantProducts === "venus" && !venusScoring) {
+  if (relevantProducts === "venus") {
+    if (!venusScoring) {
+      return (
+        <>
+          <strong>CONCORDIA</strong> and a roman numeral on the back
+        </>
+      );
+    }
     return (
       <>
-        <strong>CONCORDIA</strong> and <em>a roman numeral</em> on the back
+        <strong>VENVS</strong>, a roman numeral, and{" "}
+        <em>a small pillar icon</em> (at the bottom left corner), all on the
+        back of the card
       </>
     );
   }
 
   return (
     <>
-      <strong>VENVS</strong>, <em>a roman numeral</em>, and{" "}
-      <em>a small pillar icon</em> (at the bottom left corner), all on the back
-      of the card
+      a roman numeral and <strong>a small pillar icon</strong> (at the bottom
+      left corner) on the back
     </>
   );
 }
