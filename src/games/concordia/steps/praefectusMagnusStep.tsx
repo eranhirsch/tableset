@@ -8,6 +8,7 @@ import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
+import RomanTitle from "../ux/RomanTitle";
 import fishMarketVariant from "./fishMarketVariant";
 
 export default createDerivedGameStep({
@@ -29,14 +30,21 @@ function InstanceDerivedComponent({
   PlayerId,
   boolean
 >): JSX.Element {
-  /* spell-checker: disable */
-  const magnusKind = withFish ? "Praeectvs Piscatvs" : "Praefectvs Magnvs";
+  const magnusLabel = (
+    <strong>
+      <RomanTitle>
+        {/* spell-checker: disable */}
+        Praefectvs {withFish ? "Piscatvs" : "Magnvs"}
+        {/* spell-checker: enable */}
+      </RomanTitle>
+    </strong>
+  );
   /* spell-checker: enable */
 
   if (playerIds == null) {
     return (
       <Typography variant="body1">
-        Give the last player the <strong>{magnusKind}</strong> card.
+        Give the last player the {magnusLabel} card.
       </Typography>
     );
   }
@@ -45,8 +53,7 @@ function InstanceDerivedComponent({
     return (
       <Typography variant="body1">
         Give the {playerIds.length}
-        {Str.number_suffix(playerIds.length)} player the{" "}
-        <strong>{magnusKind}</strong> card.
+        {Str.number_suffix(playerIds.length)} player the {magnusLabel} card.
       </Typography>
     );
   }
@@ -55,8 +62,7 @@ function InstanceDerivedComponent({
     return (
       <Typography variant="body1">
         Give the player sitting to the left of{" "}
-        <PlayerAvatar playerId={firstPlayerId} inline /> the{" "}
-        <strong>{magnusKind}</strong> card.
+        <PlayerAvatar playerId={firstPlayerId} inline /> the {magnusLabel} card.
       </Typography>
     );
   }
@@ -72,8 +78,7 @@ function InstanceDerivedComponent({
 
   return (
     <Typography variant="body1">
-      Give <PlayerAvatar playerId={lastPlayer} inline /> the{" "}
-      <strong>{magnusKind}</strong> card.
+      Give <PlayerAvatar playerId={lastPlayer} inline /> the {magnusLabel} card.
     </Typography>
   );
 }
