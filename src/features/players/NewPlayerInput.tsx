@@ -14,11 +14,12 @@ export function NewPlayerInput(): JSX.Element | null {
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        if (newPlayerName === "") {
+        const submittedName = newPlayerName.trim();
+        if (submittedName === "") {
           // Ignore trivial cases
           return;
         }
-        dispatch(playersActions.added(newPlayerName));
+        dispatch(playersActions.added(submittedName));
         setNewPlayerName("");
       }}
     >
@@ -38,7 +39,7 @@ export function NewPlayerInput(): JSX.Element | null {
         margin="dense"
         fullWidth
         value={newPlayerName}
-        onChange={(event) => setNewPlayerName(event.target.value.trim())}
+        onChange={(event) => setNewPlayerName(event.target.value)}
       />
     </form>
   );
