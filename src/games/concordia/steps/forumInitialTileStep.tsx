@@ -8,7 +8,7 @@ import { playersSelectors } from "features/players/playersSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -18,6 +18,7 @@ import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import ForumTilesEncoder from "../utils/ForumTilesEncoder";
 import RomanTitle from "../ux/RomanTitle";
+import fishMarketVariant from "./fishMarketVariant";
 import forumDecksStep from "./forumDecksStep";
 import forumExpertAuctionVariant from "./forumExpertAuctionVariant";
 import forumVariantStep from "./forumVariant";
@@ -25,7 +26,12 @@ import forumVariantStep from "./forumVariant";
 export default createRandomGameStep({
   id: "forumInitial",
   labelOverride: "Forum Starting Tile",
-  dependencies: [forumVariantStep, forumExpertAuctionVariant, playersMetaStep],
+  dependencies: [
+    forumVariantStep,
+    forumExpertAuctionVariant,
+    playersMetaStep,
+    fishMarketVariant,
+  ],
   skip: (_, [forum]) => forum == null,
   isTemplatable: (_, auction) => auction.canResolveTo(true),
   resolve: (_config, _isForum, isAuction, players) =>
@@ -41,14 +47,16 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: forumHash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
-  return <AuctionMode forumHash={forumHash} />;
+  const withFish = useOptionalInstanceValue(fishMarketVariant);
+  return <AuctionMode forumHash={forumHash} withFish={withFish ?? false} />;
 }
 
 function InstanceManualComponent(): JSX.Element {
   const auctionMode = useOptionalInstanceValue(forumExpertAuctionVariant);
+  const withFish = useOptionalInstanceValue(fishMarketVariant);
 
   if (auctionMode) {
-    return <AuctionMode />;
+    return <AuctionMode withFish={withFish ?? false} />;
   }
 
   return (
@@ -65,7 +73,13 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function AuctionMode({ forumHash }: { forumHash?: string }): JSX.Element {
+function AuctionMode({
+  forumHash,
+  withFish,
+}: {
+  forumHash?: string;
+  withFish: boolean;
+}): JSX.Element {
   const playerIds = useAppSelector(
     playersSelectors.selectIds
   ) as readonly PlayerId[];
@@ -107,22 +121,42 @@ function AuctionMode({ forumHash }: { forumHash?: string }): JSX.Element {
         players <em>but one</em> have passed.
       </>
       <>The last player to bid takes that forum tile.</>
-      <BlockWithFootnotes
-        footnote={
-          <>
-            e.g. if they bid 4 points, they would put their score marker on{" "}
-            <em>96</em>
-          </>
-        }
-      >
-        {(Footnote) => (
-          <>
-            That player also moves his score marker <em>backwards</em> on the
-            score track as many points as they have bid
-            <Footnote />.
-          </>
-        )}
-      </BlockWithFootnotes>
+      {withFish ? (
+        <BlockWithFootnotes
+          footnote={
+            <>
+              e.g. if they bid 4 points, they would put their score marker on{" "}
+              <em>96</em>
+            </>
+          }
+        >
+          {(Footnote) => (
+            <>
+              That player also moves his score marker <em>backwards</em> on the
+              score track as many points as they have bid
+              <Footnote />.
+            </>
+          )}
+        </BlockWithFootnotes>
+      ) : (
+        <BlockWithFootnotes
+          footnote={
+            <>
+              e.g. if the player bid 4 points and scored 107 points at the end
+              of the game, their final score would be 103
+            </>
+          }
+        >
+          {(Footnote) => (
+            <>
+              Take note of how many points that player bid; at the end of the
+              game don't forget to check the notes and subtract points from the
+              final total scores
+              <Footnote />.
+            </>
+          )}
+        </BlockWithFootnotes>
+      )}
       <>
         <em>While there are still 3 or more tiles on the table:</em> go back to
         step 2. Players who already won a forum tile <strong>do not</strong>{" "}

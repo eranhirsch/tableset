@@ -8,24 +8,35 @@ import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
+import fishMarketVariant from "./fishMarketVariant";
 
 export default createDerivedGameStep({
   id: "praefectusMagnus",
-  dependencies: [playersMetaStep, playOrderStep, firstPlayerStep],
+  dependencies: [
+    playersMetaStep,
+    playOrderStep,
+    firstPlayerStep,
+    fishMarketVariant,
+  ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, playOrder, firstPlayerId],
+  dependencies: [playerIds, playOrder, firstPlayerId, withFish],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly PlayerId[],
-  PlayerId
+  PlayerId,
+  boolean
 >): JSX.Element {
+  /* spell-checker: disable */
+  const magnusKind = withFish ? "Praeectvs Piscatvs" : "Praefectvs Magnvs";
+  /* spell-checker: enable */
+
   if (playerIds == null) {
     return (
       <Typography variant="body1">
-        Give the last player the <strong>Praefectus Magnus</strong> card.
+        Give the last player the <strong>{magnusKind}</strong> card.
       </Typography>
     );
   }
@@ -35,7 +46,7 @@ function InstanceDerivedComponent({
       <Typography variant="body1">
         Give the {playerIds.length}
         {Str.number_suffix(playerIds.length)} player the{" "}
-        <strong>Praefectus Magnus</strong> card.
+        <strong>{magnusKind}</strong> card.
       </Typography>
     );
   }
@@ -45,7 +56,7 @@ function InstanceDerivedComponent({
       <Typography variant="body1">
         Give the player sitting to the left of{" "}
         <PlayerAvatar playerId={firstPlayerId} inline /> the{" "}
-        <strong>Praefectus Magnus</strong> card.
+        <strong>{magnusKind}</strong> card.
       </Typography>
     );
   }
@@ -62,7 +73,7 @@ function InstanceDerivedComponent({
   return (
     <Typography variant="body1">
       Give <PlayerAvatar playerId={lastPlayer} inline /> the{" "}
-      <strong>Praefectus Magnus</strong> card.
+      <strong>{magnusKind}</strong> card.
     </Typography>
   );
 }

@@ -1,14 +1,20 @@
-import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
+import {
+  createDerivedGameStep,
+  DerivedStepInstanceComponentProps,
+} from "games/core/steps/createDerivedGameStep";
 import React from "react";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
+import fishMarketVariant from "./fishMarketVariant";
 
 export default createDerivedGameStep({
   id: "playerComponents",
-  dependencies: [],
+  dependencies: [fishMarketVariant],
   InstanceDerivedComponent,
 });
 
-function InstanceDerivedComponent(): JSX.Element {
+function InstanceDerivedComponent({
+  dependencies: [withFish],
+}: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Each player takes all player components in their color:">
       <>
@@ -24,8 +30,15 @@ function InstanceDerivedComponent(): JSX.Element {
         <em>IN</em>) the storehouse.
       </>
       <>
-        A wooden <strong>scoring marker</strong> disc, placing it on the board's
-        score track, on the 0 score space.
+        A wooden <strong>scoring marker</strong> disc,{" "}
+        {withFish ? (
+          <>
+            placing it near (but not <em>IN</em>) the storehouse
+          </>
+        ) : (
+          "the placing it on the board's score track, on the 0 score space"
+        )}
+        .
       </>
       <>
         A <strong>player aid</strong> card.

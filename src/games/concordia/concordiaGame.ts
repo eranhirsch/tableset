@@ -9,6 +9,8 @@ import aegyptusStep from "./steps/aegyptusStep";
 import bonusTilesStep from "./steps/bonusTilesStep";
 import cityTilesStep from "./steps/cityTilesStep";
 import cretaStep from "./steps/cretaStep";
+import fishMarketBoardStep from "./steps/fishMarketBoardStep";
+import fishMarketVariant from "./steps/fishMarketVariant";
 import forumDecksStep from "./steps/forumDecksStep";
 import forumDisplayStep from "./steps/forumDisplayStep";
 import forumExpertAuctionVariant from "./steps/forumExpertAuctionVariant";
@@ -70,6 +72,8 @@ export const concordiaGame = createGame({
     wineMarketVariant, // Templatable
     marketBoardStep,
     cityTilesStep, // Templatable
+    fishMarketVariant, // Templatable
+    fishMarketBoardStep, // Templatable
     bonusTilesStep,
     aegyptusStep,
     cretaStep,

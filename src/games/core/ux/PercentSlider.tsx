@@ -6,14 +6,17 @@ export function PercentSlider({
   onChange,
   preventZero = false,
   disabled = false,
+  track = "normal",
 }: {
   percent: number | undefined;
   onChange(percent: number): void;
   preventZero?: boolean;
   disabled?: boolean;
+  track?: "normal" | false;
 }): JSX.Element {
   return (
     <Slider
+      track={track}
       disabled={disabled}
       sx={{ width: "75%" }}
       value={percent}
@@ -21,8 +24,6 @@ export function PercentSlider({
       max={100}
       step={5}
       marks={[{ value: 50, label: "\u25B2" }]}
-      valueLabelDisplay="auto"
-      valueLabelFormat={(percent) => `${percent}%`}
       onChange={(_, newValue) =>
         newValue !== percent && (!preventZero || newValue !== 0)
           ? onChange(type_invariant(newValue, isNumber))

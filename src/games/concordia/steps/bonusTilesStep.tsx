@@ -8,26 +8,45 @@ import {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
+import { ConcordiaProductId } from "../ConcordiaProductId";
 import CityResourcesEncoder from "../utils/CityResourcesEncoder";
 import { MapId, MAPS } from "../utils/MAPS";
 import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import cityTilesStep from "./cityTilesStep";
+import fishMarketVariant from "./fishMarketVariant";
 import mapStep from "./mapStep";
+import productsMetaStep from "./productsMetaStep";
 import saltVariantStep from "./saltVariant";
 
 export default createDerivedGameStep({
   id: "bonusTiles",
   labelOverride: "Province Bonuses",
 
-  dependencies: [mapStep, saltVariantStep, cityTilesStep],
+  dependencies: [
+    productsMetaStep,
+    mapStep,
+    saltVariantStep,
+    cityTilesStep,
+    fishMarketVariant,
+  ],
 
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [mapId, withSalt, hash],
-}: DerivedStepInstanceComponentProps<MapId, boolean, string>): JSX.Element {
+  dependencies: [products, mapId, withSalt, hash, withFish],
+}: DerivedStepInstanceComponentProps<
+  readonly ConcordiaProductId[],
+  MapId,
+  boolean,
+  string,
+  boolean
+>): JSX.Element {
+  if (withFish) {
+    return <FishMarket products={products!} />;
+  }
+
   return mapId != null && hash != null ? (
     <ComputedInstanceComponent
       mapId={mapId}
@@ -35,16 +54,22 @@ function InstanceDerivedComponent({
       hash={hash}
     />
   ) : (
-    <IncompleteInstanceDerivedComponent mapId={mapId} withSalt={withSalt} />
+    <IncompleteInstanceDerivedComponent
+      mapId={mapId}
+      withSalt={withSalt}
+      products={products!}
+    />
   );
 }
 
 function IncompleteInstanceDerivedComponent({
   mapId,
   withSalt,
+  products,
 }: {
   mapId: MapId | null | undefined;
   withSalt: boolean | null | undefined;
+  products: readonly ConcordiaProductId[];
 }): JSX.Element {
   let mapSpecificCount;
   let provinceCityCountsFootnote;
@@ -75,9 +100,9 @@ function IncompleteInstanceDerivedComponent({
     tileLocationsStep = (
       <span>
         Put a matching bonus tile, resource side up, on the{" "}
-        {hasLegacyProvincesSection
+        {products.includes("base") && hasLegacyProvincesSection
           ? "area of the board with the province names and thumbnails, covering the numbered province flag"
-          : "minimap area on the board, on the square pointing to the province"}
+          : "mini-map area on the board, on the square pointing to the province"}
         .
       </span>
     );
@@ -89,10 +114,12 @@ function IncompleteInstanceDerivedComponent({
       <BlockWithFootnotes
         footnote={
           <>
-            The board would either have a minimap with lines stretching out to
-            the bonus tile location for that province, or it would contain a
-            section with province names, thumbnails of the provinces, and a flag
-            with the province number - put the tile on the flag.
+            The board would {products.includes("base") && "either "} have a
+            mini-map with lines stretching out to the bonus tile location for
+            that province
+            {products.includes("base") &&
+              ", or it would contain a section with province names, thumbnails of the provinces, and a flag with the province number - put the tile on the flag"}
+            .
           </>
         }
       >
@@ -212,5 +239,19 @@ function ComputedInstanceComponent({
         ))}
       </Grid>
     </>
+  );
+}
+
+function FishMarket({
+  products,
+}: {
+  products: readonly ConcordiaProductId[];
+}): JSX.Element {
+  return (
+    <Typography variant="body1">
+      Put a fish tile on the province's mini-map{" "}
+      {products.includes("base") && " or the provinces section of the map"}
+      for each province on the map, on the side showing a single fish.
+    </Typography>
   );
 }
