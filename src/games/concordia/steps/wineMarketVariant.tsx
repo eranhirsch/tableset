@@ -1,7 +1,7 @@
 import LinkIcon from "@mui/icons-material/Link";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
-import { Box, Grid, IconButton, Slider, Typography } from "@mui/material";
-import { Random, type_invariant } from "common";
+import { Box, Grid, IconButton, Typography } from "@mui/material";
+import { Random } from "common";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { createRandomGameStep } from "games/core/steps/createRandomGameStep";
@@ -111,36 +111,28 @@ function MultiSliderConfigPanel({
 
   return (
     <Grid container paddingX={2}>
-      <Grid item xs={2}>
+      <Grid item xs={2} textAlign="right">
         <Typography variant="caption">Main</Typography>
       </Grid>
-      <Grid item xs={8}>
+      <Grid item xs={8} textAlign="center">
         <ConfigPanelSlider value={config?.percent} onChange={onChange} />
       </Grid>
       <Grid item xs={2} />
-      <Grid item xs={2}>
+      <Grid item xs={2} textAlign="right">
         <Typography variant="caption">With Salt</Typography>
       </Grid>
-      <Grid item xs={8}>
-        <Slider
+      <Grid item xs={8} textAlign="center">
+        <PercentSlider
           disabled={isSync}
-          value={config?.saltPercent ?? config?.percent}
-          min={0}
-          max={100}
-          step={5}
-          marks={[{ value: 50, label: "\u25B2" }]}
-          valueLabelDisplay="auto"
-          valueLabelFormat={(percent) => `${percent}%`}
-          onChange={(_, newValue) =>
-            newValue !== config?.saltPercent
-              ? onChange((current) => ({
-                  percent: current!.percent,
-                  saltPercent:
-                    newValue !== config?.percent
-                      ? type_invariant(newValue, isNumber)
-                      : undefined,
-                }))
-              : undefined
+          percent={config?.saltPercent ?? config?.percent}
+          onChange={(newSaltPercent) =>
+            onChange((current) => ({
+              percent: current!.percent,
+              saltPercent:
+                newSaltPercent !== current!.percent
+                  ? newSaltPercent
+                  : undefined,
+            }))
           }
         />
       </Grid>
@@ -194,5 +186,3 @@ function InstanceVariableComponent(): JSX.Element {
     </Typography>
   );
 }
-
-const isNumber = (x: unknown): x is number => typeof x === "number";

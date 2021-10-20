@@ -4,14 +4,17 @@ import { type_invariant } from "common";
 export function PercentSlider({
   percent,
   onChange,
-  preventZero,
+  preventZero = false,
+  disabled = false,
 }: {
   percent: number | undefined;
   onChange(percent: number): void;
   preventZero?: boolean;
+  disabled?: boolean;
 }): JSX.Element {
   return (
     <Slider
+      disabled={disabled}
       sx={{ width: "75%" }}
       value={percent}
       min={0}
