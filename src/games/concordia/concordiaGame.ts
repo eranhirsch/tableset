@@ -22,6 +22,7 @@ import marketCardsStep from "./steps/marketCardsStep";
 import marketDeckStep from "./steps/marketDeckStep";
 import marketDisplayStep from "./steps/marketDisplayStep";
 import noStartingResourcesVariant from "./steps/noStartingResourcesVariant";
+import playerCardsStep from "./steps/playerCardsStep";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
 import productsMetaStep from "./steps/productsMetaStep";
@@ -90,6 +91,7 @@ export const concordiaGame = createGame({
     playOrderStep, // Templatable
     createPlayerColorsStep(["black", "blue", "green", "red", "yellow"]), // Templatable
     playerComponentsStep,
+    playerCardsStep,
     startingColonistsStep,
     noStartingResourcesVariant, // Templatable
     startingResourcesStep,
