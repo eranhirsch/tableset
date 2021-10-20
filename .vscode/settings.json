@@ -31,7 +31,8 @@
     "Tkout",
     "TLDR",
     "Unfixable",
-    "Untemplatable"
+    "Untemplatable",
+    "VENVS"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
 }
