@@ -36,7 +36,7 @@ function InstanceDerivedComponent({
             placing it near (but not <em>IN</em>) the storehouse
           </>
         ) : (
-          "the placing it on the board's score track, on the 0 score space"
+          "placing it on the 0 score space of the board's score track"
         )}
         .
       </>
