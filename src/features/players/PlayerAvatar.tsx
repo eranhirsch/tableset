@@ -13,10 +13,15 @@ export function PlayerAvatar({
   size?: number;
   onClick?(): void;
 }): JSX.Element | null {
+  const sizeSx =
+    size != null ? { width: size, height: size, fontSize: size / 2 } : {};
   return (
     <Avatar
-      {...(inline ? { component: "span", sx: { display: "inline-flex" } } : {})}
-      sx={size != null ? { width: size, height: size, fontSize: size / 2 } : {}}
+      {...(inline
+        ? { component: "span", sx: { display: "inline-flex", ...sizeSx } }
+        : { sx: sizeSx })}
+      // IMPORTANT: DONT add an `sx` property here directly it would remove the
+      // other settings! (see the spread above)
       onClick={onClick}
     >
       <PlayerNameShortAbbreviation playerId={playerId} />
