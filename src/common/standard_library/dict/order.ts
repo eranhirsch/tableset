@@ -74,10 +74,6 @@ const sort_by_key = <T extends DictLike>(
 /**
  * This method is not part of the HSL, but it made sense to abstract the impl
  * for all the different sort methods using it.
- *
- * NOTE: It is currently not exported in the module to not pollute the namespace
- * with too many similar methods. If you feel you need it simply add it and
- * remove this note.
  */
 function sort_by_with_key<T extends DictLike, Ts>(
   dict: Readonly<T>,
@@ -102,4 +98,5 @@ export const Dict = {
   sort,
   sort_by,
   sort_by_key,
+  sort_by_with_key,
 } as const;

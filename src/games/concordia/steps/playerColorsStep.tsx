@@ -1,9 +1,11 @@
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Avatar,
   Badge,
   Button,
   Chip,
   Grid,
+  IconButton,
   Stack,
   Typography,
   useTheme,
@@ -38,6 +40,8 @@ const BASE_COLORS: readonly GamePiecesColor[] = [
   "yellow",
 ];
 const VENUS_COLORS: readonly GamePiecesColor[] = ["white"];
+
+const AVATAR_SIZE = 36;
 
 type TemplateConfig = Record<PlayerId, GamePiecesColor>;
 
@@ -92,24 +96,29 @@ function ConfigPanel({
   readonly PlayerId[],
   readonly ConcordiaProductId[]
 >): JSX.Element {
-  if (config == null) {
-    config = {};
-  }
+  const playerIds = players.resolve();
 
-  const remainingPlayerIds = useMemo(() => {
-    const allPlayers = players.resolve();
-    return config == null ? allPlayers : Vec.diff(allPlayers, Vec.keys(config));
-  }, [config, players]);
+  const sorted = useMemo(
+    () =>
+      // We memoize a sorted version of the config to stop the rows from jumping
+      // around with the changes.
+      Dict.sort_by_with_key(config ?? {}, (playerId) =>
+        playerIds.indexOf(playerId)
+      ),
+    [config, playerIds]
+  );
+  const remainingPlayerIds = useMemo(
+    () => (config == null ? playerIds : Vec.diff(playerIds, Vec.keys(config))),
+    [config, playerIds]
+  );
   const remainingColors = useMemo(() => {
     const allColors = availableColors(products.resolve());
     return config == null ? allColors : Vec.diff(allColors, Vec.values(config));
   }, [config, products]);
 
-  console.log(remainingPlayerIds, remainingColors);
-
   return (
-    <Stack direction="column" spacing={1} alignItems="center">
-      {Vec.map_with_key(config, (playerId, color) => (
+    <Stack direction="column" spacing={2} alignItems="center" margin={2}>
+      {Vec.map_with_key(sorted, (playerId, color) => (
         <IndividualPlayerConfigPanel
           key={playerId}
           playerId={playerId}
@@ -127,9 +136,16 @@ function ConfigPanel({
               )
             )
           }
+          onDelete={() =>
+            onChange((current) =>
+              current == null
+                ? {}
+                : Dict.filter_with_keys(current, (pid) => pid !== playerId)
+            )
+          }
         />
       ))}
-      {Dict.size(config) < players.resolve().length && (
+      {Dict.size(sorted) < players.resolve().length && (
         <NewPlayerColor
           onClick={() =>
             onChange((current) => ({
@@ -152,16 +168,18 @@ function IndividualPlayerConfigPanel({
   remainingPlayerIds,
   remainingColors,
   onChange,
+  onDelete,
 }: {
   playerId: PlayerId;
   color: GamePiecesColor;
   remainingPlayerIds: readonly PlayerId[];
   remainingColors: readonly GamePiecesColor[];
   onChange(playerId: PlayerId, color: GamePiecesColor): void;
+  onDelete(): void;
 }): JSX.Element {
   return (
     <Grid container>
-      <Grid item xs={9}>
+      <Grid item xs={Vec.is_empty(remainingPlayerIds) ? 11 : 8}>
         <ColorSelector
           selectedColor={color}
           availableColors={remainingColors}
@@ -169,13 +187,20 @@ function IndividualPlayerConfigPanel({
           onChange={(newColor) => onChange(playerId, newColor)}
         />
       </Grid>
-      <Grid item xs={3}>
-        {!Vec.is_empty(remainingPlayerIds) && (
-          <PlayerSelector
-            playerIds={remainingPlayerIds}
-            onChange={(newPlayerId) => onChange(newPlayerId, color)}
-          />
-        )}
+      {!Vec.is_empty(remainingPlayerIds) && (
+        <Grid item xs={3}>
+          {!Vec.is_empty(remainingPlayerIds) && (
+            <PlayerSelector
+              playerIds={remainingPlayerIds}
+              onChange={(newPlayerId) => onChange(newPlayerId, color)}
+            />
+          )}
+        </Grid>
+      )}
+      <Grid item xs={1} alignSelf="center">
+        <IconButton size="small" onClick={onDelete}>
+          <DeleteIcon fontSize="small" />
+        </IconButton>
       </Grid>
     </Grid>
   );
@@ -197,21 +222,27 @@ function ColorSelector({
   const withSelected = Vec.sort(Vec.concat(availableColors, selectedColor));
 
   return (
-    <Stack direction="row">
+    <Stack
+      direction="row"
+      spacing={0.5}
+      alignItems="center"
+      justifyContent="center"
+    >
       {Vec.map(withSelected, (color) => (
         <Badge
           key={`${color}_${playerId ?? "unknown"}`}
           color={color}
+          variant="dot"
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           overlap="circular"
           invisible={color !== selectedColor}
         >
           {selectedColor === color ? (
-            <PlayerAvatar playerId={playerId} />
+            <PlayerAvatar size={AVATAR_SIZE} playerId={playerId} />
           ) : (
             // We use an avatar component for the colored background
             <Avatar
-              sx={{ bgcolor: theme.palette[color].main }}
+              sx={{ bgcolor: theme.palette[color].main, width: 36, height: 36 }}
               onClick={() => onChange(color)}
             >
               {" "}
@@ -231,10 +262,16 @@ function PlayerSelector({
   onChange(playerId: PlayerId): void;
 }): JSX.Element {
   return (
-    <Stack direction="row">
+    <Stack
+      direction="row"
+      spacing={0.5}
+      alignItems="center"
+      justifyContent="center"
+    >
       {React.Children.toArray(
         Vec.map(playerIds, (playerId) => (
           <PlayerAvatar
+            size={AVATAR_SIZE}
             playerId={playerId}
             onClick={() => onChange(playerId)}
           />
@@ -245,7 +282,7 @@ function PlayerSelector({
 }
 
 function NewPlayerColor({ onClick }: { onClick(): void }): JSX.Element {
-  return <Button onClick={onClick}>+ Fixed Color</Button>;
+  return <Button onClick={onClick}>+ Add Fixed Color</Button>;
 }
 
 function ConfigPanelTLDR({
@@ -280,17 +317,7 @@ function ConfigPanelTLDR({
           ))
         )}
       </GrammaticalList>
-      {!Vec.is_empty(unassignedPlayers) && (
-        <>
-          .
-          <GrammaticalList>
-            {Vec.map(unassignedPlayers, (playerId) => (
-              <PlayerShortName playerId={playerId} />
-            ))}
-          </GrammaticalList>{" "}
-          are assigned randomly
-        </>
-      )}
+      {!Vec.is_empty(unassignedPlayers) && "; others assigned randomly"}
     </>
   );
 }
