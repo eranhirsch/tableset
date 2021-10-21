@@ -146,7 +146,8 @@ function ConfigPanel({
         />
       ))}
       {Dict.size(sorted) < players.resolve().length && (
-        <NewPlayerColor
+        // New row button
+        <Button
           onClick={() =>
             onChange((current) => ({
               ...(current ?? {}),
@@ -156,7 +157,9 @@ function ConfigPanel({
               ),
             }))
           }
-        />
+        >
+          + Add Fixed Color
+        </Button>
       )}
     </Stack>
   );
@@ -279,10 +282,6 @@ function PlayerSelector({
       )}
     </Stack>
   );
-}
-
-function NewPlayerColor({ onClick }: { onClick(): void }): JSX.Element {
-  return <Button onClick={onClick}>+ Add Fixed Color</Button>;
 }
 
 function ConfigPanelTLDR({
