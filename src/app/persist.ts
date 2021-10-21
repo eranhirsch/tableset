@@ -14,3 +14,6 @@ export function loadStateFromLocalStorage<S>():
   const serialized = localStorage.getItem(LOCAL_STORAGE_KEY);
   return serialized == null ? undefined : JSON.parse(serialized);
 }
+
+export const resetStateInLocalStorage = () =>
+  localStorage.removeItem(LOCAL_STORAGE_KEY);

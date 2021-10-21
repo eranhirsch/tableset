@@ -1,11 +1,12 @@
+import AddBoxIcon from "@mui/icons-material/AddBox";
 import ClearIcon from "@mui/icons-material/Clear";
 import PeopleIcon from "@mui/icons-material/People";
-import AddBoxIcon from "@mui/icons-material/AddBox";
 import TuneIcon from "@mui/icons-material/Tune";
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import { Link, Route, Switch } from "react-router-dom";
+import { OverflowMenu } from "./OverflowMenu";
 
-export function TableSetAppBar(): JSX.Element | null {
+export function TableSetAppBar(): JSX.Element {
   const templateButton = (
     <IconButton component={Link} color="inherit" to="/template">
       <TuneIcon />
@@ -53,6 +54,7 @@ export function TableSetAppBar(): JSX.Element | null {
             </IconButton>
           </Route>
         </Switch>
+        <OverflowMenu />
       </Toolbar>
     </AppBar>
   );
