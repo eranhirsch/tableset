@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
 import { ProductId } from "model/Game";
 
@@ -29,6 +29,10 @@ export const expansionsActions = expansionsSlice.actions;
 
 export const allExpansionIdsSelector = (state: RootState) =>
   state.expansions.expansions;
+export const expansionsTotalSelector = createSelector(
+  allExpansionIdsSelector,
+  (expansions) => expansions.length
+);
 export const hasExpansionSelector =
   (productId: ProductId) => (state: RootState) =>
     allExpansionIdsSelector(state).includes(productId);
