@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { resetStateInLocalStorage } from "app/persist";
+import { useHistory } from "react-router";
 
 export function ResetDialog({
   open,
@@ -15,6 +16,8 @@ export function ResetDialog({
   open: boolean;
   onClose(): void;
 }): JSX.Element {
+  const history = useHistory();
+
   return (
     <Dialog open={open}>
       <DialogTitle>Reset?</DialogTitle>
@@ -29,7 +32,7 @@ export function ResetDialog({
           onClick={() => {
             resetStateInLocalStorage();
             onClose();
-            window.location.reload();
+            history.push("/");
           }}
           autoFocus
         >
