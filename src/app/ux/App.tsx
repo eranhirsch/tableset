@@ -8,7 +8,7 @@ import { Players } from "features/players/Players";
 import { playersSelectors } from "features/players/playersSlice";
 import { Template } from "features/template/Template";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { TableSetAppBar } from "./TableSetAppBar";
+import { TableSetAppBar } from "./AppBar";
 
 function App(): JSX.Element | null {
   const playersCount = useAppSelector(playersSelectors.selectTotal);

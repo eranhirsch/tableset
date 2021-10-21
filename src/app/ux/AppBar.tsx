@@ -17,8 +17,8 @@ export function TableSetAppBar(): JSX.Element {
       <PeopleIcon />
     </IconButton>
   );
-  const expansionsButton = (
-    <IconButton component={Link} color="inherit" to="/expansions">
+  const productsButton = (
+    <IconButton component={Link} color="inherit" to="/products">
       <AddBoxIcon />
     </IconButton>
   );
@@ -30,7 +30,7 @@ export function TableSetAppBar(): JSX.Element {
           <Switch>
             <Route path="/template">Template</Route>
             <Route path="/players">Players</Route>
-            <Route path="/expansions">Expansions</Route>
+            <Route path="/products">Expansions</Route>
             <Route path="/instance">Instance</Route>
             <Route path="/">MISSING TITLE</Route>
           </Switch>
@@ -38,13 +38,13 @@ export function TableSetAppBar(): JSX.Element {
         <Switch>
           <Route path="/template">
             {playersButton}
-            {expansionsButton}
+            {productsButton}
           </Route>
           <Route path="/players">
             {templateButton}
-            {expansionsButton}
+            {productsButton}
           </Route>
-          <Route path="/expansions">
+          <Route path="/products">
             {templateButton}
             {playersButton}
           </Route>
