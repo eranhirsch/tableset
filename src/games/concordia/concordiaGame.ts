@@ -96,6 +96,9 @@ export const concordiaGame = createGame({
       InstanceManualComponent: "Place the Concordia card next to the board.",
     }),
 
+    // Fish
+    fishMarketBoardStep, // Templatable
+
     // Pools/Piles
     resourcePilesStep,
     createGameStep({
@@ -103,9 +106,6 @@ export const concordiaGame = createGame({
       InstanceManualComponent:
         "Form a pile of coins as the bank near the board.",
     }),
-
-    // Fish
-    fishMarketBoardStep, // Templatable
 
     // Player Specific ------
     // Generic
