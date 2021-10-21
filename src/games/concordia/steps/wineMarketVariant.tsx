@@ -44,6 +44,7 @@ export default createRandomGameStep({
 
   ConfigPanel,
   ConfigPanelTLDR,
+  disabledTLDROverride: "Never",
 });
 
 function ConfigPanel({

@@ -140,6 +140,8 @@ export function createVariant({
 
     ConfigPanel,
     ConfigPanelTLDR,
+
+    disabledTLDROverride: "Never",
   };
 }
 

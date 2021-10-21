@@ -126,6 +126,7 @@ type Options<
       props: ConfigPanelProps<C, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
     ): JSX.Element;
     ConfigPanelTLDR(props: { config: C }): JSX.Element;
+    disabledTLDROverride?: string;
   };
 
 interface OptionsInternal<T, C>
@@ -176,6 +177,7 @@ export function createRandomGameStep<T, C>({
   ConfigPanel,
   ConfigPanelTLDR,
   dependencies,
+  disabledTLDROverride,
   initialConfig,
   InstanceVariableComponent,
   isTemplatable,
@@ -292,6 +294,7 @@ export function createRandomGameStep<T, C>({
 
     ConfigPanel,
     ConfigPanelTLDR,
+    disabledTLDROverride,
   };
 
   return variableStep;

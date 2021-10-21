@@ -68,6 +68,7 @@ export interface Templatable<T = unknown, C = unknown> extends WithDependencies 
     onChange(newConfig: C | ((currentConfig: C | undefined) => C)): void;
   }): JSX.Element;
   ConfigPanelTLDR(props: { config: C }): JSX.Element;
+  disabledTLDROverride?: string;
 }
 
 export const isTemplatable = (x: GameStepBase): x is Templatable =>

@@ -22,6 +22,7 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
   canResolveTo: (_, config) => config != null && config.percent > 0,
   skip: (value) => value == null,
+  disabledTLDROverride: "Never",
 });
 
 function ConfigPanel({

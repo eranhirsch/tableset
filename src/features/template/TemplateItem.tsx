@@ -83,14 +83,14 @@ export function TemplateItem({
 
 const ItemLabel = React.memo(
   ({
-    templatable: { ConfigPanelTLDR },
+    templatable: { ConfigPanelTLDR, disabledTLDROverride },
     element,
   }: {
     templatable: Templatable;
     element: TemplateElement | undefined;
   }): JSX.Element | null =>
     element == null ? (
-      <>Disabled</>
+      <>{disabledTLDROverride ?? "Disabled"}</>
     ) : typeof ConfigPanelTLDR === "string" ? (
       <>{ConfigPanelTLDR}</>
     ) : (
