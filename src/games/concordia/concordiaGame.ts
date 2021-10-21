@@ -1,9 +1,5 @@
 import { createGameStep } from "games/core/steps/createGameStep";
-import {
-  createPlayerColorsStep,
-  firstPlayerStep,
-  playOrderStep
-} from "games/global";
+import { firstPlayerStep, playOrderStep } from "games/global";
 import { createGame } from "model/Game";
 import aegyptusStep from "./steps/aegyptusStep";
 import bonusTilesStep from "./steps/bonusTilesStep";
@@ -25,6 +21,7 @@ import marketDeckStep from "./steps/marketDeckStep";
 import marketDisplayStep from "./steps/marketDisplayStep";
 import noStartingResourcesVariant from "./steps/noStartingResourcesVariant";
 import playerCardsStep from "./steps/playerCardsStep";
+import playerColorsStep from "./steps/playerColorsStep";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import praefectusMagnusStep from "./steps/praefectusMagnusStep";
 import productsMetaStep from "./steps/productsMetaStep";
@@ -111,9 +108,9 @@ export const concordiaGame = createGame({
     // Generic
     playOrderStep, // Templatable
     firstPlayerStep, // Templatable
-    createPlayerColorsStep(["black", "blue", "green", "red", "yellow"]), // Templatable
 
     // Base game
+    playerColorsStep, // Templatable
     playerComponentsStep,
     playerCardsStep,
     startingColonistsStep,

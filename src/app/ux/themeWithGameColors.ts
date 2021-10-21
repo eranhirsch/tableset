@@ -9,7 +9,14 @@
  * @see GamePiecesColor
  */
 import { createTheme, PaletteColor, PaletteColorOptions } from "@mui/material";
-import { blue, green, grey, pink, red, yellow } from "@mui/material/colors";
+import {
+  blue,
+  grey,
+  lightGreen,
+  pink,
+  red,
+  yellow
+} from "@mui/material/colors";
 import { GamePiecesColor } from "model/GamePiecesColor";
 
 /**
@@ -47,15 +54,15 @@ const colorDefs = Object.freeze({
     contrastText: "#ffffff",
   },
   blue: {
-    main: blue[500],
-    light: "#6ec6ff",
-    dark: "#0069c0",
-    contrastText: "#000000",
+    main: blue[800],
+    light: "#5e92f3",
+    dark: "#003c8f",
+    contrastText: "#ffffff",
   },
   green: {
-    main: green[500],
-    light: "#80e27e",
-    dark: "#087f23",
+    main: lightGreen[700],
+    light: "#99d066",
+    dark: "#387002",
     contrastText: "#000000",
   },
   pink: {
@@ -65,21 +72,21 @@ const colorDefs = Object.freeze({
     contrastText: "#000000",
   },
   red: {
-    main: red[500],
-    light: "#ff7961",
-    dark: "#ba000d",
-    contrastText: "#000000",
+    main: red[900],
+    light: "#f05545",
+    dark: "#7f0000",
+    contrastText: "#ffffff",
   },
   white: {
-    main: grey[50],
+    main: grey[100],
     light: "#ffffff",
-    dark: "#c7c7c7",
+    dark: "#c2c2c2",
     contrastText: "#000000",
   },
   yellow: {
-    main: yellow[500],
-    light: "#ffff72",
-    dark: "#c8b900",
+    main: yellow[600],
+    light: "#ffff6b",
+    dark: "#c6a700",
     contrastText: "#000000",
   },
 } as Record<GamePiecesColor, PaletteColor>);
