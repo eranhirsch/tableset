@@ -59,7 +59,7 @@ export default createRandomGameStep({
   resolve: (config, products, players) =>
     Vec.sample(relevantMapsForConfig(config, products!, players!), 1),
 
-  initialConfig: (): TemplateConfig => ({ dynamic: "any" }),
+  initialConfig: (): TemplateConfig => ({ dynamic: "recommended" }),
 
   refresh: (config, products) =>
     "static" in config

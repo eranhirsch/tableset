@@ -40,7 +40,7 @@ export default createRandomGameStep({
     }),
   resolve: (config, playerIds) =>
     "fixed" in config ? config.fixed : Vec.sample(playerIds!, 1),
-  initialConfig: (players) => ({ fixed: defaultFirstPlayer(players) }),
+  initialConfig: (): TemplateConfig => ({ random: true }),
   refresh: (current, players) =>
     templateValue(
       "fixed" in current && !players.resolve().includes(current.fixed)

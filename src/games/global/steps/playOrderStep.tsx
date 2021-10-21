@@ -54,10 +54,10 @@ export default createRandomGameStep({
       min: 3,
     }),
 
-  resolve: (config: TemplateConfig, playerIds) =>
+  resolve: (config, playerIds) =>
     "fixed" in config ? config.fixed : Vec.shuffle(playerIds!.slice(1)),
 
-  initialConfig: (players) => ({ fixed: defaultPlayOrder(players) }),
+  initialConfig: (): TemplateConfig => ({ random: true }),
 
   refresh: (current, players) =>
     "fixed" in current
