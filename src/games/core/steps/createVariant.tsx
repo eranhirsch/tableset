@@ -115,7 +115,7 @@ export function createVariant({
     // The value can never be changed following changes in the template, it
     // could only be disabled via `canBeTemplated`
     refreshTemplateConfig: () => templateValue("unchanged"),
-    initialConfig: () => ({ percent: 50 }),
+    initialConfig: () => ({ percent: 100 }),
     coerceInstanceEntry: (entry) =>
       entry == null
         ? false

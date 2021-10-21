@@ -13,7 +13,7 @@ export default createRandomGameStep({
   labelOverride: "Variant: Forum Expert Auction",
   dependencies: [forumVariantStep],
   isTemplatable: (forum) => forum.canResolveTo(true),
-  initialConfig: () => ({ percent: 50 }),
+  initialConfig: () => ({ percent: 100 }),
   resolve: (config, isForum) =>
     isForum && Random.coin_flip(config.percent / 100) ? true : null,
   refresh: () => templateValue("unchanged"),

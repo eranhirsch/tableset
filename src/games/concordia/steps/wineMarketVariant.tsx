@@ -23,7 +23,7 @@ export default createRandomGameStep({
     products.willContainAny(["aegyptusCreta", "venus", "venusBase"]),
   InstanceVariableComponent,
   initialConfig: (): TemplateConfig => ({
-    percent: 50,
+    percent: 100,
   }),
   resolve: (config, _, withSalt): true | null =>
     Random.coin_flip(
