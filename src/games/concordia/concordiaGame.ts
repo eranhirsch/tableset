@@ -67,18 +67,27 @@ export const concordiaGame = createGame({
   productsMetaStep,
 
   steps: [
-    mapStep, // Templatable
+    // Variants ---
+    venusScoringVariant, // Templatable
     saltVariantStep, // Templatable
     wineMarketVariant, // Templatable
-    marketBoardStep,
-    cityTilesStep, // Templatable
+    forumVariantStep, // Templatable
+    forumExpertAuctionVariant, // Templatable
     fishMarketVariant, // Templatable
-    fishMarketBoardStep, // Templatable
+    noStartingResourcesVariant, // Templatable
+
+    // Global State ----
+
+    // Map
+    mapStep, // Templatable
+    cityTilesStep, // Templatable
     bonusTilesStep,
     aegyptusStep,
     cretaStep,
     germaniaRomanCastlesStep, // Templatable
-    venusScoringVariant, // Templatable
+
+    // Market
+    marketBoardStep,
     marketCardsStep,
     marketDisplayStep, // Templatable
     marketDeckStep,
@@ -86,26 +95,35 @@ export const concordiaGame = createGame({
       id: "concordiaCard",
       InstanceManualComponent: "Place the Concordia card next to the board.",
     }),
+
+    // Pools/Piles
     resourcePilesStep,
     createGameStep({
       id: "bank",
       InstanceManualComponent:
         "Form a pile of coins as the bank near the board.",
     }),
+
+    // Fish
+    fishMarketBoardStep, // Templatable
+
+    // Player Specific ------
+    // Generic
     playOrderStep, // Templatable
+    firstPlayerStep, // Templatable
     createPlayerColorsStep(["black", "blue", "green", "red", "yellow"]), // Templatable
+
+    // Base game
     playerComponentsStep,
     playerCardsStep,
     startingColonistsStep,
-    noStartingResourcesVariant, // Templatable
     startingResourcesStep,
-    firstPlayerStep, // Templatable
     startingMoneyStep,
     praefectusMagnusStep,
-    forumVariantStep, // Templatable
+
+    // Expansions
     forumDisplayStep,
     forumDecksStep,
-    forumExpertAuctionVariant, // Templatable
     forumInitialTileStep,
     forumMarketStep,
   ],
