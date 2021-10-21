@@ -1,4 +1,4 @@
-import { Chip, Grid, styled, Typography } from "@mui/material";
+import { Button, Chip, Grid, styled, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, MathUtils, nullthrows, Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
@@ -125,13 +125,16 @@ function ConfigPanel({
     [onChange, relevantMapIds]
   );
 
+  const onClear = useCallback(() => onChange({ static: [] }), [onChange]);
+
   return (
-    <Grid container paddingX={3} paddingY={0.5}>
+    <Grid container paddingX={1} paddingY={0.5}>
       <StaticChips
         config={config}
         products={products}
         players={players}
         onClick={staticOnClick}
+        onClear={onClear}
       />
       <DynamicChips
         config={config}
@@ -148,11 +151,13 @@ function StaticChips({
   products,
   players,
   onClick,
+  onClear,
 }: {
   config: TemplateConfig;
   products: readonly ConcordiaProductId[];
   players: readonly PlayerId[];
   onClick(clickedMapId: MapId): void;
+  onClear(): void;
 }): JSX.Element {
   const allMapIds = useMemo(() => mapsForProducts(products), [products]);
 
@@ -171,14 +176,28 @@ function StaticChips({
             <Chip
               disabled={"dynamic" in config}
               label={<RomanTitle>{MAPS[mapId].name}</RomanTitle>}
-              color="primary"
+              color={relevantMapIds.length === 0 ? "error" : "primary"}
               variant={relevantMapIds.includes(mapId) ? "filled" : "outlined"}
               size="small"
-              sx={{ margin: 0.25 }}
+              sx={{
+                margin: 0.5,
+                padding: relevantMapIds.includes(mapId) ? "1px" : undefined,
+              }}
               onClick={() => onClick(mapId)}
             />
           )
         )
+      )}
+      {"static" in config && (
+        <Button
+          disabled={"dynamic" in config || relevantMapIds.length === 0}
+          size="small"
+          variant="text"
+          sx={{ paddingX: 8 }}
+          onClick={() => onClear()}
+        >
+          Clear
+        </Button>
       )}
     </Grid>
   );
@@ -262,6 +281,10 @@ function DynamicChip({
 
 function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
   if ("static" in config) {
+    if (config.static.length === 0) {
+      return <>None</>;
+    }
+
     if (config.static.length <= 3) {
       return (
         <GrammaticalList finalConjunction="or">
