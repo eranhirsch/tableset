@@ -1,33 +1,25 @@
 import {
   Avatar,
   Badge,
-  Box,
-  Checkbox,
+  Button,
   Chip,
-  FormControlLabel,
+  Grid,
   Stack,
   Typography,
   useTheme,
 } from "@mui/material";
+import { useAppSelector } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
-import { Dict, invariant_violation, Shape, Vec } from "common";
+import { Dict, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
-import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
+import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
-import { Query } from "games/core/steps/Query";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
-import React, { useCallback, useMemo } from "react";
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DropResult,
-} from "react-beautiful-dnd";
+import React, { useMemo } from "react";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import {
   createRandomGameStep,
@@ -47,9 +39,11 @@ const BASE_COLORS: readonly GamePiecesColor[] = [
 ];
 const VENUS_COLORS: readonly GamePiecesColor[] = ["white"];
 
-type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
+type TemplateConfig = Record<PlayerId, GamePiecesColor>;
 
-type TemplateConfig = { random: true } | { fixed: PlayerColors };
+// This is the instance type, it's identical to the TemplateConfig, but it
+// doesn't HAVE to be, so don't merge the two type definitions.
+type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
 
 export default createRandomGameStep({
   id: "colors",
@@ -62,28 +56,28 @@ export default createRandomGameStep({
   isTemplatable: (players, products) =>
     players.count({ max: availableColors(products.resolve()).length }),
 
-  resolve: (config, playerIds, products) =>
-    "fixed" in config
-      ? config.fixed
-      : Dict.associate(
-          playerIds!,
-          Vec.shuffle(Vec.sample(availableColors(products!), playerIds!.length))
-        ),
-
-  initialConfig: (): TemplateConfig => ({
-    random: true,
+  resolve: (config, playerIds, products): PlayerColors => ({
+    ...config,
+    // Associate a color for each remaining player
+    ...Dict.associate(
+      // Players without an assigned color
+      Vec.diff(playerIds!, Vec.keys(config)),
+      // Shuffle the colors which aren't already used
+      Vec.shuffle(Vec.diff(availableColors(products!), Vec.values(config)))
+    ),
   }),
 
-  refresh: (current, players, products) =>
-    "fixed" in current
-      ? {
-          fixed: refreshFixedConfig(
-            current.fixed,
-            availableColors(products.resolve()),
-            players
-          ),
-        }
-      : templateValue("unchanged"),
+  initialConfig: (): TemplateConfig => ({}),
+
+  refresh: (current, players) => {
+    // Create a new dict with only the current players in it, effectively
+    // removing all assignments for players that don't exist anymore.
+    const refreshed = Dict.select_keys(current, players.resolve());
+    return Dict.size(refreshed) < Dict.size(current)
+      ? // Only return a new value if it's different
+        refreshed
+      : templateValue("unchanged");
+  },
 
   ConfigPanel,
   ConfigPanelTLDR,
@@ -98,263 +92,206 @@ function ConfigPanel({
   readonly PlayerId[],
   readonly ConcordiaProductId[]
 >): JSX.Element {
-  const colors = useMemo(() => availableColors(products.resolve()), [products]);
-  const initialFixed = useMemo(
-    () => Dict.associate(players.resolve(), colors),
-    [colors, players]
-  );
+  if (config == null) {
+    config = {};
+  }
+
+  const remainingPlayerIds = useMemo(() => {
+    const allPlayers = players.resolve();
+    return config == null ? allPlayers : Vec.diff(allPlayers, Vec.keys(config));
+  }, [config, players]);
+  const remainingColors = useMemo(() => {
+    const allColors = availableColors(products.resolve());
+    return config == null ? allColors : Vec.diff(allColors, Vec.values(config));
+  }, [config, products]);
+
+  console.log(remainingPlayerIds, remainingColors);
+
   return (
     <Stack direction="column" spacing={1} alignItems="center">
-      <FixedSelector
-        availableColors={colors}
-        currentPlayerColors={
-          config != null && "fixed" in config ? config.fixed : initialFixed
-        }
-        disabled={config == null || "random" in config}
-        onChange={(newColors) => onChange({ fixed: newColors })}
-      />
-      <FormControlLabel
-        sx={{ alignSelf: "center" }}
-        control={
-          <Checkbox
-            checked={config != null && "random" in config}
-            onChange={(_, checked) =>
-              onChange(checked ? { random: true } : { fixed: initialFixed })
-            }
-          />
-        }
-        label="Random"
-      />
+      {Vec.map_with_key(config, (playerId, color) => (
+        <IndividualPlayerConfigPanel
+          key={playerId}
+          playerId={playerId}
+          color={color}
+          remainingPlayerIds={remainingPlayerIds}
+          remainingColors={remainingColors}
+          onChange={(newPlayerId, newColor) =>
+            onChange((current) =>
+              Dict.merge(
+                // Remove the current entry for the player, we are going to add
+                // a new entry in the config, and it might not be for the same
+                // player id.
+                Dict.filter_with_keys(current ?? {}, (pid) => pid !== playerId),
+                { [newPlayerId]: newColor }
+              )
+            )
+          }
+        />
+      ))}
+      {Dict.size(config) < players.resolve().length && (
+        <NewPlayerColor
+          onClick={() =>
+            onChange((current) => ({
+              ...(current ?? {}),
+              [Vec.sample(remainingPlayerIds, 1)]: Vec.sample(
+                remainingColors,
+                1
+              ),
+            }))
+          }
+        />
+      )}
     </Stack>
   );
 }
 
-function FixedSelector({
-  availableColors,
-  currentPlayerColors,
-  onChange,
-  disabled,
-}: {
-  availableColors: readonly GamePiecesColor[];
-  currentPlayerColors: PlayerColors;
-  disabled: boolean;
-  onChange(newColors: PlayerColors): void;
-}): JSX.Element | null {
-  // We need the data indexed by color too
-  const colorPlayerIds = useMemo(
-    () => Shape.flip(currentPlayerColors),
-    [currentPlayerColors]
-  );
-
-  const closestAvailableColor = useCallback(
-    (
-      start: GamePiecesColor,
-      treatAsAvailable: GamePiecesColor
-    ): GamePiecesColor => {
-      const isSlotAvailable = (slot: number): boolean => {
-        const colorAtSlot = availableColors[slot];
-        return (
-          colorAtSlot != null &&
-          (colorAtSlot === treatAsAvailable ||
-            colorPlayerIds[colorAtSlot] == null)
-        );
-      };
-
-      const currentPos = availableColors.findIndex((color) => color === start);
-
-      for (let distance = 1; distance < availableColors.length; distance += 1) {
-        if (isSlotAvailable(currentPos - distance)) {
-          return availableColors[currentPos - distance];
-        }
-
-        if (isSlotAvailable(currentPos + distance)) {
-          return availableColors[currentPos + distance];
-        }
-      }
-
-      invariant_violation("Couldn't find an available color!");
-    },
-    [availableColors, colorPlayerIds]
-  );
-
-  const onDragEnd = useCallback(
-    ({ draggableId, source, destination, reason }: DropResult) => {
-      if (reason === "CANCEL") {
-        return;
-      }
-
-      if (destination == null) {
-        // User dropped the item outside of any destination
-        return;
-      }
-
-      const destinationColor = destination.droppableId as GamePiecesColor;
-      const newColors = {
-        ...currentPlayerColors,
-        [draggableId]: destinationColor,
-      };
-
-      const destinationPlayer = colorPlayerIds[destinationColor];
-      if (destinationPlayer != null && destinationPlayer !== draggableId) {
-        // In case the drag caused us to assign a color that is already used by
-        // a different player we need to update that player to use a different
-        // color.
-        newColors[destinationPlayer] = closestAvailableColor(
-          destinationColor,
-          source.droppableId as GamePiecesColor
-        );
-      }
-
-      onChange(newColors);
-    },
-    [closestAvailableColor, colorPlayerIds, currentPlayerColors, onChange]
-  );
-
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Stack
-        sx={{ opacity: disabled ? 0.5 : 1.0 }}
-        pl={0}
-        component="ul"
-        direction="row"
-        alignItems="center"
-        spacing={1}
-        height={48}
-      >
-        {Vec.map(availableColors, (color) => (
-          <ColorSlot
-            disabled={disabled}
-            key={color}
-            color={color}
-            playerId={colorPlayerIds[color]}
-          />
-        ))}
-      </Stack>
-    </DragDropContext>
-  );
-}
-
-const draggablePlayerRendererFactory =
-  (playerId: PlayerId) => (provided: DraggableProvided) =>
-    (
-      <Avatar
-        ref={provided.innerRef}
-        {...provided.dragHandleProps}
-        {...provided.draggableProps}
-      >
-        <PlayerNameShortAbbreviation playerId={playerId} />
-      </Avatar>
-    );
-
-function DraggablePlayer({
+function IndividualPlayerConfigPanel({
   playerId,
-  isDragDisabled,
+  color,
+  remainingPlayerIds,
+  remainingColors,
+  onChange,
 }: {
   playerId: PlayerId;
-  isDragDisabled: boolean;
-}) {
+  color: GamePiecesColor;
+  remainingPlayerIds: readonly PlayerId[];
+  remainingColors: readonly GamePiecesColor[];
+  onChange(playerId: PlayerId, color: GamePiecesColor): void;
+}): JSX.Element {
   return (
-    <Draggable isDragDisabled={isDragDisabled} draggableId={playerId} index={0}>
-      {draggablePlayerRendererFactory(playerId)}
-    </Draggable>
+    <Grid container>
+      <Grid item xs={9}>
+        <ColorSelector
+          selectedColor={color}
+          availableColors={remainingColors}
+          playerId={playerId}
+          onChange={(newColor) => onChange(playerId, newColor)}
+        />
+      </Grid>
+      <Grid item xs={3}>
+        {!Vec.is_empty(remainingPlayerIds) && (
+          <PlayerSelector
+            playerIds={remainingPlayerIds}
+            onChange={(newPlayerId) => onChange(newPlayerId, color)}
+          />
+        )}
+      </Grid>
+    </Grid>
   );
 }
 
-function ColorSlot({
-  color,
+function ColorSelector({
+  selectedColor,
+  availableColors,
   playerId,
-  disabled,
+  onChange,
 }: {
-  color: GamePiecesColor;
-  playerId: PlayerId | undefined;
-  disabled: boolean;
-}) {
+  selectedColor: GamePiecesColor;
+  availableColors: readonly GamePiecesColor[];
+  playerId: PlayerId;
+  onChange(color: GamePiecesColor): void;
+}): JSX.Element {
   const theme = useTheme();
 
+  const withSelected = Vec.sort(Vec.concat(availableColors, selectedColor));
+
   return (
-    <Droppable
-      droppableId={color}
-      // We need to clone the dragged item as we move it between lists
-      renderClone={
-        playerId != null ? draggablePlayerRendererFactory(playerId) : undefined
-      }
-    >
-      {(provided, snapshot) => (
+    <Stack direction="row">
+      {Vec.map(withSelected, (color) => (
         <Badge
-          // We are part of a UL of colors
-          component="li"
-          ref={provided.innerRef}
-          {...provided.droppableProps}
+          key={`${color}_${playerId ?? "unknown"}`}
           color={color}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           overlap="circular"
-          invisible={
-            // We don't need a badge when there's no avatar hiding the
-            // background color
-            playerId == null ||
-            snapshot.isDraggingOver ||
-            snapshot.draggingFromThisWith === playerId
-          }
+          invisible={color !== selectedColor}
         >
-          <Avatar
-            // We use an avatar component for the colored background because we
-            // would "cover" it with another avatar for assigned players
-            sx={{
-              bgcolor: theme.palette[color].main,
-
-              // Create a transition effect to make the color apparent while
-              // being dragged over.
-              width: snapshot.isDraggingOver ? 48 : undefined,
-              height: snapshot.isDraggingOver ? 48 : undefined,
-              transitionProperty: "width, height",
-              transitionDuration: `${snapshot.isDraggingOver ? 200 : 65}ms`,
-              transitionTimingFunction: "ease-out",
-            }}
-          >
-            {playerId != null &&
-              // We need to remove players occupying slots we are dragging so
-              // they don't render and move around, but we don't want to do
-              // this to the source slot where our item originated from
-              (!snapshot.isDraggingOver ||
-                snapshot.draggingFromThisWith === playerId) && (
-                <DraggablePlayer
-                  isDragDisabled={disabled}
-                  playerId={playerId}
-                />
-              )}
-            <Box display="none">
-              {
-                // We hide the placeholder as we don't need it, we have a single
-                // item list, and we don't want any animations.
-                // react-beautiful-dnd doesn't permit us to remove it entirely!
-                provided.placeholder
-              }
-            </Box>
-          </Avatar>
+          {selectedColor === color ? (
+            <PlayerAvatar playerId={playerId} />
+          ) : (
+            // We use an avatar component for the colored background
+            <Avatar
+              sx={{ bgcolor: theme.palette[color].main }}
+              onClick={() => onChange(color)}
+            >
+              {" "}
+            </Avatar>
+          )}
         </Badge>
-      )}
-    </Droppable>
+      ))}
+    </Stack>
   );
 }
 
-function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
-  if ("random" in config) {
+function PlayerSelector({
+  playerIds,
+  onChange,
+}: {
+  playerIds: readonly PlayerId[];
+  onChange(playerId: PlayerId): void;
+}): JSX.Element {
+  return (
+    <Stack direction="row">
+      {React.Children.toArray(
+        Vec.map(playerIds, (playerId) => (
+          <PlayerAvatar
+            playerId={playerId}
+            onClick={() => onChange(playerId)}
+          />
+        ))
+      )}
+    </Stack>
+  );
+}
+
+function NewPlayerColor({ onClick }: { onClick(): void }): JSX.Element {
+  return <Button onClick={onClick}>+ Fixed Color</Button>;
+}
+
+function ConfigPanelTLDR({
+  config,
+}: {
+  config: Readonly<TemplateConfig>;
+}): JSX.Element {
+  const playerIds = useAppSelector(
+    playersSelectors.selectIds
+  ) as readonly PlayerId[];
+
+  const unassignedPlayers = useMemo(
+    () => Vec.diff(playerIds, Vec.keys(config)),
+    [config, playerIds]
+  );
+
+  if (Dict.is_empty(config)) {
     return <>Random</>;
   }
 
   return (
-    <GrammaticalList>
-      {React.Children.toArray(
-        Vec.map_with_key(config.fixed, (playerId, color) => (
-          <Chip
-            component="span"
-            size="small"
-            color={color}
-            label={<PlayerShortName playerId={playerId} />}
-          />
-        ))
+    <>
+      <GrammaticalList>
+        {React.Children.toArray(
+          Vec.map_with_key(config, (playerId, color) => (
+            <Chip
+              component="span"
+              size="small"
+              color={color}
+              label={<PlayerShortName playerId={playerId} />}
+            />
+          ))
+        )}
+      </GrammaticalList>
+      {!Vec.is_empty(unassignedPlayers) && (
+        <>
+          .
+          <GrammaticalList>
+            {Vec.map(unassignedPlayers, (playerId) => (
+              <PlayerShortName playerId={playerId} />
+            ))}
+          </GrammaticalList>{" "}
+          are assigned randomly
+        </>
       )}
-    </GrammaticalList>
+    </>
   );
 }
 
@@ -414,26 +351,6 @@ function InstanceManualComponent(): JSX.Element {
         </>
       )}
     </BlockWithFootnotes>
-  );
-}
-
-function refreshFixedConfig(
-  current: PlayerColors,
-  availableColors: readonly GamePiecesColor[],
-  players: Query<readonly PlayerId[]>
-): PlayerColors {
-  const playerIds = players.resolve();
-  const stillActivePlayerColors = Dict.select_keys(current, playerIds);
-  const colorlessPlayers = Vec.diff(playerIds, Vec.keys(current));
-
-  return Dict.merge(
-    stillActivePlayerColors,
-    // Associate an available color for each player without a color
-    Dict.associate(
-      colorlessPlayers,
-      // Colors that aren't used by active players
-      Vec.diff(availableColors, Vec.values(stillActivePlayerColors))
-    )
   );
 }
 

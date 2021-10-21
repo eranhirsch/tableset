@@ -19,7 +19,7 @@ type Template = Readonly<
   ReturnType<typeof templateSelectors["selectEntities"]>
 >;
 
-export interface ConfigPanelProps<
+export type ConfigPanelProps<
   C,
   D0 = never,
   D1 = never,
@@ -31,8 +31,8 @@ export interface ConfigPanelProps<
   D7 = never,
   D8 = never,
   D9 = never
-> {
-  config: C | null;
+> = Readonly<{
+  config: Readonly<C | null>;
   queries: readonly [
     Query<D0>,
     Query<D1>,
@@ -45,8 +45,12 @@ export interface ConfigPanelProps<
     Query<D8>,
     Query<D9>
   ];
-  onChange(newConfig: C | ((currentConfig: C | undefined) => C)): void;
-}
+  onChange(
+    newConfig:
+      | Readonly<C>
+      | ((currentConfig: Readonly<C> | undefined) => Readonly<C>)
+  ): void;
+}>;
 
 export interface Templatable<T = unknown, C = unknown> extends WithDependencies {
   resolve(
