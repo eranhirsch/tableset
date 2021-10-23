@@ -182,14 +182,17 @@ function IndividualPlayerConfigPanel({
 }): JSX.Element {
   return (
     <Grid container>
-      <Grid item xs={Vec.is_empty(remainingPlayerIds) ? 11 : 8}>
-        <ColorSelector
-          selectedColor={color}
-          availableColors={remainingColors}
-          playerId={playerId}
-          onChange={(newColor) => onChange(playerId, newColor)}
-        />
+      <Grid item xs={Vec.is_empty(remainingColors) ? 11 : 1} textAlign="center">
+        <SelectedColor color={color} playerId={playerId} />
       </Grid>
+      {!Vec.is_empty(remainingColors) && (
+        <Grid item xs={Vec.is_empty(remainingPlayerIds) ? 10 : 7}>
+          <ColorSelector
+            availableColors={remainingColors}
+            onChange={(newColor) => onChange(playerId, newColor)}
+          />
+        </Grid>
+      )}
       {!Vec.is_empty(remainingPlayerIds) && (
         <Grid item xs={3}>
           {!Vec.is_empty(remainingPlayerIds) && (
@@ -209,20 +212,33 @@ function IndividualPlayerConfigPanel({
   );
 }
 
-function ColorSelector({
-  selectedColor,
-  availableColors,
+function SelectedColor({
+  color,
   playerId,
+}: {
+  color: GamePiecesColor;
+  playerId: PlayerId;
+}): JSX.Element {
+  return (
+    <Badge
+      color={color}
+      variant="dot"
+      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      overlap="circular"
+    >
+      <PlayerAvatar size={AVATAR_SIZE} playerId={playerId} />
+    </Badge>
+  );
+}
+
+function ColorSelector({
+  availableColors,
   onChange,
 }: {
-  selectedColor: GamePiecesColor;
   availableColors: readonly GamePiecesColor[];
-  playerId: PlayerId;
   onChange(color: GamePiecesColor): void;
 }): JSX.Element {
   const theme = useTheme();
-
-  const withSelected = Vec.sort(Vec.concat(availableColors, selectedColor));
 
   return (
     <Stack
@@ -231,27 +247,13 @@ function ColorSelector({
       alignItems="center"
       justifyContent="center"
     >
-      {Vec.map(withSelected, (color) => (
-        <Badge
-          key={`${color}_${playerId ?? "unknown"}`}
-          color={color}
-          variant="dot"
-          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          overlap="circular"
-          invisible={color !== selectedColor}
+      {Vec.map(availableColors, (color) => (
+        <Avatar
+          sx={{ bgcolor: theme.palette[color].main, width: 36, height: 36 }}
+          onClick={() => onChange(color)}
         >
-          {selectedColor === color ? (
-            <PlayerAvatar size={AVATAR_SIZE} playerId={playerId} />
-          ) : (
-            // We use an avatar component for the colored background
-            <Avatar
-              sx={{ bgcolor: theme.palette[color].main, width: 36, height: 36 }}
-              onClick={() => onChange(color)}
-            >
-              {" "}
-            </Avatar>
-          )}
-        </Badge>
+          {" " /* We use an avatar component for the colored background */}
+        </Avatar>
       ))}
     </Stack>
   );
