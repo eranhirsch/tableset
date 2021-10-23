@@ -1,4 +1,5 @@
 import { Avatar } from "@mui/material";
+import { SxProps } from "@mui/material/node_modules/@mui/system";
 import { PlayerId } from "model/Player";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
 
@@ -7,19 +8,25 @@ export function PlayerAvatar({
   inline = false,
   size,
   onClick,
+  sx,
 }: {
   playerId: PlayerId;
   inline?: boolean;
   size?: number;
   onClick?(): void;
+  sx?: SxProps;
 }): JSX.Element | null {
-  const sizeSx =
-    size != null ? { width: size, height: size, fontSize: size / 2 } : {};
+  const realSx = {
+    ...sx,
+    ...(inline ? { display: "inline-flex" } : undefined),
+    ...(size != null
+      ? { width: size, height: size, fontSize: size / 2 }
+      : undefined),
+  };
   return (
     <Avatar
-      {...(inline
-        ? { component: "span", sx: { display: "inline-flex", ...sizeSx } }
-        : { sx: sizeSx })}
+      sx={realSx}
+      {...(inline ? { component: "span" } : {})}
       // IMPORTANT: DONT add an `sx` property here directly it would remove the
       // other settings! (see the spread above)
       onClick={onClick}

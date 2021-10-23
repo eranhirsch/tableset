@@ -4,6 +4,7 @@ import {
   Badge,
   Button,
   Chip,
+  Divider,
   Grid,
   IconButton,
   Stack,
@@ -117,51 +118,64 @@ function ConfigPanel({
   }, [config, products]);
 
   return (
-    <Stack direction="column" spacing={2} alignItems="center" margin={2}>
-      {Vec.map_with_key(sorted, (playerId, color) => (
-        <IndividualPlayerConfigPanel
-          key={playerId}
-          playerId={playerId}
-          color={color}
-          remainingPlayerIds={remainingPlayerIds}
-          remainingColors={remainingColors}
-          onChange={(newPlayerId, newColor) =>
-            onChange((current) =>
-              Dict.merge(
-                // Remove the current entry for the player, we are going to add
-                // a new entry in the config, and it might not be for the same
-                // player id.
-                Dict.filter_with_keys(current ?? {}, (pid) => pid !== playerId),
-                { [newPlayerId]: newColor }
+    <Grid container rowSpacing={1}>
+      {Vec.map_with_key(sorted, (playerId, color, index) => (
+        <React.Fragment key={playerId}>
+          {index > 0 && (
+            <Grid item xs={12}>
+              <Divider variant="middle" />
+            </Grid>
+          )}
+          <IndividualPlayerConfigPanel
+            key={playerId}
+            playerId={playerId}
+            color={color}
+            remainingPlayerIds={remainingPlayerIds}
+            remainingColors={remainingColors}
+            onChange={(newPlayerId, newColor) =>
+              onChange((current) =>
+                Dict.merge(
+                  // Remove the current entry for the player, we are going to add
+                  // a new entry in the config, and it might not be for the same
+                  // player id.
+                  Dict.filter_with_keys(
+                    current ?? {},
+                    (pid) => pid !== playerId
+                  ),
+                  { [newPlayerId]: newColor }
+                )
               )
-            )
-          }
-          onDelete={() =>
-            onChange((current) =>
-              current == null
-                ? {}
-                : Dict.filter_with_keys(current, (pid) => pid !== playerId)
-            )
-          }
-        />
+            }
+            onDelete={() =>
+              onChange((current) =>
+                current == null
+                  ? {}
+                  : Dict.filter_with_keys(current, (pid) => pid !== playerId)
+              )
+            }
+          />
+        </React.Fragment>
       ))}
+
       {Dict.size(sorted) < players.resolve().length && (
         // New row button
-        <Button
-          onClick={() =>
-            onChange((current) => ({
-              ...(current ?? {}),
-              [Vec.sample(remainingPlayerIds, 1)]: Vec.sample(
-                remainingColors,
-                1
-              ),
-            }))
-          }
-        >
-          + Add Fixed Color
-        </Button>
+        <Grid item xs={12} alignSelf="center" textAlign="center">
+          <Button
+            onClick={() =>
+              onChange((current) => ({
+                ...(current ?? {}),
+                [Vec.sample(remainingPlayerIds, 1)]: Vec.sample(
+                  remainingColors,
+                  1
+                ),
+              }))
+            }
+          >
+            + Add Fixed Color
+          </Button>
+        </Grid>
       )}
-    </Stack>
+    </Grid>
   );
 }
 
@@ -181,12 +195,12 @@ function IndividualPlayerConfigPanel({
   onDelete(): void;
 }): JSX.Element {
   return (
-    <Grid container>
-      <Grid item xs={Vec.is_empty(remainingColors) ? 11 : 1} textAlign="center">
+    <>
+      <Grid item xs={2} textAlign="center" alignSelf="center">
         <SelectedColor color={color} playerId={playerId} />
       </Grid>
       {!Vec.is_empty(remainingColors) && (
-        <Grid item xs={Vec.is_empty(remainingPlayerIds) ? 10 : 7}>
+        <Grid item xs={Vec.is_empty(remainingPlayerIds) ? 8 : 5}>
           <ColorSelector
             availableColors={remainingColors}
             onChange={(newColor) => onChange(playerId, newColor)}
@@ -194,7 +208,7 @@ function IndividualPlayerConfigPanel({
         </Grid>
       )}
       {!Vec.is_empty(remainingPlayerIds) && (
-        <Grid item xs={3}>
+        <Grid item xs={4} alignSelf="center">
           {!Vec.is_empty(remainingPlayerIds) && (
             <PlayerSelector
               playerIds={remainingPlayerIds}
@@ -208,7 +222,7 @@ function IndividualPlayerConfigPanel({
           <DeleteIcon fontSize="small" />
         </IconButton>
       </Grid>
-    </Grid>
+    </>
   );
 }
 
@@ -222,16 +236,45 @@ function SelectedColor({
   return (
     <Badge
       color={color}
-      variant="dot"
+      invisible={false}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       overlap="circular"
     >
-      <PlayerAvatar size={AVATAR_SIZE} playerId={playerId} />
+      <PlayerAvatar playerId={playerId} />
     </Badge>
   );
 }
 
 function ColorSelector({
+  availableColors,
+  onChange,
+}: {
+  availableColors: readonly GamePiecesColor[];
+  onChange(color: GamePiecesColor): void;
+}): JSX.Element {
+  if (availableColors.length < 3) {
+    return (
+      <ColorSelectorRow availableColors={availableColors} onChange={onChange} />
+    );
+  }
+
+  const midPoint = Math.floor(availableColors.length / 2);
+
+  return (
+    <Stack direction="column" spacing={0.5}>
+      <ColorSelectorRow
+        availableColors={Vec.take(availableColors, midPoint - 1)}
+        onChange={onChange}
+      />
+      <ColorSelectorRow
+        availableColors={availableColors.slice(midPoint)}
+        onChange={onChange}
+      />
+    </Stack>
+  );
+}
+
+function ColorSelectorRow({
   availableColors,
   onChange,
 }: {
@@ -247,19 +290,48 @@ function ColorSelector({
       alignItems="center"
       justifyContent="center"
     >
-      {Vec.map(availableColors, (color) => (
-        <Avatar
-          sx={{ bgcolor: theme.palette[color].main, width: 36, height: 36 }}
-          onClick={() => onChange(color)}
-        >
-          {" " /* We use an avatar component for the colored background */}
-        </Avatar>
+      {Vec.map(availableColors, (color, index) => (
+        <React.Fragment key={color}>
+          <Avatar
+            sx={{ bgcolor: theme.palette[color].main, width: 36, height: 36 }}
+            onClick={() => onChange(color)}
+          >
+            {" " /* We use an avatar component for the colored background */}
+          </Avatar>
+        </React.Fragment>
       ))}
     </Stack>
   );
 }
 
 function PlayerSelector({
+  playerIds,
+  onChange,
+}: {
+  playerIds: readonly PlayerId[];
+  onChange(playerId: PlayerId): void;
+}): JSX.Element {
+  if (playerIds.length < 4) {
+    return <PlayerSelectorRow playerIds={playerIds} onChange={onChange} />;
+  }
+
+  const midPoint = Math.floor(playerIds.length / 2);
+
+  return (
+    <Stack direction="column" spacing={0.5}>
+      <PlayerSelectorRow
+        playerIds={Vec.take(playerIds, midPoint - 1)}
+        onChange={onChange}
+      />
+      <PlayerSelectorRow
+        playerIds={playerIds.slice(midPoint)}
+        onChange={onChange}
+      />
+    </Stack>
+  );
+}
+
+function PlayerSelectorRow({
   playerIds,
   onChange,
 }: {
@@ -276,6 +348,7 @@ function PlayerSelector({
       {React.Children.toArray(
         Vec.map(playerIds, (playerId) => (
           <PlayerAvatar
+            sx={{ opacity: 0.5 }}
             size={AVATAR_SIZE}
             playerId={playerId}
             onClick={() => onChange(playerId)}
