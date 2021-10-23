@@ -1,19 +1,11 @@
-import {
-  Avatar,
-  Badge,
-  Checkbox,
-  FormControlLabel,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { C, Vec } from "common";
+import { Avatar, Badge, Stack, Typography } from "@mui/material";
+import { Vec } from "common";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
-import { Query } from "games/core/steps/Query";
-import React, { useMemo } from "react";
+import React from "react";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerId } from "../../../model/Player";
 import {
@@ -21,7 +13,7 @@ import {
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 
-type TemplateConfig = { random: true } | { fixed: PlayerId };
+type TemplateConfig = { playerId?: PlayerId };
 
 export default createRandomGameStep({
   id: "firstPlayer",
@@ -38,12 +30,11 @@ export default createRandomGameStep({
       // Solo games don't need a first player
       min: 2,
     }),
-  resolve: (config, playerIds) =>
-    "fixed" in config ? config.fixed : Vec.sample(playerIds!, 1),
-  initialConfig: (): TemplateConfig => ({ random: true }),
-  refresh: (current, players) =>
+  resolve: ({ playerId }, playerIds) => playerId ?? Vec.sample(playerIds!, 1),
+  initialConfig: (): TemplateConfig => ({}),
+  refresh: ({ playerId }, players) =>
     templateValue(
-      "fixed" in current && !players.resolve().includes(current.fixed)
+      playerId != null && !players.resolve().includes(playerId)
         ? "unfixable"
         : "unchanged"
     ),
@@ -52,93 +43,35 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
 });
 
-const defaultFirstPlayer = (players: Query<readonly PlayerId[]>): PlayerId =>
-  C.firstx(players.resolve());
-
 function ConfigPanel({
   config,
   queries: [players],
   onChange,
 }: ConfigPanelProps<TemplateConfig, readonly PlayerId[]>): JSX.Element {
-  const initialFixed = useMemo(() => defaultFirstPlayer(players), [players]);
   return (
-    <Stack direction="column" spacing={1} alignItems="center">
-      <FixedSelector
-        playerIds={players.resolve()}
-        currentFirstId={
-          config != null && "fixed" in config ? config.fixed : initialFixed
-        }
-        disabled={config == null || "random" in config}
-        onChange={(newOrder) => onChange({ fixed: newOrder })}
-      />
-      <FormControlLabel
-        sx={{ alignSelf: "center" }}
-        control={
-          <Checkbox
-            checked={config != null && "random" in config}
-            onChange={(_, checked) =>
-              onChange(checked ? { random: true } : { fixed: initialFixed })
-            }
-          />
-        }
-        label="Random"
-      />
-    </Stack>
-  );
-}
-
-function FixedSelector({
-  currentFirstId,
-  playerIds,
-  disabled,
-  onChange,
-}: {
-  currentFirstId: PlayerId;
-  playerIds: readonly PlayerId[];
-  disabled: boolean;
-  onChange(newPlayerId: PlayerId): void;
-}) {
-  return (
-    <Stack direction="row" sx={{ opacity: disabled ? 0.5 : 1.0 }}>
+    <Stack direction="row" justifyContent="center" paddingY={1}>
       {React.Children.toArray(
-        Vec.map(playerIds, (playerId) => (
-          <SelectorPlayer
-            playerId={playerId}
-            isSelected={playerId === currentFirstId}
-            disabled={disabled}
-            onChange={onChange}
-          />
+        Vec.map(players.resolve(), (playerId) => (
+          <Badge
+            color="primary"
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            overlap="circular"
+            badgeContent={playerId === config?.playerId ? "1" : undefined}
+          >
+            <Avatar
+              sx={{ margin: 0.5 }}
+              onClick={() =>
+                onChange((current) =>
+                  current?.playerId === playerId ? {} : { playerId }
+                )
+              }
+            >
+              <PlayerNameShortAbbreviation playerId={playerId} />
+            </Avatar>
+          </Badge>
         ))
       )}
     </Stack>
-  );
-}
-
-function SelectorPlayer({
-  playerId,
-  isSelected,
-  onChange,
-  disabled,
-}: {
-  playerId: PlayerId;
-  isSelected: boolean;
-  onChange(newPlayerId: PlayerId): void;
-  disabled: boolean;
-}): JSX.Element | null {
-  return (
-    <Badge
-      color="primary"
-      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      overlap="circular"
-      badgeContent={isSelected ? "1" : undefined}
-    >
-      <Avatar
-        sx={{ margin: 0.5 }}
-        onClick={!isSelected ? () => onChange(playerId) : undefined}
-      >
-        <PlayerNameShortAbbreviation playerId={playerId} />
-      </Avatar>
-    </Badge>
   );
 }
 
@@ -152,10 +85,14 @@ function InstanceVariableComponent({
   );
 }
 
-function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
-  return "random" in config ? (
+function ConfigPanelTLDR({
+  config: { playerId },
+}: {
+  config: TemplateConfig;
+}): JSX.Element {
+  return playerId == null ? (
     <>Random</>
   ) : (
-    <PlayerShortName playerId={config.fixed} />
+    <PlayerShortName playerId={playerId} />
   );
 }
