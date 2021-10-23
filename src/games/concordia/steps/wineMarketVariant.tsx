@@ -56,7 +56,7 @@ function ConfigPanel({
   readonly ConcordiaProductId[],
   boolean
 >): JSX.Element {
-  if (!withSalt.willResolve()) {
+  if (!withSalt.willResolve() || !withSalt.canResolveTo(false)) {
     return (
       <Box textAlign="center">
         <ConfigPanelSlider value={config?.percent} onChange={onChange} />
