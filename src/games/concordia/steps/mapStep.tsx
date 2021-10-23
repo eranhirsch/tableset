@@ -97,7 +97,11 @@ function ConfigPanel({
 
   const relevantMapIds = useMemo(
     () =>
-      config == null ? [] : relevantMapsForConfig(config, products, players),
+      config == null
+        ? []
+        : // Keep the map IDs sorted in the stored array so that the results are
+          // always normalized and canonical
+          Vec.sort(relevantMapsForConfig(config, products, players)),
     [config, players, products]
   );
 
@@ -120,7 +124,9 @@ function ConfigPanel({
       onChange({
         static: relevantMapIds.includes(mapId)
           ? Vec.filter(relevantMapIds, (x) => x !== mapId)
-          : Vec.concat(relevantMapIds, mapId),
+          : // Keep the map IDs sorted in the stored array so that the results
+            // are always normalized and canonical
+            Vec.sort(Vec.concat(relevantMapIds, mapId)),
       }),
     [onChange, relevantMapIds]
   );
