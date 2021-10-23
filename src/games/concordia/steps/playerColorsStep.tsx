@@ -22,7 +22,7 @@ import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import {
   createRandomGameStep,
@@ -97,20 +97,27 @@ function ConfigPanel({
   readonly PlayerId[],
   readonly ConcordiaProductId[]
 >): JSX.Element {
-  const playerIds = players.resolve();
+  const assignedPlayers = useMemo(() => Vec.keys(config ?? {}), [config]);
 
+  const order = useRef<readonly PlayerId[]>([]);
+  order.current = Vec.concat(
+    Vec.intersect(order.current, assignedPlayers),
+    Vec.diff(assignedPlayers, order.current)
+  );
   const sorted = useMemo(
     () =>
       // We memoize a sorted version of the config to stop the rows from jumping
       // around with the changes.
       Dict.sort_by_with_key(config ?? {}, (playerId) =>
-        playerIds.indexOf(playerId)
+        order.current.indexOf(playerId)
       ),
-    [config, playerIds]
+    [config]
   );
+
+  const playerIds = players.resolve();
   const remainingPlayerIds = useMemo(
-    () => (config == null ? playerIds : Vec.diff(playerIds, Vec.keys(config))),
-    [config, playerIds]
+    () => (config == null ? playerIds : Vec.diff(playerIds, assignedPlayers)),
+    [assignedPlayers, config, playerIds]
   );
   const remainingColors = useMemo(() => {
     const allColors = availableColors(products.resolve());
@@ -118,7 +125,7 @@ function ConfigPanel({
   }, [config, products]);
 
   return (
-    <Grid container rowSpacing={1}>
+    <Grid container rowSpacing={1} paddingY={1}>
       {Vec.map_with_key(sorted, (playerId, color, index) => (
         <React.Fragment key={playerId}>
           {index > 0 && (
@@ -134,15 +141,20 @@ function ConfigPanel({
             remainingColors={remainingColors}
             onChange={(newPlayerId, newColor) =>
               onChange((current) =>
-                Dict.merge(
-                  // Remove the current entry for the player, we are going to add
-                  // a new entry in the config, and it might not be for the same
-                  // player id.
-                  Dict.filter_with_keys(
-                    current ?? {},
-                    (pid) => pid !== playerId
+                Dict.sort_by_with_key(
+                  Dict.merge(
+                    // Remove the current entry for the player, we are going to add
+                    // a new entry in the config, and it might not be for the same
+                    // player id.
+                    Dict.filter_with_keys(
+                      current ?? {},
+                      (pid) => pid !== playerId
+                    ),
+                    { [newPlayerId]: newColor } as Readonly<TemplateConfig>
                   ),
-                  { [newPlayerId]: newColor }
+                  // We want to normalize the config so that there's always a
+                  // SINGLE canonical representation of each user selection.
+                  (playerId) => playerIds.indexOf(playerId)
                 )
               )
             }
@@ -200,7 +212,11 @@ function IndividualPlayerConfigPanel({
         <SelectedColor color={color} playerId={playerId} />
       </Grid>
       {!Vec.is_empty(remainingColors) && (
-        <Grid item xs={Vec.is_empty(remainingPlayerIds) ? 8 : 5}>
+        <Grid
+          item
+          xs={Vec.is_empty(remainingPlayerIds) ? 8 : 5}
+          alignSelf="center"
+        >
           <ColorSelector
             availableColors={remainingColors}
             onChange={(newColor) => onChange(playerId, newColor)}
