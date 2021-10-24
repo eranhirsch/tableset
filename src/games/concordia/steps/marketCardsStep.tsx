@@ -1,7 +1,6 @@
 import { invariant, Vec } from "common";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { PlayerId } from "model/Player";
-import React from "react";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -14,6 +13,7 @@ import { MARKET_DECK_I } from "../utils/MarketDisplayEncoder";
 import { ROMAN_NUMERALS } from "../utils/ROMAN_NUMERALS";
 import RomanTitle from "../ux/RomanTitle";
 import productsMetaStep from "./productsMetaStep";
+import teamPlayVariant from "./teamPlayVariant";
 import venusScoringVariant from "./venusScoringVariant";
 
 const CARDS_PER_DECK = {
@@ -55,16 +55,21 @@ const VENUS_REPLACEMENTS: readonly REPLACEMENT[] = [
   ["Architect", "Architect/Mercator"],
 ];
 
-const MAX_PLAYER_COUNT = CARDS_PER_DECK.base.length - 1;
+const TEAM_PLAY_MAX_PLAYER_COUNT = 6;
 
 export default createDerivedGameStep({
   id: "personalityCards",
-  dependencies: [playersMetaStep, productsMetaStep, venusScoringVariant],
+  dependencies: [
+    playersMetaStep,
+    productsMetaStep,
+    venusScoringVariant,
+    teamPlayVariant,
+  ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, products, venusScoring],
+  dependencies: [playerIds, products, venusScoring, teamPlay],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly ConcordiaProductId[],
@@ -76,21 +81,23 @@ function InstanceDerivedComponent({
       : "base"
     : "venusBase";
 
+  // When playing without venus scoring with the venus base box there are
+  // additional steps in order to set up the decks
+  const baseWithVenusSteps =
+    !venusScoring && !teamPlay && relevantProduct === "venusBase";
+
   return (
     <HeaderAndSteps synopsis="Prepare the personality cards decks:">
       <CardSelectionStep
         playerIds={playerIds}
         relevantProduct={relevantProduct}
         venusScoring={venusScoring ?? false}
+        teamPlay={teamPlay ?? false}
       />
-      {!venusScoring && relevantProduct === "venusBase" && (
-        <RemoveVenusCardsStep playerIds={playerIds} />
-      )}
-      {!venusScoring && relevantProduct === "venusBase" && (
-        <AddReplacementCardsStep playerIds={playerIds} />
-      )}
+      {baseWithVenusSteps && <RemoveVenusCardsStep playerIds={playerIds} />}
+      {baseWithVenusSteps && <AddReplacementCardsStep playerIds={playerIds} />}
       <>Create a separate deck for each numeral.</>
-      {!venusScoring && relevantProduct === "venusBase" && (
+      {baseWithVenusSteps && (
         <>
           Move the{" "}
           <strong>
@@ -106,10 +113,12 @@ function InstanceDerivedComponent({
 function CardSelectionStep({
   playerIds,
   venusScoring,
+  teamPlay,
   relevantProduct,
 }: {
   playerIds: readonly PlayerId[] | null | undefined;
   venusScoring: boolean;
+  teamPlay: boolean;
   relevantProduct: "base" | "venus" | "venusBase";
 }): JSX.Element {
   invariant(
@@ -118,6 +127,12 @@ function CardSelectionStep({
     // because we handle each combination of product and scoring separately.
     !(relevantProduct === "base" && venusScoring),
     `Trying to setup a venus scoring game when no venus product is enabled`
+  );
+
+  invariant(
+    // Protecting against a bad combination of the two flags.
+    !venusScoring || !teamPlay,
+    `Both Venus Scoring and Team Play can't be both turned on`
   );
 
   if (playerIds == null) {
@@ -130,13 +145,16 @@ function CardSelectionStep({
   }
 
   const playerCount = playerIds.length;
-  return playerCount >= MAX_PLAYER_COUNT ? (
+  return playerCount >=
+    (teamPlay ? TEAM_PLAY_MAX_PLAYER_COUNT : CARDS_PER_DECK.base.length - 1) ? (
     <MaxPlayerCount
+      teamPlay={teamPlay}
       venusScoring={venusScoring}
       relevantProduct={relevantProduct}
     />
   ) : (
     <PartialPlayerCount
+      teamPlay={teamPlay}
       playerCount={playerCount}
       venusScoring={venusScoring}
       relevantProduct={relevantProduct}
@@ -188,20 +206,28 @@ function UnknownPlayerCount({
 
 function MaxPlayerCount({
   venusScoring,
+  teamPlay,
   relevantProduct,
 }: {
   venusScoring: boolean;
+  teamPlay: boolean;
   relevantProduct: "base" | "venus" | "venusBase";
 }): JSX.Element {
   return (
     <BlockWithFootnotes
-      footnote={<AllCardsCountsFootnote venusScoring={venusScoring} />}
+      footnote={
+        <AllCardsCountsFootnote
+          teamPlay={teamPlay}
+          venusScoring={venusScoring}
+        />
+      }
     >
       {(Footnote) => (
         <>
           Take all cards with{" "}
           <CardBackDescription
             venusScoring={venusScoring}
+            teamPlay={teamPlay}
             relevantProduct={relevantProduct}
           />
           <Footnote />.
@@ -214,20 +240,28 @@ function MaxPlayerCount({
 function PartialPlayerCount({
   playerCount,
   venusScoring,
+  teamPlay,
   relevantProduct,
 }: {
   playerCount: number;
   venusScoring: boolean;
+  teamPlay: boolean;
   relevantProduct: "base" | "venus" | "venusBase";
 }): JSX.Element {
   return (
     <BlockWithFootnotes
-      footnote={<AllCardsCountsFootnote venusScoring={venusScoring} />}
+      footnote={
+        <AllCardsCountsFootnote
+          teamPlay={teamPlay}
+          venusScoring={venusScoring}
+        />
+      }
     >
       {(Footnote) => (
         <>
           Take all cards with{" "}
           <CardBackDescription
+            teamPlay={teamPlay}
             venusScoring={venusScoring}
             relevantProduct={relevantProduct}
           />
@@ -239,11 +273,15 @@ function PartialPlayerCount({
           </GrammaticalList>
           ; leaving {relevantProduct !== "venusBase" && "all "}cards with{" "}
           {relevantProduct === "venus" &&
-            `${!venusScoring ? "VENVS" : "CONCORDIA"}, and cards with `}
+            `${
+              !venusScoring || !teamPlay ? "VENVS" : "CONCORDIA"
+            }, and cards with `}
           <GrammaticalList pluralize="numeral">
-            {Vec.range(playerCount + 1, MAX_PLAYER_COUNT).map((x) => (
-              <strong>{ROMAN_NUMERALS[x]!}</strong>
-            ))}
+            {Vec.range(playerCount + 1, CARDS_PER_DECK.base.length - 1).map(
+              (x) => (
+                <strong>{ROMAN_NUMERALS[x]!}</strong>
+              )
+            )}
           </GrammaticalList>{" "}
           in the box (they won't be needed)
           <Footnote />.
@@ -360,14 +398,26 @@ function AddReplacementCardsStep({
 
 function CardBackDescription({
   venusScoring,
+  teamPlay = false,
   relevantProduct,
 }: {
   venusScoring: boolean;
+  teamPlay?: boolean;
   relevantProduct: "base" | "venus" | "venusBase";
 }): JSX.Element {
   if (relevantProduct === "base") {
     return <>roman numerals on the back</>;
   }
+
+  const icon = teamPlay ? (
+    <>
+      <em>an interlocking circles icon</em> (at the bottom right corner)
+    </>
+  ) : (
+    <>
+      <em>a small pillar icon</em> (at the bottom left corner)
+    </>
+  );
 
   if (relevantProduct === "venus") {
     if (!venusScoring) {
@@ -379,32 +429,28 @@ function CardBackDescription({
     }
     return (
       <>
-        <strong>VENVS</strong>, a roman numeral, and{" "}
-        <em>a small pillar icon</em> (at the bottom left corner), all on the
-        back of the card
+        <strong>VENVS</strong>, a roman numeral, and {icon}, all on the back of
+        the card
       </>
     );
   }
 
-  return (
-    <>
-      a roman numeral and <strong>a small pillar icon</strong> (at the bottom
-      left corner) on the back
-    </>
-  );
+  return <>a roman numeral and {icon} on the back</>;
 }
 
 function AllCardsCountsFootnote({
   venusScoring,
+  teamPlay = false,
 }: {
   venusScoring: boolean;
+  teamPlay?: boolean;
 }): JSX.Element {
   return (
     <>
       <GrammaticalList>
         {Vec.filter_nulls(
           Vec.map(
-            CARDS_PER_DECK[venusScoring ? "venus" : "base"],
+            CARDS_PER_DECK[venusScoring || teamPlay ? "venus" : "base"],
             (count, index) =>
               count != null ? (
                 <>
