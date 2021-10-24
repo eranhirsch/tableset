@@ -141,7 +141,6 @@ export function createVariant({
           // it can resolve to true if the percent is greater than 0
           return value ? percent > 0 : percent < 100;
         },
-        willResolve: () => template[baseStep.id] != null,
       }),
 
     ConfigPanel,

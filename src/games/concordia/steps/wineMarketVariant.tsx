@@ -31,14 +31,14 @@ export default createRandomGameStep({
     )
       ? true
       : null,
-  refresh(config, _, withSalt) {
-    if (withSalt.willResolve()) {
-      templateValue("unchanged");
-    }
-
-    const { percent, saltPercent } = config;
-    return saltPercent != null ? { percent } : templateValue("unchanged");
-  },
+  refresh: (config, _, withSalt) =>
+    config.saltPercent == null ||
+    (withSalt.canResolveTo(true) && withSalt.canResolveTo(false))
+      ? templateValue("unchanged")
+      : // We only need to refresh the config if salt is part of the config, but
+        // is no longer a variant state (it's either never, or always, both not
+        // requiring a specific salt setting)
+        { percent: config.percent },
 
   skip: (value) => value == null,
 
