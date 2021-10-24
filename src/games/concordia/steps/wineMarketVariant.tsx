@@ -56,7 +56,10 @@ function ConfigPanel({
   readonly ConcordiaProductId[],
   boolean
 >): JSX.Element {
-  if (!withSalt.willResolve() || !withSalt.canResolveTo(false)) {
+  if (!withSalt.canResolveTo(true) || !withSalt.canResolveTo(false)) {
+    // If salt is either fully turned on or fully turned off we need only to
+    // show a single percent slider. It's only when it could be either that we
+    // need both sliders.
     return (
       <Box textAlign="center">
         <ConfigPanelSlider value={config.percent} onChange={onChange} />
