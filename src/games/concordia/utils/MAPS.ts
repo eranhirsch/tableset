@@ -123,7 +123,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
         Germania: ["Colonia A.", "Vindobona"],
       },
       B: {
-        Galia: ["Bvrdigala", "Lvtetia", "Massilia"],
+        Gallia: ["Bvrdigala", "Lvtetia", "Massilia"],
         Hispania: ["Brigantivm", "Olisipo", "Valentia"],
         Mavretania: ["Carthago", "Rvsadir"],
       },

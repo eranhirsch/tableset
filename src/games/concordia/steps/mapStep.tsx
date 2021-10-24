@@ -30,12 +30,14 @@ const TIGHTNESS_RATIO_BOUNDARIES = [
   // solo?
   Infinity,
   // 2 players
-  1.7,
+  1.9,
   // 3 players
-  1.3,
+  1.4,
   // 4 players
-  0.85,
+  1.1,
   // 5 players
+  0.8,
+  // 6 players
   0.0,
 ] as const;
 
@@ -397,7 +399,7 @@ function recommendedForPlayerCount(
   playerCount: number,
   availableMapIds: readonly MapId[]
 ): readonly MapId[] {
-  if (playerCount < 2 || playerCount > 5) {
+  if (playerCount < 2 || playerCount > 6) {
     // No recommended maps for player counts the game wasn't designed for
     return [];
   }
