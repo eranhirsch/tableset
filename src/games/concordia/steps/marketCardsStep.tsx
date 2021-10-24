@@ -420,7 +420,7 @@ function CardBackDescription({
   );
 
   if (relevantProduct === "venus") {
-    if (!venusScoring) {
+    if (!venusScoring && !teamPlay) {
       return (
         <>
           <strong>CONCORDIA</strong> and a roman numeral on the back
