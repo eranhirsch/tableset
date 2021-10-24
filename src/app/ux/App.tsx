@@ -6,35 +6,46 @@ import { Players } from "features/players/Players";
 import { Template } from "features/template/Template";
 import { Route, Switch } from "react-router-dom";
 import { TableSetAppBar } from "./AppBar";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { RootRedirector } from "./RootRedirector";
 
 function App(): JSX.Element | null {
   return (
     <ThemeProvider theme={themeWithGameColors}>
-      <TableSetAppBar />
-      <Container
-        component="main"
-        maxWidth="xs"
-        sx={{ height: "100vh", position: "relative", paddingTop: 8 }}
-      >
-        <Switch>
-          <Route path="/template">
-            <Template />
-          </Route>
-          <Route path="/players">
-            <Players />
-          </Route>
-          <Route path="/products">
-            <Expansions />
-          </Route>
-          <Route path="/instance">
-            <Instance />
-          </Route>
-          <Route path="/">
-            <RootRedirector />
-          </Route>
-        </Switch>
-      </Container>
+      <ErrorBoundary>
+        <TableSetAppBar />
+        <Container
+          component="main"
+          maxWidth="xs"
+          sx={{ height: "100vh", position: "relative", paddingTop: 8 }}
+        >
+          <Switch>
+            <Route path="/template">
+              <ErrorBoundary slice="template">
+                <Template />
+              </ErrorBoundary>
+            </Route>
+            <Route path="/players">
+              <ErrorBoundary slice="players">
+                <Players />
+              </ErrorBoundary>
+            </Route>
+            <Route path="/products">
+              <ErrorBoundary slice="expansions">
+                <Expansions />
+              </ErrorBoundary>
+            </Route>
+            <Route path="/instance">
+              <ErrorBoundary slice="instance">
+                <Instance />
+              </ErrorBoundary>
+            </Route>
+            <Route path="/">
+              <RootRedirector />
+            </Route>
+          </Switch>
+        </Container>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }

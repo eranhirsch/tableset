@@ -17,3 +17,12 @@ export function loadStateFromLocalStorage<S>():
 
 export const resetStateInLocalStorage = () =>
   localStorage.removeItem(LOCAL_STORAGE_KEY);
+
+export const resetSliceInLocalStorage = (slice: string): void =>
+  localStorage.setItem(
+    LOCAL_STORAGE_KEY,
+    JSON.stringify({
+      ...loadStateFromLocalStorage(),
+      slice: undefined,
+    })
+  );
