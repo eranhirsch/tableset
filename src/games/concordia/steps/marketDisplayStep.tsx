@@ -12,20 +12,23 @@ import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 import RomanTitle from "../ux/RomanTitle";
 import marketCardsStep from "./marketCardsStep";
+import teamPlayVariant, { useTeamPlayInstanceValue } from "./teamPlayVariant";
 import venusScoringVariant from "./venusScoringVariant";
 
 export default createRandomGameStep({
   id: "marketDisplay",
   labelOverride: "Initial Cards in Market",
 
-  dependencies: [venusScoringVariant],
+  dependencies: [venusScoringVariant, teamPlayVariant],
 
   InstanceVariableComponent,
   InstanceManualComponent,
 
   isTemplatable: () => true,
-  resolve: (_, venusScoring) =>
-    MarketDisplayEncoder.randomHash(venusScoring ?? false),
+  resolve: (_, venusScoring, teamPlay) =>
+    MarketDisplayEncoder.randomHash(
+      (venusScoring ?? false) || (teamPlay ?? false)
+    ),
 
   ...NoConfigPanel,
 });
@@ -34,10 +37,15 @@ function InstanceVariableComponent({
   value: hash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
   const venusScoring = useOptionalInstanceValue(venusScoringVariant);
+  const teamPlay = useTeamPlayInstanceValue();
 
   const market = useMemo(
-    () => MarketDisplayEncoder.decode(venusScoring ?? false, hash),
-    [hash, venusScoring]
+    () =>
+      MarketDisplayEncoder.decode(
+        (venusScoring ?? false) || (teamPlay ?? false),
+        hash
+      ),
+    [hash, teamPlay, venusScoring]
   );
 
   return (
@@ -73,6 +81,7 @@ function InstanceVariableComponent({
 
 function InstanceManualComponent(): JSX.Element {
   const venusScoring = useOptionalInstanceValue(venusScoringVariant);
+  const teamPlay = useTeamPlayInstanceValue();
 
   return (
     <HeaderAndSteps synopsis="Fill the personality cards market display:">
@@ -88,7 +97,7 @@ function InstanceManualComponent(): JSX.Element {
       </BlockWithFootnotes>
       <>
         Deal cards from the deck placing them one-by-one into the market slots
-        {!venusScoring && (
+        {!venusScoring && !teamPlay && (
           <>
             ; <em>the deck should have 1 card remaining</em>
           </>

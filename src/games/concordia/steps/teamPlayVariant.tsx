@@ -1,4 +1,7 @@
 import { Typography } from "@mui/material";
+import { useAppSelector } from "app/hooks";
+import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
+import { playersSelectors } from "features/players/playersSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { createVariant } from "games/core/steps/createVariant";
 import productsMetaStep from "./productsMetaStep";
@@ -45,6 +48,15 @@ const teamPlayVariant: typeof baseTeamPlayVariant = Object.freeze({
 });
 
 export default teamPlayVariant;
+
+export function useTeamPlayInstanceValue(): boolean {
+  const teamPlay = useOptionalInstanceValue(teamPlayVariant);
+  // TODO: We are exposing the raw players selectors to a game specific step,
+  // we should see if it makes more sense to simply send this value in as a
+  // context to `coerceInstanceEntry`.
+  const playerCount = useAppSelector(playersSelectors.selectTotal);
+  return teamPlay || playerCount === 6;
+}
 
 function InstanceVariableComponent(): JSX.Element {
   return (
