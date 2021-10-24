@@ -23,6 +23,6 @@ export const resetSliceInLocalStorage = (slice: string): void =>
     LOCAL_STORAGE_KEY,
     JSON.stringify({
       ...loadStateFromLocalStorage(),
-      slice: undefined,
+      [slice]: undefined,
     })
   );

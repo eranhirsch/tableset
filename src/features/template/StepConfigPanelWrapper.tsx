@@ -31,12 +31,19 @@ export function StepConfigPanelWrapper<C = unknown>({
   }
 
   const onChange = useCallback(
-    (newConfig: C) => {
+    (newConfig: Readonly<C> | ((current: Readonly<C>) => Readonly<C>)) => {
       if (element != null) {
         dispatch(
           templateActions.configUpdated(
             templatable as Templatable,
-            typeof newConfig === "function" ? newConfig(config) : newConfig
+            typeof newConfig === "function"
+              ? newConfig(
+                  nullthrows(
+                    config.current,
+                    `ConfigPanel for ${templatable.id} has a null template element for it's initial rendering`
+                  )
+                )
+              : newConfig
           )
         );
       }

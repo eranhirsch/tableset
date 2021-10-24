@@ -61,7 +61,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
                 : resetStateInLocalStorage();
               window.location.assign("/");
             }}
-            autoFocus
           >
             Reset {slice != null ? Str.capitalize(slice) : "App"} State
           </Button>
