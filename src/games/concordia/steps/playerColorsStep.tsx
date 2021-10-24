@@ -9,11 +9,11 @@ import {
   IconButton,
   Stack,
   Typography,
-  useTheme,
+  useTheme
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
-import { Dict, Vec } from "common";
+import { Dict, invariant, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { playersSelectors } from "features/players/playersSlice";
@@ -26,7 +26,7 @@ import React, { useCallback, useMemo, useRef } from "react";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -125,17 +125,23 @@ function ConfigPanel({
   );
 
   const onNewRow = useCallback(() => {
-    if (!Vec.is_empty(remainingPlayerIds) && !Vec.is_empty(remainingColors)) {
-      onChange((current) =>
+    invariant(
+      !Vec.is_empty(remainingPlayerIds) && !Vec.is_empty(remainingColors),
+      `Trying to create a new fixed color entry when either players ${remainingPlayerIds} or colors are depleted ${remainingColors}`
+    );
+    onChange((current) =>
+      Dict.sort_by_with_key(
         Dict.merge(current, {
           // When adding a new row we pick a random player and color so that the
           // new row is already valid in our format, otherwise we would need to
           // support empty cases for color and player in our selectors.
           [Vec.sample(remainingPlayerIds, 1)]: Vec.sample(remainingColors, 1),
-        } as Readonly<TemplateConfig>)
-      );
-    }
-  }, [onChange, remainingColors, remainingPlayerIds]);
+        } as Readonly<TemplateConfig>),
+        // And sort the output so that it remains normalized
+        (playerId) => playerIds.indexOf(playerId)
+      )
+    );
+  }, [onChange, playerIds, remainingColors, remainingPlayerIds]);
 
   return (
     <Grid container rowSpacing={1} paddingY={1}>
