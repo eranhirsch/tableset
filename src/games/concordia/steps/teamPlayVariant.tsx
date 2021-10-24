@@ -12,7 +12,14 @@ const baseTeamPlayVariant = createVariant({
   InstanceVariableComponent,
 });
 
-const teamPlayVariant: Readonly<typeof baseTeamPlayVariant> = Object.freeze({
+/**
+ * Team Play is always on when there are 6 players, the game is not playable
+ * without this variant on. To make this possible we can't simply use the basic
+ * variant builder. What we can do is use the basic builder as a "base"
+ * implementation, and then use those implemented methods in our raw impl. This
+ * makes most of the additional logic straightforward and easy to understand.
+ */
+const teamPlayVariant: typeof baseTeamPlayVariant = Object.freeze({
   ...baseTeamPlayVariant,
 
   skip: (context) =>
@@ -46,3 +53,4 @@ function InstanceVariableComponent(): JSX.Element {
     </Typography>
   );
 }
+
