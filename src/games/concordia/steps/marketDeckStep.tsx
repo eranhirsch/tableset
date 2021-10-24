@@ -13,18 +13,19 @@ import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import { ROMAN_NUMERALS } from "../utils/ROMAN_NUMERALS";
 import marketCardsStep from "./marketCardsStep";
 import marketDisplayStep from "./marketDisplayStep";
+import teamPlayVariant from "./teamPlayVariant";
 import venusScoringVariant from "./venusScoringVariant";
 
 export default createDerivedGameStep({
   id: "marketDeck",
 
-  dependencies: [playersMetaStep, venusScoringVariant],
+  dependencies: [playersMetaStep, venusScoringVariant, teamPlayVariant],
 
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, venusScoring],
+  dependencies: [playerIds, venusScoring, teamPlay],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   boolean
@@ -94,7 +95,7 @@ function InstanceDerivedComponent({
         )}
       </BlockWithFootnotes>
       {stackingStep}
-      {!venusScoring && (
+      {!venusScoring && !teamPlay && (
         <BlockWithFootnotes
           footnote={<InstanceStepLink step={marketDisplayStep} />}
         >
