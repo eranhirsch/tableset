@@ -26,13 +26,13 @@ export default createRandomGameStep({
 });
 
 function ConfigPanel({
-  config,
+  config: { percent },
   onChange,
 }: ConfigPanelProps<TemplateConfig>): JSX.Element {
   return (
     <Box textAlign="center">
       <PercentSlider
-        percent={config?.percent}
+        percent={percent}
         onChange={(percent) => onChange({ percent })}
         preventZero
       />

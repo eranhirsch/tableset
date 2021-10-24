@@ -96,20 +96,11 @@ function ConfigPanel({
   const players = playersQuery.resolve();
 
   const relevantMapIds = useMemo(
-    () =>
-      config == null
-        ? []
-        : // Keep the map IDs sorted in the stored array so that the results are
-          // always normalized and canonical
-          Vec.sort(relevantMapsForConfig(config, products, players)),
+    // Keep the map IDs sorted in the stored array so that the results are
+    // always normalized and canonical
+    () => Vec.sort(relevantMapsForConfig(config, products, players)),
     [config, players, products]
   );
-
-  if (config == null) {
-    // Disable the component while it folds away
-    config = { static: [] };
-    onChange = () => {};
-  }
 
   const dynamicOnClick = useCallback(
     (mode: TemplateConfigDynamicMode | "static") =>
@@ -159,7 +150,7 @@ function StaticChips({
   onClick,
   onClear,
 }: {
-  config: TemplateConfig;
+  config: Readonly<TemplateConfig>;
   products: readonly ConcordiaProductId[];
   players: readonly PlayerId[];
   onClick(clickedMapId: MapId): void;
@@ -215,7 +206,7 @@ function DynamicChips({
   players,
   onClick,
 }: {
-  config: TemplateConfig;
+  config: Readonly<TemplateConfig>;
   products: readonly ConcordiaProductId[];
   players: readonly PlayerId[];
   onClick(mode: TemplateConfigDynamicMode | "static"): void;
@@ -262,7 +253,7 @@ function DynamicChip({
   onClick,
   label,
 }: {
-  config: TemplateConfig;
+  config: Readonly<TemplateConfig>;
   mode: TemplateConfigDynamicMode;
   equivalentStaticSet: readonly MapId[];
   onClick(): void;
@@ -285,7 +276,11 @@ function DynamicChip({
   );
 }
 
-function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
+function ConfigPanelTLDR({
+  config,
+}: {
+  config: Readonly<TemplateConfig>;
+}): JSX.Element {
   if ("static" in config) {
     if (config.static.length === 0) {
       return <>None</>;

@@ -32,7 +32,7 @@ export type ConfigPanelProps<
   D8 = never,
   D9 = never
 > = Readonly<{
-  config: Readonly<C | null>;
+  config: Readonly<C>;
   queries: readonly [
     Query<D0>,
     Query<D1>,
@@ -46,32 +46,36 @@ export type ConfigPanelProps<
     Query<D9>
   ];
   onChange(
-    newConfig:
-      | Readonly<C>
-      | ((currentConfig: Readonly<C> | undefined) => Readonly<C>)
+    newConfig: Readonly<C> | ((currentConfig: Readonly<C>) => Readonly<C>)
   ): void;
 }>;
 
-export interface Templatable<T = unknown, C = unknown> extends WithDependencies {
+export interface Templatable<T = unknown, C = unknown>
+  extends WithDependencies {
   resolve(
     config: C,
     upstreamInstance: Readonly<Record<StepId, SetupStep>>,
     context: ContextBase
   ): T | null;
-  initialConfig(template: Template, context: Readonly<ContextBase>): C;
-  refreshTemplateConfig(
-    config: C,
+  initialConfig(
     template: Template,
     context: Readonly<ContextBase>
-  ): C;
+  ): Readonly<C>;
+  refreshTemplateConfig(
+    config: Readonly<C>,
+    template: Template,
+    context: Readonly<ContextBase>
+  ): Readonly<C>;
   canBeTemplated(template: Template, context: Readonly<ContextBase>): boolean;
 
   ConfigPanel(props: {
-    config: C | null;
+    config: Readonly<C>;
     queries: readonly Query[];
-    onChange(newConfig: C | ((currentConfig: C | undefined) => C)): void;
+    onChange(
+      newConfig: Readonly<C> | ((currentConfig: Readonly<C>) => Readonly<C>)
+    ): void;
   }): JSX.Element;
-  ConfigPanelTLDR(props: { config: C }): JSX.Element;
+  ConfigPanelTLDR(props: { config: Readonly<C> }): JSX.Element;
   disabledTLDROverride?: string;
 }
 

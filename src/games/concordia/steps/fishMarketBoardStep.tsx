@@ -28,7 +28,7 @@ export default createRandomGameStep({
 });
 
 function ConfigPanel({
-  config,
+  config: { percentRiver },
   onChange,
 }: ConfigPanelProps<TemplateConfig, boolean>): JSX.Element {
   return (
@@ -39,7 +39,7 @@ function ConfigPanel({
       <Grid item xs={8} textAlign="center">
         <PercentSlider
           track={false}
-          percent={config?.percentRiver}
+          percent={percentRiver}
           onChange={(percentRiver) => onChange({ percentRiver })}
         />
       </Grid>
@@ -50,7 +50,11 @@ function ConfigPanel({
   );
 }
 
-function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
+function ConfigPanelTLDR({
+  config,
+}: {
+  config: Readonly<TemplateConfig>;
+}): JSX.Element {
   if (config.percentRiver === 100) {
     return <>{label("river")}</>;
   }

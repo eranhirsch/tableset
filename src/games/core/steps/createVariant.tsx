@@ -152,7 +152,7 @@ export function createVariant({
 }
 
 function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
-  config,
+  config: { percent },
   onChange,
 }: ConfigPanelProps<
   TemplateConfig,
@@ -170,7 +170,7 @@ function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
   return (
     <Box textAlign="center">
       <PercentSlider
-        percent={config?.percent}
+        percent={percent}
         onChange={(percent) => onChange({ percent })}
         preventZero
       />

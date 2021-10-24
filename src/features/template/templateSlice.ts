@@ -19,7 +19,7 @@ import { templateSteps } from "./templateSteps";
 
 export type TemplateElement<C = unknown> = {
   id: StepId;
-  config: C;
+  config: Readonly<C>;
   isStale?: true;
 };
 
@@ -67,14 +67,14 @@ export const templateSlice = createSlice({
     },
 
     configUpdated: {
-      prepare: ({ id }: Templatable, config: unknown) => ({
+      prepare: ({ id }: Templatable, config: Readonly<unknown>) => ({
         payload: { id, config },
       }),
       reducer(
         state,
         {
           payload: { id, config },
-        }: PayloadAction<{ id: StepId; config: unknown }>
+        }: PayloadAction<{ id: StepId; config: Readonly<unknown> }>
       ) {
         configUpdatedImpl(state, id, config);
       },
@@ -127,11 +127,12 @@ export const templateSelectors = templateAdapter.getSelectors<RootState>(
 );
 
 export const templateElementSelectorNullable =
-  ({ id }: Templatable) =>
+  <T = unknown, C = unknown>({ id }: Templatable<T, C>) =>
   (state: RootState) =>
-    templateSelectors.selectById(state, id);
+    templateSelectors.selectById(state, id) as TemplateElement<C> | undefined;
 export const templateElementSelectorEnforce =
-  (templatable: Templatable) => (state: RootState) =>
+  <T = unknown, C = unknown>(templatable: Templatable<T, C>) =>
+  (state: RootState) =>
     nullthrows(
       templateElementSelectorNullable(templatable)(state),
       `Template missing element for step ${templatable.id}`
@@ -159,10 +160,10 @@ function disabledImpl(state: RootState["template"], stepId: StepId): void {
   markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
 }
 
-function configUpdatedImpl(
+function configUpdatedImpl<C = unknown>(
   state: RootState["template"],
   id: StepId,
-  config: unknown
+  config: Readonly<C>
 ): void {
   templateAdapter.updateOne(state, {
     id,

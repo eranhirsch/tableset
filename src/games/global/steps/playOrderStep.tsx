@@ -68,32 +68,28 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
 });
 
-const defaultPlayOrder = (
-  players: Query<readonly PlayerId[]>
-): readonly PlayerId[] => players.resolve().slice(1);
-
 function ConfigPanel({
   config,
   queries: [players],
   onChange,
 }: ConfigPanelProps<TemplateConfig, readonly PlayerId[]>): JSX.Element {
-  const initialFixed = useMemo(() => defaultPlayOrder(players), [players]);
+  const initialFixed = useMemo(() => players.resolve().slice(1), [players]);
   return (
     <Stack direction="column" spacing={1}>
       <FixedSelector
-        currentOrder={
-          config != null && "fixed" in config ? config.fixed : initialFixed
-        }
-        disabled={config == null || "random" in config}
+        currentOrder={"fixed" in config ? config.fixed : initialFixed}
+        disabled={"random" in config}
         onChange={(newOrder) => onChange({ fixed: newOrder })}
       />
       <FormControlLabel
         sx={{ alignSelf: "center" }}
         control={
           <Checkbox
-            checked={config != null && "random" in config}
-            onChange={(_, checked) =>
-              onChange(checked ? { random: true } : { fixed: initialFixed })
+            checked={"random" in config}
+            onChange={() =>
+              onChange((current) =>
+                "fixed" in current ? { random: true } : { fixed: initialFixed }
+              )
             }
           />
         }
@@ -264,7 +260,11 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
+function ConfigPanelTLDR({
+  config,
+}: {
+  config: Readonly<TemplateConfig>;
+}): JSX.Element {
   const firstPlayerId = useAppSelector(firstPlayerIdSelector);
 
   if ("random" in config) {

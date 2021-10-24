@@ -8,7 +8,7 @@ export function PercentSlider({
   disabled = false,
   track = "normal",
 }: {
-  percent: number | undefined;
+  percent: number;
   onChange(percent: number): void;
   preventZero?: boolean;
   disabled?: boolean;

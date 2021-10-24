@@ -150,12 +150,10 @@ interface OptionsInternal<T, C>
   initialConfig(...queries: Query[]): C;
   canResolveTo?(value: T, config: unknown | null, ...queries: Query[]): boolean;
   ConfigPanel(props: {
-    config: Readonly<C> | null;
+    config: Readonly<C>;
     queries: readonly Query[];
     onChange(
-      newConfig:
-        | Readonly<C>
-        | ((currentConfig: Readonly<C> | undefined) => Readonly<C>)
+      newConfig: Readonly<C> | ((currentConfig: Readonly<C>) => Readonly<C>)
     ): void;
   }): JSX.Element;
 }

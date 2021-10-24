@@ -3,7 +3,7 @@ import { nullthrows, Vec } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { Query } from "games/core/steps/Query";
 import { VariableGameStep } from "model/VariableGameStep";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Templatable } from "./Templatable";
 import {
@@ -12,37 +12,44 @@ import {
   templateSelectors,
 } from "./templateSlice";
 
-export function StepConfigPanelWrapper({
+export function StepConfigPanelWrapper<C = unknown>({
   templatable,
 }: {
-  templatable: Templatable;
+  templatable: Templatable<unknown, C>;
 }): JSX.Element | null {
   const dispatch = useDispatch();
 
   const element = useAppSelector(templateElementSelectorNullable(templatable));
   const dependencyQueries = useQueries(templatable.dependencies);
 
-  const ConfigPanel = nullthrows(
-    templatable.ConfigPanel,
-    `Missing config panel for ${templatable.id}`
-  );
+  const config = useRef<C>();
+  if (element != null) {
+    // Update the ref on every change to the config except when it's deleted,
+    // this would allow it to keep the value for rendering the collapsing config
+    // panel after deletion.
+    config.current = element.config;
+  }
 
   const onChange = useCallback(
-    (newConfig) =>
-      dispatch(
-        templateActions.configUpdated(
-          templatable,
-          typeof newConfig === "function"
-            ? newConfig(element?.config)
-            : newConfig
-        )
-      ),
-    [dispatch, element?.config, templatable]
+    (newConfig: C) => {
+      if (element != null) {
+        dispatch(
+          templateActions.configUpdated(
+            templatable as Templatable,
+            typeof newConfig === "function" ? newConfig(config) : newConfig
+          )
+        );
+      }
+    },
+    [dispatch, element, templatable]
   );
 
   return (
-    <ConfigPanel
-      config={element?.config}
+    <templatable.ConfigPanel
+      config={nullthrows(
+        config.current,
+        `ConfigPanel for ${templatable.id} has a null template element for it's initial rendering`
+      )}
       onChange={onChange}
       queries={dependencyQueries}
     />

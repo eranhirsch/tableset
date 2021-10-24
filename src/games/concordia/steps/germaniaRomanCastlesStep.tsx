@@ -79,7 +79,7 @@ export default createRandomGameStep({
 });
 
 function ConfigPanel({
-  config,
+  config: { useSalsaTiles },
   queries: [products],
   onChange,
 }: ConfigPanelProps<
@@ -89,32 +89,34 @@ function ConfigPanel({
   boolean,
   string
 >): JSX.Element {
-  if (products.willContain("salsa")) {
-    return (
-      <Box textAlign="center">
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={config?.useSalsaTiles ?? true}
-              onChange={() =>
-                onChange((current) =>
-                  current == null || current.useSalsaTiles != null
-                    ? {}
-                    : { useSalsaTiles: false }
-                )
-              }
-            />
-          }
-          label="Include the extra tiles from the Salsa Box?"
-        />
-      </Box>
-    );
+  if (!products.willContain("salsa")) {
+    return <NoConfigPanel.ConfigPanel />;
   }
 
-  return <NoConfigPanel.ConfigPanel />;
+  return (
+    <Box textAlign="center">
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={useSalsaTiles ?? true}
+            onChange={() =>
+              onChange(({ useSalsaTiles }) =>
+                useSalsaTiles != null ? {} : { useSalsaTiles: false }
+              )
+            }
+          />
+        }
+        label="Include the extra tiles from the Salsa Box?"
+      />
+    </Box>
+  );
 }
 
-function ConfigPanelTLDR({ config }: { config: TemplateConfig }): JSX.Element {
+function ConfigPanelTLDR({
+  config,
+}: {
+  config: Readonly<TemplateConfig>;
+}): JSX.Element {
   if (config.useSalsaTiles != null) {
     return <>Random (w/o extra tiles)</>;
   }

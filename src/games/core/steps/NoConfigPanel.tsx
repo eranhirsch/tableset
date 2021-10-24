@@ -1,6 +1,5 @@
 import { Typography } from "@mui/material";
 import { templateValue } from "features/template/templateSlice";
-import React from "react";
 
 /**
  * Spread this helper trait to fill in some of the required props in the

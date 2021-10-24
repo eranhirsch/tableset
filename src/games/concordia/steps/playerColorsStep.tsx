@@ -22,7 +22,7 @@ import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
-import React, { useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import {
   createRandomGameStep,
@@ -97,7 +97,7 @@ function ConfigPanel({
   readonly PlayerId[],
   readonly ConcordiaProductId[]
 >): JSX.Element {
-  const assignedPlayers = useMemo(() => Vec.keys(config ?? {}), [config]);
+  const assignedPlayers = useMemo(() => Vec.keys(config), [config]);
 
   const order = useRef<readonly PlayerId[]>([]);
   order.current = Vec.concat(
@@ -108,7 +108,7 @@ function ConfigPanel({
     () =>
       // We memoize a sorted version of the config to stop the rows from jumping
       // around with the changes.
-      Dict.sort_by_with_key(config ?? {}, (playerId) =>
+      Dict.sort_by_with_key(config, (playerId) =>
         order.current.indexOf(playerId)
       ),
     [config]
@@ -116,13 +116,26 @@ function ConfigPanel({
 
   const playerIds = players.resolve();
   const remainingPlayerIds = useMemo(
-    () => (config == null ? playerIds : Vec.diff(playerIds, assignedPlayers)),
-    [assignedPlayers, config, playerIds]
+    () => Vec.diff(playerIds, assignedPlayers),
+    [assignedPlayers, playerIds]
   );
-  const remainingColors = useMemo(() => {
-    const allColors = availableColors(products.resolve());
-    return config == null ? allColors : Vec.diff(allColors, Vec.values(config));
-  }, [config, products]);
+  const remainingColors = useMemo(
+    () => Vec.diff(availableColors(products.resolve()), Vec.values(config)),
+    [config, products]
+  );
+
+  const onNewRow = useCallback(() => {
+    if (!Vec.is_empty(remainingPlayerIds) && !Vec.is_empty(remainingColors)) {
+      onChange((current) =>
+        Dict.merge(current, {
+          // When adding a new row we pick a random player and color so that the
+          // new row is already valid in our format, otherwise we would need to
+          // support empty cases for color and player in our selectors.
+          [Vec.sample(remainingPlayerIds, 1)]: Vec.sample(remainingColors, 1),
+        } as Readonly<TemplateConfig>)
+      );
+    }
+  }, [onChange, remainingColors, remainingPlayerIds]);
 
   return (
     <Grid container rowSpacing={1} paddingY={1}>
@@ -146,10 +159,7 @@ function ConfigPanel({
                     // Remove the current entry for the player, we are going to add
                     // a new entry in the config, and it might not be for the same
                     // player id.
-                    Dict.filter_with_keys(
-                      current ?? {},
-                      (pid) => pid !== playerId
-                    ),
+                    Dict.filter_with_keys(current, (pid) => pid !== playerId),
                     { [newPlayerId]: newColor } as Readonly<TemplateConfig>
                   ),
                   // We want to normalize the config so that there's always a
@@ -160,9 +170,7 @@ function ConfigPanel({
             }
             onDelete={() =>
               onChange((current) =>
-                current == null
-                  ? {}
-                  : Dict.filter_with_keys(current, (pid) => pid !== playerId)
+                Dict.filter_with_keys(current, (pid) => pid !== playerId)
               )
             }
           />
@@ -172,19 +180,7 @@ function ConfigPanel({
       {Dict.size(sorted) < players.resolve().length && (
         // New row button
         <Grid item xs={12} alignSelf="center" textAlign="center">
-          <Button
-            onClick={() =>
-              onChange((current) => ({
-                ...(current ?? {}),
-                [Vec.sample(remainingPlayerIds, 1)]: Vec.sample(
-                  remainingColors,
-                  1
-                ),
-              }))
-            }
-          >
-            + Add Fixed Color
-          </Button>
+          <Button onClick={onNewRow}>+ Add Fixed Color</Button>
         </Grid>
       )}
     </Grid>

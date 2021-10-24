@@ -59,7 +59,7 @@ function ConfigPanel({
   if (!withSalt.willResolve() || !withSalt.canResolveTo(false)) {
     return (
       <Box textAlign="center">
-        <ConfigPanelSlider value={config?.percent} onChange={onChange} />
+        <ConfigPanelSlider value={config.percent} onChange={onChange} />
       </Box>
     );
   }
@@ -71,16 +71,18 @@ function ConfigPanelSlider({
   value,
   onChange,
 }: {
-  value: number | undefined;
+  value: number;
   onChange(
-    newConfig: (currentConfig: TemplateConfig | undefined) => TemplateConfig
+    newConfig: (
+      currentConfig: Readonly<TemplateConfig>
+    ) => Readonly<TemplateConfig>
   ): void;
 }): JSX.Element {
   return (
     <PercentSlider
       percent={value}
       onChange={(percent) =>
-        onChange((current) => ({ percent, saltPercent: current?.saltPercent }))
+        onChange(({ saltPercent }) => ({ percent, saltPercent }))
       }
       preventZero
     />
@@ -88,27 +90,32 @@ function ConfigPanelSlider({
 }
 
 function MultiSliderConfigPanel({
-  config,
+  config: { percent, saltPercent },
   onChange,
 }: {
-  config: TemplateConfig | null;
+  config: Readonly<TemplateConfig>;
   onChange(
-    newConfig: (currentConfig: TemplateConfig | undefined) => TemplateConfig
+    newConfig: (
+      currentConfig: Readonly<TemplateConfig>
+    ) => Readonly<TemplateConfig>
   ): void;
 }): JSX.Element {
   const [isSync, setSync] = useState(true);
 
   useEffect(() => {
     // Make sure that when sync is on we don't have a specific setting for salt
-    if (isSync && config?.saltPercent != null) {
-      onChange((current) => ({ percent: current!.percent }));
-    } else if (!isSync && config?.saltPercent == null) {
-      onChange((current) => ({
-        percent: current!.percent,
-        saltPercent: current!.percent,
+    if (isSync && saltPercent != null) {
+      onChange(
+        // This is equivalent to removing saltPercent from the config
+        ({ percent }) => ({ percent })
+      );
+    } else if (!isSync && saltPercent == null) {
+      onChange(({ percent }) => ({
+        percent,
+        saltPercent: percent,
       }));
     }
-  }, [config?.saltPercent, isSync, onChange]);
+  }, [saltPercent, isSync, onChange]);
 
   return (
     <Grid container paddingX={2}>
@@ -116,7 +123,7 @@ function MultiSliderConfigPanel({
         <Typography variant="caption">Main</Typography>
       </Grid>
       <Grid item xs={8} textAlign="center">
-        <ConfigPanelSlider value={config?.percent} onChange={onChange} />
+        <ConfigPanelSlider value={percent} onChange={onChange} />
       </Grid>
       <Grid item xs={2} />
       <Grid item xs={2} textAlign="right">
@@ -125,14 +132,14 @@ function MultiSliderConfigPanel({
       <Grid item xs={8} textAlign="center">
         <PercentSlider
           disabled={isSync}
-          percent={config?.saltPercent ?? config?.percent}
+          percent={saltPercent ?? percent}
           onChange={(newSaltPercent) =>
-            onChange((current) => ({
-              percent: current!.percent,
+            onChange(({ percent }) => ({
+              percent,
+              // When saltPercent is equal to percent we remove it, we don't
+              // want to store meaningless settings.
               saltPercent:
-                newSaltPercent !== current!.percent
-                  ? newSaltPercent
-                  : undefined,
+                newSaltPercent !== percent ? newSaltPercent : undefined,
             }))
           }
         />
@@ -157,7 +164,7 @@ function MultiSliderConfigPanel({
 function ConfigPanelTLDR({
   config: { percent, saltPercent },
 }: {
-  config: TemplateConfig;
+  config: Readonly<TemplateConfig>;
 }): JSX.Element {
   return (
     <>

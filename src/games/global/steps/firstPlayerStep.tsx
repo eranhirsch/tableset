@@ -44,7 +44,7 @@ export default createRandomGameStep({
 });
 
 function ConfigPanel({
-  config,
+  config: { playerId: firstPlayerId },
   queries: [players],
   onChange,
 }: ConfigPanelProps<TemplateConfig, readonly PlayerId[]>): JSX.Element {
@@ -56,13 +56,13 @@ function ConfigPanel({
             color="primary"
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             overlap="circular"
-            badgeContent={playerId === config?.playerId ? "1" : undefined}
+            badgeContent={playerId === firstPlayerId ? "1" : undefined}
           >
             <Avatar
               sx={{ margin: 0.5 }}
               onClick={() =>
-                onChange((current) =>
-                  current?.playerId === playerId ? {} : { playerId }
+                onChange(({ playerId: currentFirstPlayerId }) =>
+                  currentFirstPlayerId === playerId ? {} : { playerId }
                 )
               }
             >
@@ -88,7 +88,7 @@ function InstanceVariableComponent({
 function ConfigPanelTLDR({
   config: { playerId },
 }: {
-  config: TemplateConfig;
+  config: Readonly<TemplateConfig>;
 }): JSX.Element {
   return playerId == null ? (
     <>Random</>
