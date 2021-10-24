@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { Dict, invariant_violation, Random, Vec } from "common";
+import { Dict, Random, type_invariant, Vec } from "common";
 import { ConfigPanelProps, Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Skippable } from "model/Skippable";
@@ -119,9 +119,9 @@ export function createVariant({
     coerceInstanceEntry: (entry) =>
       entry == null
         ? false
-        : typeof entry.value === "boolean"
-        ? entry.value
-        : invariant_violation(
+        : type_invariant(
+            entry.value,
+            isBoolean,
             `Found unexpected value type ${typeof entry.value}: ${JSON.stringify(
               entry.value
             )} for variant ID ${id}`
@@ -185,3 +185,5 @@ function ConfigPanelTLDR({
 }): JSX.Element {
   return percent === 100 ? <>Always</> : <>{percent}% chance</>;
 }
+
+const isBoolean = (x: unknown): x is boolean => typeof x === "boolean";

@@ -2,12 +2,15 @@ import { Typography } from "@mui/material";
 import { createVariant } from "games/core/steps/createVariant";
 import RomanTitle from "../ux/RomanTitle";
 import productsMetaStep from "./productsMetaStep";
+import teamPlayVariant from "./teamPlayVariant";
 
 export default createVariant({
   id: "venusScoring",
   name: "Venus Scoring",
-  dependencies: [productsMetaStep],
-  isTemplatable: (products) => products.willContainAny(["venus", "venusBase"]),
+  dependencies: [productsMetaStep, teamPlayVariant],
+  isTemplatable: (products, isTeamPlay) =>
+    products.willContainAny(["venus", "venusBase"]) &&
+    isTeamPlay.canResolveTo(false),
   InstanceVariableComponent,
 });
 

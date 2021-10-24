@@ -15,9 +15,11 @@ export const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = 
 
   query: (_, { playerIds }) =>
     buildQuery("__players", {
-      count: ({ min, max }) =>
-        (min == null || playerIds.length >= min) &&
-        (max == null || playerIds.length <= max),
+      count: (limit) =>
+        typeof limit === "number"
+          ? playerIds.length === limit
+          : (limit.min == null || playerIds.length >= limit.min) &&
+            (limit.max == null || playerIds.length <= limit.max),
       resolve: () => playerIds,
     }),
 };

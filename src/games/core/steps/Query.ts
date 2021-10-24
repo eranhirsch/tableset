@@ -9,7 +9,7 @@ export interface Query<T = unknown> {
   /**
    * Use when the step returns an array of values.
    */
-  count(limits: Partial<Record<"min" | "max", number>>): boolean;
+  count(limits: Partial<Record<"min" | "max", number>> | number): boolean;
   /**
    * Call this method to get the actual value it would resolve to. Notice that
    * if the element has random components this value is not deterministic.
