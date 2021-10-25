@@ -6,7 +6,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/order.php
  */
-import { Num } from "common";
+import { Num, Vec as V } from "common";
 import { defaultComparator } from "../_private/defaultComparator";
 
 /**
@@ -43,6 +43,10 @@ const reverse = <Tv>(arr: readonly Tv[]): readonly Tv[] => [...arr].reverse();
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.shuffle/
  */
 function shuffle<Tv>(arr: readonly Tv[]): readonly Tv[] {
+  if (V.is_empty(arr)) {
+    return arr;
+  }
+
   const out = [...arr];
   for (const currentIndex of range(arr.length, 0)) {
     const randomIndex = Math.floor(Math.random() * currentIndex);
