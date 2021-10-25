@@ -44,10 +44,14 @@ export default createRandomGameStep({
     // Remove any players that are not in the game anymore.
     Vec.map(config, (team) => Vec.intersect(team, playerIds.resolve())),
 
+  skip: (_, [players, teamPlay]) =>
+    !teamPlay || !(players!.length === 4 || players!.length === 6),
+
   ConfigPanel,
   ConfigPanelTLDR,
 
   InstanceVariableComponent,
+  InstanceManualComponent,
 });
 
 function resolve(
@@ -353,6 +357,16 @@ function InstanceVariableComponent({
         ))}
       </Stack>
     </>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playersCount = useAppSelector(playersSelectors.selectTotal);
+  return (
+    <Typography variant="body1">
+      Players split into <em>({playersCount / TEAM_SIZE})</em> teams consisting
+      of <em>exactly</em> <strong>{TEAM_SIZE}</strong> players each.
+    </Typography>
   );
 }
 
