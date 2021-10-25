@@ -60,32 +60,42 @@ function resolve(
     Vec.diff(playerIds!, Vec.flatten(config))
   );
 
+  if (Vec.is_empty(remainingPlayers)) {
+    return config;
+  }
+
   const teams = Vec.concat(
     // Full teams, these don't have any missing members, use as-is in the
     // output
-    Vec.filter(config, (team) => team.length === TEAM_SIZE),
+    Vec.filter(config, ({ length }) => length === TEAM_SIZE),
+
     // Partial teams - take all partial teams (that don't have exactly
     // TEAM_SIZE members) and add members from the remainingPlayers list
     Vec.flatten(
       Vec.map(Vec.range(1, TEAM_SIZE - 1), (k) => {
         // Take all teams of a certain length 'k'
-        const partialTeams = Vec.filter(config, (team) => team.length === k);
+        const partialTeams = Vec.filter(config, ({ length }) => length === k);
+
         // Create a matching team of length TEAM_SIZE - k
         const numMissingMembers = TEAM_SIZE - k;
         const missingMembers = Vec.chunk(remainingPlayers, numMissingMembers);
+
         // Pair a partial team and the missing members, then flatten the results
         // into a single array
         const fullTeams = Vec.map(
           Vec.zip(partialTeams, missingMembers),
           Vec.flatten
         );
+
         // Update the remainingPlayers to reflect the ones we just used
         remainingPlayers = remainingPlayers.slice(
           partialTeams.length * numMissingMembers
         );
+
         return fullTeams;
       })
     ),
+
     // Add any remaining players as full teams
     Vec.chunk(remainingPlayers, TEAM_SIZE)
   );
