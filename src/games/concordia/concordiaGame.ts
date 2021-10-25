@@ -31,6 +31,7 @@ import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
 import teamPlayVariant from "./steps/teamPlayVariant";
+import teamSelectionStep from "./steps/teamSelectionStep";
 import venusScoringVariant from "./steps/venusScoringVariant";
 import wineMarketVariant from "./steps/wineMarketVariant";
 
@@ -107,6 +108,8 @@ export const concordiaGame = createGame({
     }),
 
     // Player Specific ------
+    teamSelectionStep, // Templatable
+
     // Generic
     playOrderStep, // Templatable
     firstPlayerStep, // Templatable

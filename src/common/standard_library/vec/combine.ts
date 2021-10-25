@@ -42,7 +42,8 @@ const concat = <T>(
  * make sure that our API is the safest possible we export it here retyped with
  * readonly properties on it.
  */
-const flatten = <T>(arr: readonly (readonly T[])[]): readonly T[] => arr.flat();
+const flatten = <T>(arr: readonly (readonly T[])[]): readonly T[] =>
+  arr.flat(1);
 
 export const Vec = {
   zip,
