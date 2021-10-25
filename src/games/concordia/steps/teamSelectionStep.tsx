@@ -6,6 +6,7 @@ import {
   Grid,
   IconButton,
   Stack,
+  Typography,
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { C, invariant, Vec } from "common";
@@ -325,9 +326,24 @@ function ConfigPanelTLDR({
 }
 
 function InstanceVariableComponent({
-  value,
+  value: teams,
 }: VariableStepInstanceComponentProps<Teams>): JSX.Element {
-  return <div>Hello World</div>;
+  return (
+    <>
+      <Typography variant="body1">
+        Players are paired in the following teams:
+      </Typography>
+      <Stack direction="row" justifyContent="space-around">
+        {Vec.map(teams, (team, index) => (
+          <AvatarGroup key={`team_${index}`}>
+            {Vec.map(team, (playerId) => (
+              <PlayerAvatar key={playerId} playerId={playerId} />
+            ))}
+          </AvatarGroup>
+        ))}
+      </Stack>
+    </>
+  );
 }
 
 /**
