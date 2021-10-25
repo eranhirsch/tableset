@@ -61,18 +61,22 @@ export default createRandomGameStep({
   isTemplatable: (players, products) =>
     players.count({ max: availableColors(products.resolve()).length }),
 
-  resolve: (config, playerIds, products): PlayerColors => ({
-    ...config,
-    // Associate a color for each remaining player
-    ...Dict.associate(
-      // Players without an assigned color
-      Vec.diff(playerIds!, Vec.keys(config)),
-      // Shuffle the colors which aren't already used
-      Vec.shuffle(Vec.diff(availableColors(products!), Vec.values(config)))
+  resolve: (config, playerIds, products) =>
+    normalize(
+      {
+        ...config,
+        // Associate a color for each remaining player
+        ...Dict.associate(
+          // Players without an assigned color
+          Vec.diff(playerIds!, Vec.keys(config)),
+          // Shuffle the colors which aren't already used
+          Vec.shuffle(Vec.diff(availableColors(products!), Vec.values(config)))
+        ),
+      },
+      playerIds!
     ),
-  }),
 
-  initialConfig: (): TemplateConfig => ({}),
+  initialConfig: () => ({}),
 
   refresh: (current, players) => {
     // Create a new dict with only the current players in it, effectively
@@ -108,9 +112,7 @@ function ConfigPanel({
     () =>
       // We memoize a sorted version of the config to stop the rows from jumping
       // around with the changes.
-      Dict.sort_by_with_key(config, (playerId) =>
-        order.current.indexOf(playerId)
-      ),
+      normalize(config, order.current),
     [config]
   );
 
@@ -481,4 +483,16 @@ const availableColors = (
     products.includes("venus") || products.includes("venusBase")
       ? VENUS_COLORS
       : []
+  );
+
+/**
+ * Normalize the object we store both in the template and in the instance so
+ * that the results are always canonical
+ */
+const normalize = (
+  playerColors: Readonly<PlayerColors>,
+  playerIds: readonly PlayerId[]
+): Readonly<PlayerColors> =>
+  Dict.sort_by_with_key(playerColors, (playerId) =>
+    playerIds.indexOf(playerId)
   );
