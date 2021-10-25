@@ -20,7 +20,7 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { PlayerId } from "model/Player";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import teamPlayVariant from "./teamPlayVariant";
 
 const TEAM_SIZE = 2;
@@ -175,10 +175,30 @@ function ConfigPanel({
     [onChange, players, remainingPlayerIds]
   );
 
+  // Maintaining the order of the groups while editing them to overcome\
+  // reordering because of normalization:
+  const internalConfig = useRef(config);
+  internalConfig.current = Vec.sort_by(config, (team) => {
+    // For each team in `config` we find the index in the `internalConfig` for
+    // a team that intersects with it; because both when we add a new member to
+    // that team, and when we remove one, the group of remaining members would
+    // still intersect with it (assuming we don't allow to remove all members!),
+    // and there should only be one team like it because all teams are
+    // completely different from one another.
+    const currentIndex = internalConfig.current.findIndex(
+      (internalTeam) => !Vec.is_empty(Vec.intersect(internalTeam, team))
+    );
+    return currentIndex > -1
+      ? // If the team was found, it should be located in the same index
+        currentIndex
+      : // If it wasn't, it is a new group and should be added at the end
+        99999;
+  });
+
   return (
     <Grid container rowSpacing={1} paddingY={1}>
       {React.Children.toArray(
-        Vec.map(config, (team, index) => (
+        Vec.map(internalConfig.current, (team, index) => (
           <>
             {index > 0 && (
               <Grid item xs={12}>
