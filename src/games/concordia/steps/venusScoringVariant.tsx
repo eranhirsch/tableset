@@ -19,6 +19,7 @@ export default createRandomGameStep<
 >({
   id: "variant_venusScoring",
   labelOverride: "Variant: Venus Scoring",
+  isType: (x: unknown): x is boolean => typeof x === "boolean",
   dependencies: [productsMetaStep, teamPlayVariant],
   isTemplatable: (products, isTeamPlay) =>
     products.willContainAny(["venus", "venusBase"]) &&
