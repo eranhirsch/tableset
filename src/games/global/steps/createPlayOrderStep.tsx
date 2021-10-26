@@ -2,6 +2,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import {
   Avatar,
   AvatarGroup,
+  Badge,
   Box,
   Checkbox,
   FormControlLabel,
@@ -14,6 +15,7 @@ import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Query } from "games/core/steps/Query";
+import { GamePiecesColor } from "model/GamePiecesColor";
 import React, { useCallback, useMemo } from "react";
 import {
   DragDropContext,
@@ -33,6 +35,14 @@ import {
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { Teams, TeamSelectionStep } from "./createTeamSelectionStep";
+
+const TEAM_COLORS: readonly GamePiecesColor[] = [
+  "blue",
+  "red",
+  "green",
+  "yellow",
+  "pink",
+];
 
 type TemplateConfig = { random: true } | { fixed: readonly PlayerId[] };
 
@@ -59,7 +69,7 @@ const createPlayOrderStep = ({
     InstanceManualComponent,
 
     isTemplatable: (players) =>
-      players.count({
+      players.willContainNumElements({
         // It's meaningless to talk about order with less than 3 players
         min: 3,
       }),
@@ -130,7 +140,7 @@ function compliesWithTeams(
 
 function ConfigPanel({
   config,
-  queries: [players],
+  queries: [players, teams],
   onChange,
 }: ConfigPanelProps<TemplateConfig, readonly PlayerId[], Teams>): JSX.Element {
   const playerIds = players.resolve();
@@ -152,6 +162,7 @@ function ConfigPanel({
         onChange={(newOrder) =>
           onChange({ fixed: normalize(newOrder, playerIds) })
         }
+        numTeams={teams.willResolve() ? teams.count() : 1}
       />
       <FormControlLabel
         sx={{ alignSelf: "center" }}
@@ -177,10 +188,12 @@ function FixedSelector({
   currentOrder,
   onChange,
   disabled,
+  numTeams,
 }: {
   currentOrder: readonly PlayerId[];
   onChange(newOrder: readonly PlayerId[]): void;
   disabled: boolean;
+  numTeams: number;
 }): JSX.Element {
   const onDragEnd = useCallback(
     ({ reason, source, destination }: DropResult) => {
@@ -225,6 +238,7 @@ function FixedSelector({
                     key={playerId}
                     playerId={playerId}
                     index={idx}
+                    teamNumber={numTeams > 1 ? idx % numTeams : undefined}
                   />
                 ))}
                 {provided.placeholder}
@@ -253,28 +267,44 @@ function DraggablePlayer({
   playerId,
   index,
   isDragDisabled,
+  teamNumber,
 }: {
   playerId: PlayerId;
   index: number;
-  badgeContent?: string;
   isDragDisabled: boolean;
+  teamNumber: number | undefined;
 }) {
+  <PlayerNameShortAbbreviation playerId={playerId} />;
   return (
     <Draggable
       isDragDisabled={isDragDisabled}
       draggableId={`${playerId}`}
       index={index}
     >
-      {(provided) => (
-        <Avatar
-          component="li"
-          ref={provided.innerRef}
-          {...provided.dragHandleProps}
-          {...provided.draggableProps}
-        >
-          <PlayerNameShortAbbreviation playerId={playerId} />
-        </Avatar>
-      )}
+      {(provided) =>
+        teamNumber == null ? (
+          <Avatar
+            component="li"
+            ref={provided.innerRef}
+            {...provided.dragHandleProps}
+            {...provided.draggableProps}
+          >
+            <PlayerNameShortAbbreviation playerId={playerId} />
+          </Avatar>
+        ) : (
+          <Badge
+            color={TEAM_COLORS[teamNumber]}
+            invisible={false}
+            overlap="circular"
+            badgeContent={teamNumber + 1}
+            ref={provided.innerRef}
+            {...provided.dragHandleProps}
+            {...provided.draggableProps}
+          >
+            <PlayerAvatar playerId={playerId} />
+          </Badge>
+        )
+      }
     </Draggable>
   );
 }

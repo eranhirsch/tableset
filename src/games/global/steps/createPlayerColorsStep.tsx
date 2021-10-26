@@ -63,7 +63,7 @@ const createPlayerColorsStep = <ProductId,>({
       InstanceManualComponent({ productsMetaStep, availableColors }),
 
     isTemplatable: (players, products) =>
-      players.count({
+      players.willContainNumElements({
         max: availableColors(players.resolve(), products.resolve()).length,
       }),
 

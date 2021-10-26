@@ -26,7 +26,7 @@ export default createRandomGameStep({
   InstanceManualComponent: "Choose which player goes first.",
 
   isTemplatable: (players) =>
-    players.count({
+    players.willContainNumElements({
       // Solo games don't need a first player
       min: 2,
     }),

@@ -7,9 +7,15 @@ export interface Query<T = unknown> {
    */
   canResolveTo(value: T): boolean;
   /**
-   * Use when the step returns an array of values.
+   * Use when the step returns an array of variable length.
    */
-  count(limits: Partial<Record<"min" | "max", number>> | number): boolean;
+  willContainNumElements(
+    limits: Partial<Record<"min" | "max", number>> | number
+  ): boolean;
+  /**
+   * Use when the step returns an array of fixed length.
+   */
+  count(): number;
   /**
    * Call this method to get the actual value it would resolve to. Notice that
    * if the element has random components this value is not deterministic.

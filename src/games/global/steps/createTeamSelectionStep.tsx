@@ -37,11 +37,13 @@ interface Options {
   enablerStep?: VariableGameStep<boolean>;
 }
 
-const createTeamSelectionStep = ({
+export type TeamSelectionStep = ReturnType<typeof createTeamSelectionStep>;
+
+export default function createTeamSelectionStep({
   teamSize,
   enablerStep,
-}: Options): RandomGameStep<Teams, TemplateConfig> =>
-  createRandomGameStep({
+}: Options): RandomGameStep<Teams, TemplateConfig> {
+  const step = createRandomGameStep({
     id: "teamSelection",
     labelOverride: "Teams",
     dependencies: [playersMetaStep, enablerStep ?? alwaysOnMetaStep],
@@ -66,8 +68,14 @@ const createTeamSelectionStep = ({
       <InstanceManualComponent teamSize={teamSize} />
     ),
   });
-export default createTeamSelectionStep;
-export type TeamSelectionStep = ReturnType<typeof createTeamSelectionStep>;
+  return {
+    ...step,
+    query: (template, context) => ({
+      ...step.query(template, context),
+      count: () => context.playerIds.length / teamSize,
+    }),
+  };
+}
 
 function resolve(
   config: TemplateConfig,

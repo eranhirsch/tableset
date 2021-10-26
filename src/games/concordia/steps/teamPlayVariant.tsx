@@ -12,7 +12,8 @@ const baseTeamPlayVariant = createVariant({
   name: "Teams",
   dependencies: [playersMetaStep, productsMetaStep],
   isTemplatable: (players, products) =>
-    players.count(4) && products.willContainAny(["venus", "venusBase"]),
+    players.willContainNumElements(4) &&
+    products.willContainAny(["venus", "venusBase"]),
   InstanceVariableComponent,
 });
 
