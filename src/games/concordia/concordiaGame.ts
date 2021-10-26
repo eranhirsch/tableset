@@ -1,5 +1,6 @@
 import { createGameStep } from "games/core/steps/createGameStep";
 import { firstPlayerStep, playOrderStep } from "games/global";
+import createTeamSelectionStep from "games/global/steps/createTeamSelectionStep";
 import { createGame } from "model/Game";
 import aegyptusStep from "./steps/aegyptusStep";
 import bonusTilesStep from "./steps/bonusTilesStep";
@@ -31,7 +32,6 @@ import startingColonistsStep from "./steps/startingColonistsStep";
 import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
 import teamPlayVariant from "./steps/teamPlayVariant";
-import teamSelectionStep from "./steps/teamSelectionStep";
 import venusScoringVariant from "./steps/venusScoringVariant";
 import wineMarketVariant from "./steps/wineMarketVariant";
 
@@ -108,7 +108,11 @@ export const concordiaGame = createGame({
     }),
 
     // Player Specific ------
-    teamSelectionStep, // Templatable
+    // Templatable
+    createTeamSelectionStep({
+      enablerStep: teamPlayVariant,
+      teamSize: 2,
+    }),
 
     // Generic
     playOrderStep, // Templatable

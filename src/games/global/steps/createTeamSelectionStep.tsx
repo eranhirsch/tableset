@@ -17,14 +17,16 @@ import { ConfigPanelProps } from "features/template/Templatable";
 import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
+  RandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import alwaysOnMetaStep from "games/global/steps/alwaysOnMetaStep";
 import { PlayerId } from "model/Player";
+import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
-import teamPlayVariant from "./teamPlayVariant";
 
-const TEAM_SIZE = 2;
+// const TEAM_SIZE = 2;
 
 type Teams = readonly (readonly PlayerId[])[];
 // Our template config would just be a partial representation of the step output
@@ -32,31 +34,44 @@ type Teams = readonly (readonly PlayerId[])[];
 // definitions as separate to allow flexibility to change.
 type TemplateConfig = Teams;
 
-export default createRandomGameStep({
-  id: "teamSelection",
-  labelOverride: "Teams",
-  dependencies: [playersMetaStep, teamPlayVariant],
-  isTemplatable: (_, teamPlay) => teamPlay.canResolveTo(true),
-  initialConfig: (): Readonly<TemplateConfig> => [],
-  resolve,
+interface Options {
+  teamSize: number;
+  enablerStep?: VariableGameStep<boolean>;
+}
 
-  refresh: (config, playerIds) =>
-    // Remove any players that are not in the game anymore.
-    Vec.map(config, (team) => Vec.intersect(team, playerIds.resolve())),
+const createTeamSelectionStep = ({
+  teamSize,
+  enablerStep,
+}: Options): RandomGameStep<Teams, TemplateConfig> =>
+  createRandomGameStep({
+    id: "teamSelection",
+    labelOverride: "Teams",
+    dependencies: [playersMetaStep, enablerStep ?? alwaysOnMetaStep],
+    isTemplatable: (_, isEnabled) => isEnabled.canResolveTo(true),
+    initialConfig: (): Readonly<TemplateConfig> => [],
+    resolve: (config, playerIds) => resolve(config, playerIds, teamSize),
 
-  skip: (_, [players, teamPlay]) =>
-    !teamPlay || !(players!.length === 4 || players!.length === 6),
+    refresh: (config, playerIds) =>
+      // Remove any players that are not in the game anymore.
+      Vec.map(config, (team) => Vec.intersect(team, playerIds.resolve())),
 
-  ConfigPanel,
-  ConfigPanelTLDR,
+    skip: (_, [players, isEnabled]) =>
+      !isEnabled || players!.length % teamSize !== 0,
 
-  InstanceVariableComponent,
-  InstanceManualComponent,
-});
+    ConfigPanel: (props) => <ConfigPanel {...props} teamSize={teamSize} />,
+    ConfigPanelTLDR,
+
+    InstanceVariableComponent,
+    InstanceManualComponent: () => (
+      <InstanceManualComponent teamSize={teamSize} />
+    ),
+  });
+export default createTeamSelectionStep;
 
 function resolve(
   config: TemplateConfig,
-  playerIds: readonly PlayerId[] | null
+  playerIds: readonly PlayerId[] | null,
+  n: number
 ): Teams {
   // Shuffle the player
   let remainingPlayers = Vec.shuffle(
@@ -71,17 +86,17 @@ function resolve(
   const teams = Vec.concat(
     // Full teams, these don't have any missing members, use as-is in the
     // output
-    Vec.filter(config, ({ length }) => length === TEAM_SIZE),
+    Vec.filter(config, ({ length }) => length === n),
 
     // Partial teams - take all partial teams (that don't have exactly
     // TEAM_SIZE members) and add members from the remainingPlayers list
     Vec.flatten(
-      Vec.map(Vec.range(1, TEAM_SIZE - 1), (k) => {
+      Vec.map(Vec.range(1, n - 1), (k) => {
         // Take all teams of a certain length 'k'
         const partialTeams = Vec.filter(config, ({ length }) => length === k);
 
         // Create a matching team of length TEAM_SIZE - k
-        const numMissingMembers = TEAM_SIZE - k;
+        const numMissingMembers = n - k;
         const missingMembers = Vec.chunk(remainingPlayers, numMissingMembers);
 
         // Pair a partial team and the missing members, then flatten the results
@@ -101,7 +116,7 @@ function resolve(
     ),
 
     // Add any remaining players as full teams
-    Vec.chunk(remainingPlayers, TEAM_SIZE)
+    Vec.chunk(remainingPlayers, n)
   );
 
   return normalize(teams, playerIds!);
@@ -111,7 +126,10 @@ function ConfigPanel({
   config,
   queries: [players],
   onChange,
-}: ConfigPanelProps<TemplateConfig, readonly PlayerId[]>): JSX.Element {
+  teamSize,
+}: ConfigPanelProps<TemplateConfig, readonly PlayerId[], boolean> & {
+  teamSize: number;
+}): JSX.Element {
   const remainingPlayerIds = useMemo(
     () => Vec.diff(players.resolve(), Vec.flatten(config)),
     [config, players]
@@ -226,11 +244,12 @@ function ConfigPanel({
               onPlayerAdded={onPlayerAdded}
               onPlayerRemoved={onPlayerRemoved}
               onDelete={onTeamDeleted}
+              teamSize={teamSize}
             />
           </>
         ))
       )}
-      {config.length < players.resolve().length / TEAM_SIZE && (
+      {config.length < players.resolve().length / teamSize && (
         <Grid item xs={12} alignSelf="center" textAlign="center">
           <Button onClick={onTeamCreated}>+ Add Fixed Team</Button>
         </Grid>
@@ -245,14 +264,16 @@ function IndividualTeamConfigPanel({
   onPlayerAdded,
   onPlayerRemoved,
   onDelete,
+  teamSize,
 }: {
   team: readonly PlayerId[];
   remainingPlayerIds: readonly PlayerId[];
   onPlayerAdded(playerId: PlayerId, team: readonly PlayerId[]): void;
   onPlayerRemoved(playerId: PlayerId): void;
   onDelete(team: readonly PlayerId[]): void;
+  teamSize: number;
 }): JSX.Element {
-  const isFull = team.length === TEAM_SIZE;
+  const isFull = team.length === teamSize;
 
   const avatars = Vec.map(
     isFull ? team : Vec.concat(team, remainingPlayerIds),
@@ -265,7 +286,7 @@ function IndividualTeamConfigPanel({
             ? team.length > 1
               ? () => onPlayerRemoved(playerId)
               : undefined
-            : team.length < TEAM_SIZE
+            : team.length < teamSize
             ? () => onPlayerAdded(playerId, team)
             : undefined
         }
@@ -300,8 +321,10 @@ function IndividualTeamConfigPanel({
 
 function ConfigPanelTLDR({
   config,
+  teamSize,
 }: {
   config: Readonly<TemplateConfig>;
+  teamSize: number;
 }): JSX.Element {
   const playersCount = useAppSelector(playersSelectors.selectTotal);
 
@@ -309,14 +332,14 @@ function ConfigPanelTLDR({
     return <>Random</>;
   }
 
-  const groupsCount = playersCount / TEAM_SIZE;
+  const groupsCount = playersCount / teamSize;
 
   return (
     <>
       {Vec.map(config, (team, index) => (
         <>
           {index > 0 && <em> VS </em>}
-          {team.length === TEAM_SIZE ? (
+          {team.length === teamSize ? (
             <GrammaticalList>
               {Vec.map(team, (playerId) => (
                 <PlayerShortName playerId={playerId} />
@@ -360,12 +383,16 @@ function InstanceVariableComponent({
   );
 }
 
-function InstanceManualComponent(): JSX.Element {
+function InstanceManualComponent({
+  teamSize,
+}: {
+  teamSize: number;
+}): JSX.Element {
   const playersCount = useAppSelector(playersSelectors.selectTotal);
   return (
     <Typography variant="body1">
-      Players split into <em>({playersCount / TEAM_SIZE})</em> teams consisting
-      of <em>exactly</em> <strong>{TEAM_SIZE}</strong> players each.
+      Players split into <em>({playersCount / teamSize})</em> teams consisting
+      of <em>exactly</em> <strong>{teamSize}</strong> players each.
     </Typography>
   );
 }
