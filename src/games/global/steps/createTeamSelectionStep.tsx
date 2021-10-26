@@ -152,11 +152,11 @@ function ConfigPanel({
         return normalize(
           Vec.concat(
             // Take all elements up to the current team
-            Vec.take(current, currentTeamIndex - 1),
+            Vec.take(current, currentTeamIndex),
             // Add the new playerId to the team
             [Vec.concat(team, playerId)],
             // Take all elements after the current team.
-            current.slice(currentTeamIndex + 1)
+            Vec.drop(current, currentTeamIndex + 1)
           ),
           players.resolve()
         );
