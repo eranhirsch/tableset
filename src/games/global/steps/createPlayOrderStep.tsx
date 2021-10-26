@@ -16,7 +16,7 @@ import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Query } from "games/core/steps/Query";
 import { GamePiecesColor } from "model/GamePiecesColor";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -38,9 +38,9 @@ import { Teams, TeamSelectionStep } from "./createTeamSelectionStep";
 
 const TEAM_COLORS: readonly GamePiecesColor[] = [
   "blue",
+  "yellow",
   "red",
   "green",
-  "yellow",
   "pink",
 ];
 
@@ -195,6 +195,10 @@ function FixedSelector({
   disabled: boolean;
   numTeams: number;
 }): JSX.Element {
+  const pivotIndex = useRef(0);
+
+  const orderRotated = Vec.rotate(currentOrder, pivotIndex.current);
+
   const onDragEnd = useCallback(
     ({ reason, source, destination }: DropResult) => {
       if (reason === "CANCEL") {
@@ -206,11 +210,35 @@ function FixedSelector({
         return;
       }
 
-      const value = moveItem(currentOrder, source.index, destination.index);
+      const srcIdx = source.index;
+      const dstIdx = destination.index;
 
-      onChange(value);
+      if (srcIdx === dstIdx) {
+        // Trivial
+        return;
+      }
+
+      onChange(moveItem(orderRotated, srcIdx, dstIdx));
+
+      // recalibrate pivot index
+      const currPivotIdx = pivotIndex.current;
+
+      if (srcIdx === currPivotIdx) {
+        // We are moving the pivot itself
+        pivotIndex.current = dstIdx;
+      } else if (srcIdx < currPivotIdx) {
+        if (dstIdx >= currPivotIdx) {
+          // We are moving a player from an index before the pivot to an index
+          // after the pivot, so the pivot will have to make room for it
+          pivotIndex.current -= 1;
+        }
+      } else if (dstIdx <= currPivotIdx) {
+        // We are moving a player from an index after the pivot to an index
+        // before the pivot, so the pivot will have to make room for it.
+        pivotIndex.current += 1;
+      }
     },
-    [currentOrder, onChange]
+    [orderRotated, onChange]
   );
 
   return (
@@ -232,7 +260,7 @@ function FixedSelector({
                 sx={{ padding: 0 }}
                 spacing={1}
               >
-                {currentOrder.map((playerId, idx) => (
+                {orderRotated.map((playerId, idx) => (
                   <DraggablePlayer
                     isDragDisabled={disabled}
                     key={playerId}
