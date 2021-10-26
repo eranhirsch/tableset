@@ -89,10 +89,16 @@ export default function createPlayerColorsStep<ProductId>({
 
     initialConfig: () => ({}),
 
-    refresh: (current, players) => {
-      // Create a new dict with only the current players in it, effectively
-      // removing all assignments for players that don't exist anymore.
-      const refreshed = Dict.select_keys(current, players.resolve());
+    refresh: (current, players, products) => {
+      const playerIds = players.resolve();
+      const colors = availableColors(playerIds, products.resolve());
+      // And also remove all colors which aren't available anymore
+      const refreshed = Dict.filter(
+        // Create a new dict with only the current players in it, effectively
+        // removing all assignments for players that don't exist anymore.
+        Dict.select_keys(current, playerIds),
+        (color) => colors.includes(color)
+      );
       return Dict.size(refreshed) < Dict.size(current)
         ? // Only return a new value if it's different
           refreshed
