@@ -121,6 +121,22 @@ function equal_multiset_by<Ta, Tb, Ts>(
 
   return true;
 }
+const intersects = <Ta, Tb>(a: readonly Ta[], b: readonly Tb[]): boolean =>
+  intersects_by(a, b, (x) => x);
+
+function intersects_by<Ta, Tb, Ts>(
+  a: readonly Ta[],
+  b: readonly Tb[],
+  scalarFunc: (value: Ta | Tb) => Ts
+): boolean {
+  for (const item of a) {
+    const i = b.findIndex((x) => scalarFunc(item) === scalarFunc(x));
+    if (i !== -1) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export const Vec = {
   diff,
@@ -133,4 +149,6 @@ export const Vec = {
   contained_in_by,
   equal_multiset,
   equal_multiset_by,
+  intersects,
+  intersects_by,
 } as const;
