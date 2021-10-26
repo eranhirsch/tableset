@@ -49,11 +49,11 @@ interface Options<ProductId> {
   ): readonly GamePiecesColor[];
 }
 
-export default function createPlayerColorsStep<ProductId>({
+const createPlayerColorsStep = <ProductId,>({
   productsMetaStep,
   availableColors,
-}: Options<ProductId>): RandomGameStep<PlayerColors, TemplateConfig> {
-  return createRandomGameStep({
+}: Options<ProductId>): RandomGameStep<PlayerColors, TemplateConfig> =>
+  createRandomGameStep({
     id: "colors",
 
     dependencies: [playersMetaStep, productsMetaStep],
@@ -105,28 +105,29 @@ export default function createPlayerColorsStep<ProductId>({
         : templateValue("unchanged");
     },
 
-    ConfigPanel: (props) =>
-      ConfigPanel({
-        ...props,
-        colors: availableColors(
-          props.queries[0].resolve(),
-          props.queries[1].resolve()
-        ),
-      }),
+    ConfigPanel: ({ config, onChange, queries: [players, products] }) => (
+      <ConfigPanel
+        config={config}
+        onChange={onChange}
+        playerIds={players.resolve()}
+        colors={availableColors(players.resolve(), products.resolve())}
+      />
+    ),
     ConfigPanelTLDR,
   });
-}
+export default createPlayerColorsStep;
 
-function ConfigPanel<ProductId>({
+function ConfigPanel({
   config,
-  queries: [players, products],
   onChange,
+  playerIds,
   colors,
-}: ConfigPanelProps<
-  TemplateConfig,
-  readonly PlayerId[],
-  readonly ProductId[]
-> & { colors: readonly GamePiecesColor[] }): JSX.Element {
+}: {
+  config: Readonly<TemplateConfig>;
+  onChange: ConfigPanelProps<TemplateConfig>["onChange"];
+  playerIds: readonly PlayerId[];
+  colors: readonly GamePiecesColor[];
+}): JSX.Element {
   const assignedPlayers = useMemo(() => Vec.keys(config), [config]);
 
   const order = useRef<readonly PlayerId[]>([]);
@@ -142,7 +143,6 @@ function ConfigPanel<ProductId>({
     [config]
   );
 
-  const playerIds = players.resolve();
   const remainingPlayerIds = useMemo(
     () => Vec.diff(playerIds, assignedPlayers),
     [assignedPlayers, playerIds]
@@ -211,7 +211,7 @@ function ConfigPanel<ProductId>({
         </React.Fragment>
       ))}
 
-      {Dict.size(sorted) < players.resolve().length && (
+      {Dict.size(sorted) < playerIds.length && (
         // New row button
         <Grid item xs={12} alignSelf="center" textAlign="center">
           <Button onClick={onNewRow}>+ Add Fixed Color</Button>
