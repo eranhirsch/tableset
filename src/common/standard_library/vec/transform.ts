@@ -41,6 +41,12 @@ const map = <V1, V2>(
   valueFunc: (item: V1, index: number) => V2
 ): readonly V2[] => arr.map(valueFunc);
 
+/**
+ * Rotates the array so that elements from it's tail are pushed back to the
+ * head in the same order.
+ *
+ * Use a negative number to rotate in the opposite direction.
+ */
 function rotate<T>(arr: readonly T[], steps: number): readonly T[] {
   // We can't rotate more than the array's length
   steps = steps % arr.length;
@@ -52,7 +58,10 @@ function rotate<T>(arr: readonly T[], steps: number): readonly T[] {
   // Negative steps rotate backwards
   steps = steps > 0 ? steps : arr.length + steps;
 
-  return V.concat(V.drop(arr, steps), V.take(arr, arr.length - steps));
+  return V.concat(
+    V.drop(arr, arr.length - steps),
+    V.take(arr, arr.length - steps)
+  );
 }
 
 export const Vec = {
