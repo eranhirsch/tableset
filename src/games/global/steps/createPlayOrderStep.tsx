@@ -274,7 +274,6 @@ function DraggablePlayer({
   isDragDisabled: boolean;
   teamNumber: number | undefined;
 }) {
-  <PlayerNameShortAbbreviation playerId={playerId} />;
   return (
     <Draggable
       isDragDisabled={isDragDisabled}
