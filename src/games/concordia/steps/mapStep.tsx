@@ -4,12 +4,12 @@ import { Dict, MathUtils, nullthrows, Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
+import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";

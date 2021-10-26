@@ -2,8 +2,7 @@ import { Avatar, Grid, Typography } from "@mui/material";
 import { Str, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
-import { firstPlayerStep, playOrderStep } from "games/global";
+import { firstPlayerStep, playersMetaStep, playOrderStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {

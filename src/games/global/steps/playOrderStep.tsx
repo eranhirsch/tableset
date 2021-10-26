@@ -15,15 +15,15 @@ import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbb
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { Query } from "games/core/steps/Query";
 import React, { useCallback, useMemo } from "react";
 import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult
+  DropResult,
 } from "react-beautiful-dnd";
+import { playersMetaStep } from ".";
 import { useAppSelector } from "../../../app/hooks";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";

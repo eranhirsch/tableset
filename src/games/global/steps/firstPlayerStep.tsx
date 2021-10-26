@@ -4,8 +4,8 @@ import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbb
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import React from "react";
+import { playersMetaStep } from ".";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerId } from "../../../model/Player";
 import {

@@ -9,7 +9,7 @@ import { Dict, nullthrows, type_invariant, Vec } from "common";
 import { expansionsActions } from "features/expansions/expansionsSlice";
 import { playersActions } from "features/players/playersSlice";
 import { GameId, GAMES } from "games/core/GAMES";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
+import { playersMetaStep } from "games/global";
 import { ContextBase } from "model/ContextBase";
 import { StepId } from "model/Game";
 import { GameStepBase } from "model/GameStepBase";

@@ -1,5 +1,5 @@
 import { Vec } from "common";
-import createPlayerColorsStep from "games/global/steps/createColorsStep";
+import { createPlayerColorsStep } from "games/global";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import productsMetaStep from "./productsMetaStep";
 

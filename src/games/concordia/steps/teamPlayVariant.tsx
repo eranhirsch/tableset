@@ -2,8 +2,8 @@ import { Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import { createVariant } from "games/core/steps/createVariant";
+import { playersMetaStep } from "games/global";
 import RomanTitle from "../ux/RomanTitle";
 import productsMetaStep from "./productsMetaStep";
 

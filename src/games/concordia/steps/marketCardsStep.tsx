@@ -1,5 +1,5 @@
 import { invariant, Vec } from "common";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
+import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import {
   createDerivedGameStep,

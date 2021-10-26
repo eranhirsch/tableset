@@ -1,6 +1,9 @@
 import { createGameStep } from "games/core/steps/createGameStep";
-import { firstPlayerStep, playOrderStep } from "games/global";
-import createTeamSelectionStep from "games/global/steps/createTeamSelectionStep";
+import {
+  createTeamSelectionStep,
+  firstPlayerStep,
+  playOrderStep,
+} from "games/global";
 import { createGame } from "model/Game";
 import aegyptusStep from "./steps/aegyptusStep";
 import bonusTilesStep from "./steps/bonusTilesStep";

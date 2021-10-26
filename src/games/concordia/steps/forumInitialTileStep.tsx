@@ -5,15 +5,19 @@ import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { playersSelectors } from "features/players/playersSlice";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { firstPlayerStep, fullPlayOrder, playOrderStep } from "games/global";
+import {
+  firstPlayerStep,
+  fullPlayOrder,
+  playersMetaStep,
+  playOrderStep,
+} from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import ForumTilesEncoder from "../utils/ForumTilesEncoder";

@@ -19,7 +19,6 @@ import { PlayerShortName } from "features/players/PlayerShortName";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
   RandomGameStep,
@@ -29,6 +28,7 @@ import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
+import { playersMetaStep } from ".";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";

@@ -1,6 +1,6 @@
 import { Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
+import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {

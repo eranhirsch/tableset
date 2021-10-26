@@ -1,8 +1,8 @@
 import { VariableGameStep } from "model/VariableGameStep";
 import { PlayerId } from "../../../model/Player";
-import { buildQuery } from "./Query";
+import { buildQuery } from "../../core/steps/Query";
 
-export const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = {
+const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = {
   id: "__players",
   label: "<Players>",
 
@@ -23,3 +23,4 @@ export const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = 
       resolve: () => playerIds,
     }),
 };
+export default playersMetaStep;

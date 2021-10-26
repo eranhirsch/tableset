@@ -14,7 +14,6 @@ import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
-import { playersMetaStep } from "games/core/steps/createPlayersDependencyMetaStep";
 import {
   createRandomGameStep,
   RandomGameStep,
@@ -25,6 +24,7 @@ import alwaysOnMetaStep from "games/global/steps/alwaysOnMetaStep";
 import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
+import { playersMetaStep } from ".";
 
 type Teams = readonly (readonly PlayerId[])[];
 // Our template config would just be a partial representation of the step output
