@@ -419,9 +419,10 @@ function InstanceManualComponent({
           <>
             e.g. if there are 3 groups sit someone from the first group, then
             someone from a different group to the left of them, and someone from
-            the last group left of them; only then sit the next member of the
-            groups, continuing around the table, and maintaining the same order
-            of groups as the first round: A - B - C - A - B - C - A - B...
+            the last group left of them; only then sit the next members of each
+            group, continuing around the table, and maintaining the same order
+            of groups as the first round. Continue until everyone is seated.
+            <br />A - B - C - A - B - C - A - B...
           </>
         ) : (
           <></>
