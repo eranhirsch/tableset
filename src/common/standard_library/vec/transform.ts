@@ -41,8 +41,19 @@ const map = <V1, V2>(
   valueFunc: (item: V1, index: number) => V2
 ): readonly V2[] => arr.map(valueFunc);
 
-const rotate = <T>(arr: readonly T[], steps: number): readonly T[] =>
-  V.concat(V.drop(arr, steps), V.take(arr, arr.length - steps));
+function rotate<T>(arr: readonly T[], steps: number): readonly T[] {
+  // We can't rotate more than the array's length
+  steps = steps % arr.length;
+
+  if (steps === 0) {
+    return arr;
+  }
+
+  // Negative steps rotate backwards
+  steps = steps > 0 ? steps : arr.length + steps;
+
+  return V.concat(V.drop(arr, steps), V.take(arr, arr.length - steps));
+}
 
 export const Vec = {
   fill,

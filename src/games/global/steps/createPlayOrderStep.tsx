@@ -394,6 +394,6 @@ function normalize(
   const pivot = C.firstx(playerIds);
   const pivotIndex = order.indexOf(pivot);
   invariant(pivotIndex !== -1, `Pivot ${pivot} not found in order ${order}`);
-  const [, ...pivoted] = Vec.rotate(order, pivotIndex);
+  const [, ...pivoted] = Vec.rotate(order, -pivotIndex);
   return pivoted;
 }
