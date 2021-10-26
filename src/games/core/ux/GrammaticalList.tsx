@@ -1,3 +1,4 @@
+import { Vec } from "common";
 import { Children, ReactChild, ReactFragment, ReactPortal } from "react";
 
 export function GrammaticalList({
@@ -32,9 +33,9 @@ export function GrammaticalList({
     <>
       {prefix}{" "}
       {Children.toArray(
-        children
-          .slice(0, children.length - 1)
-          .map((child, idx) => <>{child}, </>)
+        Vec.map(Vec.take(children, children.length - 1), (child) => (
+          <>{child}, </>
+        ))
       )}{" "}
       {finalConjunction} {children[children.length - 1]}
     </>

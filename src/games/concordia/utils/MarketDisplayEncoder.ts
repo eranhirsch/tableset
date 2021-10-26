@@ -1,4 +1,4 @@
-import { MathUtils, nullthrows, Num, Random } from "common";
+import { MathUtils, nullthrows, Num, Random, Vec } from "common";
 import { asReadonlyArray } from "common/asReadonlyArray";
 
 export const MARKET_DECK_I = {
@@ -34,11 +34,14 @@ export default {
     ),
 
   decode: (venusScoring: boolean, hash: string): readonly string[] =>
-    nullthrows(
-      asReadonlyArray(
-        MathUtils.permutations_lazy_array(
-          MARKET_DECK_I[venusScoring ? "venus" : "base"]
-        )
-      )[Num.decode_base32(hash)]
-    ).slice(0, 7),
+    Vec.take(
+      nullthrows(
+        asReadonlyArray(
+          MathUtils.permutations_lazy_array(
+            MARKET_DECK_I[venusScoring ? "venus" : "base"]
+          )
+        )[Num.decode_base32(hash)]
+      ),
+      7
+    ),
 } as const;

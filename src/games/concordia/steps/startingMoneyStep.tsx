@@ -141,10 +141,9 @@ function playerAvatars(
     const firstPlayerIdx = fullPlayOrder.findIndex(
       (playerId) => playerId === firstPlayerId
     );
-    return fullPlayOrder
-      .slice(firstPlayerIdx)
-      .concat(fullPlayOrder.slice(0, firstPlayerIdx))
-      .map((playerId) => <PlayerAvatar playerId={playerId} inline />);
+    return Vec.map(Vec.rotate(fullPlayOrder, firstPlayerIdx), (playerId) => (
+      <PlayerAvatar playerId={playerId} inline />
+    ));
   }
 
   return Vec.range(1, playerIds.length).map((playerIdx) =>

@@ -81,7 +81,7 @@ const drop = <T extends DictLike>(
   n: number
 ): Readonly<Partial<T>> =>
   // Optimize for react by returning the same object for a trivial `n` value
-  n === 0 ? dict : S.from_entries(Vec.entries(dict).slice(n));
+  n === 0 ? dict : S.from_entries(Vec.drop(Vec.entries(dict), n));
 
 /**
  * @returns a mapper-obj containing only the values for which the given

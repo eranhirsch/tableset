@@ -21,8 +21,5 @@ export function fullPlayOrder(
   const firstPlayerIdx = fullPlayOrder.findIndex(
     (playerId) => playerId === firstPlayerId
   );
-  return Vec.concat(
-    fullPlayOrder.slice(firstPlayerIdx),
-    fullPlayOrder.slice(0, firstPlayerIdx)
-  );
+  return Vec.rotate(fullPlayOrder, firstPlayerIdx);
 }

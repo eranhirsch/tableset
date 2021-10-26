@@ -123,7 +123,8 @@ function resolve(
         );
 
         // Update the remainingPlayers to reflect the ones we just used
-        remainingPlayers = remainingPlayers.slice(
+        remainingPlayers = Vec.drop(
+          remainingPlayers,
           partialTeams.length * numMissingMembers
         );
 

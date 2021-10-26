@@ -124,9 +124,10 @@ export function Instance(): JSX.Element | null {
   return (
     <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
       {groups.map((group, groupIdx) => {
-        const correctedIdx = groups
-          .slice(0, groupIdx)
-          .reduce((sum, group) => sum + group.length, 0);
+        const correctedIdx = Vec.take(groups, groupIdx).reduce(
+          (sum, group) => sum + group.length,
+          0
+        );
         if (groupIdx !== expandedGroupIdx && group.length > 1) {
           return (
             <Step
@@ -142,7 +143,7 @@ export function Instance(): JSX.Element | null {
               >
                 <Typography variant="caption">
                   {React.Children.toArray(
-                    group.slice(0, 2).map((stepId, index) => (
+                    Vec.map(Vec.take(group, 2), (stepId, index) => (
                       <>
                         {index > 0 && ", "}
                         <StepLabel stepId={stepId} />

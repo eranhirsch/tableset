@@ -129,7 +129,7 @@ function decodeCityResources(
         cityResources.length === cities.length,
         `Number of resources ${cityResources.length} didn't match number of cities ${cities.length}`
       );
-      resources = resources.slice(cities.length);
+      resources = Vec.drop(resources, cities.length);
       return Dict.from_entries(cityResources);
     })
   );

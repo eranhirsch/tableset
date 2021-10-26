@@ -24,7 +24,7 @@ const diff_by_key = <T extends DictLike>(
  */
 const drop = <T extends DictLike>(dict: Readonly<T>, n: number): Readonly<T> =>
   // Optimize for react by returning the same object for a trivial `n` value
-  n === 0 ? dict : D.from_entries(Vec.entries(dict).slice(n));
+  n === 0 ? dict : D.from_entries(Vec.drop(Vec.entries(dict), n));
 
 /**
  * @returns a mapper-obj containing only the values for which the given
