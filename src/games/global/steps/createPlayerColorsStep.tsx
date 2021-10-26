@@ -309,11 +309,11 @@ function ColorSelector({
   return (
     <Stack direction="column" spacing={0.5}>
       <ColorSelectorRow
-        availableColors={Vec.take(availableColors, midPoint - 1)}
+        availableColors={Vec.take(availableColors, midPoint)}
         onChange={onChange}
       />
       <ColorSelectorRow
-        availableColors={availableColors.slice(midPoint)}
+        availableColors={Vec.drop(availableColors, midPoint)}
         onChange={onChange}
       />
     </Stack>
@@ -366,11 +366,11 @@ function PlayerSelector({
   return (
     <Stack direction="column" spacing={0.5}>
       <PlayerSelectorRow
-        playerIds={Vec.take(playerIds, midPoint - 1)}
+        playerIds={Vec.take(playerIds, midPoint)}
         onChange={onChange}
       />
       <PlayerSelectorRow
-        playerIds={playerIds.slice(midPoint)}
+        playerIds={Vec.drop(playerIds, midPoint)}
         onChange={onChange}
       />
     </Stack>
