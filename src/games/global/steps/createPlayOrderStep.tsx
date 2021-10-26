@@ -410,21 +410,34 @@ function InstanceManualComponent({
 
   return (
     <BlockWithFootnotes
-      footnote={
+      footnotes={[
         <>
           Players would play in <strong>clockwise</strong> order around the
           table.
-        </>
-      }
+        </>,
+        teamPlay || teams != null ? (
+          <>
+            e.g. if there are 3 groups sit someone from the first group, then
+            someone from a different group to the left of them, and someone from
+            the last group left of them; only then sit the next member of the
+            groups, continuing around the table, and maintaining the same order
+            of groups as the first round: A - B - C - A - B - C - A - B...
+          </>
+        ) : (
+          <></>
+        ),
+      ]}
     >
       {(Footnote) => (
         <>
           Choose a seat around the table for each player
-          <Footnote />.{" "}
-          {teamPlay && (
+          <Footnote index={1} />.{" "}
+          {(teamPlay || teams != null) && (
             <>
-              Players on the same team should sit on opposing sides of the
-              table, maintaining the same play order of the teams.
+              Players on the same team should sit across the table from one
+              another so that, going around the table, teams play in the same
+              order
+              <Footnote index={2} />.
             </>
           )}
         </>
