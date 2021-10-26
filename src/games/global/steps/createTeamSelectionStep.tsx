@@ -26,8 +26,6 @@ import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
 
-// const TEAM_SIZE = 2;
-
 type Teams = readonly (readonly PlayerId[])[];
 // Our template config would just be a partial representation of the step output
 // where the resolve method would simply fill in the blanks. Keep these
