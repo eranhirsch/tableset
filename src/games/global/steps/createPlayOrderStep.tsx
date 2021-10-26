@@ -194,6 +194,7 @@ function FixedSelector({
       }
 
       const value = moveItem(currentOrder, source.index, destination.index);
+
       onChange(value);
     },
     [currentOrder, onChange]
@@ -393,8 +394,6 @@ function normalize(
   const pivot = C.firstx(playerIds);
   const pivotIndex = order.indexOf(pivot);
   invariant(pivotIndex !== -1, `Pivot ${pivot} not found in order ${order}`);
-  return Vec.concat(
-    Vec.drop(order, pivotIndex + 1),
-    Vec.take(order, pivotIndex)
-  );
+  const [, ...pivoted] = Vec.rotate(order, pivotIndex);
+  return pivoted;
 }

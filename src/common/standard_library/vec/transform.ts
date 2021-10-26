@@ -41,8 +41,12 @@ const map = <V1, V2>(
   valueFunc: (item: V1, index: number) => V2
 ): readonly V2[] => arr.map(valueFunc);
 
+const rotate = <T>(arr: readonly T[], steps: number): readonly T[] =>
+  V.concat(V.drop(arr, steps), V.take(arr, arr.length - steps));
+
 export const Vec = {
   fill,
   map,
   map_with_key,
+  rotate,
 } as const;
