@@ -47,6 +47,10 @@ export default function createTeamSelectionStep({
     id: "teamSelection",
     labelOverride: "Teams",
     dependencies: [playersMetaStep, enablerStep ?? alwaysOnMetaStep],
+
+    isType: (x: unknown): x is Teams =>
+      Array.isArray(x) && (Vec.is_empty(x) || Array.isArray(C.firstx(x))),
+
     isTemplatable: (_, isEnabled) => isEnabled.canResolveTo(true),
     initialConfig: (): Readonly<TemplateConfig> => [],
     resolve: (config, playerIds) => resolve(config, playerIds, teamSize),

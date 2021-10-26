@@ -3,20 +3,20 @@ import {
   Avatar,
   AvatarGroup,
   Badge,
-  Box,
   Checkbox,
   FormControlLabel,
   Stack,
   Typography,
 } from "@mui/material";
 import { C, invariant, Vec } from "common";
+import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import { Query } from "games/core/steps/Query";
 import { GamePiecesColor } from "model/GamePiecesColor";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -51,21 +51,23 @@ interface Options {
 }
 
 const createPlayOrderStep = ({
-  teamSelectionStep,
+  teamSelectionStep = neverResolvesMetaStep as TeamSelectionStep,
 }: Options): RandomGameStep<readonly PlayerId[], TemplateConfig> =>
   createRandomGameStep({
     id: "playOrder",
     labelOverride: "Seating",
 
-    dependencies: [
-      playersMetaStep,
-      teamSelectionStep ?? (neverResolvesMetaStep as TeamSelectionStep),
-    ],
+    dependencies: [playersMetaStep, teamSelectionStep],
 
     isType: (x): x is PlayerId[] =>
       Array.isArray(x) && x.every((y) => typeof y === "string"),
 
-    InstanceVariableComponent,
+    InstanceVariableComponent: (props) => (
+      <InstanceVariableComponent
+        {...props}
+        teamSelectionStep={teamSelectionStep}
+      />
+    ),
     InstanceManualComponent,
 
     isTemplatable: (players) =>
@@ -338,27 +340,64 @@ function DraggablePlayer({
 
 function InstanceVariableComponent({
   value: playOrder,
-}: VariableStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
+  teamSelectionStep,
+}: VariableStepInstanceComponentProps<readonly PlayerId[]> & {
+  teamSelectionStep: TeamSelectionStep;
+}): JSX.Element {
   const firstPlayerId = useAppSelector(firstPlayerIdSelector);
+  const teams = useOptionalInstanceValue(teamSelectionStep);
+
+  const [showTeams, setShowTeams] = useState(false);
+
+  const avatars = Vec.map(
+    Vec.concat([firstPlayerId], playOrder),
+    (playerId, index) =>
+      showTeams && teams != null ? (
+        <Badge
+          key={playerId}
+          color={TEAM_COLORS[index % teams.length]}
+          invisible={false}
+          overlap="circular"
+          badgeContent={(index % teams.length) + 1}
+        >
+          <PlayerAvatar playerId={playerId} />
+        </Badge>
+      ) : (
+        <PlayerAvatar playerId={playerId} />
+      )
+  );
 
   return (
     <>
       <Typography variant="body1">
         Sit players clockwise around the table in the following order:
       </Typography>
-      <Box display="flex" component="figure">
-        <AvatarGroup max={playOrder.length + 1}>
-          <PlayerAvatar playerId={firstPlayerId} />
-          {React.Children.toArray(
-            playOrder.map((playerId) => <PlayerAvatar playerId={playerId} />)
-          )}
-        </AvatarGroup>
-      </Box>
+      <Stack direction="column" spacing={1} alignItems="center">
+        {showTeams ? (
+          <Stack direction="row" spacing={1}>
+            {avatars}
+          </Stack>
+        ) : (
+          <AvatarGroup max={playOrder.length + 1}>{avatars}</AvatarGroup>
+        )}
+        {teams != null && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                onChange={() => setShowTeams((current) => !current)}
+                checked={showTeams}
+              />
+            }
+            label={"Show Teams?"}
+          />
+        )}
+      </Stack>
     </>
   );
 }
 
 function InstanceManualComponent(): JSX.Element {
+  // TODO: Add instructions for seating for team play
   return (
     <BlockWithFootnotes
       footnote={
