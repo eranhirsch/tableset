@@ -392,7 +392,7 @@ function ConfigPanelTLDR({
   return (
     <>
       {React.Children.toArray(
-        [firstPlayerId].concat(config.fixed).map((playerId, idx) => (
+        Vec.map(Vec.concat([firstPlayerId], config.fixed), (playerId, idx) => (
           <>
             {idx > 0 && (
               <NavigateNextIcon
