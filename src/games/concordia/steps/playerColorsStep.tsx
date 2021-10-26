@@ -13,7 +13,7 @@ const BASE_COLORS: readonly GamePiecesColor[] = [
 const VENUS_COLORS: readonly GamePiecesColor[] = ["white"];
 
 export default createPlayerColorsStep({
-  productsMetaStep: productsMetaStep,
+  productsMetaStep,
   availableColors: (_, products): readonly GamePiecesColor[] =>
     Vec.concat(
       BASE_COLORS,
