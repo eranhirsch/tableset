@@ -57,7 +57,9 @@ const createTeamSelectionStep = ({
       !isEnabled || players!.length % teamSize !== 0,
 
     ConfigPanel: (props) => <ConfigPanel {...props} teamSize={teamSize} />,
-    ConfigPanelTLDR,
+    ConfigPanelTLDR: (props) => (
+      <ConfigPanelTLDR {...props} teamSize={teamSize} />
+    ),
 
     InstanceVariableComponent,
     InstanceManualComponent: () => (
