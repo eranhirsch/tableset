@@ -299,7 +299,7 @@ function RemoveVenusCardsStep({
   const venusCards =
     playerIds == null
       ? VENUS_REPLACEMENTS
-      : Vec.take(VENUS_REPLACEMENTS, playerIds.length - 1);
+      : Vec.take(VENUS_REPLACEMENTS, playerIds.length);
 
   return (
     <BlockWithFootnotes
@@ -336,7 +336,7 @@ function AddReplacementCardsStep({
   const venusCards =
     playerIds == null
       ? VENUS_REPLACEMENTS
-      : Vec.take(VENUS_REPLACEMENTS, playerIds.length - 1);
+      : Vec.take(VENUS_REPLACEMENTS, playerIds.length);
 
   const footnotes = Vec.concat(
     [
