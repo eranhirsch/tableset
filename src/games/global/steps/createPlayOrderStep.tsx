@@ -397,6 +397,16 @@ function refreshFixedConfig(
       // already in the ordering, we simply take the old ordering as is, and add
       // any new players that might have been added
       Vec.concat(currentRefreshed, missing)
+    : missing.length === 1
+    ? // The current is only missing one element and the new pivot isn't part
+      // of current so we can assume that there were no changes at all and we
+      // simply need to rebuild the full order by reattaching the pivot.
+      // Another scenario is that the old pivot was removed and a new player was
+      // added that is now the pivot, in this case we would need to rotate the
+      // order so that the new pivot is last in order (and not first), but
+      // because there's no way for us to tell the two scenarios apart, and the
+      // latter is rarer, we'll just ignore that case altogether.
+      Vec.concat([newPivot], currentRefreshed)
     : missing.length === 2
     ? // The 2 missing players are a new player that should be a pivot instead
       // of the old pivot, and the old pivot itself that because of
