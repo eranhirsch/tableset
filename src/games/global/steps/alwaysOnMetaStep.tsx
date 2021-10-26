@@ -11,9 +11,6 @@ const alwaysOnMetaStep: VariableGameStep<boolean> = {
   coerceInstanceEntry: () => true,
   hasValue: () => true,
   extractInstanceValue: () => true,
-  query: () =>
-    buildQuery("__alwaysOn", {
-      canResolveTo: (value) => value,
-    }),
+  query: () => buildQuery("__alwaysOn", { canResolveTo: (value) => value }),
 };
 export default alwaysOnMetaStep;

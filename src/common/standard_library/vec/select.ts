@@ -2,8 +2,6 @@
  * Ported (manually) from HSL.
  *
  * Methods not needed in JS:
- * * `drop` === `Array.slice`
- * * `filter` === `Array.filter`
  * * `slice` === `Array.slice` (technically slice will always return a NEW array
  * and we can consider a version more suitable for react where it would return
  * the SAME array if the indices used mean returning the same array:
@@ -124,14 +122,13 @@ function sample<Tv>(
  *
  * @see `Array.slice` for a more general way to create sub-arrays
  */
-const take = <Tv>(arr: readonly Tv[], n: number): readonly Tv[] =>
+const take = <T>(arr: readonly T[], n: number): readonly T[] =>
   // We don't need to create a new array (which slice does implicitly) when
   // the number of elements we want to take is larger than the array itself.
-  n < arr.length
-    ? // Slice takes a start and a non-inclusive end, In order to return n
-      // elements we need to go one further.
-      arr.slice(0, n + 1)
-    : arr;
+  n >= arr.length ? arr : n <= 0 ? [] : arr.slice(0, n);
+
+const drop = <T>(arr: readonly T[], n: number): readonly T[] =>
+  n <= 0 ? arr : n >= arr.length ? [] : arr.slice(n);
 
 /**
  * @returns an array containing each element of the given array exactly
@@ -237,6 +234,7 @@ export const Vec = {
   keys,
   sample,
   take,
+  drop,
   unique_by,
   unique,
   values,

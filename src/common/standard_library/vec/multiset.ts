@@ -67,8 +67,8 @@ function union_by<Ta, Tb, Ts>(
     const i = remaining.findIndex(([_, value]) => value === scalarFunc(item));
     if (i > -1) {
       remaining.splice(i, 1);
-      out.push(item as Ta | Tb);
     }
+    out.push(item as Ta | Tb);
   }
   return [...out, ...V.map(remaining, ([orig]) => orig)];
 }

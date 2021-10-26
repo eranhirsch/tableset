@@ -12,12 +12,7 @@ import {
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import {
-  firstPlayerStep,
-  fullPlayOrder,
-  playersMetaStep,
-  playOrderStep,
-} from "games/global";
+import { firstPlayerStep, fullPlayOrder, playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import ForumTilesEncoder from "../utils/ForumTilesEncoder";
@@ -26,6 +21,7 @@ import fishMarketVariant from "./fishMarketVariant";
 import forumDecksStep from "./forumDecksStep";
 import forumExpertAuctionVariant from "./forumExpertAuctionVariant";
 import forumVariantStep from "./forumVariant";
+import playOrderStep from "./playOrderStep";
 
 export default createRandomGameStep({
   id: "forumInitial",
@@ -237,3 +233,4 @@ function InstancePatricians({
     </>
   );
 }
+

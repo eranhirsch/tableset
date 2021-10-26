@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { Str } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
-import { firstPlayerStep, playersMetaStep, playOrderStep } from "games/global";
+import { firstPlayerStep, playersMetaStep } from "games/global";
 import { PlayerId } from "../../../model/Player";
 import {
   createDerivedGameStep,
@@ -9,6 +9,8 @@ import {
 } from "../../core/steps/createDerivedGameStep";
 import RomanTitle from "../ux/RomanTitle";
 import fishMarketVariant from "./fishMarketVariant";
+import playOrderStep from "./playOrderStep";
+
 
 export default createDerivedGameStep({
   id: "praefectusMagnus",

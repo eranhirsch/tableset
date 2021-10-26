@@ -26,7 +26,7 @@ import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
 import { playersMetaStep } from ".";
 
-type Teams = readonly (readonly PlayerId[])[];
+export type Teams = readonly (readonly PlayerId[])[];
 // Our template config would just be a partial representation of the step output
 // where the resolve method would simply fill in the blanks. Keep these
 // definitions as separate to allow flexibility to change.
@@ -65,6 +65,7 @@ const createTeamSelectionStep = ({
     ),
   });
 export default createTeamSelectionStep;
+export type TeamSelectionStep = ReturnType<typeof createTeamSelectionStep>;
 
 function resolve(
   config: TemplateConfig,

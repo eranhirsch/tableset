@@ -2,7 +2,7 @@ import { Avatar, Grid, Typography } from "@mui/material";
 import { Str, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
-import { firstPlayerStep, playersMetaStep, playOrderStep } from "games/global";
+import { firstPlayerStep, playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {
@@ -12,6 +12,7 @@ import {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
+import playOrderStep from "./playOrderStep";
 
 const STARTING_MONEY_BASE = 5;
 const NO_RESOURCES_VARIANT_EXTRA = 20;
