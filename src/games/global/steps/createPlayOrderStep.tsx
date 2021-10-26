@@ -68,7 +68,9 @@ const createPlayOrderStep = ({
         teamSelectionStep={teamSelectionStep}
       />
     ),
-    InstanceManualComponent,
+    InstanceManualComponent: () => (
+      <InstanceManualComponent teamSelectionStep={teamSelectionStep} />
+    ),
 
     isTemplatable: (players) =>
       players.willContainNumElements({
@@ -396,8 +398,16 @@ function InstanceVariableComponent({
   );
 }
 
-function InstanceManualComponent(): JSX.Element {
-  // TODO: Add instructions for seating for team play
+function InstanceManualComponent({
+  teamSelectionStep,
+}: {
+  teamSelectionStep: TeamSelectionStep;
+}): JSX.Element {
+  // TODO: this won't work for 6 players on concordia because the team player
+  // variant isn't in the instance itself.
+  const teamPlay = useOptionalInstanceValue(teamSelectionStep.enablerStep);
+  const teams = useOptionalInstanceValue(teamSelectionStep);
+
   return (
     <BlockWithFootnotes
       footnote={
@@ -410,7 +420,13 @@ function InstanceManualComponent(): JSX.Element {
       {(Footnote) => (
         <>
           Choose a seat around the table for each player
-          <Footnote />.
+          <Footnote />.{" "}
+          {teamPlay && (
+            <>
+              Players on the same team should sit on opposing sides of the
+              table, maintaining the same play order of the teams.
+            </>
+          )}
         </>
       )}
     </BlockWithFootnotes>

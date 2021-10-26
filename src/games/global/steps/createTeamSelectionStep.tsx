@@ -41,12 +41,14 @@ export type TeamSelectionStep = ReturnType<typeof createTeamSelectionStep>;
 
 export default function createTeamSelectionStep({
   teamSize,
-  enablerStep,
-}: Options): RandomGameStep<Teams, TemplateConfig> {
+  enablerStep = alwaysOnMetaStep,
+}: Options): RandomGameStep<Teams, TemplateConfig> & {
+  enablerStep: NonNullable<Options["enablerStep"]>;
+} {
   const step = createRandomGameStep({
     id: "teamSelection",
     labelOverride: "Teams",
-    dependencies: [playersMetaStep, enablerStep ?? alwaysOnMetaStep],
+    dependencies: [playersMetaStep, enablerStep],
 
     isType: (x: unknown): x is Teams =>
       Array.isArray(x) && (Vec.is_empty(x) || Array.isArray(C.firstx(x))),
@@ -78,6 +80,7 @@ export default function createTeamSelectionStep({
       ...step.query(template, context),
       count: () => context.playerIds.length / teamSize,
     }),
+    enablerStep,
   };
 }
 
