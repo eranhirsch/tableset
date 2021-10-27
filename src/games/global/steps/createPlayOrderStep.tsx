@@ -221,7 +221,7 @@ function ConfigPanel({
               </>
             ) : (
               <Typography color="error" variant="caption">
-                <strong>Random</strong> when the Team variant is used.
+                <strong>Ignored</strong> when the Team variant is used.
               </Typography>
             )}
           </Stack>
