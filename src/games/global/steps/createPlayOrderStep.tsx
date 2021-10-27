@@ -4,8 +4,10 @@ import {
   AvatarGroup,
   Badge,
   Checkbox,
+  Collapse,
   FormControlLabel,
   Stack,
+  Switch,
   Typography,
 } from "@mui/material";
 import { C, invariant, Vec } from "common";
@@ -162,7 +164,7 @@ function compliesWithTeams(
 
 function ConfigPanel({
   config,
-  queries: [players, _teamPlay, teams],
+  queries: [players, teamPlay, teams],
   onChange,
 }: ConfigPanelProps<
   TemplateConfig,
@@ -171,6 +173,8 @@ function ConfigPanel({
   Teams
 >): JSX.Element {
   const playerIds = players.resolve();
+
+  const [showTeams, setShowTeams] = useState(!teamPlay.canResolveTo(false));
 
   const currentOrder = useMemo(
     () =>
@@ -181,31 +185,46 @@ function ConfigPanel({
     [config, playerIds]
   );
 
+  const fixedSelector = (
+    <FixedSelector
+      currentOrder={currentOrder}
+      onChange={(newOrder) =>
+        onChange({ fixed: normalize(newOrder, playerIds) })
+      }
+      numTeams={teams.willResolve() && showTeams ? teams.count() : 1}
+    />
+  );
+
   return (
-    <Stack direction="column" spacing={1}>
-      <FixedSelector
-        currentOrder={currentOrder}
-        disabled={"random" in config}
-        onChange={(newOrder) =>
-          onChange({ fixed: normalize(newOrder, playerIds) })
-        }
-        numTeams={teams.willResolve() ? teams.count() : 1}
-      />
+    <Stack direction="column" spacing={1} paddingY={1}>
+      <Collapse in={"fixed" in config}>
+        {teamPlay.canResolveTo(true) && teams.willResolve() ? (
+          <Stack direction="column">
+            {fixedSelector}
+            <FormControlLabel
+              sx={{ alignSelf: "center" }}
+              label="Show Teams"
+              control={<Checkbox size="small" />}
+              checked={showTeams}
+              onChange={() => setShowTeams((current) => !current)}
+            />
+          </Stack>
+        ) : (
+          fixedSelector
+        )}
+      </Collapse>
       <FormControlLabel
         sx={{ alignSelf: "center" }}
-        control={
-          <Checkbox
-            checked={"random" in config}
-            onChange={() =>
-              onChange((current) =>
-                "fixed" in current
-                  ? { random: true }
-                  : { fixed: normalize(currentOrder, playerIds) }
-              )
-            }
-          />
-        }
         label="Random"
+        control={<Switch />}
+        checked={"random" in config}
+        onChange={() =>
+          onChange((current) =>
+            "fixed" in current
+              ? { random: true }
+              : { fixed: normalize(currentOrder, playerIds) }
+          )
+        }
       />
     </Stack>
   );
@@ -214,12 +233,10 @@ function ConfigPanel({
 function FixedSelector({
   currentOrder,
   onChange,
-  disabled,
   numTeams,
 }: {
   currentOrder: readonly PlayerId[];
   onChange(newOrder: readonly PlayerId[]): void;
-  disabled: boolean;
   numTeams: number;
 }): JSX.Element {
   const pivotIndex = useRef(0);
@@ -269,12 +286,7 @@ function FixedSelector({
   );
 
   return (
-    <Stack
-      sx={{ opacity: disabled ? 0.5 : 1.0 }}
-      alignItems="center"
-      direction="column"
-      spacing={1}
-    >
+    <Stack alignItems="center" direction="column" spacing={1}>
       <Stack direction="row" spacing={1}>
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="order" direction="horizontal">
@@ -289,7 +301,6 @@ function FixedSelector({
               >
                 {orderRotated.map((playerId, idx) => (
                   <DraggablePlayer
-                    isDragDisabled={disabled}
                     key={playerId}
                     playerId={playerId}
                     index={idx}
@@ -321,20 +332,14 @@ function moveItem<T>(
 function DraggablePlayer({
   playerId,
   index,
-  isDragDisabled,
   teamNumber,
 }: {
   playerId: PlayerId;
   index: number;
-  isDragDisabled: boolean;
   teamNumber: number | undefined;
 }) {
   return (
-    <Draggable
-      isDragDisabled={isDragDisabled}
-      draggableId={`${playerId}`}
-      index={index}
-    >
+    <Draggable draggableId={`${playerId}`} index={index}>
       {(provided) =>
         teamNumber == null ? (
           <Avatar
