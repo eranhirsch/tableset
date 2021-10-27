@@ -57,7 +57,11 @@ const createPlayOrderStep = ({
     id: "playOrder",
     labelOverride: "Seating",
 
-    dependencies: [playersMetaStep, teamSelectionStep],
+    dependencies: [
+      playersMetaStep,
+      teamSelectionStep.enablerStep,
+      teamSelectionStep,
+    ],
 
     isType: (x): x is PlayerId[] =>
       Array.isArray(x) && x.every((y) => typeof y === "string"),
@@ -72,23 +76,30 @@ const createPlayOrderStep = ({
       <InstanceManualComponent teamSelectionStep={teamSelectionStep} />
     ),
 
-    isTemplatable: (players) =>
+    isTemplatable: (players, teamPlay, teams) =>
       players.willContainNumElements({
         // It's meaningless to talk about order with less than 3 players
         min: 3,
-      }),
+      }) &&
+      (teamPlay.canResolveTo(false) || teams.willResolve()),
 
-    resolve: (config, playerIds, teams) =>
-      "fixed" in config &&
-      (teams == null || compliesWithTeams(config.fixed, teams, playerIds!))
+    resolve: (config, playerIds, teamPlay, teams) =>
+      teamPlay
+        ? // teamPlay is ON:
+          teams == null
+          ? // We don't know who's in each team so we can't generate any seating
+            null
+          : // We can only use the fixed config if it happens to comply with the
+          // resolved teams, otherwise we fallback to a random seating (see
+          // comment in the UX below)
+          "fixed" in config &&
+            compliesWithTeams(config.fixed, teams, playerIds!)
+          ? config.fixed
+          : resolveRandomForTeams(teams, playerIds!)
+        : // teamPlay is OFF:
+        "fixed" in config
         ? config.fixed
-        : normalize(
-            teams == null
-              ? // For non-team games we just shuffle the players
-                Vec.shuffle(playerIds!)
-              : resolveForTeams(teams, playerIds!.length),
-            playerIds!
-          ),
+        : resolveRandom(playerIds!),
 
     initialConfig: (): TemplateConfig => ({ random: true }),
 
@@ -102,9 +113,14 @@ const createPlayOrderStep = ({
   });
 export default createPlayOrderStep;
 
-function resolveForTeams(
+function resolveRandom(playerIds: readonly PlayerId[]): readonly PlayerId[] {
+  const seating = Vec.shuffle(playerIds);
+  return normalize(seating, playerIds);
+}
+
+function resolveRandomForTeams(
   teams: Teams,
-  playersCount: number
+  playerIds: readonly PlayerId[]
 ): readonly PlayerId[] {
   // Shuffle the teams
   const shuffled = Vec.shuffle(
@@ -113,11 +129,13 @@ function resolveForTeams(
   );
 
   const teamsCount = teams.length;
-  return Vec.map(
-    Vec.range(0, playersCount - 1),
+  const seating = Vec.map(
+    Vec.range(0, playerIds.length - 1),
     // Go over the teams in sequence and take the matching team member
     (index) => shuffled[index % teamsCount][Math.floor(index / teamsCount)]
   );
+
+  return normalize(seating, playerIds);
 }
 
 function compliesWithTeams(
@@ -144,9 +162,14 @@ function compliesWithTeams(
 
 function ConfigPanel({
   config,
-  queries: [players, teams],
+  queries: [players, _teamPlay, teams],
   onChange,
-}: ConfigPanelProps<TemplateConfig, readonly PlayerId[], Teams>): JSX.Element {
+}: ConfigPanelProps<
+  TemplateConfig,
+  readonly PlayerId[],
+  boolean,
+  Teams
+>): JSX.Element {
   const playerIds = players.resolve();
 
   const currentOrder = useMemo(
