@@ -5,7 +5,7 @@ import { createVariant } from "games/core/steps/createVariant";
 import { neverResolvesMetaStep, playersMetaStep } from "games/global";
 import { VariableGameStep } from "model/VariableGameStep";
 
-interface Options<ProductId = unknown> {
+interface Options<ProductId = never> {
   productDependencies?: {
     step: Readonly<VariableGameStep<readonly ProductId[]>>;
     products: readonly ProductId[];
@@ -19,7 +19,7 @@ export type TeamVariantStep = VariableGameStep<boolean> & {
   useRequiredInstanceValue: () => boolean;
 };
 
-export default function createTeamVariant<ProductId = unknown>({
+export default function createTeamVariant<ProductId = never>({
   productDependencies,
   optionalAt,
   enabledAt,
