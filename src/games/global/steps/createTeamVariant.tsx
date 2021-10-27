@@ -1,7 +1,7 @@
 import { useAppSelector } from "app/hooks";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
-import { createVariant, VariantGameStep } from "games/core/steps/createVariant";
+import { createVariant } from "games/core/steps/createVariant";
 import { neverResolvesMetaStep, playersMetaStep } from "games/global";
 import { VariableGameStep } from "model/VariableGameStep";
 
@@ -15,7 +15,7 @@ interface Options<ProductId> {
   InstanceVariableComponent: () => JSX.Element;
 }
 
-type TeamVariantStep = VariantGameStep & {
+export type TeamVariantStep = VariableGameStep<boolean> & {
   useRequiredInstanceValue: () => boolean;
 };
 

@@ -403,9 +403,8 @@ function InstanceManualComponent({
 }: {
   teamSelectionStep: TeamSelectionStep;
 }): JSX.Element {
-  // TODO: this won't work for 6 players on concordia because the team player
-  // variant isn't in the instance itself.
-  const teamPlay = useOptionalInstanceValue(teamSelectionStep.enablerStep);
+  const { useRequiredInstanceValue } = teamSelectionStep.enablerStep;
+  const teamPlay = useRequiredInstanceValue();
   const teams = useOptionalInstanceValue(teamSelectionStep);
 
   return (
