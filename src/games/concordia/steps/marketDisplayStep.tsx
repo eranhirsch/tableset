@@ -12,7 +12,7 @@ import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import MarketDisplayEncoder from "../utils/MarketDisplayEncoder";
 import RomanTitle from "../ux/RomanTitle";
 import marketCardsStep from "./marketCardsStep";
-import teamPlayVariant, { useTeamPlayInstanceValue } from "./teamPlayVariant";
+import teamPlayVariant from "./teamPlayVariant";
 import venusScoringVariant from "./venusScoringVariant";
 
 export default createRandomGameStep({
@@ -37,7 +37,9 @@ function InstanceVariableComponent({
   value: hash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
   const venusScoring = useOptionalInstanceValue(venusScoringVariant);
-  const teamPlay = useTeamPlayInstanceValue();
+
+  const { useRequiredInstanceValue } = teamPlayVariant;
+  const teamPlay = useRequiredInstanceValue();
 
   const market = useMemo(
     () =>
@@ -81,7 +83,9 @@ function InstanceVariableComponent({
 
 function InstanceManualComponent(): JSX.Element {
   const venusScoring = useOptionalInstanceValue(venusScoringVariant);
-  const teamPlay = useTeamPlayInstanceValue();
+
+  const { useRequiredInstanceValue } = teamPlayVariant;
+  const teamPlay = useRequiredInstanceValue();
 
   return (
     <HeaderAndSteps synopsis="Fill the personality cards market display:">
