@@ -60,7 +60,8 @@ export default function createTeamSelectionStep({
 
     isTemplatable: (_, isEnabled) => isEnabled.canResolveTo(true),
     initialConfig: (): Readonly<TemplateConfig> => [],
-    resolve: (config, playerIds) => resolve(config, playerIds, teamSize),
+    resolve: (config, playerIds, teamPlay) =>
+      teamPlay ? resolve(config, playerIds, teamSize) : null,
 
     refresh: (config, playerIds) =>
       // Remove any players that are not in the game anymore.
