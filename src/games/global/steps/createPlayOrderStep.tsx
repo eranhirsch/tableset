@@ -198,16 +198,32 @@ function ConfigPanel({
   return (
     <Stack direction="column" spacing={1} paddingY={1}>
       <Collapse in={"fixed" in config}>
-        {teamPlay.canResolveTo(true) && teams.willResolve() ? (
-          <Stack direction="column">
+        {teamPlay.canResolveTo(true) ? (
+          <Stack direction="column" alignItems="center">
             {fixedSelector}
-            <FormControlLabel
-              sx={{ alignSelf: "center" }}
-              label="Show Teams"
-              control={<Checkbox size="small" />}
-              checked={showTeams}
-              onChange={() => setShowTeams((current) => !current)}
-            />
+            {teams.willResolve() ? (
+              <>
+                {teamPlay.canResolveTo(false) && (
+                  <FormControlLabel
+                    sx={{ alignSelf: "center" }}
+                    label="Show Teams"
+                    control={<Checkbox size="small" />}
+                    checked={showTeams}
+                    onChange={() => setShowTeams((current) => !current)}
+                  />
+                )}
+                {(!teamPlay.canResolveTo(false) || showTeams) && (
+                  <Typography color="error" variant="caption">
+                    <strong>Random</strong> if the seating does't match the
+                    chosen teams.
+                  </Typography>
+                )}
+              </>
+            ) : (
+              <Typography color="error" variant="caption">
+                <strong>Random</strong> when the Team variant is used.
+              </Typography>
+            )}
           </Stack>
         ) : (
           fixedSelector
@@ -313,7 +329,7 @@ function FixedSelector({
           </Droppable>
         </DragDropContext>
       </Stack>
-      <Typography variant="caption">{"In clockwise order"}</Typography>
+      <Typography variant="caption">In clockwise order.</Typography>
     </Stack>
   );
 }
