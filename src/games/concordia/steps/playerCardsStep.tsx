@@ -8,6 +8,7 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { PlayerAvatarsList } from "games/core/ux/PlayerAvatarsList";
 import { firstPlayerStep, fullPlayOrder, playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React from "react";
@@ -215,7 +216,7 @@ function VenusCards({
           )}
         </BlockWithFootnotes>
         <>
-          The other {playerIds.length / 2} players return the{" "}
+          The remaining {playerIds.length / 2} players return the{" "}
           <strong>
             <RomanTitle>Architect</RomanTitle>
           </strong>{" "}
@@ -226,22 +227,13 @@ function VenusCards({
   }
 
   const order = fullPlayOrder(playerIds, playOrder, firstPlayerId);
-  const firstPartners = Vec.take(order, order.length / 2);
-  const secondPartners = Vec.drop(order, order.length / 2);
-
   return (
     <HeaderAndSteps synopsis="Each player prepares their starting hand:">
       <>
         Take <TakeCardsStep isBase={isBase} teamPlay />
       </>
       <>
-        <GrammaticalList>
-          {React.Children.toArray(
-            Vec.map(firstPartners, (playerId) => (
-              <PlayerAvatar playerId={playerId} inline />
-            ))
-          )}
-        </GrammaticalList>{" "}
+        <PlayerAvatarsList playerIds={Vec.take(order, order.length / 2)} />{" "}
         return the{" "}
         <strong>
           <RomanTitle>Diplomat</RomanTitle>
@@ -249,13 +241,7 @@ function VenusCards({
         card back to the box.
       </>
       <>
-        <GrammaticalList>
-          {React.Children.toArray(
-            Vec.map(secondPartners, (playerId) => (
-              <PlayerAvatar playerId={playerId} inline />
-            ))
-          )}
-        </GrammaticalList>{" "}
+        <PlayerAvatarsList playerIds={Vec.drop(order, order.length / 2)} />{" "}
         return the{" "}
         <strong>
           <RomanTitle>Architect</RomanTitle>
