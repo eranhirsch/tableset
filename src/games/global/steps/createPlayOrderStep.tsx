@@ -230,11 +230,7 @@ function FixedSelector({
     <PlayerReorderer
       currentOrder={order}
       onChange={onChange}
-      numTeams={
-        teams.willResolve() && (!teamPlay.canResolveTo(false) || showTeams)
-          ? teams.count()
-          : 1
-      }
+      numTeams={teams.willResolve() && showTeams ? teams.count() : 1}
     />
   );
 
