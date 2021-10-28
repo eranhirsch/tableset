@@ -1,4 +1,6 @@
 import { invariant, Vec } from "common";
+import { InstanceStepLink } from "features/instance/InstanceStepLink";
+import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -6,13 +8,18 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { firstPlayerStep, fullPlayOrder, playersMetaStep } from "games/global";
+import { PlayerId } from "model/Player";
 import React from "react";
 import { ConcordiaProductId } from "../ConcordiaProductId";
 import RomanTitle from "../ux/RomanTitle";
+import playOrderStep from "./playOrderStep";
 import productsMetaStep from "./productsMetaStep";
+import teamPlayVariant from "./teamPlayVariant";
 import venusScoringVariant from "./venusScoringVariant";
 
 const PLAYER_CARDS = {
+  /* spell-checker: disable */
   base: [
     "Architect",
     "Diplomat",
@@ -32,19 +39,47 @@ const PLAYER_CARDS = {
     "Senator",
     "Tribune",
   ],
+  team: [
+    "Architect",
+    "Diplomat",
+    "Legatus",
+    "Mercator",
+    "Praetor",
+    "Prefect",
+    "Tribune",
+  ],
+  /* spell-checker: enable */
 } as const;
 
 export default createDerivedGameStep({
   id: "playerCards",
   labelOverride: "Player Hand",
-  dependencies: [productsMetaStep, venusScoringVariant],
+  dependencies: [
+    playersMetaStep,
+    productsMetaStep,
+    venusScoringVariant,
+    firstPlayerStep,
+    playOrderStep,
+    teamPlayVariant,
+  ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [products, venusScoring],
+  dependencies: [
+    playerIds,
+    products,
+    venusScoring,
+    firstPlayerId,
+    playOrder,
+    teamPlay,
+  ],
 }: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
   readonly ConcordiaProductId[],
+  boolean,
+  PlayerId,
+  readonly PlayerId[],
   boolean
 >): JSX.Element {
   const relevantProduct = products!.includes("base")
@@ -53,86 +88,84 @@ function InstanceDerivedComponent({
       : "base"
     : "venusBase";
 
-  invariant(
-    // Safe-guard against impossible states
-    relevantProduct !== "base" || !venusScoring,
-    `Venus scoring enabled for a base only game: ${JSON.stringify(products)}`
-  );
-
-  switch (relevantProduct) {
-    case "base":
-      return (
-        <BlockWithFootnotes footnote={<CardsFootnote />}>
-          {(Footnote) => (
-            <>
-              Each player takes to their hand the {PLAYER_CARDS.base.length}{" "}
-              cards <em>of their color</em>
-              <Footnote />.
-            </>
-          )}
-        </BlockWithFootnotes>
-      );
-
-    case "venusBase":
-      return <VenusBaseCards venusScoring={venusScoring ?? false} />;
-
-    case "venus":
-      return (
-        <BlockWithFootnotes
-          footnote={<CardsFootnote venusScoring={venusScoring ?? false} />}
-        >
-          {(Footnote) => (
-            <>
-              Each player takes to their hand the{" "}
-              {PLAYER_CARDS[venusScoring ? "venus" : "base"].length} cards{" "}
-              <em>of their color</em> with{" "}
-              {venusScoring ? "VENVS" : "CONCORDIA"}{" "}
-              {venusScoring && (
-                <>
-                  and <strong>a small pilar icon</strong> (at the bottom right
-                  corner){" "}
-                </>
-              )}
-              on the back
-              <Footnote />.
-            </>
-          )}
-        </BlockWithFootnotes>
-      );
+  if (relevantProduct === "base") {
+    invariant(
+      !venusScoring && !teamPlay,
+      `Team play (${teamPlay}) or Venus Scoring (${venusScoring}) enabled for a base only game: ${JSON.stringify(
+        products
+      )}`
+    );
+    return (
+      <BlockWithFootnotes footnote={<CardsFootnote />}>
+        {(Footnote) => (
+          <>
+            Each player takes to their hand the {PLAYER_CARDS.base.length} cards{" "}
+            <em>of their color</em>
+            <Footnote />.
+          </>
+        )}
+      </BlockWithFootnotes>
+    );
   }
+
+  invariant(
+    !venusScoring || !teamPlay,
+    `Both venus scoring and team play can't be enabled at the same time`
+  );
+  return (
+    <VenusCards
+      isBase={relevantProduct === "venusBase"}
+      venusScoring={venusScoring ?? false}
+      teamPlay={teamPlay ?? false}
+      playerIds={playerIds!}
+      firstPlayerId={firstPlayerId}
+      playOrder={playOrder}
+    />
+  );
 }
 
-/**
- * We extracted the venus base version of the setup because it's the only one
- * that might contain 2 steps (in cases where the base game is played with
- * the venus cards).
- */
-function VenusBaseCards({
+function VenusCards({
+  isBase,
   venusScoring,
+  teamPlay,
+  playerIds,
+  firstPlayerId,
+  playOrder,
 }: {
+  isBase: boolean;
   venusScoring: boolean;
+  teamPlay: boolean;
+  playerIds: readonly PlayerId[];
+  firstPlayerId: PlayerId | undefined | null;
+  playOrder: readonly PlayerId[] | undefined | null;
 }): JSX.Element {
-  const takeCardsStep = (
-    <BlockWithFootnotes footnote={<CardsFootnote venusScoring />}>
-      {(Footnote) => (
-        <>
-          {venusScoring ? "Each player takes to their hand" : "Take"} the{" "}
-          {PLAYER_CARDS.venus.length} cards <em>of their color</em> with{" "}
-          <strong>a small pilar icon</strong> (at the bottom right corner)
-          <Footnote />.
-        </>
-      )}
-    </BlockWithFootnotes>
-  );
-
   if (venusScoring) {
-    return takeCardsStep;
+    // Playing venus scoring is the simplest mode, we don't need to return any
+    // cards to the box
+    return (
+      <>
+        Each player takes to their hand{" "}
+        <TakeCardsStep isBase={isBase} venusScoring />
+      </>
+    );
   }
 
-  return (
-    <HeaderAndSteps synopsis="Each player prepares their starting hand:">
-      {takeCardsStep}
-      {!venusScoring && (
+  if (!teamPlay) {
+    if (!isBase) {
+      // When not playing with venus scoring or team play, and there are the
+      // OG concordia cards available we just need to take them instead...
+      return (
+        <>
+          Each player takes to their hand <TakeCardsStep />
+        </>
+      );
+    }
+
+    return (
+      <HeaderAndSteps synopsis="Each player prepares their starting hand:">
+        <>
+          Take <TakeCardsStep isBase />
+        </>
         <>
           Return the{" "}
           <strong>
@@ -140,24 +173,173 @@ function VenusBaseCards({
           </strong>{" "}
           card to the box.
         </>
-      )}
+      </HeaderAndSteps>
+    );
+  }
+
+  if (firstPlayerId == null || playOrder == null) {
+    // We can't say anything about the players and need to provide generic
+    // instructions
+    return (
+      <HeaderAndSteps synopsis="Each player prepares their starting hand:">
+        <>
+          Take <TakeCardsStep isBase={isBase} teamPlay />
+        </>
+        <BlockWithFootnotes
+          footnotes={Vec.concat(
+            [<InstanceStepLink step={playOrderStep} />],
+            firstPlayerId == null
+              ? [<InstanceStepLink step={firstPlayerStep} />]
+              : []
+          )}
+        >
+          {(Footnote) => (
+            <>
+              Starting with{" "}
+              {firstPlayerId != null ? (
+                <PlayerAvatar playerId={firstPlayerId} inline />
+              ) : (
+                <>
+                  the first player
+                  <Footnote index={2} />
+                </>
+              )}{" "}
+              and going around the table in turn order
+              <Footnote index={1} />, the first {playerIds.length / 2} players
+              return the{" "}
+              <strong>
+                <RomanTitle>Diplomat</RomanTitle>
+              </strong>{" "}
+              card back to the box.
+            </>
+          )}
+        </BlockWithFootnotes>
+        <>
+          The other {playerIds.length / 2} players return the{" "}
+          <strong>
+            <RomanTitle>Architect</RomanTitle>
+          </strong>{" "}
+          card back to the box.
+        </>
+      </HeaderAndSteps>
+    );
+  }
+
+  const order = fullPlayOrder(playerIds, playOrder, firstPlayerId);
+  const firstPartners = Vec.take(order, order.length / 2);
+  const secondPartners = Vec.drop(order, order.length / 2);
+
+  return (
+    <HeaderAndSteps synopsis="Each player prepares their starting hand:">
+      <>
+        Take <TakeCardsStep isBase={isBase} teamPlay />
+      </>
+      <>
+        <GrammaticalList>
+          {React.Children.toArray(
+            Vec.map(firstPartners, (playerId) => (
+              <PlayerAvatar playerId={playerId} inline />
+            ))
+          )}
+        </GrammaticalList>{" "}
+        return the{" "}
+        <strong>
+          <RomanTitle>Diplomat</RomanTitle>
+        </strong>{" "}
+        card back to the box.
+      </>
+      <>
+        <GrammaticalList>
+          {React.Children.toArray(
+            Vec.map(secondPartners, (playerId) => (
+              <PlayerAvatar playerId={playerId} inline />
+            ))
+          )}
+        </GrammaticalList>{" "}
+        return the{" "}
+        <strong>
+          <RomanTitle>Architect</RomanTitle>
+        </strong>{" "}
+        card back to the box.
+      </>
     </HeaderAndSteps>
+  );
+}
+
+function TakeCardsStep({
+  isBase = false,
+  venusScoring = false,
+  teamPlay = false,
+}: {
+  isBase?: boolean;
+  venusScoring?: boolean;
+  teamPlay?: boolean;
+}): JSX.Element {
+  const icon = teamPlay ? (
+    <>
+      <strong>an interlocking circles icon</strong> (at the bottom right corner)
+    </>
+  ) : (
+    <>
+      <strong>a small pilar icon</strong> (at the bottom left corner)
+    </>
+  );
+
+  return isBase ? (
+    <BlockWithFootnotes
+      footnote={
+        <CardsFootnote venusScoring={venusScoring} teamPlay={teamPlay} />
+      }
+    >
+      {(Footnote) => (
+        <>
+          the {PLAYER_CARDS[teamPlay ? "team" : "venus"].length} cards{" "}
+          <em>of their color</em> with {icon}
+          <Footnote />.
+        </>
+      )}
+    </BlockWithFootnotes>
+  ) : (
+    <BlockWithFootnotes
+      footnote={
+        <CardsFootnote venusScoring={venusScoring} teamPlay={teamPlay} />
+      }
+    >
+      {(Footnote) => (
+        <>
+          the{" "}
+          {
+            PLAYER_CARDS[venusScoring ? "venus" : teamPlay ? "team" : "base"]
+              .length
+          }{" "}
+          cards <em>of their color</em> with{" "}
+          {venusScoring || teamPlay ? "VENVS" : "CONCORDIA"}{" "}
+          {(venusScoring || teamPlay) && <>and {icon}</>} on the back
+          <Footnote />.
+        </>
+      )}
+    </BlockWithFootnotes>
   );
 }
 
 function CardsFootnote({
   venusScoring = false,
+  teamPlay = false,
 }: {
   venusScoring?: boolean;
+  teamPlay?: boolean;
 }): JSX.Element {
   return (
     <>
       <GrammaticalList>
-        {Vec.map(PLAYER_CARDS[venusScoring ? "venus" : "base"], (card) => (
-          <React.Fragment key={card}>
-            <RomanTitle>{card}</RomanTitle>
-          </React.Fragment>
-        ))}
+        {Vec.map(
+          PLAYER_CARDS[venusScoring ? "venus" : teamPlay ? "team" : "base"],
+          (card) => (
+            <React.Fragment key={card}>
+              <RomanTitle>{card}</RomanTitle>
+            </React.Fragment>
+          )
+        )}
       </GrammaticalList>
       .
     </>
