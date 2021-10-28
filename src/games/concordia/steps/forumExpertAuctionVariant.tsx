@@ -16,11 +16,27 @@ export default createRandomGameStep({
   initialConfig: () => ({ percent: 100 }),
   resolve: (config, isForum) =>
     isForum && Random.coin_flip(config.percent / 100) ? true : null,
+  onlyResolvableValue(config, isForumQuery) {
+    if (config == null) {
+      return false;
+    }
+
+    const isForum = isForumQuery.onlyResolvableValue();
+    if (isForum == null) {
+      return undefined;
+    }
+
+    return !isForum ? false : config.percent === 100 ? true : undefined;
+  },
   refresh: () => templateValue("unchanged"),
   InstanceVariableComponent,
   ConfigPanel,
   ConfigPanelTLDR,
-  canResolveTo: (_, config) => config != null && config.percent > 0,
+  canResolveTo: (value, config, forum) =>
+    value
+      ? forum.canResolveTo(true) && config != null && config.percent > 0
+      : forum.canResolveTo(false) || config == null || config.percent < 100,
+
   skip: (value) => value == null,
   disabledTLDROverride: "Never",
 });

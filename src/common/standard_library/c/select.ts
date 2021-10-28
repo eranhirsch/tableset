@@ -164,6 +164,9 @@ function onlyx<Tv>(arr: readonly Tv[], msg?: string): Tv {
   return arr[0];
 }
 
+const only = <Tv>(arr: readonly Tv[]): Tv | undefined =>
+  arr.length === 1 ? arr[0] : undefined;
+
 export const C = {
   findx,
   find_key,
@@ -177,4 +180,5 @@ export const C = {
   last_keyx,
   nfirst,
   onlyx,
+  only,
 } as const;

@@ -1,6 +1,6 @@
 import { Button, Chip, Grid, styled, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Dict, MathUtils, nullthrows, Vec } from "common";
+import { C, Dict, MathUtils, nullthrows, Vec } from "common";
 import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -9,7 +9,7 @@ import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -60,6 +60,17 @@ export default createRandomGameStep({
 
   resolve: (config, products, players) =>
     Vec.sample(relevantMapsForConfig(config, products!, players!), 1),
+
+  onlyResolvableValue: (config, products, players) =>
+    config != null
+      ? C.only(
+          relevantMapsForConfig(
+            config,
+            products.onlyResolvableValue()!,
+            players.onlyResolvableValue()!
+          )
+        )
+      : undefined,
 
   initialConfig: (): TemplateConfig => ({ dynamic: "recommended" }),
 

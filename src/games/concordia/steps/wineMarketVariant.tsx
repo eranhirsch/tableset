@@ -31,6 +31,27 @@ export default createRandomGameStep({
     )
       ? true
       : null,
+  onlyResolvableValue(config, _, withSaltQuery) {
+    if (config == null) {
+      return false;
+    }
+
+    const { percent, saltPercent } = config;
+
+    const withSalt = withSaltQuery.onlyResolvableValue();
+    if (withSalt == null && saltPercent != null) {
+      // Salt is undeceive so we can't tell which percent to rely on.
+      return undefined;
+    }
+
+    const relevantPercent = (withSalt ? saltPercent : null) ?? percent;
+    return relevantPercent === 100
+      ? true
+      : relevantPercent === 0
+      ? false
+      : undefined;
+  },
+
   refresh: (config, _, withSalt) =>
     config.saltPercent == null ||
     (withSalt.canResolveTo(true) && withSalt.canResolveTo(false))

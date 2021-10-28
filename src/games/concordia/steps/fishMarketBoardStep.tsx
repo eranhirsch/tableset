@@ -19,6 +19,15 @@ export default createRandomGameStep({
         ? "river"
         : "mountain"
       : null,
+  onlyResolvableValue: (config, withFish) =>
+    config != null && !withFish.canResolveTo(false)
+      ? config.percentRiver === 100
+        ? "river"
+        : config.percentRiver === 0
+        ? "mountain"
+        : undefined
+      : undefined,
+
   skip: (_, [withFish]) => withFish == null,
   refresh: () => templateValue("unchanged"),
   ConfigPanel,
