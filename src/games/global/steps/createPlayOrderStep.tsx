@@ -231,6 +231,9 @@ function FixedSelector({
       currentOrder={order}
       onChange={onChange}
       numTeams={teams.willResolve() && showTeams ? teams.count() : 1}
+      actualTeams={
+        teams.willResolve() ? teams.onlyResolvableValue() : undefined
+      }
     />
   );
 
@@ -268,7 +271,7 @@ function FixedSelector({
             <TeamWarning
               order={order}
               playerIds={playerIds}
-              queries={[teamPlay, teams]}
+              actualTeams={teams.onlyResolvableValue()}
             />
           )}
         </>
@@ -280,13 +283,12 @@ function FixedSelector({
 function TeamWarning({
   order,
   playerIds,
-  queries: [teamPlay, teams],
+  actualTeams,
 }: {
   order: readonly PlayerId[];
   playerIds: readonly PlayerId[];
-  queries: [Query<boolean>, Query<Teams>];
+  actualTeams: Teams | undefined;
 }): JSX.Element | null {
-  const actualTeams = teams.onlyResolvableValue();
   if (actualTeams == null) {
     // We don't have the actual teams (it's going to be randomized) so we can't
     // promise anything about the current seating.
@@ -305,8 +307,9 @@ function TeamWarning({
 
   return (
     <Typography color="error" variant="caption" paddingX={5}>
-      Current order does not match teams, a <strong>random</strong> order would
-      be used <em>instead</em>.
+      Current order does not comply with the teams; players in the same team
+      should sit opposite one another. A <strong>random</strong> order would be
+      used <em>instead</em>.
     </Typography>
   );
 }
@@ -315,10 +318,12 @@ function PlayerReorderer({
   currentOrder,
   onChange,
   numTeams,
+  actualTeams,
 }: {
   currentOrder: readonly PlayerId[];
   onChange(newOrder: readonly PlayerId[]): void;
   numTeams: number;
+  actualTeams: Teams | undefined;
 }): JSX.Element {
   const pivotIndex = useRef(0);
 
@@ -385,7 +390,15 @@ function PlayerReorderer({
                     key={playerId}
                     playerId={playerId}
                     index={idx}
-                    teamNumber={numTeams > 1 ? idx % numTeams : undefined}
+                    teamNumber={
+                      actualTeams != null
+                        ? actualTeams.findIndex((team) =>
+                            team.includes(playerId)
+                          )
+                        : numTeams > 1
+                        ? idx % numTeams
+                        : undefined
+                    }
                   />
                 ))}
                 {provided.placeholder}
