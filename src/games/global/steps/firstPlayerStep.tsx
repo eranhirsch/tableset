@@ -34,7 +34,7 @@ export default createRandomGameStep({
   initialConfig: (): TemplateConfig => ({}),
   refresh: ({ playerId }, players) =>
     templateValue(
-      playerId != null && !players.resolve().includes(playerId)
+      playerId != null && !players.onlyResolvableValue()!.includes(playerId)
         ? "unfixable"
         : "unchanged"
     ),
@@ -51,7 +51,7 @@ function ConfigPanel({
   return (
     <Stack direction="row" justifyContent="center" paddingY={1}>
       {React.Children.toArray(
-        Vec.map(players.resolve(), (playerId) => (
+        Vec.map(players.onlyResolvableValue()!, (playerId) => (
           <Badge
             color="primary"
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}

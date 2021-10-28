@@ -64,7 +64,10 @@ const createPlayerColorsStep = <ProductId,>({
 
     isTemplatable: (players, products) =>
       players.willContainNumElements({
-        max: availableColors(players.resolve(), products.resolve()).length,
+        max: availableColors(
+          players.onlyResolvableValue()!,
+          products.onlyResolvableValue()!
+        ).length,
       }),
 
     resolve: (config, playerIds, products) =>
@@ -90,8 +93,11 @@ const createPlayerColorsStep = <ProductId,>({
     initialConfig: () => ({}),
 
     refresh: (current, players, products) => {
-      const playerIds = players.resolve();
-      const colors = availableColors(playerIds, products.resolve());
+      const playerIds = players.onlyResolvableValue()!;
+      const colors = availableColors(
+        playerIds,
+        products.onlyResolvableValue()!
+      );
       // And also remove all colors which aren't available anymore
       const refreshed = Dict.filter(
         // Create a new dict with only the current players in it, effectively
@@ -109,8 +115,11 @@ const createPlayerColorsStep = <ProductId,>({
       <ConfigPanel
         config={config}
         onChange={onChange}
-        playerIds={players.resolve()}
-        colors={availableColors(players.resolve(), products.resolve())}
+        playerIds={players.onlyResolvableValue()!}
+        colors={availableColors(
+          players.onlyResolvableValue()!,
+          products.onlyResolvableValue()!
+        )}
       />
     ),
     ConfigPanelTLDR,

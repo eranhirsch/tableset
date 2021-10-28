@@ -17,10 +17,11 @@ export interface Query<T = unknown> {
    */
   count(): number;
   /**
-   * Call this method to get the actual value it would resolve to. Notice that
-   * if the element has random components this value is not deterministic.
+   * Use when you need the actual value the step would resolve to. Notice that
+   * steps with random components resolve undeterministically so can't answer
+   * this question unless their config is de-facto a single result setting.
    */
-  resolve(): T;
+  onlyResolvableValue(): T | undefined;
   /**
    * Use when the step returns an array of values.
    */

@@ -68,7 +68,7 @@ export default createRandomGameStep({
       ? {
           static: Vec.intersect(
             config.static,
-            mapsForProducts(products.resolve())
+            mapsForProducts(products.onlyResolvableValue()!)
           ),
         }
       : templateValue("unchanged"),
@@ -77,8 +77,8 @@ export default createRandomGameStep({
     config != null &&
     relevantMapsForConfig(
       config,
-      products.resolve(),
-      players.resolve()
+      products.onlyResolvableValue()!,
+      players.onlyResolvableValue()!
     ).includes(value),
 
   ConfigPanel,
@@ -94,8 +94,8 @@ function ConfigPanel({
   readonly ConcordiaProductId[],
   readonly PlayerId[]
 >): JSX.Element {
-  const products = productsQuery.resolve();
-  const players = playersQuery.resolve();
+  const products = productsQuery.onlyResolvableValue()!;
+  const players = playersQuery.onlyResolvableValue()!;
 
   const relevantMapIds = useMemo(
     // Keep the map IDs sorted in the stored array so that the results are

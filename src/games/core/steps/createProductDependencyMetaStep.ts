@@ -20,7 +20,7 @@ export const createProductsMetaStep = <Pid extends ProductId>(): Readonly<
       willContain: (pid) => currentProductIds.includes(pid),
       willContainAny: (products) =>
         products.some((pid) => currentProductIds.includes(pid)),
-      resolve: () => currentProductIds as readonly Pid[],
+      onlyResolvableValue: () => currentProductIds as readonly Pid[],
     }),
 });
 

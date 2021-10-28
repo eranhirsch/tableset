@@ -65,7 +65,9 @@ export default function createTeamSelectionStep({
 
     refresh: (config, playerIds) =>
       // Remove any players that are not in the game anymore.
-      Vec.map(config, (team) => Vec.intersect(team, playerIds.resolve())),
+      Vec.map(config, (team) =>
+        Vec.intersect(team, playerIds.onlyResolvableValue()!)
+      ),
 
     skip: (_, [players, isEnabled]) =>
       !isEnabled || players!.length % teamSize !== 0,
@@ -154,7 +156,7 @@ function ConfigPanel({
   teamSize: number;
 }): JSX.Element {
   const remainingPlayerIds = useMemo(
-    () => Vec.diff(players.resolve(), Vec.flatten(config)),
+    () => Vec.diff(players.onlyResolvableValue()!, Vec.flatten(config)),
     [config, players]
   );
 
@@ -182,7 +184,7 @@ function ConfigPanel({
             // Take all elements after the current team.
             Vec.drop(current, currentTeamIndex + 1)
           ),
-          players.resolve()
+          players.onlyResolvableValue()!
         );
       }),
     [onChange, players]
@@ -195,7 +197,7 @@ function ConfigPanel({
           Vec.map(current, (team) =>
             Vec.filter(team, (playerId) => playerId !== removedPlayerId)
           ),
-          players.resolve()
+          players.onlyResolvableValue()!
         )
       ),
     [onChange, players]
@@ -214,7 +216,7 @@ function ConfigPanel({
               // changed when we look for it.
               !Vec.equal(team, t)
           ),
-          players.resolve()
+          players.onlyResolvableValue()!
         )
       ),
     [onChange, players]
@@ -225,7 +227,7 @@ function ConfigPanel({
       onChange((current) =>
         normalize(
           Vec.concat(current, [[Vec.sample(remainingPlayerIds, 1)]]),
-          players.resolve()
+          players.onlyResolvableValue()!
         )
       ),
     [onChange, players, remainingPlayerIds]
@@ -272,7 +274,7 @@ function ConfigPanel({
           </>
         ))
       )}
-      {config.length < players.resolve().length / teamSize && (
+      {config.length < players.onlyResolvableValue()!.length / teamSize && (
         <Grid item xs={12} alignSelf="center" textAlign="center">
           <Button onClick={onTeamCreated}>+ Add Fixed Team</Button>
         </Grid>

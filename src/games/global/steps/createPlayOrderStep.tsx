@@ -172,7 +172,7 @@ function ConfigPanel({
   boolean,
   Teams
 >): JSX.Element {
-  const playerIds = players.resolve();
+  const playerIds = players.onlyResolvableValue()!;
 
   const [showTeams, setShowTeams] = useState(false);
 
@@ -524,7 +524,7 @@ function refreshFixedConfig(
   current: readonly PlayerId[],
   players: Query<readonly PlayerId[]>
 ): readonly PlayerId[] {
-  const playerIds = players.resolve();
+  const playerIds = players.onlyResolvableValue()!;
 
   // Keep only the values in current which are still players
   const currentRefreshed = Vec.intersect(current, playerIds);

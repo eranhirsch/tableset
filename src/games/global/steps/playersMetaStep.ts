@@ -20,7 +20,7 @@ const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = {
           ? playerIds.length === limit
           : (limit.min == null || playerIds.length >= limit.min) &&
             (limit.max == null || playerIds.length <= limit.max),
-      resolve: () => playerIds,
+      onlyResolvableValue: () => playerIds,
     }),
 };
 export default playersMetaStep;
