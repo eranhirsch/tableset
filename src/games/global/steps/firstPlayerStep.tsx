@@ -31,6 +31,7 @@ export default createRandomGameStep({
       min: 2,
     }),
   resolve: ({ playerId }, playerIds) => playerId ?? Vec.sample(playerIds!, 1),
+  onlyResolvableValue: (config) => config?.playerId,
   initialConfig: (): TemplateConfig => ({}),
   refresh: ({ playerId }, players) =>
     templateValue(

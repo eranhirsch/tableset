@@ -133,13 +133,23 @@ export function createVariant({
 
     query: (template) =>
       buildQuery(baseStep.id, {
-        canResolveTo: (value: boolean) => {
+        canResolveTo(value: boolean) {
           const element = template[baseStep.id];
           const percent =
             element != null ? (element.config as TemplateConfig).percent : 0;
           // a variant can resolve to false if the percent is lower than 100
           // it can resolve to true if the percent is greater than 0
           return value ? percent > 0 : percent < 100;
+        },
+
+        onlyResolvableValue() {
+          const element = template[baseStep.id];
+          if (element == null) {
+            return false;
+          }
+
+          const { percent } = element.config as TemplateConfig;
+          return percent === 100 ? true : percent === 0 ? false : undefined;
         },
       }),
 

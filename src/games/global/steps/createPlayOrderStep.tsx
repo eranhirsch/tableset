@@ -103,6 +103,9 @@ const createPlayOrderStep = ({
         ? config.fixed
         : resolveRandom(playerIds!),
 
+    onlyResolvableValue: (config) =>
+      config != null && "fixed" in config ? config.fixed : undefined,
+
     initialConfig: (): TemplateConfig => ({ random: true }),
 
     refresh: (current, players) =>

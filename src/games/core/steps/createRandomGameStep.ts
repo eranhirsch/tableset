@@ -106,6 +106,19 @@ type Options<
       query9: Query<D9>,
       query10: Query<D10>
     ): boolean;
+    onlyResolvableValue?(
+      config: C | null,
+      query1: Query<D1>,
+      query2: Query<D2>,
+      query3: Query<D3>,
+      query4: Query<D4>,
+      query5: Query<D5>,
+      query6: Query<D6>,
+      query7: Query<D7>,
+      query8: Query<D8>,
+      query9: Query<D9>,
+      query10: Query<D10>
+    ): T | undefined;
     initialConfig(
       query1: Query<D1>,
       query2: Query<D2>,
@@ -149,6 +162,10 @@ interface OptionsInternal<T, C>
   refresh(current: C, ...dependencies: Query[]): C;
   initialConfig(...queries: Query[]): C;
   canResolveTo?(value: T, config: unknown | null, ...queries: Query[]): boolean;
+  onlyResolvableValue?(
+    config: unknown | null,
+    ...queries: Query[]
+  ): T | undefined;
   ConfigPanel(props: {
     config: Readonly<C>;
     queries: readonly Query[];
@@ -184,6 +201,7 @@ export function createRandomGameStep<T, C>({
   InstanceVariableComponent,
   isTemplatable,
   isType,
+  onlyResolvableValue,
   refresh,
   resolve,
   skip,
@@ -291,6 +309,18 @@ export function createRandomGameStep<T, C>({
                     dependency.query(template, context)
                   )
                 ),
+
+        onlyResolvableValue:
+          onlyResolvableValue == null
+            ? undefined
+            : () =>
+                onlyResolvableValue(
+                  template[baseStep.id]?.config,
+                  ...Vec.map(dependencies, (dependency) =>
+                    dependency.query(template, context)
+                  )
+                ),
+
         willResolve: () => template[baseStep.id] != null,
       }),
 

@@ -63,6 +63,22 @@ export default function createTeamSelectionStep({
     resolve: (config, playerIds, teamPlay) =>
       teamPlay ? resolve(config, playerIds, teamSize) : null,
 
+    onlyResolvableValue(config, players) {
+      if (config == null) {
+        // No config, we won't resolve the step anyway
+        return;
+      }
+
+      const playerIds = players.onlyResolvableValue()!;
+      if (Vec.flatten(config).length < playerIds.length - 1) {
+        // If we have more than one missing player there are at least 2
+        // different ways to slot them, so we can't resolve decisively
+        return;
+      }
+
+      return resolve(config, playerIds, teamSize);
+    },
+
     refresh: (config, playerIds) =>
       // Remove any players that are not in the game anymore.
       Vec.map(config, (team) =>

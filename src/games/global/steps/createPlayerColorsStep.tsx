@@ -70,25 +70,34 @@ const createPlayerColorsStep = <ProductId,>({
         ).length,
       }),
 
-    resolve: (config, playerIds, products) =>
-      normalize(
-        {
-          ...config,
-          // Associate a color for each remaining player
-          ...Dict.associate(
-            // Players without an assigned color
-            Vec.diff(playerIds!, Vec.keys(config)),
-            // Shuffle the colors which aren't already used
-            Vec.shuffle(
-              Vec.diff(
-                availableColors(playerIds!, products!),
-                Vec.values(config)
-              )
-            )
-          ),
-        },
-        playerIds!
-      ),
+    resolve: (config, players, products) =>
+      resolve(config, players!, availableColors(players!, products!)),
+
+    onlyResolvableValue(config, players, products) {
+      if (config == null) {
+        return;
+      }
+
+      const playerIds = players.onlyResolvableValue()!;
+      const assignedCount = Dict.size(config);
+      if (assignedCount < playerIds.length - 1) {
+        // If we have more than one missing player there are at least 2
+        // different ways to resolve so we can't resolve decisively
+        return;
+      }
+
+      const colors = availableColors(
+        playerIds,
+        products.onlyResolvableValue()!
+      );
+      if (assignedCount < colors.length - 1) {
+        // If we have more than one color to match that person with we can't
+        // resolve decisively
+        return;
+      }
+
+      return resolve(config, playerIds, colors);
+    },
 
     initialConfig: () => ({}),
 
@@ -125,6 +134,25 @@ const createPlayerColorsStep = <ProductId,>({
     ConfigPanelTLDR,
   });
 export default createPlayerColorsStep;
+
+const resolve = (
+  config: TemplateConfig,
+  playerIds: readonly PlayerId[],
+  availableColors: readonly GamePiecesColor[]
+): Readonly<PlayerColors> =>
+  normalize(
+    {
+      ...config,
+      // Associate a color for each remaining player
+      ...Dict.associate(
+        // Players without an assigned color
+        Vec.diff(playerIds, Vec.keys(config)),
+        // Shuffle the colors which aren't already used
+        Vec.shuffle(Vec.diff(availableColors, Vec.values(config)))
+      ),
+    },
+    playerIds
+  );
 
 function ConfigPanel({
   config,
