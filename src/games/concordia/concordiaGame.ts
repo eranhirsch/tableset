@@ -33,6 +33,7 @@ import startingMoneyStep from "./steps/startingMoneyStep";
 import startingResourcesStep from "./steps/startingResourcesStep";
 import teamPlayVariant from "./steps/teamPlayVariant";
 import teamSelectionStep from "./steps/teamSelectionStep";
+import turnOrderMarkerStep from "./steps/turnOrderMarkerStep";
 import venusScoringVariant from "./steps/venusScoringVariant";
 import wineMarketVariant from "./steps/wineMarketVariant";
 
@@ -124,6 +125,7 @@ export const concordiaGame = createGame({
     praefectusMagnusStep,
 
     // Expansions
+    turnOrderMarkerStep,
     forumDisplayStep,
     forumDecksStep,
     forumInitialTileStep,
