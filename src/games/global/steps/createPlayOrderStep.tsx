@@ -174,7 +174,7 @@ function ConfigPanel({
 >): JSX.Element {
   const playerIds = players.resolve();
 
-  const [showTeams, setShowTeams] = useState(!teamPlay.canResolveTo(false));
+  const [showTeams, setShowTeams] = useState(false);
 
   const currentOrder = useMemo(
     () =>
