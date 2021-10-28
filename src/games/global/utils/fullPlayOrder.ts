@@ -17,9 +17,10 @@ export function fullPlayOrder(
   playOrder: readonly PlayerId[],
   firstPlayerId: PlayerId
 ): readonly PlayerId[] {
-  const fullPlayOrder = [playerIds[0], ...playOrder];
+  debugger;
+  const fullPlayOrder = Vec.concat(Vec.take(playerIds, 1), playOrder);
   const firstPlayerIdx = fullPlayOrder.findIndex(
     (playerId) => playerId === firstPlayerId
   );
-  return Vec.rotate(fullPlayOrder, firstPlayerIdx);
+  return Vec.rotate(fullPlayOrder, -firstPlayerIdx);
 }
