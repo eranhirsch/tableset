@@ -177,60 +177,24 @@ function ConfigPanel({
 >): JSX.Element {
   const playerIds = players.onlyResolvableValue()!;
 
-  const [showTeams, setShowTeams] = useState(false);
-
-  const currentOrder = useMemo(
+  const fixedOrder = useMemo(
     () =>
       "fixed" in config
         ? // Rebuild the full ordering by adding the pivot back
           Vec.concat(Vec.take(playerIds, 1), config.fixed)
-        : playerIds,
+        : null,
     [config, playerIds]
-  );
-
-  const fixedSelector = (
-    <FixedSelector
-      currentOrder={currentOrder}
-      onChange={(newOrder) =>
-        onChange({ fixed: normalize(newOrder, playerIds) })
-      }
-      numTeams={teams.willResolve() && showTeams ? teams.count() : 1}
-    />
   );
 
   return (
     <Stack direction="column" spacing={1} paddingY={1}>
-      <Collapse in={"fixed" in config}>
-        {teamPlay.canResolveTo(true) ? (
-          <Stack direction="column" alignItems="center">
-            {fixedSelector}
-            {teams.willResolve() ? (
-              <>
-                {teamPlay.canResolveTo(false) && (
-                  <FormControlLabel
-                    sx={{ alignSelf: "center" }}
-                    label="Show Teams"
-                    control={<Checkbox size="small" />}
-                    checked={showTeams}
-                    onChange={() => setShowTeams((current) => !current)}
-                  />
-                )}
-                {(!teamPlay.canResolveTo(false) || showTeams) && (
-                  <Typography color="error" variant="caption">
-                    <strong>Random</strong> if the seating does't match the
-                    chosen teams.
-                  </Typography>
-                )}
-              </>
-            ) : (
-              <Typography color="error" variant="caption">
-                <strong>Ignored</strong> when the Team variant is used.
-              </Typography>
-            )}
-          </Stack>
-        ) : (
-          fixedSelector
-        )}
+      <Collapse in={fixedOrder != null}>
+        <FixedSelector
+          order={fixedOrder ?? playerIds}
+          playerIds={playerIds}
+          onChange={(order) => onChange({ fixed: normalize(order, playerIds) })}
+          queries={[teamPlay, teams]}
+        />
       </Collapse>
       <FormControlLabel
         sx={{ alignSelf: "center" }}
@@ -241,7 +205,7 @@ function ConfigPanel({
           onChange((current) =>
             "fixed" in current
               ? { random: true }
-              : { fixed: normalize(currentOrder, playerIds) }
+              : { fixed: normalize(playerIds, playerIds) }
           )
         }
       />
@@ -250,6 +214,108 @@ function ConfigPanel({
 }
 
 function FixedSelector({
+  order,
+  playerIds,
+  onChange,
+  queries: [teamPlay, teams],
+}: {
+  order: readonly PlayerId[];
+  playerIds: readonly PlayerId[];
+  onChange(order: readonly PlayerId[]): void;
+  queries: [Query<boolean>, Query<Teams>];
+}): JSX.Element {
+  const [showTeams, setShowTeams] = useState(!teamPlay.canResolveTo(false));
+
+  const playerReorderer = (
+    <PlayerReorderer
+      currentOrder={order}
+      onChange={onChange}
+      numTeams={
+        teams.willResolve() && (!teamPlay.canResolveTo(false) || showTeams)
+          ? teams.count()
+          : 1
+      }
+    />
+  );
+
+  if (!teamPlay.canResolveTo(true)) {
+    // No team play shenanigans to support
+    return playerReorderer;
+  }
+
+  return (
+    <Stack
+      direction="column"
+      alignItems="center"
+      textAlign="center"
+      paddingX={1}
+    >
+      {playerReorderer}
+      {!teams.willResolve() ? (
+        <Typography color="error" variant="caption">
+          <strong>Ignored</strong> when the Team variant is used.
+        </Typography>
+      ) : (
+        <>
+          {teamPlay.canResolveTo(false) && (
+            // Only provide a controller if there are two modes available for
+            // team play.
+            <FormControlLabel
+              sx={{ alignSelf: "center" }}
+              label="Show Teams"
+              control={<Checkbox size="small" />}
+              checked={showTeams}
+              onChange={() => setShowTeams((current) => !current)}
+            />
+          )}
+          {showTeams && (
+            <TeamWarning
+              order={order}
+              playerIds={playerIds}
+              queries={[teamPlay, teams]}
+            />
+          )}
+        </>
+      )}
+    </Stack>
+  );
+}
+
+function TeamWarning({
+  order,
+  playerIds,
+  queries: [teamPlay, teams],
+}: {
+  order: readonly PlayerId[];
+  playerIds: readonly PlayerId[];
+  queries: [Query<boolean>, Query<Teams>];
+}): JSX.Element | null {
+  const actualTeams = teams.onlyResolvableValue();
+  if (actualTeams == null) {
+    // We don't have the actual teams (it's going to be randomized) so we can't
+    // promise anything about the current seating.
+    return (
+      <Typography color="error" variant="caption">
+        <strong>Random</strong> if the seating does't match the chosen teams.
+      </Typography>
+    );
+  }
+
+  if (compliesWithTeams(normalize(order, playerIds), actualTeams, playerIds)) {
+    // The seating matches the team structure so we don't need to tell the user
+    // anything.
+    return null;
+  }
+
+  return (
+    <Typography color="error" variant="caption" paddingX={5}>
+      Current order does not match teams, a <strong>random</strong> order would
+      be used <em>instead</em>.
+    </Typography>
+  );
+}
+
+function PlayerReorderer({
   currentOrder,
   onChange,
   numTeams,
