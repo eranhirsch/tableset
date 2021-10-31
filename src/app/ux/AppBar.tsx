@@ -41,8 +41,9 @@ export function TableSetAppBar(): JSX.Element {
             <Route path="/games">Games</Route>
             <Route path="/template">Template</Route>
             <Route path="/players">Players</Route>
-            <Route path="/collection">Collection</Route>
+            <Route path="/collection">{game.name}: Collection</Route>
             <Route path="/instance">Instance</Route>
+            <Route path="/:gameId">{game.name}</Route>
             <Route path="/">MISSING TITLE</Route>
           </Switch>
         </Typography>
