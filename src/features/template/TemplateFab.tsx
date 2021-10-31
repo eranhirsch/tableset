@@ -1,14 +1,13 @@
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { CircularProgress, Fab } from "@mui/material";
+import { instanceActions } from "features/instance/instanceSlice";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { instanceSlice } from "../instance/instanceSlice";
 import {
   templateIsStaleSelector,
   wholeTemplateSelector,
 } from "./templateSlice";
-import { templateSteps } from "./templateSteps";
 
 export function TemplateFab(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -26,11 +25,7 @@ export function TemplateFab(): JSX.Element {
       sx={{ position: "absolute", bottom: 16, right: 16 }}
       color="primary"
       aria-label="go"
-      onClick={() => {
-        dispatch(
-          instanceSlice.actions.created(templateSteps(wholeTemplate), context)
-        );
-      }}
+      onClick={() => dispatch(instanceActions.created(wholeTemplate, context))}
     >
       {isStale ? <CircularProgress /> : <PlayArrowIcon />}
     </Fab>

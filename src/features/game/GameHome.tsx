@@ -1,6 +1,10 @@
 import { List, ListItem, ListItemButton, ListSubheader } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import {
+  hasGameInstance,
+  instanceActions,
+} from "features/instance/instanceSlice";
+import {
   hasGameTemplate,
   templateActions,
 } from "features/template/templateSlice";
@@ -18,6 +22,7 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
   const history = useHistory();
 
   const hasTemplate = useAppSelector(hasGameTemplate(game));
+  const hasInstance = useAppSelector(hasGameInstance(game));
 
   return (
     <>
@@ -40,11 +45,25 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
           </ListItemButton>
         </ListItem>
       </List>
-      <List subheader={<ListSubheader>Tables</ListSubheader>}>
-        <ListItem disableGutters>
-          <ListItemButton></ListItemButton>
-        </ListItem>
-      </List>
+      {hasInstance && (
+        <List subheader={<ListSubheader>Tables</ListSubheader>}>
+          <ListItem disableGutters>
+            <ListItemButton component={Link} to="/instance">
+              Last
+            </ListItemButton>
+          </ListItem>
+          <ListItem disableGutters>
+            <ListItemButton
+              onClick={() => {
+                dispatch(instanceActions.reset(game));
+                history.push(`/instance`);
+              }}
+            >
+              Manual
+            </ListItemButton>
+          </ListItem>
+        </List>
+      )}
     </>
   );
 }
