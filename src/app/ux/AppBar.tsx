@@ -9,6 +9,7 @@ import { gameSelector } from "features/game/gameSlice";
 import { Link, Route, Switch } from "react-router-dom";
 import { OverflowMenu } from "./OverflowMenu";
 
+
 export function TableSetAppBar(): JSX.Element {
   const game = useAppSelector(gameSelector);
 
@@ -27,11 +28,6 @@ export function TableSetAppBar(): JSX.Element {
       <AddBoxIcon />
     </IconButton>
   );
-  const gameHomeButton = (
-    <IconButton component={Link} color="inherit" to={`/${game.id}`}>
-      <HomeIcon />
-    </IconButton>
-  );
 
   return (
     <AppBar position="sticky" sx={{ flexGrow: 0 }}>
@@ -41,16 +37,20 @@ export function TableSetAppBar(): JSX.Element {
             <Route path="/games">Games</Route>
             <Route path="/template">Template</Route>
             <Route path="/players">Players</Route>
-            <Route path="/collection">{game.name}: Collection</Route>
+            <Route path="/collection">{game?.name}: Collection</Route>
             <Route path="/instance">Instance</Route>
-            <Route path="/:gameId">{game.name}</Route>
+            <Route path="/:gameId">{game?.name}</Route>
             <Route path="/">MISSING TITLE</Route>
           </Switch>
         </Typography>
         <Switch>
           <Route path="/template">{playersButton}</Route>
           <Route path="/players">{templateButton}</Route>
-          <Route path="/collection">{gameHomeButton}</Route>
+          <Route path="/collection">
+            <IconButton component={Link} color="inherit" to={`/${game?.id}`}>
+              <HomeIcon />
+            </IconButton>
+          </Route>
           <Route path="/instance">
             <IconButton component={Link} color="inherit" to="/template">
               <ClearIcon />

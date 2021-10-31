@@ -40,13 +40,13 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
     <>
       {Vec.is_empty(products) && <NoProductsMegaphone game={game} />}
       <List subheader={<ListSubheader>Recipes</ListSubheader>}>
-        <ListItem disableGutters>
-          {hasTemplate && (
+        {hasTemplate && (
+          <ListItem disableGutters>
             <ListItemButton component={Link} to="/template">
               Current
             </ListItemButton>
-          )}
-        </ListItem>
+          </ListItem>
+        )}
         <ListItem disableGutters>
           <ListItemButton
             onClick={() => {

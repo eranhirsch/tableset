@@ -123,12 +123,15 @@ export const templateSlice = createSlice({
       .addCase(playersActions.removed, (state) =>
         markDownstreamElementsStale(playersMetaStep, state)
       )
-      .addCase(collectionActions.toggled, (state) =>
+      .addCase(collectionActions.toggled, (state) => {
+        if (state.gameId == null) {
+          return;
+        }
         markDownstreamElementsStale(
-          GAMES[state.gameId!].productsMetaStep,
+          GAMES[state.gameId].productsMetaStep,
           state
-        )
-      );
+        );
+      });
   },
 });
 
