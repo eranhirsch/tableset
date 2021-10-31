@@ -45,25 +45,25 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
           </ListItemButton>
         </ListItem>
       </List>
-      {hasInstance && (
-        <List subheader={<ListSubheader>Tables</ListSubheader>}>
+      <List subheader={<ListSubheader>Tables</ListSubheader>}>
+        {hasInstance && (
           <ListItem disableGutters>
             <ListItemButton component={Link} to="/instance">
               Last
             </ListItemButton>
           </ListItem>
-          <ListItem disableGutters>
-            <ListItemButton
-              onClick={() => {
-                dispatch(instanceActions.reset(game));
-                history.push(`/instance`);
-              }}
-            >
-              Manual
-            </ListItemButton>
-          </ListItem>
-        </List>
-      )}
+        )}
+        <ListItem disableGutters>
+          <ListItemButton
+            onClick={() => {
+              dispatch(instanceActions.reset(game));
+              history.push(`/instance`);
+            }}
+          >
+            Manual
+          </ListItemButton>
+        </ListItem>
+      </List>
     </>
   );
 }
