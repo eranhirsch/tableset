@@ -1,5 +1,5 @@
 import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
-import { expansionsSlice } from "features/expansions/expansionsSlice";
+import { collectionSlice } from "features/collection/collectionSlice";
 import { gameSlice } from "features/game/gameSlice";
 import { instanceSlice } from "features/instance/instanceSlice";
 import { playersSlice } from "features/players/playersSlice";
@@ -12,7 +12,7 @@ export const store = configureStore({
     [playersSlice.name]: playersSlice.reducer,
     [instanceSlice.name]: instanceSlice.reducer,
     [gameSlice.name]: gameSlice.reducer,
-    [expansionsSlice.name]: expansionsSlice.reducer,
+    [collectionSlice.name]: collectionSlice.reducer,
   },
   preloadedState: loadStateFromLocalStorage(),
 });

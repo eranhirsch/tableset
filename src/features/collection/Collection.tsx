@@ -11,7 +11,7 @@ import { Shape, Vec } from "common";
 import { gameSelector } from "features/game/gameSlice";
 import { ProductId } from "model/Game";
 import React from "react";
-import { expansionsActions, hasExpansionSelector } from "./expansionsSlice";
+import { collectionActions, hasProductSelector } from "./collectionSlice";
 
 export function ExpansionListItem({
   productId,
@@ -23,7 +23,7 @@ export function ExpansionListItem({
   const dispatch = useAppDispatch();
 
   const game = useAppSelector(gameSelector);
-  const isEnabled = useAppSelector(hasExpansionSelector(productId));
+  const isEnabled = useAppSelector(hasProductSelector(game, productId));
 
   const product = game.products[productId];
 
@@ -33,7 +33,7 @@ export function ExpansionListItem({
       <Checkbox
         edge="end"
         checked={isEnabled}
-        onChange={() => dispatch(expansionsActions.toggled(productId))}
+        onChange={() => dispatch(collectionActions.toggled(game, productId))}
       />
     </ListItem>
   );
@@ -62,7 +62,7 @@ function Expansions({
   );
 }
 
-export function Products(): JSX.Element {
+export function Collection(): JSX.Element {
   const { products } = useAppSelector(gameSelector);
   const [implemented, unimplemented] = Shape.partition(
     products,

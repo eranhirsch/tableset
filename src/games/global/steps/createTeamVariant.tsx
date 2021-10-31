@@ -1,10 +1,6 @@
-import { useAppSelector } from "app/hooks";
-import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
-import { playersSelectors } from "features/players/playersSlice";
 import { createVariant } from "games/core/steps/createVariant";
 import { neverResolvesMetaStep, playersMetaStep } from "games/global";
 import { VariableGameStep } from "model/VariableGameStep";
-
 interface Options<ProductId = never> {
   productDependencies?: {
     step: Readonly<VariableGameStep<readonly ProductId[]>>;
@@ -15,16 +11,12 @@ interface Options<ProductId = never> {
   InstanceVariableComponent: () => JSX.Element;
 }
 
-export type TeamVariantStep = VariableGameStep<boolean> & {
-  useRequiredInstanceValue: () => boolean;
-};
-
 export default function createTeamVariant<ProductId = never>({
   productDependencies,
   optionalAt,
   enabledAt,
   InstanceVariableComponent,
-}: Options<ProductId>): Readonly<TeamVariantStep> {
+}: Options<ProductId>): Readonly<VariableGameStep<boolean>> {
   const baseTeamPlayVariant = createVariant({
     id: "teams",
     name: "Teams",
@@ -41,14 +33,8 @@ export default function createTeamVariant<ProductId = never>({
     InstanceVariableComponent,
   });
 
-  const baseWithHook = {
-    ...baseTeamPlayVariant,
-    useRequiredInstanceValue: () =>
-      useRequiredInstanceValue(baseTeamPlayVariant),
-  };
-
   if (enabledAt == null) {
-    return baseWithHook;
+    return baseTeamPlayVariant;
   }
 
   /**
@@ -58,23 +44,26 @@ export default function createTeamVariant<ProductId = never>({
    * This makes most of the additional logic straightforward and easy to
    * understand.
    */
-  const teamPlayVariant: typeof baseWithHook = {
-    ...baseWithHook,
+  const teamPlayVariant: typeof baseTeamPlayVariant = {
+    ...baseTeamPlayVariant,
 
     skip: (context) =>
-      baseWithHook.skip(context) &&
+      baseTeamPlayVariant.skip(context) &&
       !enabledAt.includes(context.playerIds.length),
 
     hasValue: (context) =>
-      baseWithHook.hasValue(context) ||
+      baseTeamPlayVariant.hasValue(context) ||
       enabledAt.includes(context.playerIds.length),
 
     extractInstanceValue: (upstreamInstance, context) =>
-      baseWithHook.extractInstanceValue(upstreamInstance, context) ??
+      baseTeamPlayVariant.extractInstanceValue(upstreamInstance, context) ??
+      (enabledAt.includes(context.playerIds.length) ? true : null),
+    coerceInstanceEntry: (instanceElement, context) =>
+      baseTeamPlayVariant.coerceInstanceEntry(instanceElement, context) ??
       (enabledAt.includes(context.playerIds.length) ? true : null),
 
     query: (template, context) => {
-      const baseQuery = baseWithHook.query(template, context);
+      const baseQuery = baseTeamPlayVariant.query(template, context);
       return {
         ...baseQuery,
         canResolveTo: (value) =>
@@ -82,18 +71,6 @@ export default function createTeamVariant<ProductId = never>({
             ? value
             : baseQuery.canResolveTo(value),
       };
-    },
-
-    useRequiredInstanceValue() {
-      // We deconstruct the hook from the base object so that lint detects we
-      // are using a hook and warn us if we use it incorrectly (it doesn't
-      // detect `something.useHook` as a hook call)
-      const { useRequiredInstanceValue } = baseWithHook;
-      const instanceValue = useRequiredInstanceValue();
-
-      const playerCount = useAppSelector(playersSelectors.selectTotal);
-
-      return instanceValue || enabledAt.includes(playerCount);
     },
 
     InstanceManualComponent: InstanceVariableComponent,

@@ -1,6 +1,6 @@
 import { Container, ThemeProvider } from "@mui/material";
 import { themeWithGameColors } from "app/ux/themeWithGameColors";
-import { Products } from "features/expansions/Expansions";
+import { Collection } from "features/collection/Collection";
 import { Instance } from "features/instance/Instance";
 import { Players } from "features/players/Players";
 import { Template } from "features/template/Template";
@@ -30,9 +30,9 @@ function App(): JSX.Element | null {
                 <Players />
               </ErrorBoundary>
             </Route>
-            <Route path="/products">
-              <ErrorBoundary slice="expansions">
-                <Products />
+            <Route path="/collection">
+              <ErrorBoundary slice="collection">
+                <Collection />
               </ErrorBoundary>
             </Route>
             <Route path="/instance">

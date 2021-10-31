@@ -20,10 +20,10 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
-import alwaysOnMetaStep from "games/global/steps/alwaysOnMetaStep";
 import { PlayerId } from "model/Player";
+import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
-import { TeamVariantStep } from "./createTeamVariant";
+import alwaysOnMetaStep from "./alwaysOnMetaStep";
 import playersMetaStep from "./playersMetaStep";
 
 export type Teams = readonly (readonly PlayerId[])[];
@@ -34,19 +34,14 @@ type TemplateConfig = Teams;
 
 interface Options {
   teamSize: number;
-  enablerStep?: TeamVariantStep;
+  enablerStep?: VariableGameStep<boolean>;
 }
-
-const DEFAULT_ENABLER_STEP: TeamVariantStep = {
-  ...alwaysOnMetaStep,
-  useRequiredInstanceValue: () => true,
-};
 
 export type TeamSelectionStep = ReturnType<typeof createTeamSelectionStep>;
 
 export default function createTeamSelectionStep({
   teamSize,
-  enablerStep = DEFAULT_ENABLER_STEP,
+  enablerStep = alwaysOnMetaStep,
 }: Options): RandomGameStep<Teams, TemplateConfig> & {
   enablerStep: NonNullable<Options["enablerStep"]>;
 } {

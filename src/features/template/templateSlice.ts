@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
 import { Dict, nullthrows, type_invariant, Vec } from "common";
-import { expansionsActions } from "features/expansions/expansionsSlice";
+import { collectionActions } from "features/collection/collectionSlice";
 import { playersActions } from "features/players/playersSlice";
 import { GameId, GAMES } from "games/core/GAMES";
 import { playersMetaStep } from "games/global";
@@ -115,7 +115,7 @@ export const templateSlice = createSlice({
       .addCase(playersActions.removed, (state) =>
         markDownstreamElementsStale(playersMetaStep, state)
       )
-      .addCase(expansionsActions.toggled, (state) =>
+      .addCase(collectionActions.toggled, (state) =>
         markDownstreamElementsStale(GAMES[state.gameId].productsMetaStep, state)
       );
   },

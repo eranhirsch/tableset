@@ -1,5 +1,8 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
-import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { useMemo } from "react";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
@@ -37,9 +40,7 @@ function InstanceVariableComponent({
   value: hash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
   const venusScoring = useOptionalInstanceValue(venusScoringVariant);
-
-  const { useRequiredInstanceValue } = teamPlayVariant;
-  const teamPlay = useRequiredInstanceValue();
+  const teamPlay = useRequiredInstanceValue(teamPlayVariant);
 
   const market = useMemo(
     () =>
@@ -83,9 +84,7 @@ function InstanceVariableComponent({
 
 function InstanceManualComponent(): JSX.Element {
   const venusScoring = useOptionalInstanceValue(venusScoringVariant);
-
-  const { useRequiredInstanceValue } = teamPlayVariant;
-  const teamPlay = useRequiredInstanceValue();
+  const teamPlay = useRequiredInstanceValue(teamPlayVariant);
 
   return (
     <HeaderAndSteps synopsis="Fill the personality cards market display:">

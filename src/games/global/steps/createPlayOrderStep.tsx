@@ -11,7 +11,10 @@ import {
   Typography,
 } from "@mui/material";
 import { C, invariant, Vec } from "common";
-import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
@@ -525,8 +528,7 @@ function InstanceManualComponent({
 }: {
   teamSelectionStep: TeamSelectionStep;
 }): JSX.Element {
-  const { useRequiredInstanceValue } = teamSelectionStep.enablerStep;
-  const teamPlay = useRequiredInstanceValue();
+  const teamPlay = useRequiredInstanceValue(teamSelectionStep.enablerStep);
   const teams = useOptionalInstanceValue(teamSelectionStep);
 
   return (

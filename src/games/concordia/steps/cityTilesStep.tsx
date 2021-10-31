@@ -1,7 +1,5 @@
 import { Divider, Grid, Stack, Typography, useTheme } from "@mui/material";
-import { useAppSelector } from "app/hooks";
 import { Dict, MathUtils, Shape, Vec } from "common";
-import { hasExpansionSelector } from "features/expansions/expansionsSlice";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
@@ -24,21 +22,22 @@ import { MapId, MAPS, Zone } from "../utils/MAPS";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
+import productsMetaStep from "./productsMetaStep";
 import saltVariantStep from "./saltVariant";
 
 export default createRandomGameStep({
   id: "cityTiles",
   labelOverride: "City Resources",
 
-  dependencies: [mapStep, saltVariantStep],
+  dependencies: [productsMetaStep, mapStep, saltVariantStep],
 
   isType: (x): x is string => typeof x === "string",
 
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  isTemplatable: (map) => map.willResolve(),
-  resolve: (_, mapId, withSalt) =>
+  isTemplatable: (_, map) => map.willResolve(),
+  resolve: (_config, _products, mapId, withSalt) =>
     CityResourcesEncoder.randomHash(
       // We can force mapId here with `!` because the element is only
       // templatable when map will resolve (see isTemplatable)
@@ -112,8 +111,10 @@ function InstanceVariableComponent({
 function InstanceManualComponent() {
   const mapId = useOptionalInstanceValue(mapStep);
 
-  const withSalsaProduct = useAppSelector(hasExpansionSelector("salsa"));
+  const products = useRequiredInstanceValue(productsMetaStep);
   const withSalt = useRequiredInstanceValue(saltVariantStep);
+
+  const withSalsaProduct = products.includes("salsa");
 
   return (
     <HeaderAndSteps synopsis="Set up the city resource tiles on the board:">
@@ -130,7 +131,9 @@ function InstanceManualComponent() {
 
 function GatherStep(): JSX.Element {
   const mapId = useOptionalInstanceValue(mapStep);
-  const withSalsaProduct = useAppSelector(hasExpansionSelector("salsa"));
+  const products = useRequiredInstanceValue(productsMetaStep);
+
+  const withSalsaProduct = products.includes("salsa");
 
   const allZones = Vec.keys(CITY_TILES);
 

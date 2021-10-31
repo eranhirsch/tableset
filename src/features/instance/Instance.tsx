@@ -7,17 +7,15 @@ import {
   Typography
 } from "@mui/material";
 import { Dict, Vec } from "common";
-import { allExpansionIdsSelector } from "features/expansions/expansionsSlice";
 import { StepLabel } from "features/game/StepLabel";
+import { useFeaturesContext } from "features/useFeaturesContext";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
 import React, { useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { ProductId, StepId } from "../../model/Game";
-import { PlayerId } from "../../model/Player";
+import { StepId } from "../../model/Game";
 import { gameStepSelector } from "../game/gameSlice";
-import { playersSelectors } from "../players/playersSlice";
 import {
   fullInstanceSelector,
   instanceSelectors,
@@ -33,24 +31,18 @@ function InstanceItemContent({
     | RandomGameStep
     | DerivedGameStep;
   const instance = useAppSelector(instanceSelectors.selectEntities);
-  const playerIds = useAppSelector(
-    playersSelectors.selectIds
-  ) as readonly PlayerId[];
-  const productIds = useAppSelector(
-    allExpansionIdsSelector
-  ) as readonly ProductId[];
+  const context = useFeaturesContext();
   const { InstanceManualComponent } = gameStep;
   if ("InstanceDerivedComponent" in gameStep) {
     return (
       <gameStep.InstanceDerivedComponent
         context={{
+          ...context,
           instance:
             // redux dictionaries are really weird because they support ID types
             // which aren't used, and have undefined as part of the value.
             // We cast here to work around it...
             Vec.values(instance as Record<StepId, SetupStep>),
-          playerIds,
-          productIds,
         }}
       />
     );

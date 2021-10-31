@@ -38,6 +38,8 @@ import venusScoringVariant from "./steps/venusScoringVariant";
 import wineMarketVariant from "./steps/wineMarketVariant";
 
 export const concordiaGame = createGame({
+  id: "concordia",
+
   products: {
     base: { isBase: true, name: "Concordia", bggId: 124361, year: 2013 },
     britanniaGermania: {

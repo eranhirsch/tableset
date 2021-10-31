@@ -8,12 +8,10 @@ export const createProductsMetaStep = <Pid extends ProductId>(): Readonly<
   id: "__product",
   label: `<Product>`,
 
-  // trivial impl, these steps are never part of the template.
-  coerceInstanceEntry: () => null,
-
-  hasValue: ({ productIds }) => true,
+  hasValue: () => true,
 
   extractInstanceValue: (_, { productIds }) => productIds as readonly Pid[],
+  coerceInstanceEntry: (_, { productIds }) => productIds as readonly Pid[],
 
   query: (_, { productIds: currentProductIds }) =>
     buildQuery("__product", {

@@ -12,7 +12,8 @@ export interface VariableGameStep<T = unknown>
   extends GameStepBase,
     Queryable<T> {
   coerceInstanceEntry(
-    instanceEntry: Readonly<{ id: string; value: unknown }> | undefined
+    instanceEntry: Readonly<{ id: string; value: unknown }> | undefined,
+    context: Readonly<ContextBase>
   ): T | null;
   hasValue(context: TemplateContext | InstanceContext): boolean;
   extractInstanceValue(
