@@ -46,7 +46,13 @@ function InstanceDerivedComponent({
       <RomanTitle>
         {/* spell-checker: disable */}Gavdos{/* spell-checker: enable */}
       </RomanTitle>
-      ); <em>Otherwise skip this step</em>.
+      )
+      {mapId == null && (
+        <>
+          ; <em>Otherwise skip this step</em>
+        </>
+      )}
+      .
     </Typography>
   );
 }
