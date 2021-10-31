@@ -1,30 +1,43 @@
-import { createSelector, createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nullthrows, Vec } from "common";
-import { StepId } from "model/Game";
+import { Game, StepId } from "model/Game";
 import { GameStepBase } from "model/GameStepBase";
 import { RootState } from "../../app/store";
 import { GameId, GAMES } from "../../games/core/GAMES";
 
 interface GameState {
-  id: GameId;
+  id?: GameId;
 }
 
-const initialState: GameState = { id: "concordia" };
+const initialState: GameState = {};
 
 export const gameSlice = createSlice({
   name: "game",
   initialState,
-  reducers: {},
+  reducers: {
+    set: {
+      prepare: ({ id }: Game) => ({ payload: id }),
+      reducer(state, { payload: gameId }: PayloadAction<GameId>) {
+        state.id = gameId;
+      },
+    },
+  },
 });
 
-const gameIdSelector = (state: RootState) => state.game.id;
+export const gameActions = gameSlice.actions;
+
+const gameIdSelector = ({ game: { id } }: RootState) => id;
+export const isGameSelectedSelector = createSelector(
+  gameIdSelector,
+  (gameId) => gameId !== null
+);
 export const gameSelector = createSelector(
   gameIdSelector,
-  (gameId) => GAMES[gameId]
+  (gameId) => GAMES[gameId!]
 );
 export const gameStepsSelector = createSelector(
   gameSelector,
-  (game) => game.steps
+  ({ steps }) => steps
 );
 export const gameStepSelector = (stepId: StepId) => (state: RootState) =>
   nullthrows(

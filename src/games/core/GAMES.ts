@@ -3,6 +3,6 @@ import { Game } from "model/Game";
 
 export type GameId = "concordia";
 
-export const GAMES = Object.freeze({
+export const GAMES: Required<Record<GameId, Readonly<Game>>> = {
   concordia: concordiaGame,
-} as Record<GameId, Game>);
+};

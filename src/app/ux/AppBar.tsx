@@ -28,6 +28,7 @@ export function TableSetAppBar(): JSX.Element {
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           <Switch>
+            <Route path="/games">Games</Route>
             <Route path="/template">Template</Route>
             <Route path="/players">Players</Route>
             <Route path="/collection">Collection</Route>

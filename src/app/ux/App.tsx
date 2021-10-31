@@ -1,6 +1,7 @@
 import { Container, ThemeProvider } from "@mui/material";
 import { themeWithGameColors } from "app/ux/themeWithGameColors";
 import { Collection } from "features/collection/Collection";
+import { Games } from "features/game/Games";
 import { Instance } from "features/instance/Instance";
 import { Players } from "features/players/Players";
 import { Template } from "features/template/Template";
@@ -20,6 +21,11 @@ function App(): JSX.Element | null {
           sx={{ height: "100vh", position: "relative", paddingTop: 8 }}
         >
           <Switch>
+            <Route path="/games">
+              <ErrorBoundary slice="game">
+                <Games />
+              </ErrorBoundary>
+            </Route>
             <Route path="/template">
               <ErrorBoundary slice="template">
                 <Template />

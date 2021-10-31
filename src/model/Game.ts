@@ -9,20 +9,22 @@ export type StepId = string;
 export type ProductId = string;
 
 export interface GameOptions<Pid extends ProductId = ProductId> {
-  readonly id: GameId;
-  readonly productsMetaStep: VariableGameStep<readonly Pid[]>;
-  readonly steps: readonly Readonly<GameStepBase>[];
-  readonly products: Readonly<Record<Pid, Product>>;
+  id: GameId;
+  name: string;
+  productsMetaStep: VariableGameStep<readonly Pid[]>;
+  steps: readonly Readonly<GameStepBase>[];
+  products: Readonly<Record<Pid, Product>>;
 }
 
 export interface Game<
   Sid extends StepId = StepId,
   Pid extends ProductId = ProductId
 > {
-  readonly id: GameId;
-  readonly productsMetaStep: VariableGameStep<readonly Pid[]>;
-  readonly steps: Readonly<Record<Sid, GameStepBase>>;
-  readonly products: Readonly<Record<Pid, Product>>;
+  name: string;
+  id: GameId;
+  productsMetaStep: VariableGameStep<readonly Pid[]>;
+  steps: Readonly<Record<Sid, GameStepBase>>;
+  products: Readonly<Record<Pid, Product>>;
 }
 
 export const createGame = <
@@ -30,11 +32,13 @@ export const createGame = <
   Pid extends ProductId = ProductId
 >({
   id,
+  name,
+  products,
   productsMetaStep,
   steps,
-  products,
-}: GameOptions<Pid>): Game<Sid, Pid> => ({
+}: Readonly<GameOptions<Pid>>): Game<Sid, Pid> => ({
   id,
+  name,
   products,
   productsMetaStep,
   steps: Dict.from_values(steps, ({ id }) => id),
