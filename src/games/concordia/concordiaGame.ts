@@ -51,6 +51,7 @@ export const concordiaGame = createGame({
       name: "8 Forum Cards mini-expansion",
       bggId: 209574,
       year: 2016,
+      isNotImplemented: true,
     },
     aegyptusCreta: { name: "Aegyptus / Creta", bggId: 232917, year: 2017 },
     venus: { name: "Venus (Expansion)", bggId: 262711, year: 2018 },
@@ -62,7 +63,12 @@ export const concordiaGame = createGame({
     },
     balearicaCyprus: { name: "Balearica / Cyprus", bggId: 283177, year: 2019 },
     balearicaItalia: { name: "Balearica / Italia", bggId: 283362, year: 2019 },
-    solitaria: { name: "Solitaria", bggId: 325490, year: 2021 },
+    solitaria: {
+      name: "Solitaria",
+      bggId: 325490,
+      year: 2021,
+      isNotImplemented: true,
+    },
   },
 
   productsMetaStep,

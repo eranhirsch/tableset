@@ -1,6 +1,13 @@
-import { Checkbox, List, ListItem, ListItemText } from "@mui/material";
+import {
+  Checkbox,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  ListSubheader,
+} from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { Dict, Vec } from "common";
+import { Shape, Vec } from "common";
 import { gameSelector } from "features/game/gameSlice";
 import { ProductId } from "model/Game";
 import React from "react";
@@ -8,8 +15,10 @@ import { expansionsActions, hasExpansionSelector } from "./expansionsSlice";
 
 export function ExpansionListItem({
   productId,
+  disabled = false,
 }: {
   productId: ProductId;
+  disabled?: boolean;
 }): JSX.Element {
   const dispatch = useAppDispatch();
 
@@ -19,7 +28,7 @@ export function ExpansionListItem({
   const product = game.products[productId];
 
   return (
-    <ListItem disablePadding>
+    <ListItem disablePadding disabled={disabled}>
       <ListItemText primary={product.name} />
       <Checkbox
         edge="end"
@@ -30,17 +39,50 @@ export function ExpansionListItem({
   );
 }
 
-export function Expansions(): JSX.Element {
-  const { products } = useAppSelector(gameSelector);
-
+function Expansions({
+  productIds,
+  disabled = false,
+  subheader,
+}: {
+  productIds: readonly ProductId[];
+  disabled?: boolean;
+  subheader: string;
+}): JSX.Element {
   return (
-    <List sx={{ width: "100%" }}>
+    <List
+      sx={{ width: "100%" }}
+      subheader={<ListSubheader disableGutters>{subheader}</ListSubheader>}
+    >
       {React.Children.toArray(
-        Vec.map_with_key(
-          Dict.sort_by(products, ({ isBase }) => (isBase ? 0 : 1)),
-          (productId) => <ExpansionListItem productId={productId} />
-        )
+        Vec.map(productIds, (productId) => (
+          <ExpansionListItem productId={productId} disabled={disabled} />
+        ))
       )}
     </List>
+  );
+}
+
+export function Products(): JSX.Element {
+  const { products } = useAppSelector(gameSelector);
+  const [implemented, unimplemented] = Shape.partition(
+    products,
+    ({ isNotImplemented }) => !isNotImplemented
+  );
+  const [expansions, bases] = Shape.partition(
+    implemented,
+    (product) => !product?.isBase
+  );
+  return (
+    <>
+      <Expansions productIds={Vec.keys(bases)} subheader="Base" />
+      <Divider />
+      <Expansions productIds={Vec.keys(expansions)} subheader="Expansions" />
+      <Divider />
+      <Expansions
+        productIds={Vec.keys(unimplemented)}
+        disabled
+        subheader="Not Implemented"
+      />
+    </>
   );
 }

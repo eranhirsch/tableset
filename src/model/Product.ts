@@ -3,4 +3,5 @@ export interface Product {
   isBase?: true;
   name: string;
   year: number;
+  isNotImplemented?: true;
 }

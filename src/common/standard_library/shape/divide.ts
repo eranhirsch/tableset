@@ -4,7 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/divide.php
  */
 import { Dict, Shape as S, tuple, Vec } from "common";
-import { ValueOf } from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns an array containing the original dict split into chunks of the given
@@ -23,20 +23,25 @@ const chunk = <T extends Record<keyof any, any>>(
  * @returns a 2-tuple containing mapper-objs for which the given predicate
  * returned `true` and `false`, respectively.
  */
-const partition = <T extends Record<keyof any, any>>(
+const partition = <T extends DictLike>(
   dict: Readonly<T>,
   predicate: (value: ValueOf<T>) => boolean
-): readonly [enabled: Readonly<Partial<T>>, disabled: Readonly<Partial<T>>] =>
-  partition_with_key(dict, (_, value) => predicate(value));
+): readonly [
+  enabled: Readonly<Partial<Record<keyof T, ValueOf<T>>>>,
+  disabled: Readonly<Partial<Record<keyof T, ValueOf<T>>>>
+] => partition_with_key(dict, (_, value) => predicate(value));
 
 /**
  * @returns a 2-tuple containing mapper-objs for which the given keyed predicate
  * returned `true` and `false`, respectively.
  */
-function partition_with_key<T extends Record<keyof any, any>>(
+function partition_with_key<T extends DictLike>(
   dict: Readonly<T>,
   predicate: (key: keyof T, value: ValueOf<T>) => boolean
-): readonly [enabled: Readonly<Partial<T>>, disabled: Readonly<Partial<T>>] {
+): readonly [
+  enabled: Readonly<Partial<Record<keyof T, ValueOf<T>>>>,
+  disabled: Readonly<Partial<Record<keyof T, ValueOf<T>>>>
+] {
   const enabled = S.filter_with_keys(dict, (key, value) =>
     predicate(key, value)
   );
