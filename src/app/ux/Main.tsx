@@ -1,6 +1,7 @@
 import { Container } from "@mui/material";
 import { ReactUtils } from "common";
 import { Collection } from "features/collection/Collection";
+import { GameHomeWrapper } from "features/game/GameHome";
 import { Games } from "features/game/Games";
 import { Instance } from "features/instance/Instance";
 import { Players } from "features/players/Players";
@@ -45,6 +46,9 @@ export function Main(): JSX.Element {
           <ErrorBoundary slice="instance">
             <Instance />
           </ErrorBoundary>
+        </Route>
+        <Route path="/:gameId">
+          <GameHomeWrapper />
         </Route>
         <Route path="/">
           <RootRedirector />

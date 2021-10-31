@@ -15,7 +15,7 @@ export function Games(): JSX.Element {
           <ListItemButton
             onClick={() => {
               dispatch(gameActions.set(game));
-              history.push("/");
+              history.push(`/${gameId}`);
             }}
           >
             {game.name}

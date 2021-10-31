@@ -11,7 +11,7 @@ import { playersActions } from "features/players/playersSlice";
 import { GameId, GAMES } from "games/core/GAMES";
 import { playersMetaStep } from "games/global";
 import { ContextBase } from "model/ContextBase";
-import { StepId } from "model/Game";
+import { Game, StepId } from "model/Game";
 import { GameStepBase } from "model/GameStepBase";
 import { VariableGameStep } from "model/VariableGameStep";
 import { isTemplatable, Templatable } from "./Templatable";
@@ -28,15 +28,23 @@ const templateAdapter = createEntityAdapter<TemplateElement>({
 });
 
 interface GlobalTemplateState {
-  gameId: GameId;
+  gameId?: GameId;
 }
 
-const INITIAL_GLOBAL_STATE: GlobalTemplateState = { gameId: "concordia" };
+const INITIAL_GLOBAL_STATE: GlobalTemplateState = {};
 
 export const templateSlice = createSlice({
   name: "template",
   initialState: templateAdapter.getInitialState(INITIAL_GLOBAL_STATE),
   reducers: {
+    initialize: {
+      prepare: ({ id }: Game) => ({ payload: id }),
+      reducer(state, { payload: id }: PayloadAction<GameId>) {
+        state.gameId = id;
+        templateAdapter.removeAll(state);
+      },
+    },
+
     enabled: {
       prepare: ({ id }: Templatable, context: ContextBase) => ({
         payload: id,
@@ -50,7 +58,7 @@ export const templateSlice = createSlice({
         }: PayloadAction<StepId, string, { context: ContextBase }>
       ) {
         const templatable = type_invariant(
-          GAMES[state.gameId].steps[id],
+          GAMES[state.gameId!].steps[id],
           isTemplatable
         );
         const config = templatable.initialConfig(state.entities, context);
@@ -116,12 +124,15 @@ export const templateSlice = createSlice({
         markDownstreamElementsStale(playersMetaStep, state)
       )
       .addCase(collectionActions.toggled, (state) =>
-        markDownstreamElementsStale(GAMES[state.gameId].productsMetaStep, state)
+        markDownstreamElementsStale(
+          GAMES[state.gameId!].productsMetaStep,
+          state
+        )
       );
   },
 });
 
-export const wholeTemplateSelector = (state: RootState) => state.template;
+export const wholeTemplateSelector = ({ template }: RootState) => template;
 export const templateSelectors = templateAdapter.getSelectors<RootState>(
   wholeTemplateSelector
 );
@@ -137,6 +148,13 @@ export const templateElementSelectorEnforce =
       templateElementSelectorNullable(templatable)(state),
       `Template missing element for step ${templatable.id}`
     );
+
+export const hasGameTemplate = ({ id }: Game) =>
+  createSelector(
+    wholeTemplateSelector,
+    templateSelectors.selectTotal,
+    ({ gameId }, count) => gameId === id && count > 0
+  );
 
 export const templateIsStaleSelector = createSelector(
   templateSelectors.selectAll,
@@ -157,7 +175,7 @@ export const templateActions = templateSlice.actions;
 
 function disabledImpl(state: RootState["template"], stepId: StepId): void {
   templateAdapter.removeOne(state, stepId);
-  markDownstreamElementsStale(GAMES[state.gameId].steps[stepId], state);
+  markDownstreamElementsStale(GAMES[state.gameId!].steps[stepId], state);
 }
 
 function configUpdatedImpl<C = unknown>(
@@ -169,7 +187,7 @@ function configUpdatedImpl<C = unknown>(
     id,
     changes: { config },
   });
-  markDownstreamElementsStale(GAMES[state.gameId].steps[id], state);
+  markDownstreamElementsStale(GAMES[state.gameId!].steps[id], state);
 }
 
 const isVariableGameStep = (step: GameStepBase): step is VariableGameStep =>

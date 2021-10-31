@@ -16,9 +16,13 @@ export function templateSteps({
   gameId,
   entities,
 }: {
-  gameId: GameId;
+  gameId?: GameId;
   entities: Dictionary<TemplateElement>;
 }): readonly [Templatable, TemplateElement][] {
+  if (gameId == null) {
+    return [];
+  }
+
   return Vec.map_with_key(
     // The inner join is the cleanest way to filter both dicts on each-other's
     // keys.
