@@ -24,7 +24,7 @@ export function TableSetAppBar(): JSX.Element {
   );
 
   return (
-    <AppBar position="absolute">
+    <AppBar position="sticky" sx={{ flexGrow: 0 }}>
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           <Switch>
