@@ -176,7 +176,9 @@ function UnknownPlayerCount({
           e.g. for a 3 player game take all cards with numerals I, II, and III
           and leave cards with numerals IV and V in the box.
         </>,
-        <AllCardsCountsFootnote venusScoring={venusScoring} />,
+        <AllCardsCountsFootnote
+          venusDeck={relevantProduct === "venusBase" || venusScoring}
+        />,
       ]}
     >
       {(Footnote) => (
@@ -217,8 +219,9 @@ function MaxPlayerCount({
     <BlockWithFootnotes
       footnote={
         <AllCardsCountsFootnote
-          teamPlay={teamPlay}
-          venusScoring={venusScoring}
+          venusDeck={
+            relevantProduct === "venusBase" || teamPlay || venusScoring
+          }
         />
       }
     >
@@ -252,8 +255,9 @@ function PartialPlayerCount({
     <BlockWithFootnotes
       footnote={
         <AllCardsCountsFootnote
-          teamPlay={teamPlay}
-          venusScoring={venusScoring}
+          venusDeck={
+            relevantProduct === "venusBase" || teamPlay || venusScoring
+          }
         />
       }
     >
@@ -439,18 +443,16 @@ function CardBackDescription({
 }
 
 function AllCardsCountsFootnote({
-  venusScoring,
-  teamPlay = false,
+  venusDeck,
 }: {
-  venusScoring: boolean;
-  teamPlay?: boolean;
+  venusDeck: boolean;
 }): JSX.Element {
   return (
     <>
       <GrammaticalList>
         {Vec.filter_nulls(
           Vec.map(
-            CARDS_PER_DECK[venusScoring || teamPlay ? "venus" : "base"],
+            CARDS_PER_DECK[venusDeck ? "venus" : "base"],
             (count, index) =>
               count != null ? (
                 <>
