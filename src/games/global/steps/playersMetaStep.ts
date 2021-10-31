@@ -9,7 +9,7 @@ const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = {
   // trivial impl, these steps are never part of the template.
   coerceInstanceEntry: () => null,
 
-  hasValue: ({ playerIds }) => playerIds.length > 0,
+  hasValue: () => true,
 
   extractInstanceValue: (_, { playerIds }) => playerIds,
 

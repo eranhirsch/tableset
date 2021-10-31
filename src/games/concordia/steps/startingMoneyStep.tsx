@@ -3,6 +3,7 @@ import { Str, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { firstPlayerStep, playersMetaStep } from "games/global";
+import { Teams } from "games/global/steps/createTeamSelectionStep";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {
@@ -13,6 +14,8 @@ import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
 import playOrderStep from "./playOrderStep";
+import teamPlayVariant from "./teamPlayVariant";
+import teamSelectionStep from "./teamSelectionStep";
 
 const STARTING_MONEY_BASE = 5;
 const NO_RESOURCES_VARIANT_EXTRA = 20;
@@ -24,6 +27,8 @@ export default createDerivedGameStep({
     playOrderStep,
     firstPlayerStep,
     noStartingResourcesVariant,
+    teamPlayVariant,
+    teamSelectionStep,
   ],
   InstanceDerivedComponent,
 });
@@ -34,14 +39,18 @@ function InstanceDerivedComponent({
     playOrder,
     firstPlayerId,
     isNoStartingResourcesVariantEnabled,
+    teamPlay,
+    teams,
   ],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly PlayerId[],
   PlayerId,
-  boolean
+  boolean,
+  boolean,
+  Readonly<Teams>
 >): JSX.Element {
-  if (playerIds == null) {
+  if (Vec.is_empty(playerIds!)) {
     return (
       <NoPlayers withExtraSestertii={isNoStartingResourcesVariantEnabled} />
     );
@@ -58,7 +67,7 @@ function InstanceDerivedComponent({
       </Typography>
       <Grid container component="figure" spacing={1} alignItems="center">
         {React.Children.toArray(
-          playerAvatars(playerIds, playOrder, firstPlayerId).map(
+          playerAvatars(playerIds!, playOrder, firstPlayerId).map(
             (player, index) => (
               <>
                 <Grid item xs={2}>
