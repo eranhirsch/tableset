@@ -14,7 +14,7 @@ export function Main(): JSX.Element {
     <Container
       component="main"
       maxWidth="xs"
-      sx={ReactUtils.SX_SCROLL_WITHOUT_SCROLLBARS}
+      sx={{ flexGrow: 1, ...ReactUtils.SX_SCROLL_WITHOUT_SCROLLBARS }}
     >
       <Switch>
         <Route path="/games">
