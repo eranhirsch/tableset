@@ -6,7 +6,7 @@ import {
   PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { nullthrows, Vec } from "../../common";
+import { Dict, nullthrows, Vec } from "../../common";
 import { Player, PlayerId } from "../../model/Player";
 
 const playersAdapter = createEntityAdapter<Player>({
@@ -45,22 +45,44 @@ export const playersSlice = createSlice({
   },
 });
 
-export const playersSelectors = playersAdapter.getSelectors<RootState>(
+export const allPlayersSelectors = playersAdapter.getSelectors<RootState>(
   (state) => state.players
 );
 
+export const playersSelectors: typeof allPlayersSelectors = Object.freeze({
+  selectIds: createSelector(allPlayersSelectors.selectAll, (players) => [
+    ...Vec.map(
+      Vec.filter(players, ({ isActive }) => isActive),
+      ({ id }) => id
+    ),
+  ]),
+  selectEntities: createSelector(
+    allPlayersSelectors.selectEntities,
+    (entities) => Dict.filter(entities, ({ isActive }) => isActive)
+  ),
+  selectAll: createSelector(allPlayersSelectors.selectAll, (players) => [
+    ...Vec.filter(players, ({ isActive }) => isActive),
+  ]),
+  selectTotal: createSelector(allPlayersSelectors.selectAll, (players) =>
+    Vec.count_where(players, ({ isActive }) => isActive)
+  ),
+  selectById: createSelector(allPlayersSelectors.selectById, (player) =>
+    player?.isActive ? player : undefined
+  ),
+});
+
 export const firstPlayerIdSelector = createSelector(
-  playersSelectors.selectIds,
+  allPlayersSelectors.selectIds,
   (playerIds) => nullthrows(playerIds[0]) as PlayerId
 );
 
 export const allPlayerNamesSelector = createSelector(
-  playersSelectors.selectAll,
+  allPlayersSelectors.selectAll,
   (players) => players.map((player) => player.name)
 );
 
 export const hasActivePlayersSelector = createSelector(
-  playersSelectors.selectAll,
+  allPlayersSelectors.selectAll,
   (players) => Vec.count_where(players, ({ isActive }) => isActive) > 0
 );
 

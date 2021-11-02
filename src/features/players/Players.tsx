@@ -5,10 +5,10 @@ import { useMemo } from "react";
 import { useAppSelector } from "../../app/hooks";
 import { NewPlayerInput } from "./NewPlayerInput";
 import { PlayerListItem } from "./PlayerListItem";
-import { playersSelectors } from "./playersSlice";
+import { allPlayersSelectors } from "./playersSlice";
 
 export function Players(): JSX.Element | null {
-  const players = useAppSelector(playersSelectors.selectAll);
+  const players = useAppSelector(allPlayersSelectors.selectAll);
 
   const [active, inActive] = useMemo(
     () => Vec.partition(players, ({ isActive }) => isActive),

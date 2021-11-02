@@ -1,7 +1,7 @@
 import { useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
 import { PlayerId } from "model/Player";
-import { allPlayerNamesSelector, playersSelectors } from "./playersSlice";
+import { allPlayerNamesSelector, allPlayersSelectors } from "./playersSlice";
 import { shortest_unique_abbreviation } from "./shortest_names";
 
 export function PlayerNameShortAbbreviation({
@@ -10,7 +10,7 @@ export function PlayerNameShortAbbreviation({
   playerId: PlayerId;
 }): JSX.Element {
   const player = ReactUtils.useAppEntityIdSelectorEnforce(
-    playersSelectors,
+    allPlayersSelectors,
     playerId
   );
   const allNames = useAppSelector(allPlayerNamesSelector);
