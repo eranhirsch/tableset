@@ -4,11 +4,12 @@ import { Megaphone } from "app/ux/Megaphone";
 import { Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import {
-  hasGameInstance,
+  hasGameInstanceSelector,
   instanceActions,
 } from "features/instance/instanceSlice";
+import { hasActivePlayersSelector } from "features/players/playersSlice";
 import {
-  hasGameTemplate,
+  hasGameTemplateSelector,
   templateActions,
 } from "features/template/templateSlice";
 import { GameId, GAMES } from "games/core/GAMES";
@@ -25,12 +26,23 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
   const history = useHistory();
 
   const products = useAppSelector(allProductIdsSelector(game));
-  const hasTemplate = useAppSelector(hasGameTemplate(game));
-  const hasInstance = useAppSelector(hasGameInstance(game));
+  const hasActivePlayers = useAppSelector(hasActivePlayersSelector);
+  const hasTemplate = useAppSelector(hasGameTemplateSelector(game));
+  const hasInstance = useAppSelector(hasGameInstanceSelector(game));
 
   return (
     <>
-      {Vec.is_empty(products) && <NoProductsMegaphone game={game} />}
+      {Vec.is_empty(products) ? (
+        <NoProductsMegaphone game={game} />
+      ) : (
+        !hasActivePlayers && (
+          <Megaphone
+            header="Table is empty."
+            body="Most games would not generate the correct results without knowing who's playing."
+            cta={{ label: "Add Players", url: "/players" }}
+          />
+        )
+      )}
       <List subheader={<ListSubheader>Recipes</ListSubheader>}>
         {hasTemplate && (
           <ListItem disableGutters>

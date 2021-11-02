@@ -20,7 +20,7 @@ export function Players(): JSX.Element | null {
       {Vec.is_empty(players) ? (
         <Megaphone
           header="No players!"
-          body="Presence works best when you tell us whose around the table."
+          body="Presence works best when you tell us who's around the table."
         />
       ) : (
         <>

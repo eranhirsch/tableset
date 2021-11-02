@@ -3,7 +3,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import { Badge, BottomNavigation, BottomNavigationAction } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { C, Dict, Vec } from "common";
-import { hasActivePlayers } from "features/players/playersSlice";
+import { hasActivePlayersSelector } from "features/players/playersSlice";
 import { useHistory, useLocation } from "react-router-dom";
 
 interface Feature {
@@ -47,7 +47,7 @@ export function FeaturesNav(): JSX.Element {
 }
 
 function PlayersIcon(): JSX.Element {
-  const hasActive = useAppSelector(hasActivePlayers);
+  const hasActive = useAppSelector(hasActivePlayersSelector);
   return (
     <Badge variant="dot" color="warning" invisible={hasActive}>
       <PeopleIcon />

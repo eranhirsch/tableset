@@ -59,7 +59,7 @@ export const allPlayerNamesSelector = createSelector(
   (players) => players.map((player) => player.name)
 );
 
-export const hasActivePlayers = createSelector(
+export const hasActivePlayersSelector = createSelector(
   playersSelectors.selectAll,
   (players) => Vec.count_where(players, ({ isActive }) => isActive) > 0
 );

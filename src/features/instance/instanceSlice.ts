@@ -89,7 +89,7 @@ const wholeInstanceSelector = ({ instance }: RootState) => instance;
 export const instanceSelectors = instanceAdapter.getSelectors<RootState>(
   wholeInstanceSelector
 );
-export const hasGameInstance = ({ id }: Game) =>
+export const hasGameInstanceSelector = ({ id }: Game) =>
   createSelector(
     wholeInstanceSelector,
     instanceSelectors.selectTotal,

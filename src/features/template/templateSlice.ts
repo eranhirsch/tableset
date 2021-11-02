@@ -152,7 +152,7 @@ export const templateElementSelectorEnforce =
       `Template missing element for step ${templatable.id}`
     );
 
-export const hasGameTemplate = ({ id }: Game) =>
+export const hasGameTemplateSelector = ({ id }: Game) =>
   createSelector(
     wholeTemplateSelector,
     templateSelectors.selectTotal,

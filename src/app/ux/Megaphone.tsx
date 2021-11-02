@@ -7,17 +7,17 @@ export function Megaphone({
   cta,
 }: {
   header: string;
-  body: React.ReactNode;
+  body?: React.ReactNode;
   cta?: { label: string; url: string };
 }): JSX.Element {
   return (
     <Paper sx={{ paddingY: 2, paddingX: 3, marginBottom: 1 }}>
       <Stack direction="column" spacing={1}>
         <Typography variant="h6">{header}</Typography>
-        <Typography variant="body2">{body}</Typography>
+        {body != null && <Typography variant="body2">{body}</Typography>}
         {cta != null && (
           <Button
-            sx={{ width: "50%", alignSelf: "end" }}
+            sx={{ width: "auto", paddingX: 1, alignSelf: "end" }}
             size="small"
             component={Link}
             to={cta.url}
