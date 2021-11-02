@@ -1,14 +1,6 @@
-import {
-  Button,
-  List,
-  ListItem,
-  ListItemButton,
-  ListSubheader,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { List, ListItem, ListItemButton, ListSubheader } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
+import { Megaphone } from "app/ux/Megaphone";
 import { Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import {
@@ -83,24 +75,15 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
 
 function NoProductsMegaphone({ game }: { game: Readonly<Game> }): JSX.Element {
   return (
-    <Paper sx={{ paddingY: 2, paddingX: 3, marginBottom: 1 }}>
-      <Stack direction="column" spacing={1}>
-        <Typography variant="h6">
-          There are no {game.name} products in your collection.
-        </Typography>
-        <Typography variant="body2">
+    <Megaphone
+      header={`There are no ${game.name} products in your collection.`}
+      body={
+        <>
           For a better experience add some <em>before</em> generating tables for
           the game.
-        </Typography>
-        <Button
-          sx={{ width: "50%", alignSelf: "end" }}
-          size="small"
-          component={Link}
-          to="/collection"
-        >
-          Go to Collection
-        </Button>
-      </Stack>
-    </Paper>
+        </>
+      }
+      cta={{ label: "Go to Collection", url: "/collection" }}
+    />
   );
 }
