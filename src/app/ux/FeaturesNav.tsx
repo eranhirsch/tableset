@@ -1,31 +1,41 @@
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import PeopleIcon from "@mui/icons-material/People";
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
-import { Link, useLocation } from "react-router-dom";
+import { C, Dict, Vec } from "common";
+import { useHistory, useLocation } from "react-router-dom";
+
+interface Feature {
+  label: string;
+  url: string;
+  icon: React.ReactNode;
+}
+const FEATURES: Readonly<Record<string, Readonly<Feature>>> = {
+  games: { label: "Games", url: "/games", icon: <LibraryAddIcon /> },
+  players: { label: "Players", url: "/players", icon: <PeopleIcon /> },
+};
 
 export function FeaturesNav(): JSX.Element {
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const history = useHistory();
+
   return (
     <BottomNavigation
       component="nav"
       showLabels
-      value={
-        pathname === "/games" ? 0 : pathname === "/players" ? 1 : undefined
-      }
+      value={C.first(
+        Vec.keys(Dict.filter(FEATURES, ({ url }) => location.pathname === url))
+      )}
+      onChange={(_, newActive) => history.push(FEATURES[newActive].url)}
       sx={{ flexGrow: 0 }}
     >
-      <BottomNavigationAction
-        component={Link}
-        label="Games"
-        icon={<LibraryAddIcon />}
-        to="/games"
-      />
-      <BottomNavigationAction
-        component={Link}
-        label="Players"
-        icon={<PeopleIcon />}
-        to="/players"
-      />
+      {Vec.map_with_key(FEATURES, (key, { label, icon }) => (
+        <BottomNavigationAction
+          key={key}
+          value={key}
+          label={label}
+          icon={icon}
+        />
+      ))}
     </BottomNavigation>
   );
 }
