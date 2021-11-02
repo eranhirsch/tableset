@@ -117,10 +117,10 @@ export const templateSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(playersActions.added, (state) =>
+      .addCase(playersActions.addedToTable, (state) =>
         markDownstreamElementsStale(playersMetaStep, state)
       )
-      .addCase(playersActions.removed, (state) =>
+      .addCase(playersActions.removedFromTable, (state) =>
         markDownstreamElementsStale(playersMetaStep, state)
       )
       .addCase(collectionActions.toggled, (state) => {

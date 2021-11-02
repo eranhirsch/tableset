@@ -3,6 +3,7 @@ import {
   createSelector,
   createSlice,
   nanoid,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import { nullthrows } from "../../common";
@@ -16,13 +17,31 @@ export const playersSlice = createSlice({
   name: "players",
   initialState: playersAdapter.getInitialState(),
   reducers: {
-    added: {
+    created: {
       prepare: (name: string) => ({
-        payload: { id: nanoid(), name: name },
+        payload: { id: nanoid(), name: name, isActive: false },
       }),
       reducer: playersAdapter.addOne,
     },
-    removed: playersAdapter.removeOne,
+
+    deleted: {
+      prepare: ({ id }: Player) => ({ payload: id }),
+      reducer: playersAdapter.removeOne,
+    },
+
+    addedToTable: {
+      prepare: ({ id }: Player) => ({ payload: id }),
+      reducer(state, { payload: playerId }: PayloadAction<PlayerId>) {
+        state.entities[playerId]!.isActive = true;
+      },
+    },
+
+    removedFromTable: {
+      prepare: ({ id }: Player) => ({ payload: id }),
+      reducer(state, { payload: playerId }: PayloadAction<PlayerId>) {
+        state.entities[playerId]!.isActive = false;
+      },
+    },
   },
 });
 

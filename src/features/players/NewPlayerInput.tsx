@@ -19,7 +19,7 @@ export function NewPlayerInput(): JSX.Element | null {
           // Ignore trivial cases
           return;
         }
-        dispatch(playersActions.added(submittedName));
+        dispatch(playersActions.created(submittedName));
         setNewPlayerName("");
       }}
     >
