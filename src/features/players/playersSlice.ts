@@ -3,10 +3,10 @@ import {
   createSelector,
   createSlice,
   nanoid,
-  PayloadAction,
+  PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { nullthrows } from "../../common";
+import { nullthrows, Vec } from "../../common";
 import { Player, PlayerId } from "../../model/Player";
 
 const playersAdapter = createEntityAdapter<Player>({
@@ -57,6 +57,11 @@ export const firstPlayerIdSelector = createSelector(
 export const allPlayerNamesSelector = createSelector(
   playersSelectors.selectAll,
   (players) => players.map((player) => player.name)
+);
+
+export const hasActivePlayers = createSelector(
+  playersSelectors.selectAll,
+  (players) => Vec.count_where(players, ({ isActive }) => isActive) > 0
 );
 
 export const playersActions = playersSlice.actions;
