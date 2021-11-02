@@ -1,6 +1,11 @@
 import { createGame } from "model/Game";
+import boardStep from "./steps/boardStep";
+import combatCardsDeckStep from "./steps/combatCardsDeckStep";
+import encountersDeckStep from "./steps/encountersDeckStep";
+import encounterTokensStep from "./steps/encounterTokensStep";
+import factoryDeckStep from "./steps/factoryDeckStep";
+import objectivesDeckStep from "./steps/objectivesDeckStep";
 import productsMetaStep from "./steps/productsMetaStep";
-
 export const scytheGame = createGame({
   id: "scythe",
   name: "Scythe",
@@ -107,5 +112,12 @@ export const scytheGame = createGame({
 
   productsMetaStep,
 
-  steps: [],
+  steps: [
+    boardStep,
+    encounterTokensStep,
+    encountersDeckStep,
+    objectivesDeckStep,
+    combatCardsDeckStep,
+    factoryDeckStep,
+  ],
 });
