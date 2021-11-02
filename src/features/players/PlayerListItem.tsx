@@ -5,7 +5,7 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemSecondaryAction,
-  ListItemText,
+  ListItemText
 } from "@mui/material";
 import { useAppDispatch } from "app/hooks";
 import { Player } from "model/Player";
@@ -13,7 +13,7 @@ import { PlayerAvatar } from "./PlayerAvatar";
 import { PlayerShortName } from "./PlayerShortName";
 import { playersActions } from "./playersSlice";
 
-export function ActivePlayerListItem({
+export function PlayerListItem({
   player,
 }: {
   player: Player;
