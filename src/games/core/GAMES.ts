@@ -1,8 +1,10 @@
 import { concordiaGame } from "games/concordia/concordiaGame";
+import { scytheGame } from "games/scythe/scytheGame";
 import { Game } from "model/Game";
 
-export type GameId = "concordia";
+export type GameId = "concordia" | "scythe";
 
 export const GAMES: Required<Record<GameId, Readonly<Game>>> = {
   concordia: concordiaGame,
+  scythe: scytheGame,
 };

@@ -1,0 +1,18 @@
+export type ScytheProductId =
+  | "base"
+  | "invaders"
+  | "windGambit"
+  | "fenris"
+  | "encounters"
+  | "modularBoard"
+  | "promo1"
+  | "promo2"
+  | "promo3"
+  | "promo4"
+  | "promo6"
+  | "promo7"
+  | "promo11"
+  | "promo12"
+  | "promo13"
+  | "promo14"
+  | "bonusPromos";
