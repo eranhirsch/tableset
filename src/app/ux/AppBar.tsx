@@ -1,33 +1,16 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import ClearIcon from "@mui/icons-material/Clear";
 import HomeIcon from "@mui/icons-material/Home";
-import PeopleIcon from "@mui/icons-material/People";
-import TuneIcon from "@mui/icons-material/Tune";
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { gameSelector } from "features/game/gameSlice";
 import { Link, Route, Switch } from "react-router-dom";
 import { OverflowMenu } from "./OverflowMenu";
 
-
 export function TableSetAppBar(): JSX.Element {
   const game = useAppSelector(gameSelector);
 
-  const templateButton = (
-    <IconButton component={Link} color="inherit" to="/template">
-      <TuneIcon />
-    </IconButton>
-  );
-  const playersButton = (
-    <IconButton component={Link} color="inherit" to="/players">
-      <PeopleIcon />
-    </IconButton>
-  );
-  const productsButton = (
-    <IconButton component={Link} color="inherit" to="/collection">
-      <AddBoxIcon />
-    </IconButton>
-  );
+  const gamesLinkTo = `/${game?.id ?? "games"}`;
 
   return (
     <AppBar position="sticky" sx={{ flexGrow: 0 }}>
@@ -44,20 +27,24 @@ export function TableSetAppBar(): JSX.Element {
           </Switch>
         </Typography>
         <Switch>
-          <Route path="/template">{playersButton}</Route>
-          <Route path="/players">{templateButton}</Route>
+          <Route path="/template" />
+          <Route path="/players" />
           <Route path="/collection">
-            <IconButton component={Link} color="inherit" to={`/${game?.id}`}>
+            <IconButton component={Link} color="inherit" to={gamesLinkTo}>
               <HomeIcon />
             </IconButton>
           </Route>
           <Route path="/instance">
-            <IconButton component={Link} color="inherit" to="/template">
+            <IconButton component={Link} color="inherit" to={gamesLinkTo}>
               <ClearIcon />
             </IconButton>
           </Route>
           <Route path="/games" />
-          <Route path="/:gameId">{productsButton}</Route>
+          <Route path="/:gameId">
+            <IconButton component={Link} color="inherit" to="/collection">
+              <AddBoxIcon />
+            </IconButton>
+          </Route>
         </Switch>
         <OverflowMenu />
       </Toolbar>
