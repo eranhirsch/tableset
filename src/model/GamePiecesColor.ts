@@ -8,8 +8,12 @@
 export type GamePiecesColor =
   | "black"
   | "blue"
+  | "cyan"
   | "green"
+  | "orange"
   | "pink"
+  | "purple"
   | "red"
   | "white"
   | "yellow";
+

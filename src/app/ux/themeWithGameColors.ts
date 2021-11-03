@@ -11,11 +11,14 @@
 import { createTheme, PaletteColor, PaletteColorOptions } from "@mui/material";
 import {
   blue,
+  cyan,
   grey,
   lightGreen,
+  orange,
   pink,
+  purple,
   red,
-  yellow
+  yellow,
 } from "@mui/material/colors";
 import { GamePiecesColor } from "model/GamePiecesColor";
 
@@ -24,15 +27,18 @@ import { GamePiecesColor } from "model/GamePiecesColor";
  * textually. Multiple piece colors can share a name (in case different games
  * want to use different hues for the same "color").
  */
-export const colorName = Object.freeze({
+export const colorName: Readonly<Record<GamePiecesColor, string>> = {
   black: "Black",
   blue: "Blue",
+  cyan: "Cyan",
   green: "Green",
-  red: "Red",
-  yellow: "Yellow",
-  white: "White",
+  orange: "Orange",
   pink: "Pink",
-} as Record<GamePiecesColor, string>);
+  purple: "Purple",
+  red: "Red",
+  white: "White",
+  yellow: "Yellow",
+};
 
 /**
  * For each color we want to add we need to provide all colors required by the
@@ -46,7 +52,7 @@ export const colorName = Object.freeze({
  *
  * @see https://material.io/resources/color/
  */
-const colorDefs = Object.freeze({
+const colorDefs: Readonly<Record<GamePiecesColor, Readonly<PaletteColor>>> = {
   black: {
     main: grey[900],
     light: "#484848",
@@ -89,7 +95,25 @@ const colorDefs = Object.freeze({
     dark: "#c6a700",
     contrastText: "#000000",
   },
-} as Record<GamePiecesColor, PaletteColor>);
+  cyan: {
+    main: cyan[200],
+    light: "#b4ffff",
+    dark: "#4bacb8",
+    contrastText: "#000000",
+  },
+  orange: {
+    main: orange[500],
+    light: "#ffc947",
+    dark: "#c66900",
+    contrastText: "#000000",
+  },
+  purple: {
+    main: purple[800],
+    light: "#9c4dcc",
+    dark: "#38006b",
+    contrastText: "#ffffff",
+  },
+};
 
 declare module "@mui/material/styles" {
   // We need to add the color ids into the main palette object so they can be
