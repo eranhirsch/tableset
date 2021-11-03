@@ -1,6 +1,6 @@
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
-import { Box, Chip, Typography } from "@mui/material";
+import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, Vec } from "common";
 import { playersSelectors } from "features/players/playersSlice";
@@ -207,6 +207,11 @@ function ConfigPanelTLDR({
 }): JSX.Element {
   const playersCount = useAppSelector(playersSelectors.selectTotal);
 
+  if (Vec.is_empty(always) && Vec.is_empty(never)) {
+    // Just for consistency with other templatables
+    return <>Random</>;
+  }
+
   const unassignedCount = playersCount - always.length;
 
   return (
@@ -253,23 +258,27 @@ function InstanceVariableComponent({
   value: factionIds,
 }: VariableStepInstanceComponentProps<readonly FactionId[]>): JSX.Element {
   return (
-    <Typography variant="body1">
-      The chosen factions are{" "}
-      <GrammaticalList>
+    <>
+      <Typography variant="body1">The factions are:</Typography>
+      <Stack
+        spacing={1}
+        direction="column"
+        textAlign="center"
+        paddingX={8}
+        paddingY={2}
+      >
         {Vec.map_with_key(
           Dict.select_keys(FACTIONS, factionIds),
           (factionId, { name, color }) => (
             <Chip
               key={factionId}
-              component="span"
-              size="small"
               color={color}
               label={<strong>{name}</strong>}
             />
           )
         )}
-      </GrammaticalList>
-    </Typography>
+      </Stack>
+    </>
   );
 }
 
