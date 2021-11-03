@@ -1,3 +1,4 @@
+import { createGameStep } from "games/core/steps/createGameStep";
 import { createGame } from "model/Game";
 import boardStep from "./steps/boardStep";
 import combatCardsDeckStep from "./steps/combatCardsDeckStep";
@@ -121,7 +122,12 @@ export const scytheGame = createGame({
     objectivesDeckStep,
     combatCardsDeckStep,
     factoryDeckStep,
-    structureBonusStep,
+    structureBonusStep, // Templatable
     resourcesPilesStep,
+    createGameStep({
+      id: "bank",
+      InstanceManualComponent:
+        "Form a pile of coins as the bank near the board.",
+    }),
   ],
 });
