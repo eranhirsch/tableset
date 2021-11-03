@@ -1,5 +1,5 @@
 import { MathUtils } from "common";
-import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
+import { createGameStep } from "games/core/steps/createGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 
@@ -8,13 +8,12 @@ import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
  */
 const COMBAT_CARDS_DISTRIBUTION = [0, 16, 12, 8, 6] as const;
 
-export default createDerivedGameStep({
+export default createGameStep({
   id: "combatCardsDeck",
-  dependencies: [],
-  InstanceDerivedComponent,
+  InstanceManualComponent,
 });
 
-function InstanceDerivedComponent(): JSX.Element {
+function InstanceManualComponent(): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Prepare the combat cards:">
       <BlockWithFootnotes
