@@ -6,6 +6,7 @@ import encounterTokensStep from "./steps/encounterTokensStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
 import objectivesDeckStep from "./steps/objectivesDeckStep";
 import productsMetaStep from "./steps/productsMetaStep";
+import resourcesPilesStep from "./steps/resourcesPilesStep";
 import structureBonusStep from "./steps/structureBonusStep";
 export const scytheGame = createGame({
   id: "scythe",
@@ -121,5 +122,6 @@ export const scytheGame = createGame({
     combatCardsDeckStep,
     factoryDeckStep,
     structureBonusStep,
+    resourcesPilesStep,
   ],
 });
