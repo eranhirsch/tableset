@@ -1,5 +1,5 @@
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
-import PushPinIcon from "@mui/icons-material/PushPin";
 import { Box, Chip, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, Vec } from "common";
@@ -10,6 +10,7 @@ import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
+import { Query } from "games/core/steps/Query";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { playersMetaStep } from "games/global";
 import { GamePiecesColor } from "model/GamePiecesColor";
@@ -64,6 +65,8 @@ type TemplateConfig = {
   never: readonly FactionId[];
 };
 
+type Mode = "always" | "never" | "random";
+
 export default createRandomGameStep({
   id: "faction",
   dependencies: [playersMetaStep, productsMetaStep],
@@ -116,7 +119,7 @@ export default createRandomGameStep({
 });
 
 function ConfigPanel({
-  config: { always, never },
+  config,
   queries: [players, products],
   onChange,
 }: ConfigPanelProps<
@@ -134,46 +137,21 @@ function ConfigPanel({
       display="flex"
       flexWrap="wrap"
       justifyContent="center"
-      // alignContent="space-around"
       gap={1}
     >
       {Vec.map(available, (factionId) => (
         <FactionChip
           key={factionId}
           factionId={factionId}
-          mode={
-            always.includes(factionId)
-              ? "always"
-              : never.includes(factionId)
-              ? "never"
-              : "random"
-          }
+          mode={currentMode(config, factionId)}
           onClick={() =>
-            // TODO prevent pinning more items than number of players:
-            // players.willContainNumElements({
-            //   min: always.length + 1,
-            // })
             onChange((current) =>
-              current.always.includes(factionId)
-                ? {
-                    ...current,
-                    always: Vec.filter(
-                      current.always,
-                      (fid) => fid !== factionId
-                    ),
-                  }
-                : current.never.includes(factionId)
-                ? {
-                    always: Vec.sort(Vec.concat(current.always, factionId)),
-                    never: Vec.filter(
-                      current.never,
-                      (fid) => fid !== factionId
-                    ),
-                  }
-                : {
-                    ...current,
-                    never: Vec.sort(Vec.concat(current.never, factionId)),
-                  }
+              switchModes(
+                current,
+                factionId,
+                currentMode(current, factionId),
+                nextMode(current, factionId, players, available.length)
+              )
             )
           }
         />
@@ -194,10 +172,14 @@ function FactionChip({
   const { name, color } = FACTIONS[factionId];
   return (
     <Chip
-      sx={{ opacity: mode === "never" ? 0.5 : 1.0 }}
+      sx={{
+        opacity: mode === "never" ? 0.75 : 1.0,
+        paddingX:
+          mode === "random" ? "13px" : mode === "always" ? undefined : "3px",
+      }}
       icon={
         mode === "always" ? (
-          <PushPinIcon fontSize="small" />
+          <CheckCircleIcon fontSize="small" />
         ) : mode === "never" ? (
           <NotInterestedRoundedIcon fontSize="small" />
         ) : undefined
@@ -259,7 +241,6 @@ function ConfigPanelTLDR({
                     )
                   </>
                 )}
-                .
               </>,
             ]
           : []
@@ -296,3 +277,95 @@ const availableFactions = (
   products: readonly ScytheProductId[]
 ): readonly FactionId[] =>
   Vec.flatten(Vec.values(Dict.select_keys(FACTIONS_IN_PRODUCTS, products)));
+
+const currentMode = (
+  { always, never }: Readonly<TemplateConfig>,
+  factionId: FactionId
+): Mode =>
+  always.includes(factionId)
+    ? "always"
+    : never.includes(factionId)
+    ? "never"
+    : "random";
+
+function nextMode(
+  config: Readonly<TemplateConfig>,
+  factionId: FactionId,
+  players: Query<readonly PlayerId[]>,
+  numFactions: number
+): Mode {
+  const availableModes = Vec.filter_nulls([
+    players.willContainNumElements({ min: config.always.length + 1 })
+      ? ("always" as Mode)
+      : null,
+    players.willContainNumElements({
+      max: numFactions - config.never.length - 1,
+    })
+      ? ("never" as Mode)
+      : null,
+    "random" as Mode,
+  ]);
+  return availableModes[
+    (availableModes.indexOf(currentMode(config, factionId)) + 1) %
+      availableModes.length
+  ];
+}
+
+function switchModes(
+  config: Readonly<TemplateConfig>,
+  factionId: FactionId,
+  currentMode: Mode,
+  nextMode: Mode
+): Readonly<TemplateConfig> {
+  switch (currentMode) {
+    case "always":
+      switch (nextMode) {
+        case "always":
+          return config;
+        case "never":
+          return {
+            always: Vec.filter(config.always, (fid) => fid !== factionId),
+            never: Vec.sort(Vec.concat(config.never, factionId)),
+          };
+        case "random":
+          return {
+            ...config,
+            always: Vec.filter(config.always, (fid) => fid !== factionId),
+          };
+      }
+      break;
+
+    case "never":
+      switch (nextMode) {
+        case "always":
+          return {
+            always: Vec.sort(Vec.concat(config.always, factionId)),
+            never: Vec.filter(config.never, (fid) => fid !== factionId),
+          };
+        case "never":
+          return config;
+        case "random":
+          return {
+            ...config,
+            never: Vec.filter(config.never, (fid) => fid !== factionId),
+          };
+      }
+      break;
+
+    case "random":
+      switch (nextMode) {
+        case "always":
+          return {
+            ...config,
+            always: Vec.sort(Vec.concat(config.always, factionId)),
+          };
+        case "never":
+          return {
+            ...config,
+            never: Vec.sort(Vec.concat(config.never, factionId)),
+          };
+        case "random":
+          return config;
+      }
+  }
+}
