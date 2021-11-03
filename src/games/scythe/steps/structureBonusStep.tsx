@@ -13,7 +13,7 @@ import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import productsMetaStep from "./productsMetaStep";
 
-const STRUCTURE_BONUS_TILES = {
+const BONUS_TILES = {
   adjTunnels: "Adjacent Tunnels",
   adjLakes: "Adjacent Lakes",
   adjEncounters: "Adjacent Encounters",
@@ -29,7 +29,7 @@ const STRUCTURE_BONUS_TILES = {
   onMountainForest: "On Mountains and Forests",
   adjSameEncounter: "Adjacent to The Same Encounter",
 } as const;
-type TileKey = keyof typeof STRUCTURE_BONUS_TILES;
+type TileKey = keyof typeof BONUS_TILES;
 
 const TILES_IN_PRODUCTS: Readonly<
   Partial<Record<ScytheProductId, readonly TileKey[]>>
@@ -54,7 +54,7 @@ const TILES_IN_PRODUCTS: Readonly<
   ],
 };
 
-type TemplateConfig = { fixed?: keyof typeof STRUCTURE_BONUS_TILES };
+type TemplateConfig = { fixed?: keyof typeof BONUS_TILES };
 
 export default createRandomGameStep({
   id: "structureBonus",
@@ -87,7 +87,7 @@ function ConfigPanel({
     () =>
       Vec.sort_by(
         availableForProducts(products.onlyResolvableValue()!),
-        (key) => STRUCTURE_BONUS_TILES[key]
+        (key) => BONUS_TILES[key]
       ),
     [products]
   );
@@ -106,7 +106,7 @@ function ConfigPanel({
           </MenuItem>
           {Vec.map(available, (key) => (
             <MenuItem key={key} value={key}>
-              {STRUCTURE_BONUS_TILES[key]}
+              {BONUS_TILES[key]}
             </MenuItem>
           ))}
         </Select>
@@ -120,9 +120,7 @@ function ConfigPanelTLDR({
 }: {
   config: Readonly<TemplateConfig>;
 }): JSX.Element {
-  return (
-    <>{config.fixed == null ? "Random" : STRUCTURE_BONUS_TILES[config.fixed]}</>
-  );
+  return <>{config.fixed == null ? "Random" : BONUS_TILES[config.fixed]}</>;
 }
 
 function InstanceVariableComponent({
@@ -134,7 +132,7 @@ function InstanceVariableComponent({
         <>
           Place the{" "}
           <Typography component="span" color="primary">
-            <strong>{STRUCTURE_BONUS_TILES[value]}</strong>
+            <strong>{BONUS_TILES[value]}</strong>
           </Typography>{" "}
           <em>Structure Bonus</em> tile on it's designated spot on the board
           <Footnote />.
