@@ -14,20 +14,20 @@ import { ScytheProductId } from "../ScytheProductId";
 import productsMetaStep from "./productsMetaStep";
 
 const BONUS_TILES = {
-  adjTunnels: "Adjacent Tunnels",
-  adjLakes: "Adjacent Lakes",
   adjEncounters: "Adjacent Encounters",
-  onTunnels: "On Tunnels",
-  row: "In A Row",
-  onFarmTundra: "On Farms and Tundras",
   adjHomeFactory: "Adjacent to Home Bases or The Factory",
-  adjSameLake: "Adjacent to The Same Lake",
-  onVillages: "On Villages",
-  onEncounters: "On Encounters",
+  adjLakes: "Adjacent Lakes",
   adjNoStructures: "Not Adjacent to Other Structures",
-  diamond: "In A Diamond Formation",
-  onMountainForest: "On Mountains and Forests",
   adjSameEncounter: "Adjacent to The Same Encounter",
+  adjSameLake: "Adjacent to The Same Lake",
+  adjTunnels: "Adjacent Tunnels",
+  diamond: "In A Diamond Formation",
+  onEncounters: "On Encounters",
+  onFarmTundra: "On Farms and Tundras",
+  onMountainForest: "On Mountains and Forests",
+  onTunnels: "On Tunnels",
+  onVillages: "On Villages",
+  row: "In A Row",
 } as const;
 type TileKey = keyof typeof BONUS_TILES;
 
