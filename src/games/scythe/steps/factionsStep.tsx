@@ -1,6 +1,17 @@
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
-import { Box, Chip, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Chip,
+  Divider,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, invariant, Random, Shape, Vec } from "common";
 import {
@@ -189,37 +200,107 @@ function ConfigPanel({
   readonly PlayerId[],
   readonly ScytheProductId[]
 >): JSX.Element {
+  const productIds = products.onlyResolvableValue()!;
   const available = useMemo(
-    () =>
-      Vec.sort(Factions.availableForProducts(products.onlyResolvableValue()!)),
-    [products]
+    () => Vec.sort(Factions.availableForProducts(productIds)),
+    [productIds]
+  );
+
+  return (
+    <Stack direction="column" spacing={1} padding={3}>
+      <FactionsSelector
+        config={config}
+        productIds={productIds}
+        onClick={(factionId) =>
+          onChange((current) =>
+            switchModes(
+              current,
+              factionId,
+              currentMode(current, factionId),
+              nextMode(current, factionId, players, available.length)
+            )
+          )
+        }
+      />
+      <Divider />
+      <BannedCombosSelector
+        banned={config.banned}
+        productIds={productIds}
+        onClick={(matId, factionId) =>
+          onChange(({ banned, ...rest }) => ({
+            ...rest,
+            banned: {
+              ...banned,
+              [matId]: Vec.concat(banned[matId] ?? [], factionId),
+            },
+          }))
+        }
+      />
+    </Stack>
+  );
+}
+
+function FactionsSelector({
+  config,
+  productIds,
+  onClick,
+}: {
+  config: Readonly<TemplateConfig>;
+  productIds: readonly ScytheProductId[];
+  onClick(factionId: FactionId): void;
+}): JSX.Element {
+  const available = useMemo(
+    () => Vec.sort(Factions.availableForProducts(productIds)),
+    [productIds]
   );
   return (
-    <Box
-      padding={3}
-      display="flex"
-      flexWrap="wrap"
-      justifyContent="center"
-      gap={1}
-    >
+    <Box display="flex" flexWrap="wrap" justifyContent="center" gap={1}>
       {Vec.map(available, (factionId) => (
         <FactionChip
           key={factionId}
           factionId={factionId}
           mode={currentMode(config, factionId)}
-          onClick={() =>
-            onChange((current) =>
-              switchModes(
-                current,
-                factionId,
-                currentMode(current, factionId),
-                nextMode(current, factionId, players, available.length)
-              )
-            )
-          }
+          onClick={() => onClick(factionId)}
         />
       ))}
     </Box>
+  );
+}
+
+function BannedCombosSelector({
+  banned,
+  productIds,
+  onClick,
+}: {
+  banned: Readonly<BannedCombos>;
+  productIds: readonly ScytheProductId[];
+  onClick(matId: MatId, factionId: FactionId): void;
+}): JSX.Element {
+  const availablePlayerMats = useMemo(
+    () => PlayerMats.availableForProducts(productIds),
+    [productIds]
+  );
+  const availableFactions = useMemo(
+    () => Factions.availableForProducts(productIds),
+    [productIds]
+  );
+  return (
+    <TableContainer>
+      <Table size="small">
+        <TableBody>
+          {Vec.map(availablePlayerMats, (matId) => (
+            <TableRow key={matId}>
+              <TableCell>{PlayerMats[matId].name}</TableCell>
+              {Vec.map(availableFactions, (factionId) => (
+                <TableCell key={`${matId}_${factionId}`}>
+                  {banned[matId]?.includes(factionId) ? "Y" : "N"}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
