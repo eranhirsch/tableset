@@ -139,12 +139,12 @@ function filter_nulls<T extends DictLike>(
  * container mapper-obj and the given array. The mapper-obj will have the same
  * ordering as the `keys` array.
  */
-function select_keys<T extends Record<keyof any, any>>(
+function select_keys<T extends Record<keyof any, any>, K extends keyof T>(
   dict: Readonly<T>,
-  keys: readonly (keyof T)[]
-): Readonly<Partial<T>> {
-  const selected = filter_with_keys(dict, (key) => keys.includes(key));
-  // Optimize for react by returning the same object if everything got selecteS.
+  keys: readonly K[]
+): Readonly<Partial<Pick<T, K>>> {
+  const selected = filter_with_keys(dict, (key) => keys.includes(key as K));
+  // Optimize for react by returning the same object if everything got selected.
   return Dict.size(selected) === Dict.size(dict) ? dict : selected;
 }
 
