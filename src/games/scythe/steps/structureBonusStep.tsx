@@ -27,7 +27,7 @@ const BONUS_TILES = {
   onMountainForest: "On Mountains and Forests",
   onTunnels: "On Tunnels",
   onVillages: "On Villages",
-  row: "In A Row",
+  row: "In A Straight Line",
 } as const;
 type TileKey = keyof typeof BONUS_TILES;
 
