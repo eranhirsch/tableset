@@ -6,7 +6,7 @@
  *
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/order.php
  */
-import { Num, Vec as V } from "common";
+import { Num } from "common";
 import { defaultComparator } from "../_private/defaultComparator";
 
 /**
@@ -32,31 +32,6 @@ const range = (
  * @returns a new vec with the values of the given vec in reversed order.
  */
 const reverse = <Tv>(arr: readonly Tv[]): readonly Tv[] => [...arr].reverse();
-
-/**
- * @returns a new array with the values of the given array in a random order.
- *
- * Based on an answer in stackoverflow implementing the Fisher-Yates shuffle.
- *
- * @see https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
- * @see https://stackoverflow.com/a/2450976
- * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.shuffle/
- */
-function shuffle<Tv>(arr: readonly Tv[]): readonly Tv[] {
-  if (V.is_empty(arr)) {
-    return arr;
-  }
-
-  const out = [...arr];
-  for (const currentIndex of range(arr.length, 0)) {
-    const randomIndex = Math.floor(Math.random() * currentIndex);
-    [out[currentIndex - 1], out[randomIndex]] = [
-      out[randomIndex],
-      out[currentIndex - 1],
-    ];
-  }
-  return out;
-}
 
 /**
  * @returns an array sorted by the values of the given array.
@@ -103,7 +78,6 @@ function sort_by<Tv, Ts>(
 export const Vec = {
   range,
   reverse,
-  shuffle,
   sort_by,
   sort,
 } as const;

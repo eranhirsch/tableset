@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
-import { Dict, invariant, Vec } from "common";
+import { Dict, invariant, Random, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { playersSelectors } from "features/players/playersSlice";
@@ -148,7 +148,7 @@ const resolve = (
         // Players without an assigned color
         Vec.diff(playerIds, Vec.keys(config)),
         // Shuffle the colors which aren't already used
-        Vec.shuffle(Vec.diff(availableColors, Vec.values(config)))
+        Random.shuffle(Vec.diff(availableColors, Vec.values(config)))
       ),
     },
     playerIds

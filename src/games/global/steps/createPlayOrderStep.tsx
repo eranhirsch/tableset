@@ -10,7 +10,7 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import { C, invariant, Vec } from "common";
+import { C, invariant, Random, Vec } from "common";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
@@ -122,7 +122,7 @@ const createPlayOrderStep = ({
 export default createPlayOrderStep;
 
 function resolveRandom(playerIds: readonly PlayerId[]): readonly PlayerId[] {
-  const seating = Vec.shuffle(playerIds);
+  const seating = Random.shuffle(playerIds);
   return normalize(seating, playerIds);
 }
 
@@ -131,9 +131,9 @@ function resolveRandomForTeams(
   playerIds: readonly PlayerId[]
 ): readonly PlayerId[] {
   // Shuffle the teams
-  const shuffled = Vec.shuffle(
+  const shuffled = Random.shuffle(
     // and shuffle each team separately
-    Vec.map(teams, (team) => Vec.shuffle(team))
+    Vec.map(teams, (team) => Random.shuffle(team))
   );
 
   const teamsCount = teams.length;

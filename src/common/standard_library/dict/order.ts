@@ -18,15 +18,6 @@ const reverse = <T extends DictLike>(dict: Readonly<T>): Readonly<T> =>
   D.from_entries(Vec.reverse(Vec.entries(dict)));
 
 /**
- * @returns a new mapper-obj with the key value pairs of the given input
- * container in a random order.
- *
- * `shuffle` is not using cryptographically secure randomness.
- */
-const shuffle = <T extends DictLike>(dict: Readonly<T>): Readonly<T> =>
-  D.from_entries(Vec.shuffle(Vec.entries(dict)));
-
-/**
  * @returns a mapper-obj sorted by the values of the given mapper-obj. If
  * the optional comparator function isn't provided, the values will be sorted in
  * ascending order. The default comparator also treats numbers as numbers
@@ -94,7 +85,6 @@ function sort_by_with_key<T extends DictLike, Ts>(
 
 export const Dict = {
   reverse,
-  shuffle,
   sort,
   sort_by,
   sort_by_key,

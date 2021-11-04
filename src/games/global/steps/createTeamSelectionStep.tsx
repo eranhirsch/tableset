@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { C, invariant, Vec } from "common";
+import { C, invariant, Random, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { playersSelectors } from "features/players/playersSlice";
@@ -109,7 +109,7 @@ function resolve(
   n: number
 ): Teams {
   // Shuffle the player
-  let remainingPlayers = Vec.shuffle(
+  let remainingPlayers = Random.shuffle(
     // Find all players not currently in any team
     Vec.diff(playerIds!, Vec.flatten(config))
   );
