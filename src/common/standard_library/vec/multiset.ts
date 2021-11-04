@@ -16,6 +16,10 @@ function diff_by<Ta, Tb, Ts>(
   b: readonly Tb[],
   scalarFunc: (value: Ta | Tb) => Ts
 ): readonly Ta[] {
+  if (V.is_empty(b)) {
+    return a;
+  }
+  
   let remaining = [...V.map(b, scalarFunc)];
   const out = [];
   for (const item of a) {
