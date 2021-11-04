@@ -46,48 +46,7 @@ export default createRandomGameStep({
 
   initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
 
-  resolve(config, players, products, playerMatsIdx) {
-    const available = Factions.availableForProducts(products!);
-
-    const playerMats =
-      playerMatsIdx != null
-        ? PlayerMats.decode(playerMatsIdx, players!.length, products!)
-        : null;
-
-    // Random factions are those that aren't required by `always` and aren't
-    // disallowed by `never`
-    const randomFactions = Vec.diff(
-      Vec.diff(available, config.never),
-      config.always
-    );
-    // Candidates are all required factions (put first so they get priority) and
-    // a random order for the random factions (so that all factions have the
-    // same probability of being chosen)
-    const candidates = Vec.concat(
-      config.always,
-      Random.shuffle(randomFactions)
-    );
-
-    const factionIds = Vec.range(0, players!.length - 1).reduce(
-      (ongoing, index) =>
-        randomFactionsReducer(
-          ongoing,
-          playerMats != null ? playerMats[index] : null,
-          players!.length,
-          candidates
-        ),
-      [] as readonly FactionId[]
-    );
-
-    invariant(
-      factionIds.length === players!.length,
-      `Mismatch in number of factions chosen: ${JSON.stringify(
-        factionIds
-      )}, expected: ${players!.length}`
-    );
-
-    return Factions.encode(factionIds, products!);
-  },
+  resolve,
 
   refresh({ always, never }, players, products) {
     const available = Factions.availableForProducts(
@@ -125,6 +84,55 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
 });
+
+function resolve(
+  config: TemplateConfig,
+  players: readonly PlayerId[] | null,
+  products: readonly ScytheProductId[] | null,
+  playerMatsIdx: number | null
+): number {
+  const available = Factions.availableForProducts(products!);
+
+  const playerMats =
+    playerMatsIdx != null
+      ? PlayerMats.decode(playerMatsIdx, players!.length, products!)
+      : null;
+
+  // Random factions are those that aren't required by `always` and aren't
+  // disallowed by `never`
+  const randomFactions = Vec.diff(
+    Vec.diff(available, config.never),
+    config.always
+  );
+
+  // Candidates are all required factions (put first so they get priority) and
+  // then the random factions. We randomize each section separately so that all
+  // factions have the same probability of being chosen
+  const candidates = Vec.concat(
+    Random.shuffle(config.always),
+    Random.shuffle(randomFactions)
+  );
+
+  const factionIds = Vec.range(0, players!.length - 1).reduce(
+    (ongoing, index) =>
+      randomFactionsReducer(
+        ongoing,
+        playerMats != null ? playerMats[index] : null,
+        players!.length,
+        candidates
+      ),
+    [] as readonly FactionId[]
+  );
+
+  invariant(
+    factionIds.length === players!.length,
+    `Mismatch in number of factions chosen: ${JSON.stringify(
+      factionIds
+    )}, expected: ${players!.length}`
+  );
+
+  return Factions.encode(factionIds, products!);
+}
 
 function randomFactionsReducer(
   ongoing: readonly FactionId[],
