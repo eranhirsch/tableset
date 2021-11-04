@@ -25,18 +25,21 @@ import { MatId, PlayerMats } from "../utils/PlayerMats";
 import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
 
-type TemplateConfig = {
-  always: readonly FactionId[];
-  never: readonly FactionId[];
-};
+type BannedCombos = Partial<Record<MatId, readonly FactionId[]>>;
 
-type Mode = "always" | "never" | "random";
-
-// TODO: Make this part of the config
-const BANNED_COMBOS: Readonly<Partial<Record<MatId, readonly FactionId[]>>> = {
+const DEFAULT_BANNED_COMBOS: Readonly<BannedCombos> = {
+  // These were declared officially and added to the complete rule book
   industrial: ["rusviet"],
   patriotic: ["crimea"],
 };
+
+type TemplateConfig = {
+  always: readonly FactionId[];
+  never: readonly FactionId[];
+  banned: Readonly<BannedCombos>;
+};
+
+type Mode = "always" | "never" | "random";
 
 export default createRandomGameStep({
   id: "factions",
@@ -44,11 +47,15 @@ export default createRandomGameStep({
 
   isTemplatable: () => true,
 
-  initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
+  initialConfig: (): Readonly<TemplateConfig> => ({
+    always: [],
+    never: [],
+    banned: DEFAULT_BANNED_COMBOS,
+  }),
 
   resolve,
 
-  refresh({ always, never }, players, products) {
+  refresh({ always, never, ...rest }, players, products) {
     const available = Factions.availableForProducts(
       products.onlyResolvableValue()!
     );
@@ -76,7 +83,7 @@ export default createRandomGameStep({
     // The only case we need to fix is when the 'never' array contains elements
     // which aren't available anymore; for normalization, we want to remove them
     // from the 'never' array too
-    return { always, never: Vec.intersect(never, available) };
+    return { always, never: Vec.intersect(never, available), ...rest };
   },
 
   ConfigPanel,
@@ -122,7 +129,7 @@ function resolve(
           playerMats != null ? playerMats[index] : null,
           players!.length,
           candidates,
-          config.always
+          config
         )
       ),
     [] as readonly FactionId[]
@@ -143,22 +150,22 @@ function randomFaction(
   matId: MatId | null,
   playersCount: number,
   candidates: readonly FactionId[],
-  always: readonly FactionId[]
+  { always, banned }: Readonly<TemplateConfig>
 ): FactionId {
   // We might not have mats data (that step might be turned off in the template)
-  const banned = matId != null ? BANNED_COMBOS[matId] ?? [] : [];
+  const bannedForMat = matId != null ? banned[matId] ?? [] : [];
 
   // Remove any factions already selected
   const unused = Vec.diff(candidates, ongoing);
 
   // Remove banned factions (if any)
-  const unBanned = Vec.diff(unused, banned);
+  const unBanned = Vec.diff(unused, bannedForMat);
 
   // We need to account for factions that are part of the always array that
   // are banned for this specific mat, if we don't take them into account we
   // might not use the factions as required.
   const remainingRequired = Vec.diff(always, ongoing);
-  const bannedRequired = Vec.intersect(remainingRequired, banned);
+  const bannedRequired = Vec.intersect(remainingRequired, bannedForMat);
 
   // We  take the first elements of this array depending on how many factions we
   // already have chosen and how many players. This makes sure we always include
@@ -412,6 +419,7 @@ function switchModes(
           return config;
         case "never":
           return {
+            ...config,
             always: Vec.filter(config.always, (fid) => fid !== factionId),
             never: Vec.sort(Vec.concat(config.never, factionId)),
           };
@@ -427,6 +435,7 @@ function switchModes(
       switch (nextMode) {
         case "always":
           return {
+            ...config,
             always: Vec.sort(Vec.concat(config.always, factionId)),
             never: Vec.filter(config.never, (fid) => fid !== factionId),
           };
