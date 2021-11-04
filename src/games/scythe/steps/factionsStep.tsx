@@ -2,84 +2,28 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Dict, Random, Vec } from "common";
+import { Dict, Random, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { playersMetaStep } from "games/global";
-import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
+import { FactionId, Factions } from "../utils/Factions";
 import { MatId, PlayerMats } from "../utils/PlayerMats";
 import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
-
-type FactionId =
-  /* spell-checker: disable */
-  | "albion"
-  | "crimea"
-  | "fenris"
-  | "nordic"
-  | "polania"
-  | "rusviet"
-  | "saxony"
-  | "tesla"
-  | "togawa";
-/* spell-checker: enable */
-
-interface Faction {
-  name: string;
-  color: GamePiecesColor;
-  power: number;
-  combatCards: number;
-}
-const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
-  /* spell-checker: disable */
-  albion: { name: "Clan Albion", color: "green", power: 3, combatCards: 0 },
-  crimea: {
-    name: "Crimean Khanate",
-    color: "yellow",
-    power: 5,
-    combatCards: 0,
-  },
-  fenris: { name: "Fenris", color: "orange", power: 4, combatCards: 2 },
-  nordic: { name: "Nordic Kingdoms", color: "blue", power: 4, combatCards: 1 },
-  polania: {
-    name: "Republic of Polania",
-    color: "white",
-    power: 2,
-    combatCards: 3,
-  },
-  rusviet: { name: "Rusviet Union", color: "red", power: 3, combatCards: 2 },
-  saxony: { name: "Saxony Empire", color: "black", power: 1, combatCards: 4 },
-  tesla: { name: "Tesla", color: "cyan", power: 1, combatCards: 1 },
-  togawa: {
-    name: "Togawa Shogunate",
-    color: "purple",
-    power: 0,
-    combatCards: 2,
-  },
-  /* spell-checker: enable */
-};
-
-const FACTIONS_IN_PRODUCTS: Readonly<
-  Partial<Record<ScytheProductId, readonly FactionId[]>>
-> = {
-  base: ["crimea", "nordic", "polania", "rusviet", "saxony"],
-  invaders: ["albion", "togawa"],
-  fenris: ["fenris", "tesla"],
-};
 
 type TemplateConfig = {
   always: readonly FactionId[];
@@ -103,7 +47,7 @@ export default createRandomGameStep({
   initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
 
   resolve(config, players, products, playerMatsIdx) {
-    const available = availableFactions(products!);
+    const available = Factions.availableForProducts(products!);
 
     const playerMats =
       playerMatsIdx != null
@@ -140,7 +84,9 @@ export default createRandomGameStep({
   },
 
   refresh({ always, never }, players, products) {
-    const available = availableFactions(products.onlyResolvableValue()!);
+    const available = Factions.availableForProducts(
+      products.onlyResolvableValue()!
+    );
 
     if (!Vec.is_empty(Vec.diff(always, available))) {
       // If always has values which are now unavailable, we can't fix the config
@@ -221,7 +167,8 @@ function ConfigPanel({
   readonly ScytheProductId[]
 >): JSX.Element {
   const available = useMemo(
-    () => Vec.sort(availableFactions(products.onlyResolvableValue()!)),
+    () =>
+      Vec.sort(Factions.availableForProducts(products.onlyResolvableValue()!)),
     [products]
   );
   return (
@@ -262,7 +209,7 @@ function FactionChip({
   mode: "always" | "never" | "random";
   onClick(): void;
 }): JSX.Element {
-  const { name, color } = FACTIONS[factionId];
+  const { name, color } = Factions[factionId];
   return (
     <Chip
       sx={{
@@ -311,7 +258,7 @@ function ConfigPanelTLDR({
     <GrammaticalList>
       {Vec.concat(
         Vec.map_with_key(
-          Dict.select_keys(FACTIONS, always),
+          Shape.select_keys(Factions, always),
           (fid, { name, color }) => (
             <Chip
               key={fid}
@@ -333,7 +280,7 @@ function ConfigPanelTLDR({
                     (but not{" "}
                     <GrammaticalList finalConjunction="or">
                       {React.Children.toArray(
-                        Vec.map(never, (fid) => FACTIONS[fid].name)
+                        Vec.map(never, (fid) => Factions[fid].name)
                       )}
                     </GrammaticalList>
                     )
@@ -378,7 +325,7 @@ function InstanceVariableComponent({
           Vec.map_with_key(
             // Don't use Dict.select_keys here because that uses the order from
             // the source dict, not the keys array
-            Dict.from_keys(factionIds, (factionId) => FACTIONS[factionId]),
+            Dict.from_keys(factionIds, (factionId) => Factions[factionId]),
             (_, { name, color }, index) => (
               <Chip
                 color={color}
@@ -397,11 +344,6 @@ function InstanceVariableComponent({
     </>
   );
 }
-
-const availableFactions = (
-  products: readonly ScytheProductId[]
-): readonly FactionId[] =>
-  Vec.flatten(Vec.values(Dict.select_keys(FACTIONS_IN_PRODUCTS, products)));
 
 const currentMode = (
   { always, never }: Readonly<TemplateConfig>,
