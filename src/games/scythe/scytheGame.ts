@@ -4,7 +4,7 @@ import boardStep from "./steps/boardStep";
 import combatCardsDeckStep from "./steps/combatCardsDeckStep";
 import encountersDeckStep from "./steps/encountersDeckStep";
 import encounterTokensStep from "./steps/encounterTokensStep";
-import factionStep from "./steps/factionStep";
+import factionStep from "./steps/factionsStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
 import objectivesDeckStep from "./steps/objectivesDeckStep";
 import productsMetaStep from "./steps/productsMetaStep";

@@ -69,7 +69,7 @@ type TemplateConfig = {
 type Mode = "always" | "never" | "random";
 
 export default createRandomGameStep({
-  id: "faction",
+  id: "factions",
   dependencies: [playersMetaStep, productsMetaStep],
   isTemplatable: () => true,
   initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
