@@ -115,11 +115,15 @@ function resolve(
 
   const factionIds = Vec.range(0, players!.length - 1).reduce(
     (ongoing, index) =>
-      randomFactionsReducer(
+      Vec.concat(
         ongoing,
-        playerMats != null ? playerMats[index] : null,
-        players!.length,
-        candidates
+        randomFaction(
+          ongoing,
+          playerMats != null ? playerMats[index] : null,
+          players!.length,
+          candidates,
+          config.always
+        )
       ),
     [] as readonly FactionId[]
   );
@@ -134,41 +138,39 @@ function resolve(
   return Factions.encode(factionIds, products!);
 }
 
-function randomFactionsReducer(
+function randomFaction(
   ongoing: readonly FactionId[],
   matId: MatId | null,
   playersCount: number,
-  candidates: readonly FactionId[]
-): readonly FactionId[] {
-  return Vec.concat(
-    ongoing,
-    // Sample 1 random element from the array of candidate factions
-    Vec.sample(
-      // We build the array of possible factions so that the first factions
-      // in it are the required ones, and the rest are the candidate
-      // factions, re-ordered randomly. We then take the first elements of
-      // this array depending on how many factions we already have chosen
-      // and how many players. This makes sure we always include all
-      // `always` factions, and that the remaining factions are taken
-      // randomly.
-      Vec.take(
-        Vec.diff(
-          Vec.diff(
-            candidates,
-            // Remove any factions already selected
-            ongoing
-          ),
-          // We might not have mats data (that step might be turned off in the
-          // template)
-          // Remove banned factions (if any)
-          matId != null ? BANNED_COMBOS[matId] ?? [] : []
-        ),
-        // Take just enough elements so that we always include `always` factions
-        playersCount - ongoing.length
-      ),
-      1
-    )
+  candidates: readonly FactionId[],
+  always: readonly FactionId[]
+): FactionId {
+  // We might not have mats data (that step might be turned off in the template)
+  const banned = matId != null ? BANNED_COMBOS[matId] ?? [] : [];
+
+  // Remove any factions already selected
+  const unused = Vec.diff(candidates, ongoing);
+
+  // Remove banned factions (if any)
+  const unBanned = Vec.diff(unused, banned);
+
+  // We need to account for factions that are part of the always array that
+  // are banned for this specific mat, if we don't take them into account we
+  // might not use the factions as required.
+  const remainingRequired = Vec.diff(always, ongoing);
+  const bannedRequired = Vec.intersect(remainingRequired, banned);
+
+  // We  take the first elements of this array depending on how many factions we
+  // already have chosen and how many players. This makes sure we always include
+  // all `always` factions.
+  const actualCandidates = Vec.take(
+    unBanned,
+    // Take just enough elements so that we always include `always` factions
+    playersCount - ongoing.length - bannedRequired.length
   );
+
+  // Pick a candidates faction and add it to the ongoing arr for the reducer
+  return Vec.sample(actualCandidates, 1);
 }
 
 function ConfigPanel({
