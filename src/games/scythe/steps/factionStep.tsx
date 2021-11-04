@@ -75,19 +75,21 @@ export default createRandomGameStep({
   initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
   resolve(config, players, products) {
     const available = availableFactions(products!);
-    const combinations = MathUtils.combinations_lazy_array(
+
+    const randomPool = Vec.diff(
+      Vec.diff(available, config.never),
+      config.always
+    );
+    const random = Vec.sample(
+      randomPool,
+      players!.length - config.always.length
+    );
+    const selection = Vec.concat(config.always, random);
+
+    return MathUtils.combinations_lazy_array(
       available,
       players!.length
-    );
-    return combinations.indexOf(
-      Vec.concat(
-        config.always,
-        Vec.sample(
-          Vec.diff(Vec.diff(available, config.never), config.always),
-          players!.length - config.always.length
-        )
-      )
-    );
+    ).indexOf(selection);
   },
   refresh({ always, never }, players, products) {
     const available = availableFactions(products.onlyResolvableValue()!);
