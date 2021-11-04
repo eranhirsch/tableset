@@ -20,7 +20,6 @@ export const scytheGame = createGame({
       name: "Invaders from Afar",
       bggId: 199727,
       year: 2016,
-      isNotImplemented: true,
     },
     windGambit: {
       name: "The Wind Gambit",
