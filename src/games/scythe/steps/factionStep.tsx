@@ -2,7 +2,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Dict, Vec } from "common";
+import { Dict, MathUtils, nullthrows, Vec } from "common";
+import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -72,19 +73,22 @@ export default createRandomGameStep({
   dependencies: [playersMetaStep, productsMetaStep],
   isTemplatable: () => true,
   initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
-  resolve: (config, players, products) =>
-    Vec.sort(
+  resolve(config, players, products) {
+    const available = availableFactions(products!);
+    const combinations = MathUtils.combinations_lazy_array(
+      available,
+      players!.length
+    );
+    return combinations.indexOf(
       Vec.concat(
         config.always,
         Vec.sample(
-          Vec.diff(
-            Vec.diff(availableFactions(products!), config.never),
-            config.always
-          ),
+          Vec.diff(Vec.diff(available, config.never), config.always),
           players!.length - config.always.length
         )
       )
-    ),
+    );
+  },
   refresh({ always, never }, players, products) {
     const available = availableFactions(products.onlyResolvableValue()!);
 
@@ -255,8 +259,23 @@ function ConfigPanelTLDR({
 }
 
 function InstanceVariableComponent({
-  value: factionIds,
-}: VariableStepInstanceComponentProps<readonly FactionId[]>): JSX.Element {
+  value: combinationsIdx,
+}: VariableStepInstanceComponentProps<number>): JSX.Element {
+  const products = useRequiredInstanceValue(productsMetaStep);
+  const players = useRequiredInstanceValue(playersMetaStep);
+
+  const factionIds = useMemo(
+    () =>
+      nullthrows(
+        MathUtils.combinations_lazy_array(
+          availableFactions(products),
+          players.length
+        ).at(combinationsIdx),
+        `Factions idx ${combinationsIdx} was out of range for products ${products}`
+      ),
+    [combinationsIdx, players.length, products]
+  );
+
   return (
     <>
       <Typography variant="body1">The factions are:</Typography>
