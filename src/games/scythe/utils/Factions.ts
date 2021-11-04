@@ -1,4 +1,4 @@
-import { Dict, Vec } from "common";
+import { Dict, MathUtils, nullthrows, Vec } from "common";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { ScytheProductId } from "../ScytheProductId";
 
@@ -60,6 +60,45 @@ const FACTIONS_IN_PRODUCTS: Readonly<
 
 export const Factions = {
   ...FACTIONS,
+
+  decode(
+    index: number,
+    playersCount: number,
+    products: readonly ScytheProductId[]
+  ): readonly FactionId[] {
+    const combinations = MathUtils.combinations_lazy_array(
+      availableForProducts(products),
+      playersCount
+    );
+    const combinationIdx = index % combinations.length;
+    const combination = nullthrows(
+      combinations.at(combinationIdx),
+      `Combination index ${combinationIdx} overflown for combinations array ${combinations}`
+    );
+
+    const permutations = MathUtils.permutations_lazy_array(combination);
+    const permutationIdx = Math.floor(index / combinations.length);
+    return nullthrows(
+      permutations.at(permutationIdx),
+      `Permutations index ${permutationIdx} overflown for permutations array ${permutations}`
+    );
+  },
+
+  encode(
+    factionIds: readonly FactionId[],
+    products: readonly ScytheProductId[]
+  ): number {
+    const combinations = MathUtils.combinations_lazy_array(
+      availableForProducts(products),
+      factionIds.length
+    );
+    const permutations = MathUtils.permutations_lazy_array(factionIds);
+    return (
+      combinations.length * permutations.indexOf(factionIds) +
+      combinations.indexOf(factionIds)
+    );
+  },
+
   availableForProducts,
 } as const;
 

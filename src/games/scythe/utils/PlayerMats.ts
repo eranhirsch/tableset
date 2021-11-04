@@ -60,12 +60,11 @@ export const PlayerMats = {
 
   encode: (
     matIds: readonly MatId[],
-    playerCount: number,
     products: readonly ScytheProductId[]
   ): number =>
     MathUtils.combinations_lazy_array(
       availableForProducts(products),
-      playerCount
+      matIds.length
     ).indexOf(matIds),
 
   availableForProducts,

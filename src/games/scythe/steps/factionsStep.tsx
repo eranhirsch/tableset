@@ -2,17 +2,17 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Dict, Random, Shape, Vec } from "common";
+import { Dict, invariant, Random, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
@@ -68,7 +68,7 @@ export default createRandomGameStep({
       Random.shuffle(randomFactions)
     );
 
-    const factions = Vec.range(0, players!.length - 1).reduce(
+    const factionIds = Vec.range(0, players!.length - 1).reduce(
       (ongoing, index) =>
         randomFactionsReducer(
           ongoing,
@@ -79,8 +79,16 @@ export default createRandomGameStep({
       [] as readonly FactionId[]
     );
 
-    // TODO: use a hash/index for the result instead of an array
-    return factions;
+    invariant(
+      factionIds.length === players!.length,
+      `Mismatch in number of factions chosen: ${JSON.stringify(
+        factionIds
+      )}, expected: ${players!.length}`
+    );
+
+    debugger;
+
+    return Factions.encode(factionIds, products!);
   },
 
   refresh({ always, never }, players, products) {
@@ -295,8 +303,8 @@ function ConfigPanelTLDR({
 }
 
 function InstanceVariableComponent({
-  value: factionIds,
-}: VariableStepInstanceComponentProps<readonly FactionId[]>): JSX.Element {
+  value: factionIdx,
+}: VariableStepInstanceComponentProps<number>): JSX.Element {
   const matsIdx = useOptionalInstanceValue(playerMatsStep);
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const products = useRequiredInstanceValue(productsMetaStep);
@@ -308,6 +316,13 @@ function InstanceVariableComponent({
         : PlayerMats.decode(matsIdx, playerIds.length, products),
     [matsIdx, playerIds.length, products]
   );
+
+  const factionIds = useMemo(
+    () => Factions.decode(factionIdx, playerIds.length, products),
+    [factionIdx, playerIds.length, products]
+  );
+
+  debugger;
 
   return (
     <>
