@@ -47,7 +47,7 @@ export default createRandomGameStep({
     const randomCount = players!.length - config.always.length;
     const random = Vec.sample(randomPool, randomCount);
     invariant(
-      random.length !== randomCount,
+      random.length === randomCount,
       `Mismatch in number of random elements chosen: ${JSON.stringify(
         random
       )}, expected: ${randomCount}`
