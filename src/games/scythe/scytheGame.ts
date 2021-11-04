@@ -4,9 +4,9 @@ import boardStep from "./steps/boardStep";
 import combatCardsDeckStep from "./steps/combatCardsDeckStep";
 import encountersDeckStep from "./steps/encountersDeckStep";
 import encounterTokensStep from "./steps/encounterTokensStep";
-import factionStep from "./steps/factionsStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
 import objectivesDeckStep from "./steps/objectivesDeckStep";
+import playerMatsStep from "./steps/playerMatsStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import resourcesPilesStep from "./steps/resourcesPilesStep";
 import structureBonusStep from "./steps/structureBonusStep";
@@ -129,6 +129,6 @@ export const scytheGame = createGame({
       InstanceManualComponent:
         "Form a pile of coins as the bank near the board.",
     }),
-    factionStep,
+    playerMatsStep,
   ],
 });
