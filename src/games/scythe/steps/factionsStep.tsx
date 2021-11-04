@@ -86,8 +86,6 @@ export default createRandomGameStep({
       )}, expected: ${players!.length}`
     );
 
-    debugger;
-
     return Factions.encode(factionIds, products!);
   },
 
@@ -321,8 +319,6 @@ function InstanceVariableComponent({
     () => Factions.decode(factionIdx, playerIds.length, products),
     [factionIdx, playerIds.length, products]
   );
-
-  debugger;
 
   return (
     <>
