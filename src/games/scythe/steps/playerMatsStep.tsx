@@ -2,7 +2,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Dict, Vec } from "common";
+import { Dict, invariant, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
@@ -44,12 +44,17 @@ export default createRandomGameStep({
       Vec.diff(available, config.never),
       config.always
     );
-    const random = Vec.sample(
-      randomPool,
-      players!.length - config.always.length
+    const randomCount = players!.length - config.always.length;
+    const random = Vec.sample(randomPool, randomCount);
+    invariant(
+      random.length !== randomCount,
+      `Mismatch in number of random elements chosen: ${JSON.stringify(
+        random
+      )}, expected: ${randomCount}`
     );
     const selection = Vec.concat(config.always, random);
-    return PlayerMats.encode(selection, players!.length, products!);
+
+    return PlayerMats.encode(selection, products!);
   },
 
   refresh({ always, never }, players, products) {
