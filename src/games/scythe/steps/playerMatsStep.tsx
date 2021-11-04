@@ -2,7 +2,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Dict, MathUtils, nullthrows, Vec } from "common";
+import { Dict, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
@@ -17,46 +17,8 @@ import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
+import { MatId, PlayerMats } from "../utils/PlayerMats";
 import productsMetaStep from "./productsMetaStep";
-
-type MatId =
-  | "agricultural"
-  | "engineering"
-  | "industrial"
-  | "innovative"
-  | "mechanical"
-  | "militant"
-  | "patriotic";
-
-interface Mat {
-  name: string;
-  rank: string;
-  popularity: number;
-  cash: number;
-}
-
-const MATS: Readonly<Record<MatId, Readonly<Mat>>> = {
-  agricultural: { name: "Agricultural", rank: "5", popularity: 4, cash: 7 },
-  engineering: { name: "Engineering", rank: "2", popularity: 2, cash: 5 },
-  industrial: { name: "Industrial", rank: "1", popularity: 2, cash: 4 },
-  innovative: { name: "Innovative", rank: "3a", popularity: 3, cash: 5 },
-  mechanical: { name: "Mechanical", rank: "4", popularity: 3, cash: 6 },
-  militant: { name: "Militant", rank: "2a", popularity: 3, cash: 4 },
-  patriotic: { name: "Patriotic", rank: "3", popularity: 2, cash: 6 },
-};
-
-const MATS_IN_PRODUCTS: Readonly<
-  Partial<Record<ScytheProductId, readonly MatId[]>>
-> = {
-  base: [
-    "agricultural",
-    "engineering",
-    "industrial",
-    "mechanical",
-    "patriotic",
-  ],
-  invaders: ["innovative", "militant"],
-};
 
 type TemplateConfig = {
   always: readonly MatId[];
@@ -69,12 +31,14 @@ export default createRandomGameStep({
   id: "playerMats",
   dependencies: [playersMetaStep, productsMetaStep],
 
+  isType: (x: unknown): x is number => typeof x === "number",
+
   isTemplatable: () => true,
 
   initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
 
   resolve(config, players, products) {
-    const available = availableMats(products!);
+    const available = PlayerMats.availableForProducts(products!);
 
     const randomPool = Vec.diff(
       Vec.diff(available, config.never),
@@ -85,15 +49,13 @@ export default createRandomGameStep({
       players!.length - config.always.length
     );
     const selection = Vec.concat(config.always, random);
-
-    return MathUtils.combinations_lazy_array(
-      available,
-      players!.length
-    ).indexOf(selection);
+    return PlayerMats.encode(selection, players!.length, products!);
   },
 
   refresh({ always, never }, players, products) {
-    const available = availableMats(products.onlyResolvableValue()!);
+    const available = PlayerMats.availableForProducts(
+      products.onlyResolvableValue()!
+    );
 
     if (!Vec.is_empty(Vec.diff(always, available))) {
       // If always has values which are now unavailable, we can't fix the config
@@ -139,8 +101,8 @@ function ConfigPanel({
   const available = useMemo(
     () =>
       Vec.sort_by(
-        availableMats(products.onlyResolvableValue()!),
-        (matId) => MATS[matId].rank
+        PlayerMats.availableForProducts(products.onlyResolvableValue()!),
+        (matId) => PlayerMats[matId].rank
       ),
     [products]
   );
@@ -183,7 +145,7 @@ function MatChip({
   mode: "always" | "never" | "random";
   onClick(): void;
 }): JSX.Element {
-  const { name } = MATS[matId];
+  const { name } = PlayerMats[matId];
   return (
     <Chip
       sx={{
@@ -231,9 +193,10 @@ function ConfigPanelTLDR({
   return (
     <GrammaticalList>
       {Vec.concat(
-        Vec.map_with_key(Dict.select_keys(MATS, always), (mid, { name }) => (
-          <React.Fragment key={mid}>{name}</React.Fragment>
-        )),
+        Vec.map_with_key(
+          Dict.select_keys(PlayerMats, always),
+          (mid, { name }) => <React.Fragment key={mid}>{name}</React.Fragment>
+        ),
         unassignedCount > 0
           ? [
               <>
@@ -245,7 +208,7 @@ function ConfigPanelTLDR({
                     (but not{" "}
                     <GrammaticalList finalConjunction="or">
                       {React.Children.toArray(
-                        Vec.map(never, (mid) => MATS[mid].name)
+                        Vec.map(never, (mid) => PlayerMats[mid].name)
                       )}
                     </GrammaticalList>
                     )
@@ -266,14 +229,7 @@ function InstanceVariableComponent({
   const players = useRequiredInstanceValue(playersMetaStep);
 
   const matIds = useMemo(
-    () =>
-      nullthrows(
-        MathUtils.combinations_lazy_array(
-          availableMats(products),
-          players.length
-        ).at(combinationsIdx),
-        `Mats idx ${combinationsIdx} was out of range for products ${products}`
-      ),
+    () => PlayerMats.decode(combinationsIdx, players.length, products),
     [combinationsIdx, players.length, products]
   );
 
@@ -287,18 +243,16 @@ function InstanceVariableComponent({
         paddingX={8}
         paddingY={2}
       >
-        {Vec.map_with_key(Dict.select_keys(MATS, matIds), (matId, { name }) => (
-          <strong key={matId}>{name}</strong>
-        ))}
+        {Vec.map_with_key(
+          Dict.select_keys(PlayerMats, matIds),
+          (matId, { name }) => (
+            <strong key={matId}>{name}</strong>
+          )
+        )}
       </Stack>
     </>
   );
 }
-
-const availableMats = (
-  products: readonly ScytheProductId[]
-): readonly MatId[] =>
-  Vec.flatten(Vec.values(Dict.select_keys(MATS_IN_PRODUCTS, products)));
 
 const currentMode = (
   { always, never }: Readonly<TemplateConfig>,

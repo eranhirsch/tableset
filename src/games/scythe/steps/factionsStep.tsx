@@ -2,8 +2,11 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Dict, MathUtils, nullthrows, Vec } from "common";
-import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
+import { Dict, Random, Vec } from "common";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -18,6 +21,8 @@ import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
+import { MatId, PlayerMats } from "../utils/PlayerMats";
+import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
 
 type FactionId =
@@ -36,29 +41,44 @@ type FactionId =
 interface Faction {
   name: string;
   color: GamePiecesColor;
+  power: number;
+  combatCards: number;
 }
 const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   /* spell-checker: disable */
-  albion: { name: "Clan Albion", color: "green" },
-  crimea: { name: "Crimean Khanate", color: "yellow" },
-  fenris: { name: "Fenris", color: "orange" },
-  nordic: { name: "Nordic Kingdoms", color: "blue" },
-  polania: { name: "Republic of Polania", color: "white" },
-  rusviet: { name: "Rusviet Union", color: "red" },
-  saxony: { name: "Saxony Empire", color: "black" },
-  tesla: { name: "Tesla", color: "cyan" },
-  togawa: { name: "Togawa Shogunate", color: "purple" },
+  albion: { name: "Clan Albion", color: "green", power: 3, combatCards: 0 },
+  crimea: {
+    name: "Crimean Khanate",
+    color: "yellow",
+    power: 5,
+    combatCards: 0,
+  },
+  fenris: { name: "Fenris", color: "orange", power: 4, combatCards: 2 },
+  nordic: { name: "Nordic Kingdoms", color: "blue", power: 4, combatCards: 1 },
+  polania: {
+    name: "Republic of Polania",
+    color: "white",
+    power: 2,
+    combatCards: 3,
+  },
+  rusviet: { name: "Rusviet Union", color: "red", power: 3, combatCards: 2 },
+  saxony: { name: "Saxony Empire", color: "black", power: 1, combatCards: 4 },
+  tesla: { name: "Tesla", color: "cyan", power: 1, combatCards: 1 },
+  togawa: {
+    name: "Togawa Shogunate",
+    color: "purple",
+    power: 0,
+    combatCards: 2,
+  },
   /* spell-checker: enable */
 };
 
 const FACTIONS_IN_PRODUCTS: Readonly<
   Partial<Record<ScytheProductId, readonly FactionId[]>>
 > = {
-  /* spell-checker: disable */
-  base: ["saxony", "rusviet", "crimea", "polania", "nordic"],
+  base: ["crimea", "nordic", "polania", "rusviet", "saxony"],
   invaders: ["albion", "togawa"],
-  fenris: ["tesla", "fenris"],
-  /* spell-checker: enable */
+  fenris: ["fenris", "tesla"],
 };
 
 type TemplateConfig = {
@@ -68,29 +88,57 @@ type TemplateConfig = {
 
 type Mode = "always" | "never" | "random";
 
+// TODO: Make this part of the config
+const BANNED_COMBOS: Readonly<Partial<Record<MatId, readonly FactionId[]>>> = {
+  industrial: ["rusviet"],
+  patriotic: ["crimea"],
+};
+
 export default createRandomGameStep({
   id: "factions",
-  dependencies: [playersMetaStep, productsMetaStep],
+  dependencies: [playersMetaStep, productsMetaStep, playerMatsStep],
+
   isTemplatable: () => true,
+
   initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
-  resolve(config, players, products) {
+
+  resolve(config, players, products, playerMatsIdx) {
     const available = availableFactions(products!);
 
-    const randomPool = Vec.diff(
+    const playerMats =
+      playerMatsIdx != null
+        ? PlayerMats.decode(playerMatsIdx, players!.length, products!)
+        : null;
+
+    // Random factions are those that aren't required by `always` and aren't
+    // disallowed by `never`
+    const randomFactions = Vec.diff(
       Vec.diff(available, config.never),
       config.always
     );
-    const random = Vec.sample(
-      randomPool,
-      players!.length - config.always.length
+    // Candidates are all required factions (put first so they get priority) and
+    // a random order for the random factions (so that all factions have the
+    // same probability of being chosen)
+    const candidates = Vec.concat(
+      config.always,
+      Random.shuffle(randomFactions)
     );
-    const selection = Vec.concat(config.always, random);
 
-    return MathUtils.combinations_lazy_array(
-      available,
-      players!.length
-    ).indexOf(selection);
+    const factions = Vec.range(0, players!.length - 1).reduce(
+      (ongoing, index) =>
+        randomFactionsReducer(
+          ongoing,
+          playerMats != null ? playerMats[index] : null,
+          players!.length,
+          candidates
+        ),
+      [] as readonly FactionId[]
+    );
+
+    // TODO: use a hash/index for the result instead of an array
+    return factions;
   },
+
   refresh({ always, never }, players, products) {
     const available = availableFactions(products.onlyResolvableValue()!);
 
@@ -119,10 +167,49 @@ export default createRandomGameStep({
     // from the 'never' array too
     return { always, never: Vec.intersect(never, available) };
   },
+
   ConfigPanel,
   ConfigPanelTLDR,
+
   InstanceVariableComponent,
 });
+
+function randomFactionsReducer(
+  ongoing: readonly FactionId[],
+  matId: MatId | null,
+  playersCount: number,
+  candidates: readonly FactionId[]
+): readonly FactionId[] {
+  return Vec.concat(
+    ongoing,
+    // Sample 1 random element from the array of candidate factions
+    Vec.sample(
+      // We build the array of possible factions so that the first factions
+      // in it are the required ones, and the rest are the candidate
+      // factions, re-ordered randomly. We then take the first elements of
+      // this array depending on how many factions we already have chosen
+      // and how many players. This makes sure we always include all
+      // `always` factions, and that the remaining factions are taken
+      // randomly.
+      Vec.take(
+        Vec.diff(
+          Vec.diff(
+            candidates,
+            // Remove any factions already selected
+            ongoing
+          ),
+          // We might not have mats data (that step might be turned off in the
+          // template)
+          // Remove banned factions (if any)
+          matId != null ? BANNED_COMBOS[matId] ?? [] : []
+        ),
+        // Take just enough elements so that we always include `always` factions
+        playersCount - ongoing.length
+      ),
+      1
+    )
+  );
+}
 
 function ConfigPanel({
   config,
@@ -261,26 +348,25 @@ function ConfigPanelTLDR({
 }
 
 function InstanceVariableComponent({
-  value: combinationsIdx,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
+  value: factionIds,
+}: VariableStepInstanceComponentProps<readonly FactionId[]>): JSX.Element {
+  const matsIdx = useOptionalInstanceValue(playerMatsStep);
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
   const products = useRequiredInstanceValue(productsMetaStep);
-  const players = useRequiredInstanceValue(playersMetaStep);
 
-  const factionIds = useMemo(
+  const playerMatIds = useMemo(
     () =>
-      nullthrows(
-        MathUtils.combinations_lazy_array(
-          availableFactions(products),
-          players.length
-        ).at(combinationsIdx),
-        `Factions idx ${combinationsIdx} was out of range for products ${products}`
-      ),
-    [combinationsIdx, players.length, products]
+      matsIdx == null
+        ? null
+        : PlayerMats.decode(matsIdx, playerIds.length, products),
+    [matsIdx, playerIds.length, products]
   );
 
   return (
     <>
-      <Typography variant="body1">The factions are:</Typography>
+      <Typography variant="body1">
+        The factions {playerMatIds != null && "and matching player mats "}are:
+      </Typography>
       <Stack
         spacing={1}
         direction="column"
@@ -288,14 +374,23 @@ function InstanceVariableComponent({
         paddingX={8}
         paddingY={2}
       >
-        {Vec.map_with_key(
-          Dict.select_keys(FACTIONS, factionIds),
-          (factionId, { name, color }) => (
-            <Chip
-              key={factionId}
-              color={color}
-              label={<strong>{name}</strong>}
-            />
+        {React.Children.toArray(
+          Vec.map_with_key(
+            // Don't use Dict.select_keys here because that uses the order from
+            // the source dict, not the keys array
+            Dict.from_keys(factionIds, (factionId) => FACTIONS[factionId]),
+            (_, { name, color }, index) => (
+              <Chip
+                color={color}
+                label={
+                  <>
+                    {playerMatIds != null &&
+                      `${PlayerMats[playerMatIds[index]].name} `}
+                    <strong>{name}</strong>
+                  </>
+                }
+              />
+            )
           )
         )}
       </Stack>
@@ -322,23 +417,23 @@ function nextMode(
   config: Readonly<TemplateConfig>,
   factionId: FactionId,
   players: Query<readonly PlayerId[]>,
-  numFactions: number
+  numMats: number
 ): Mode {
-  const availableModes = Vec.filter_nulls([
-    players.willContainNumElements({ min: config.always.length + 1 })
-      ? ("always" as Mode)
-      : null,
-    players.willContainNumElements({
-      max: numFactions - config.never.length - 1,
-    })
-      ? ("never" as Mode)
-      : null,
-    "random" as Mode,
-  ]);
-  return availableModes[
-    (availableModes.indexOf(currentMode(config, factionId)) + 1) %
-      availableModes.length
-  ];
+  const alwaysEnabled = players.willContainNumElements({
+    min: config.always.length + 1,
+  });
+  const neverEnabled = players.willContainNumElements({
+    max: numMats - config.never.length - 1,
+  });
+
+  switch (currentMode(config, factionId)) {
+    case "always":
+      return neverEnabled ? "never" : "random";
+    case "never":
+      return "random";
+    case "random":
+      return alwaysEnabled ? "always" : neverEnabled ? "never" : "random";
+  }
 }
 
 function switchModes(
