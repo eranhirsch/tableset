@@ -1,29 +1,31 @@
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import {
   Box,
   Chip,
   Divider,
+  IconButton,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
-  Typography,
+  Typography
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, invariant, Random, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
@@ -229,15 +231,29 @@ function ConfigPanel({
         onClick={(matId, factionId) =>
           onChange(({ banned, ...rest }) => ({
             ...rest,
-            banned: {
-              ...banned,
-              [matId]: Vec.concat(banned[matId] ?? [], factionId),
-            },
+            banned: toggleBannedState(banned, matId, factionId),
           }))
         }
       />
     </Stack>
   );
+}
+
+function toggleBannedState(
+  banned: Readonly<BannedCombos>,
+  matId: MatId,
+  factionId: FactionId
+): Readonly<BannedCombos> {
+  const bannedForMat = banned[matId];
+  return Dict.sort({
+    ...banned,
+    [matId]:
+      bannedForMat == null
+        ? [factionId]
+        : bannedForMat.includes(factionId)
+        ? Vec.filter(bannedForMat, (fid) => fid !== factionId)
+        : Vec.sort(Vec.concat(bannedForMat, factionId)),
+  });
 }
 
 function FactionsSelector({
@@ -293,7 +309,13 @@ function BannedCombosSelector({
               <TableCell>{PlayerMats[matId].name}</TableCell>
               {Vec.map(availableFactions, (factionId) => (
                 <TableCell key={`${matId}_${factionId}`}>
-                  {banned[matId]?.includes(factionId) ? "Y" : "N"}
+                  <IconButton onClick={() => onClick(matId, factionId)}>
+                    {banned[matId]?.includes(factionId) ? (
+                      <CheckCircleIcon fontSize="small" />
+                    ) : (
+                      <AddCircleOutlineIcon fontSize="small" />
+                    )}
+                  </IconButton>
                 </TableCell>
               ))}
             </TableRow>
