@@ -557,17 +557,11 @@ function InstanceVariableComponent({
   );
 
   return (
-    <>
-      <Typography variant="body1">
+    <Stack direction="column" spacing={1} alignItems="center">
+      <Typography variant="body1" sx={{ width: "100%" }}>
         The factions {playerMatIds != null && "and matching player mats "}are:
       </Typography>
-      <Stack
-        spacing={1}
-        direction="column"
-        textAlign="center"
-        paddingX={8}
-        paddingY={2}
-      >
+      <Stack spacing={1} direction="column" textAlign="center">
         {React.Children.toArray(
           Vec.map_with_key(
             // Don't use Dict.select_keys here because that uses the order from
@@ -588,7 +582,7 @@ function InstanceVariableComponent({
           )
         )}
       </Stack>
-    </>
+    </Stack>
   );
 }
 
