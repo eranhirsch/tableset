@@ -317,32 +317,70 @@ function BannedCombosSelector({
       <Table size="small" padding="none">
         <TableBody>
           {Vec.map(availablePlayerMats, (matId) => (
-            <TableRow key={matId}>
-              <TableCell>{PlayerMats[matId].name}</TableCell>
-              {Vec.map(availableFactions, (factionId) => (
-                <TableCell key={`${matId}_${factionId}`} align="center">
-                  <IconButton
-                    size="small"
-                    color={Factions[factionId].color}
-                    onClick={() => onClick(matId, factionId)}
-                    sx={{ padding: 0 }}
-                  >
-                    {banned[matId]?.includes(factionId) ? (
-                      <HighlightOffTwoToneIcon fontSize="small" />
-                    ) : (
-                      <AddCircleOutlineIcon
-                        fontSize="small"
-                        sx={{ opacity: 0.25 }}
-                      />
-                    )}
-                  </IconButton>
-                </TableCell>
-              ))}
-            </TableRow>
+            <BannedComboMatRow
+              key={matId}
+              matId={matId}
+              factionIds={availableFactions}
+              banned={banned[matId] ?? []}
+              onClick={(factionId) => onClick(matId, factionId)}
+            />
           ))}
         </TableBody>
       </Table>
     </TableContainer>
+  );
+}
+
+function BannedComboMatRow({
+  matId,
+  factionIds,
+  banned,
+  onClick,
+}: {
+  matId: MatId;
+  factionIds: readonly FactionId[];
+  banned: readonly FactionId[];
+  onClick(factionId: FactionId): void;
+}): JSX.Element {
+  return (
+    <TableRow>
+      <TableCell>{PlayerMats[matId].name}</TableCell>
+      {Vec.map(factionIds, (factionId) => (
+        <BannedComboFactionButton
+          key={`${matId}_${factionId}`}
+          factionId={factionId}
+          isBanned={banned.includes(factionId)}
+          onClick={() => onClick(factionId)}
+        />
+      ))}
+    </TableRow>
+  );
+}
+
+function BannedComboFactionButton({
+  factionId,
+  isBanned,
+  onClick,
+}: {
+  factionId: FactionId;
+  isBanned: boolean;
+  onClick(): void;
+}): JSX.Element {
+  return (
+    <TableCell align="center">
+      <IconButton
+        size="small"
+        color={Factions[factionId].color}
+        onClick={onClick}
+        sx={{ padding: 0 }}
+      >
+        {isBanned ? (
+          <HighlightOffTwoToneIcon fontSize="small" />
+        ) : (
+          <AddCircleOutlineIcon fontSize="small" sx={{ opacity: 0.25 }} />
+        )}
+      </IconButton>
+    </TableCell>
   );
 }
 
