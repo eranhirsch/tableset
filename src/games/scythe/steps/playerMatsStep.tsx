@@ -55,6 +55,14 @@ export default createRandomGameStep({
     return Vec.sort(Vec.concat(config.always, random));
   },
 
+  willContain: (matId, config) =>
+    config != null &&
+    (config.always.includes(matId)
+      ? true
+      : config.never.includes(matId)
+      ? false
+      : undefined),
+
   refresh({ always, never }, players, products) {
     const available = PlayerMats.availableForProducts(
       products.onlyResolvableValue()!
