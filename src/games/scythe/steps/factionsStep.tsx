@@ -162,11 +162,16 @@ function resolve(
       );
       return Factions.encode(factionIds, products!);
     } catch (error) {
-      if (error instanceof FactionConstraintsError && attempts < MAX_ATTEMPTS) {
-        // Swallow the error and retry
-        attempts++;
+      if (!(error instanceof FactionConstraintsError)) {
+        throw error;
       }
-      throw error;
+
+      if (attempts >= MAX_ATTEMPTS) {
+        throw error;
+      }
+
+      // Swallow the error and retry
+      attempts++;
     }
   }
 }
