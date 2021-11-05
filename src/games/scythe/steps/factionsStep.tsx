@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Dict, invariant, Random, Shape, Vec } from "common";
+import { C, Dict, invariant, Random, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
@@ -214,7 +214,7 @@ function ConfigPanel({
   );
 
   return (
-    <Stack direction="column" spacing={1} padding={3}>
+    <Stack direction="column" spacing={2} padding={3}>
       <FactionsSelector
         config={config}
         productIds={productIds}
@@ -229,9 +229,6 @@ function ConfigPanel({
           )
         }
       />
-      <Button onClick={() => setShowBanned((current) => !current)}>
-        {showBanned ? "Hide" : "Show"} Banned Combos
-      </Button>
       <Collapse in={showBanned}>
         <BannedCombosSelector
           banned={config.banned}
@@ -245,6 +242,9 @@ function ConfigPanel({
           }
         />
       </Collapse>
+      <Button size="small" onClick={() => setShowBanned((current) => !current)}>
+        {showBanned ? "Hide" : "Show"} Banned Combos
+      </Button>
     </Stack>
   );
 }
@@ -312,6 +312,31 @@ function BannedCombosSelector({
     () => Vec.sort(Vec.diff(Factions.availableForProducts(productIds), never)),
     [never, productIds]
   );
+
+  const onlyFactionForMat = useMemo(
+    () =>
+      // We want the data keyed by the mat instead of the faction
+      Shape.flip(
+        // Filter out the factions that don't have one (most factions wont)
+        Shape.filter_nulls(
+          // For each faction (maybe) find a mat which is the only non-banned
+          // assignment for it.
+          Shape.from_keys(availableFactions, (factionId) => {
+            const bannedForFaction = Dict.filter(banned, (bannedFactionIds) =>
+              bannedFactionIds.includes(factionId)
+            );
+            const bannedMatsForFaction = Vec.keys(bannedForFaction);
+            const availableForFaction = Vec.diff(
+              availablePlayerMats,
+              bannedMatsForFaction
+            );
+            return C.only(availableForFaction);
+          })
+        )
+      ),
+    [availableFactions, availablePlayerMats, banned]
+  );
+
   return (
     <TableContainer>
       <Table size="small" padding="none">
@@ -322,6 +347,7 @@ function BannedCombosSelector({
               matId={matId}
               factionIds={availableFactions}
               banned={banned[matId] ?? []}
+              requiredFaction={onlyFactionForMat[matId]}
               onClick={(factionId) => onClick(matId, factionId)}
             />
           ))}
@@ -335,11 +361,13 @@ function BannedComboMatRow({
   matId,
   factionIds,
   banned,
+  requiredFaction,
   onClick,
 }: {
   matId: MatId;
   factionIds: readonly FactionId[];
   banned: readonly FactionId[];
+  requiredFaction: FactionId | undefined;
   onClick(factionId: FactionId): void;
 }): JSX.Element {
   return (
@@ -354,9 +382,10 @@ function BannedComboMatRow({
           mode={
             banned.includes(factionId)
               ? "banned"
-              : banned.length < factionIds.length - 1
-              ? "optional"
-              : "required"
+              : banned.length >= factionIds.length - 1 ||
+                factionId === requiredFaction
+              ? "required"
+              : "optional"
           }
           onClick={() => onClick(factionId)}
         />
