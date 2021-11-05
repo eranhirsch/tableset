@@ -309,7 +309,7 @@ function BannedCombosSelector({
     [productIds]
   );
   const availableFactions = useMemo(
-    () => Vec.diff(Factions.availableForProducts(productIds), never),
+    () => Vec.sort(Vec.diff(Factions.availableForProducts(productIds), never)),
     [never, productIds]
   );
   return (
@@ -344,7 +344,9 @@ function BannedComboMatRow({
 }): JSX.Element {
   return (
     <TableRow>
-      <TableCell>{PlayerMats[matId].name}</TableCell>
+      <TableCell sx={{ opacity: Vec.is_empty(banned) ? 0.25 : 1.0 }}>
+        {PlayerMats[matId].name}
+      </TableCell>
       {Vec.map(factionIds, (factionId) => (
         <BannedComboFactionButton
           key={`${matId}_${factionId}`}
