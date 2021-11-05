@@ -1,4 +1,4 @@
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import HighlightOffTwoToneIcon from "@mui/icons-material/HighlightOffTwoTone";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
@@ -349,7 +349,13 @@ function BannedComboMatRow({
         <BannedComboFactionButton
           key={`${matId}_${factionId}`}
           factionId={factionId}
-          isBanned={banned.includes(factionId)}
+          mode={
+            banned.includes(factionId)
+              ? "banned"
+              : banned.length < factionIds.length - 1
+              ? "optional"
+              : "required"
+          }
           onClick={() => onClick(factionId)}
         />
       ))}
@@ -359,11 +365,11 @@ function BannedComboMatRow({
 
 function BannedComboFactionButton({
   factionId,
-  isBanned,
+  mode,
   onClick,
 }: {
   factionId: FactionId;
-  isBanned: boolean;
+  mode: "banned" | "optional" | "required";
   onClick(): void;
 }): JSX.Element {
   return (
@@ -371,13 +377,15 @@ function BannedComboFactionButton({
       <IconButton
         size="small"
         color={Factions[factionId].color}
-        onClick={onClick}
+        onClick={mode !== "required" ? onClick : undefined}
         sx={{ padding: 0 }}
       >
-        {isBanned ? (
+        {mode === "banned" ? (
           <HighlightOffTwoToneIcon fontSize="small" />
+        ) : mode === "optional" ? (
+          <AddRoundedIcon fontSize="small" sx={{ opacity: 0.25 }} />
         ) : (
-          <AddCircleOutlineIcon fontSize="small" sx={{ opacity: 0.25 }} />
+          <CheckCircleIcon fontSize="small" />
         )}
       </IconButton>
     </TableCell>
