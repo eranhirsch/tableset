@@ -235,6 +235,7 @@ function ConfigPanel({
       <Collapse in={showBanned}>
         <BannedCombosSelector
           banned={config.banned}
+          never={config.never}
           productIds={productIds}
           onClick={(matId, factionId) =>
             onChange(({ banned, ...rest }) => ({
@@ -294,10 +295,12 @@ function FactionsSelector({
 
 function BannedCombosSelector({
   banned,
+  never,
   productIds,
   onClick,
 }: {
   banned: Readonly<BannedCombos>;
+  never: readonly FactionId[];
   productIds: readonly ScytheProductId[];
   onClick(matId: MatId, factionId: FactionId): void;
 }): JSX.Element {
@@ -306,8 +309,8 @@ function BannedCombosSelector({
     [productIds]
   );
   const availableFactions = useMemo(
-    () => Factions.availableForProducts(productIds),
-    [productIds]
+    () => Vec.diff(Factions.availableForProducts(productIds), never),
+    [never, productIds]
   );
   return (
     <TableContainer>
