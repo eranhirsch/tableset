@@ -14,20 +14,20 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Typography,
+  Typography
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { C, Dict, Random, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
@@ -124,14 +124,9 @@ function resolve(
   config: TemplateConfig,
   players: readonly PlayerId[] | null,
   products: readonly ScytheProductId[] | null,
-  playerMatsIdx: number | null
+  playerMats: readonly MatId[] | null
 ): number {
   const available = Factions.availableForProducts(products!);
-
-  const playerMats =
-    playerMatsIdx != null
-      ? PlayerMats.decode(playerMatsIdx, players!.length, products!)
-      : null;
 
   // Random factions are those that aren't required by `always` and aren't
   // disallowed by `never`
@@ -217,12 +212,13 @@ function randomFaction(
 
 function ConfigPanel({
   config,
-  queries: [players, products],
+  queries: [players, products, playerMats],
   onChange,
 }: ConfigPanelProps<
   TemplateConfig,
   readonly PlayerId[],
-  readonly ScytheProductId[]
+  readonly ScytheProductId[],
+  readonly MatId[]
 >): JSX.Element {
   const [showBanned, setShowBanned] = useState(false);
 
@@ -253,6 +249,7 @@ function ConfigPanel({
           banned={config.banned}
           never={config.never}
           productIds={productIds}
+          playerMatsQuery={playerMats}
           onClick={(matId, factionId) =>
             onChange(({ banned, ...rest }) => ({
               ...rest,
@@ -316,16 +313,22 @@ function BannedCombosSelector({
   banned,
   never,
   productIds,
+  playerMatsQuery,
   onClick,
 }: {
   banned: Readonly<BannedCombos>;
   never: readonly FactionId[];
   productIds: readonly ScytheProductId[];
+  playerMatsQuery: Query<readonly MatId[]>;
   onClick(matId: MatId, factionId: FactionId): void;
 }): JSX.Element {
   const availablePlayerMats = useMemo(
-    () => PlayerMats.availableForProducts(productIds),
-    [productIds]
+    () =>
+      Vec.filter(
+        PlayerMats.availableForProducts(productIds),
+        (matId) => true/* playerMatsQuery.willContain(matId) === false */
+      ),
+    [playerMatsQuery, productIds]
   );
   const availableFactions = useMemo(
     () => Vec.sort(Vec.diff(Factions.availableForProducts(productIds), never)),
@@ -539,17 +542,9 @@ function ConfigPanelTLDR({
 function InstanceVariableComponent({
   value: factionIdx,
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
-  const matsIdx = useOptionalInstanceValue(playerMatsStep);
+  const playerMatIds = useOptionalInstanceValue(playerMatsStep);
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const products = useRequiredInstanceValue(productsMetaStep);
-
-  const playerMatIds = useMemo(
-    () =>
-      matsIdx == null
-        ? null
-        : PlayerMats.decode(matsIdx, playerIds.length, products),
-    [matsIdx, playerIds.length, products]
-  );
 
   const factionIds = useMemo(
     () => Factions.decode(factionIdx, playerIds.length, products),

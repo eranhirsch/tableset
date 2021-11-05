@@ -1,4 +1,4 @@
-import { Dict, MathUtils, nullthrows, Vec } from "common";
+import { Dict, Vec } from "common";
 import { ScytheProductId } from "../ScytheProductId";
 
 export type MatId =
@@ -42,30 +42,6 @@ const MATS_IN_PRODUCTS: Readonly<
 
 export const PlayerMats = {
   ...PLAYER_MATS,
-
-  decode: (
-    idx: number,
-    playerCount: number,
-    products: readonly ScytheProductId[]
-  ): readonly MatId[] =>
-    nullthrows(
-      MathUtils.combinations_lazy_array(
-        availableForProducts(products),
-        playerCount
-      ).at(idx),
-      `Mats idx ${idx} was out of range for products ${JSON.stringify(
-        products
-      )}`
-    ),
-
-  encode: (
-    matIds: readonly MatId[],
-    products: readonly ScytheProductId[]
-  ): number =>
-    MathUtils.combinations_lazy_array(
-      availableForProducts(products),
-      matIds.length
-    ).indexOf(matIds),
 
   availableForProducts,
 } as const;

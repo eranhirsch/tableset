@@ -3,7 +3,6 @@ import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, invariant, Vec } from "common";
-import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -31,7 +30,8 @@ export default createRandomGameStep({
   id: "playerMats",
   dependencies: [playersMetaStep, productsMetaStep],
 
-  isType: (x: unknown): x is number => typeof x === "number",
+  isType: (x: unknown): x is readonly MatId[] =>
+    Array.isArray(x) && x.every((mid) => PlayerMats[mid as MatId] != null),
 
   isTemplatable: () => true,
 
@@ -52,9 +52,7 @@ export default createRandomGameStep({
         random
       )}, expected: ${randomCount}`
     );
-    const selection = Vec.concat(config.always, random);
-
-    return PlayerMats.encode(selection, products!);
+    return Vec.sort(Vec.concat(config.always, random));
   },
 
   refresh({ always, never }, players, products) {
@@ -228,16 +226,8 @@ function ConfigPanelTLDR({
 }
 
 function InstanceVariableComponent({
-  value: combinationsIdx,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
-  const products = useRequiredInstanceValue(productsMetaStep);
-  const players = useRequiredInstanceValue(playersMetaStep);
-
-  const matIds = useMemo(
-    () => PlayerMats.decode(combinationsIdx, players.length, products),
-    [combinationsIdx, players.length, products]
-  );
-
+  value: matIds,
+}: VariableStepInstanceComponentProps<readonly MatId[]>): JSX.Element {
   return (
     <>
       <Typography variant="body1">The mats are:</Typography>
