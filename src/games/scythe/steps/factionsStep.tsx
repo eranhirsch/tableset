@@ -1,10 +1,12 @@
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import HighlightOffTwoToneIcon from "@mui/icons-material/HighlightOffTwoTone";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import {
   Box,
+  Button,
   Chip,
-  Divider,
+  Collapse,
   IconButton,
   Stack,
   Table,
@@ -12,26 +14,26 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Typography
+  Typography,
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, invariant, Random, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "../utils/Factions";
 import { MatId, PlayerMats } from "../utils/PlayerMats";
@@ -202,6 +204,8 @@ function ConfigPanel({
   readonly PlayerId[],
   readonly ScytheProductId[]
 >): JSX.Element {
+  const [showBanned, setShowBanned] = useState(false);
+
   const productIds = products.onlyResolvableValue()!;
   const available = useMemo(
     () => Vec.sort(Factions.availableForProducts(productIds)),
@@ -224,17 +228,21 @@ function ConfigPanel({
           )
         }
       />
-      <Divider />
-      <BannedCombosSelector
-        banned={config.banned}
-        productIds={productIds}
-        onClick={(matId, factionId) =>
-          onChange(({ banned, ...rest }) => ({
-            ...rest,
-            banned: toggleBannedState(banned, matId, factionId),
-          }))
-        }
-      />
+      <Button onClick={() => setShowBanned((current) => !current)}>
+        Banned Combos
+      </Button>
+      <Collapse in={showBanned}>
+        <BannedCombosSelector
+          banned={config.banned}
+          productIds={productIds}
+          onClick={(matId, factionId) =>
+            onChange(({ banned, ...rest }) => ({
+              ...rest,
+              banned: toggleBannedState(banned, matId, factionId),
+            }))
+          }
+        />
+      </Collapse>
     </Stack>
   );
 }
@@ -302,18 +310,25 @@ function BannedCombosSelector({
   );
   return (
     <TableContainer>
-      <Table size="small">
+      <Table size="small" padding="none">
         <TableBody>
           {Vec.map(availablePlayerMats, (matId) => (
             <TableRow key={matId}>
               <TableCell>{PlayerMats[matId].name}</TableCell>
               {Vec.map(availableFactions, (factionId) => (
                 <TableCell key={`${matId}_${factionId}`}>
-                  <IconButton onClick={() => onClick(matId, factionId)}>
+                  <IconButton
+                    color={Factions[factionId].color}
+                    onClick={() => onClick(matId, factionId)}
+                    sx={{ padding: 0 }}
+                  >
                     {banned[matId]?.includes(factionId) ? (
-                      <CheckCircleIcon fontSize="small" />
+                      <HighlightOffTwoToneIcon fontSize="small" />
                     ) : (
-                      <AddCircleOutlineIcon fontSize="small" />
+                      <AddCircleOutlineIcon
+                        fontSize="small"
+                        sx={{ opacity: 0.25 }}
+                      />
                     )}
                   </IconButton>
                 </TableCell>

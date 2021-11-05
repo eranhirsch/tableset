@@ -133,6 +133,9 @@ declare module "@mui/material/Badge" {
 declare module "@mui/material/Chip" {
   interface ChipPropsColorOverrides extends ColorOverrides {}
 }
+declare module "@mui/material/IconButton" {
+  interface IconButtonPropsColorOverrides extends ColorOverrides {}
+}
 
 export const themeWithGameColors = createTheme({
   palette: colorDefs,
