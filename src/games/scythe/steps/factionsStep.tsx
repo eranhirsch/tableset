@@ -229,7 +229,7 @@ function ConfigPanel({
         }
       />
       <Button onClick={() => setShowBanned((current) => !current)}>
-        Banned Combos
+        {showBanned ? "Hide" : "Show"} Banned Combos
       </Button>
       <Collapse in={showBanned}>
         <BannedCombosSelector
@@ -316,8 +316,9 @@ function BannedCombosSelector({
             <TableRow key={matId}>
               <TableCell>{PlayerMats[matId].name}</TableCell>
               {Vec.map(availableFactions, (factionId) => (
-                <TableCell key={`${matId}_${factionId}`}>
+                <TableCell key={`${matId}_${factionId}`} align="center">
                   <IconButton
+                    size="small"
                     color={Factions[factionId].color}
                     onClick={() => onClick(matId, factionId)}
                     sx={{ padding: 0 }}
