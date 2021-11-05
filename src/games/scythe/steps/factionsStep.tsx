@@ -44,6 +44,7 @@ type BannedCombos = Partial<Record<MatId, readonly FactionId[]>>;
 
 const DEFAULT_BANNED_COMBOS: Readonly<BannedCombos> = {
   // These were declared officially and added to the complete rule book
+  // IMPORTANT: Keep sorted by mat id and internally by faction id!
   industrial: ["rusviet"],
   patriotic: ["crimea"],
 };
