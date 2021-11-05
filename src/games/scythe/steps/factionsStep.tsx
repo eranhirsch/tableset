@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { C, Dict, invariant, Random, Shape, Vec } from "common";
+import { C, Dict, Random, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
@@ -40,6 +40,8 @@ import { MatId, PlayerMats } from "../utils/PlayerMats";
 import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
 
+const MAX_ATTEMPTS = 5;
+
 type BannedCombos = Partial<Record<MatId, readonly FactionId[]>>;
 
 const DEFAULT_BANNED_COMBOS: Readonly<BannedCombos> = {
@@ -56,6 +58,16 @@ type TemplateConfig = {
 };
 
 type Mode = "always" | "never" | "random";
+
+class FactionConstraintsError extends Error {
+  constructor(
+    public matId: MatId | null,
+    public always: readonly FactionId[],
+    public banned: Readonly<BannedCombos>
+  ) {
+    super();
+  }
+}
 
 export default createRandomGameStep({
   id: "factions",
@@ -128,37 +140,40 @@ function resolve(
     config.always
   );
 
-  // Candidates are all required factions (put first so they get priority) and
-  // then the random factions. We randomize each section separately so that all
-  // factions have the same probability of being chosen
-  const candidates = Vec.concat(
-    Random.shuffle(config.always),
-    Random.shuffle(randomFactions)
-  );
+  let attempts = 0;
+  while (true) {
+    // Candidates are all required factions (put first so they get priority) and
+    // then the random factions. We randomize each section separately so that all
+    // factions have the same probability of being chosen
+    const candidates = Vec.concat(
+      Random.shuffle(config.always),
+      Random.shuffle(randomFactions)
+    );
 
-  const factionIds = Vec.range(0, players!.length - 1).reduce(
-    (ongoing, index) =>
-      Vec.concat(
-        ongoing,
-        randomFaction(
-          ongoing,
-          playerMats != null ? playerMats[index] : null,
-          players!.length,
-          candidates,
-          config
-        )
-      ),
-    [] as readonly FactionId[]
-  );
-
-  invariant(
-    factionIds.length === players!.length,
-    `Mismatch in number of factions chosen: ${JSON.stringify(
-      factionIds
-    )}, expected: ${players!.length}`
-  );
-
-  return Factions.encode(factionIds, products!);
+    try {
+      const factionIds = Vec.range(0, players!.length - 1).reduce(
+        (ongoing, index) =>
+          Vec.concat(
+            ongoing,
+            randomFaction(
+              ongoing,
+              playerMats != null ? playerMats[index] : null,
+              players!.length,
+              candidates,
+              config
+            )
+          ),
+        [] as readonly FactionId[]
+      );
+      return Factions.encode(factionIds, products!);
+    } catch (error) {
+      if (error instanceof FactionConstraintsError && attempts < MAX_ATTEMPTS) {
+        // Swallow the error and retry
+        attempts++;
+      }
+      throw error;
+    }
+  }
 }
 
 function randomFaction(
@@ -191,6 +206,10 @@ function randomFaction(
     // Take just enough elements so that we always include `always` factions
     playersCount - ongoing.length - bannedRequired.length
   );
+
+  if (Vec.is_empty(actualCandidates)) {
+    throw new FactionConstraintsError(matId, always, banned);
+  }
 
   // Pick a candidates faction and add it to the ongoing arr for the reducer
   return Vec.sample(actualCandidates, 1);
