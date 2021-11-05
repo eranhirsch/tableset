@@ -326,7 +326,7 @@ function BannedCombosSelector({
     () =>
       Vec.filter(
         PlayerMats.availableForProducts(productIds),
-        (matId) => true/* playerMatsQuery.willContain(matId) === false */
+        (matId) => playerMatsQuery.willContain(matId) !== false
       ),
     [playerMatsQuery, productIds]
   );

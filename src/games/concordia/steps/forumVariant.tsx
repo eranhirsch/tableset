@@ -6,7 +6,7 @@ export default createVariant({
   id: "forum",
   name: "Forum",
   dependencies: [productsMetaStep],
-  isTemplatable: (products) => products.willContain("salsa"),
+  isTemplatable: (products) => products.willContain("salsa")!,
   InstanceVariableComponent,
 });
 

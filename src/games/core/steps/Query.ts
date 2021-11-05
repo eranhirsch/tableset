@@ -1,6 +1,8 @@
 import { invariant_violation, Vec } from "common";
 import { StepId } from "model/Game";
 
+export type ArrayElement<T> = T extends readonly (infer E)[] ? E : never;
+
 export interface Query<T = unknown> {
   /**
    * Check if the step could resolve to the single value passed through.
@@ -29,7 +31,7 @@ export interface Query<T = unknown> {
   /**
    * Use when the step returns an array of values.
    */
-  willContain(value: T extends readonly (infer E)[] ? E : never): boolean;
+  willContain(value: ArrayElement<T>): boolean | undefined;
   /**
    * Will the step resolve to any non-null value.
    */

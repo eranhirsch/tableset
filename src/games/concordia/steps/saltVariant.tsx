@@ -10,7 +10,7 @@ export default createVariant({
   name: "Salt",
   dependencies: [productsMetaStep],
   InstanceVariableComponent,
-  isTemplatable: (products) => products.willContain("salsa"),
+  isTemplatable: (products) => products.willContain("salsa")!,
 });
 
 function InstanceVariableComponent(): JSX.Element {

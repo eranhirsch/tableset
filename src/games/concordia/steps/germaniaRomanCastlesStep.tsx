@@ -55,7 +55,7 @@ export default createRandomGameStep({
     products == null || (map != null && map !== "germania"),
 
   isTemplatable: (products, map, _, cities) =>
-    products.willContain("britanniaGermania") &&
+    products.willContain("britanniaGermania")! &&
     map.canResolveTo("germania") &&
     cities.willResolve(),
   resolve: (config, products, map, withSalt, cities) =>

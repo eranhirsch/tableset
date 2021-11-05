@@ -10,7 +10,7 @@ import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
 import { DepsTuple } from "./DepsTuple";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
-import { buildQuery, Query } from "./Query";
+import { ArrayElement, buildQuery, Query } from "./Query";
 
 export interface VariableStepInstanceComponentProps<T> {
   value: T;
@@ -106,6 +106,10 @@ type Options<
       query9: Query<D9>,
       query10: Query<D10>
     ): boolean;
+    willContain?(
+      element: ArrayElement<T>,
+      config: C | null
+    ): boolean | undefined;
     onlyResolvableValue?(
       config: C | null,
       query1: Query<D1>,
@@ -162,6 +166,10 @@ interface OptionsInternal<T, C>
   refresh(current: C, ...dependencies: Query[]): C;
   initialConfig(...queries: Query[]): C;
   canResolveTo?(value: T, config: unknown | null, ...queries: Query[]): boolean;
+  willContain?(
+    element: ArrayElement<T>,
+    config: unknown | null
+  ): boolean | undefined;
   onlyResolvableValue?(
     config: unknown | null,
     ...queries: Query[]
@@ -205,6 +213,7 @@ export function createRandomGameStep<T, C>({
   refresh,
   resolve,
   skip,
+  willContain,
   ...baseOptions
 }: OptionsInternal<T, C>): Readonly<RandomGameStep<T, C>> {
   const baseStep = createGameStep(baseOptions);
@@ -320,6 +329,11 @@ export function createRandomGameStep<T, C>({
                     dependency.query(template, context)
                   )
                 ),
+
+        willContain:
+          willContain == null
+            ? undefined
+            : (element) => willContain(element, template[baseStep.id]?.config),
 
         willResolve: () => template[baseStep.id] != null,
       }),
