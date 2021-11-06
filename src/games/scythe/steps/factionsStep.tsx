@@ -250,7 +250,7 @@ function ConfigPanel({
         }
       />
       {playerMats.willResolve() && (
-        <Stack direction="column" spacing={10}>
+        <>
           <Collapse in={showBanned}>
             <BannedCombosSelector
               banned={config.banned}
@@ -271,7 +271,7 @@ function ConfigPanel({
           >
             {showBanned ? "Hide" : "Show"} Banned Combos
           </Button>
-        </Stack>
+        </>
       )}
     </Stack>
   );
