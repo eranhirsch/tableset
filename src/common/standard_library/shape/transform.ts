@@ -113,11 +113,13 @@ const group_by = <Tk extends keyof any, Tv>(
 ): Readonly<Partial<Record<Tk, readonly Tv[]>>> =>
   values.reduce((out, value) => {
     const key = keyFunc(value);
-    if (key != null) {
-      out[key] = (out[key] ?? []).concat(value);
-    }
-    return out;
-  }, {} as Record<Tk, Tv[]>);
+    return key == null
+      ? out
+      : {
+          ...out,
+          [key]: Vec.concat(out[key] ?? [], [value]),
+        };
+  }, {} as Readonly<Record<Tk, readonly Tv[]>>);
 
 /**
  * @returns a new mapper-obj where each key is the result of calling the given
