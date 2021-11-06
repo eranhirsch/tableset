@@ -829,4 +829,3 @@ const removeFromBannedCombos = (
     ),
     (bannedMats) => !Vec.is_empty(bannedMats)
   );
-
