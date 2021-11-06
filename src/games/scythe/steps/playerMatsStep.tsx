@@ -78,11 +78,8 @@ export default createRandomGameStep({
 
   isTemplatable: () => true,
 
-  initialConfig: (_players, products, factions): Readonly<TemplateConfig> => ({
-    always: [],
-    never: [],
-    ...refreshBanned(undefined, products.onlyResolvableValue()!, factions),
-  }),
+  initialConfig: (players, products, factions): Readonly<TemplateConfig> =>
+    refresh({ always: [], never: [] }, players, products, factions),
 
   resolve,
   refresh,
@@ -216,7 +213,7 @@ function refresh(
     }
   }
 
-  const { banned } = refreshBanned(config.banned, productIds, factions);
+  const { banned } = refreshBanned(config, productIds, factions);
 
   return {
     always:
@@ -270,7 +267,7 @@ function refreshAlwaysNever(
  * special value.
  */
 function refreshBanned(
-  banned: Readonly<BannedCombos> | undefined,
+  { banned, never }: Readonly<TemplateConfig>,
   productIds: readonly ScytheProductId[],
   factions: Query<readonly FactionId[]>
 ): Readonly<Pick<TemplateConfig, "banned">> {
@@ -285,11 +282,15 @@ function refreshBanned(
     availableFactions,
     (fid) => factions.willContain(fid) !== false
   );
+  const relevantMats = Vec.diff(availableMats, never);
 
   const refreshedBanned = Dict.sort(
-    Dict.map(
-      Shape.select_keys(banned ?? DEFAULT_BANNED_COMBOS, relevantFactions),
-      (bannedMats) => Vec.sort(Vec.intersect(bannedMats, availableMats))
+    Shape.filter(
+      Dict.map(
+        Shape.select_keys(banned ?? DEFAULT_BANNED_COMBOS, relevantFactions),
+        (bannedMats) => Vec.sort(Vec.intersect(bannedMats, relevantMats))
+      ),
+      (bannedMats) => !Vec.is_empty(bannedMats)
     )
   );
 
@@ -763,9 +764,12 @@ function switchModes(
           return config;
         case "never":
           return {
-            ...config,
             always: Vec.filter(config.always, (mid) => mid !== matId),
             never: Vec.sort(Vec.concat(config.never, matId)),
+            banned:
+              config.banned == null
+                ? undefined
+                : removeFromBannedCombos(config.banned, matId),
           };
         case "random":
           return {
@@ -804,9 +808,25 @@ function switchModes(
           return {
             ...config,
             never: Vec.sort(Vec.concat(config.never, matId)),
+            banned:
+              config.banned == null
+                ? undefined
+                : removeFromBannedCombos(config.banned, matId),
           };
         case "random":
           return config;
       }
   }
 }
+
+const removeFromBannedCombos = (
+  banned: Readonly<BannedCombos>,
+  matId: MatId
+): Readonly<BannedCombos> =>
+  Shape.filter(
+    Dict.map(banned, (bannedMats) =>
+      Vec.filter(bannedMats, (mid) => mid !== matId)
+    ),
+    (bannedMats) => !Vec.is_empty(bannedMats)
+  );
+
