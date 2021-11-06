@@ -249,23 +249,30 @@ function ConfigPanel({
           )
         }
       />
-      <Collapse in={showBanned}>
-        <BannedCombosSelector
-          banned={config.banned}
-          never={config.never}
-          productIds={productIds}
-          playerMatsQuery={playerMats}
-          onClick={(matId, factionId) =>
-            onChange(({ banned, ...rest }) => ({
-              ...rest,
-              banned: toggleBannedState(banned, matId, factionId),
-            }))
-          }
-        />
-      </Collapse>
-      <Button size="small" onClick={() => setShowBanned((current) => !current)}>
-        {showBanned ? "Hide" : "Show"} Banned Combos
-      </Button>
+      {playerMats.willResolve() && (
+        <Stack direction="column" spacing={10}>
+          <Collapse in={showBanned}>
+            <BannedCombosSelector
+              banned={config.banned}
+              never={config.never}
+              productIds={productIds}
+              playerMatsQuery={playerMats}
+              onClick={(matId, factionId) =>
+                onChange(({ banned, ...rest }) => ({
+                  ...rest,
+                  banned: toggleBannedState(banned, matId, factionId),
+                }))
+              }
+            />
+          </Collapse>
+          <Button
+            size="small"
+            onClick={() => setShowBanned((current) => !current)}
+          >
+            {showBanned ? "Hide" : "Show"} Banned Combos
+          </Button>
+        </Stack>
+      )}
     </Stack>
   );
 }
