@@ -105,6 +105,17 @@ function resolve(
   // disallowed by `never`
   const randomMats = Vec.diff(Vec.diff(available, config.never), config.always);
 
+  if (factionIds == null) {
+    // When we don't have faction ids we simply need to pick a combination of
+    // mats, we don't need to randomize the order, we also don't need all the
+    // complex logic for checking and comparing against banned combos.
+    const matIds = Vec.concat(
+      config.always,
+      Vec.sample(randomMats, players!.length - config.always.length)
+    );
+    return PlayerMats.encode(matIds, false, products!);
+  }
+
   let attempts = 0;
   while (true) {
     // Candidates are all required mats (put first so they get priority) and
@@ -122,7 +133,7 @@ function resolve(
             ongoing,
             randomMat(
               ongoing,
-              factionIds != null ? factionIds[index] : null,
+              factionIds[index],
               players!.length,
               candidates,
               config
@@ -130,7 +141,7 @@ function resolve(
           ),
         [] as readonly MatId[]
       );
-      return PlayerMats.encode(matIds, factionIds != null, products!);
+      return PlayerMats.encode(matIds, true, products!);
     } catch (error) {
       if (!(error instanceof MatConstraintsError)) {
         throw error;
@@ -205,19 +216,7 @@ function refresh(
     }
   }
 
-  let refreshedBanned = null;
-  try {
-    refreshedBanned = refreshBanned(config.banned, productIds, factions);
-  } catch (error) {
-    if (!(error instanceof UnchangedTemplateValue)) {
-      // Ignore these exceptions, we want to merge their logic
-      throw error;
-    }
-  }
-
-  if (refreshedAlwaysNever == null && refreshedBanned == null) {
-    templateValue("unchanged");
-  }
+  const { banned } = refreshBanned(config.banned, productIds, factions);
 
   return {
     always:
@@ -226,7 +225,7 @@ function refresh(
         : config.always,
     never:
       refreshedAlwaysNever != null ? refreshedAlwaysNever.never : config.never,
-    banned: refreshedBanned != null ? refreshedBanned.banned : config.banned,
+    banned,
   };
 }
 
@@ -263,13 +262,20 @@ function refreshAlwaysNever(
   return { always, never: Vec.intersect(never, available) };
 }
 
+/**
+ * This method take either the current or the default ban list, and updates it
+ * based on the state of the factions step and products.
+ * Important: DO NOT CALL templateValue('unchanged') as this method is also
+ * used in the `initialConfig` config hook where it won't be able to handle the
+ * special value.
+ */
 function refreshBanned(
   banned: Readonly<BannedCombos> | undefined,
   productIds: readonly ScytheProductId[],
   factions: Query<readonly FactionId[]>
 ): Readonly<Pick<TemplateConfig, "banned">> {
   if (!factions.willResolve()) {
-    return banned == null ? templateValue("unchanged") : {};
+    return {};
   }
 
   const availableFactions = Factions.availableForProducts(productIds);
@@ -316,8 +322,6 @@ function refreshBanned(
     templateValue("unfixable");
   }
 
-  // TODO: Compare the refreshedBanned to the starting banned so that we return
-  // 'unchanged' instead if it's identical.
   return { banned: refreshedBanned };
 }
 
