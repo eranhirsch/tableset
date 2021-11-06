@@ -236,8 +236,8 @@ function removeUntemplatableStep(
   disabledImpl(state, id);
 }
 
-class UnfixableTemplateValue extends Error {}
-class UnchangedTemplateValue extends Error {}
+export class UnfixableTemplateValue extends Error {}
+export class UnchangedTemplateValue extends Error {}
 
 export function templateValue(special: "unfixable" | "unchanged"): never {
   switch (special) {

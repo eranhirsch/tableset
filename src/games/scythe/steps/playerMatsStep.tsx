@@ -14,20 +14,23 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Typography,
+  Typography
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { C, Dict, Random, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
-import { templateValue } from "features/template/templateSlice";
+import {
+  templateValue,
+  UnchangedTemplateValue
+} from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
@@ -54,7 +57,7 @@ const DEFAULT_BANNED_COMBOS: Readonly<BannedCombos> = {
 type TemplateConfig = {
   always: readonly MatId[];
   never: readonly MatId[];
-  banned: Readonly<BannedCombos>;
+  banned?: Readonly<BannedCombos>;
 };
 
 type Mode = "always" | "never" | "random";
@@ -63,7 +66,7 @@ class MatConstraintsError extends Error {
   constructor(
     public factionId: FactionId | null,
     public always: readonly MatId[],
-    public banned: Readonly<BannedCombos>
+    public banned: Readonly<BannedCombos> | undefined
   ) {
     super();
   }
@@ -75,44 +78,14 @@ export default createRandomGameStep({
 
   isTemplatable: () => true,
 
-  initialConfig: (): Readonly<TemplateConfig> => ({
+  initialConfig: (_players, _products, factions): Readonly<TemplateConfig> => ({
     always: [],
     never: [],
-    banned: DEFAULT_BANNED_COMBOS,
+    ...(factions.willResolve() ? { banned: DEFAULT_BANNED_COMBOS } : {}),
   }),
 
   resolve,
-
-  refresh({ always, never, ...rest }, players, products) {
-    const available = PlayerMats.availableForProducts(
-      products.onlyResolvableValue()!
-    );
-
-    if (!Vec.is_empty(Vec.diff(always, available))) {
-      // If always has values which are now unavailable, we can't fix the config
-      // because we don't know how to fill the gap created by the missing
-      // mat trivially (do we just remove it? do we replace it? etc...)
-      templateValue("unfixable");
-    }
-
-    if (!players.willContainNumElements({ min: always.length })) {
-      // There are more values in the always array then there are players, we
-      // can't use the array and there's no trivial way to fix it either (what
-      // mat do you remove?)
-      templateValue("unfixable");
-    }
-
-    if (Vec.contained_in(never, available)) {
-      // At this point the 'always' array is valid, so if the never array
-      // doesn't require any fixing too, we don't need to touch the config.
-      templateValue("unchanged");
-    }
-
-    // The only case we need to fix is when the 'never' array contains elements
-    // which aren't available anymore; for normalization, we want to remove them
-    // from the 'never' array too
-    return { always, never: Vec.intersect(never, available), ...rest };
-  },
+  refresh,
 
   ConfigPanel,
   ConfigPanelTLDR,
@@ -182,7 +155,8 @@ function randomMat(
 ): MatId {
   // We might not have factions data (that step might be turned off in the
   // template)
-  const bannedForFaction = factionId != null ? banned[factionId] ?? [] : [];
+  const bannedForFaction =
+    factionId != null && banned != null ? banned[factionId] ?? [] : [];
 
   // Remove any mats already selected
   const unused = Vec.diff(candidates, ongoing);
@@ -211,6 +185,140 @@ function randomMat(
 
   // Pick a candidates faction and add it to the ongoing arr for the reducer
   return Vec.sample(actualCandidates, 1);
+}
+
+function refresh(
+  config: Readonly<TemplateConfig>,
+  players: Query<readonly PlayerId[]>,
+  productsQuery: Query<readonly ScytheProductId[]>,
+  factions: Query<readonly FactionId[]>
+): Readonly<TemplateConfig> {
+  const productIds = productsQuery.onlyResolvableValue()!;
+
+  let refreshedAlwaysNever = null;
+  try {
+    refreshedAlwaysNever = refreshAlwaysNever(config, players, productIds);
+  } catch (error) {
+    if (!(error instanceof UnchangedTemplateValue)) {
+      // Ignore these exceptions, we want to merge their logic
+      throw error;
+    }
+  }
+
+  let refreshedBanned = null;
+  try {
+    refreshedBanned = refreshBanned(config, productIds, factions);
+  } catch (error) {
+    if (!(error instanceof UnchangedTemplateValue)) {
+      // Ignore these exceptions, we want to merge their logic
+      throw error;
+    }
+  }
+
+  if (refreshedAlwaysNever == null && refreshedBanned == null) {
+    templateValue("unchanged");
+  }
+
+  return {
+    always:
+      refreshedAlwaysNever != null
+        ? refreshedAlwaysNever.always
+        : config.always,
+    never:
+      refreshedAlwaysNever != null ? refreshedAlwaysNever.never : config.never,
+    banned: refreshedBanned != null ? refreshedBanned.banned : config.banned,
+  };
+}
+
+function refreshAlwaysNever(
+  { always, never }: Readonly<TemplateConfig>,
+  players: Query<readonly PlayerId[]>,
+  productIds: readonly ScytheProductId[]
+): Omit<TemplateConfig, "banned"> {
+  const available = PlayerMats.availableForProducts(productIds);
+
+  if (!Vec.is_empty(Vec.diff(always, available))) {
+    // If always has values which are now unavailable, we can't fix the config
+    // because we don't know how to fill the gap created by the missing
+    // mat trivially (do we just remove it? do we replace it? etc...)
+    templateValue("unfixable");
+  }
+
+  if (!players.willContainNumElements({ min: always.length })) {
+    // There are more values in the always array then there are players, we
+    // can't use the array and there's no trivial way to fix it either (what
+    // mat do you remove?)
+    templateValue("unfixable");
+  }
+
+  if (Vec.contained_in(never, available)) {
+    // At this point the 'always' array is valid, so if the never array
+    // doesn't require any fixing too, we don't need to touch the config.
+    templateValue("unchanged");
+  }
+
+  // The only case we need to fix is when the 'never' array contains elements
+  // which aren't available anymore; for normalization, we want to remove them
+  // from the 'never' array too
+  return { always, never: Vec.intersect(never, available) };
+}
+
+function refreshBanned(
+  { banned }: Readonly<TemplateConfig>,
+  productIds: readonly ScytheProductId[],
+  factions: Query<readonly FactionId[]>
+): Readonly<Pick<TemplateConfig, "banned">> {
+  if (!factions.willResolve()) {
+    return banned == null ? templateValue("unchanged") : {};
+  }
+
+  const availableFactions = Factions.availableForProducts(productIds);
+  const availableMats = PlayerMats.availableForProducts(productIds);
+
+  const relevantFactions = Vec.filter(
+    availableFactions,
+    (fid) => factions.willContain(fid) !== false
+  );
+
+  const refreshedBanned = Dict.sort(
+    Dict.map(
+      Shape.select_keys(banned ?? DEFAULT_BANNED_COMBOS, relevantFactions),
+      (bannedMats) => Vec.sort(Vec.intersect(bannedMats, availableMats))
+    )
+  );
+
+  if (
+    !Dict.is_empty(
+      Dict.filter(
+        refreshedBanned,
+        (bannedMats) => bannedMats.length === availableMats.length
+      )
+    )
+  ) {
+    // If at least one faction has all available mats banned then that faction
+    // is unplayable. This is unfixable because we don't know what mat to un-
+    // ban.
+    templateValue("unfixable");
+  }
+
+  if (
+    Dict.size(refreshedBanned) === relevantFactions.length &&
+    availableMats.some((mid) =>
+      Dict.is_empty(
+        Dict.filter(refreshedBanned, (bannedMats) => !bannedMats.includes(mid))
+      )
+    )
+  ) {
+    // If all factions have at least one banned mat, and for a specific mat id
+    // all factions have it included in their banned list, it means that this
+    // mat is now banned for all factions. This is unfixable because we don't
+    // know what faction to un-ban.
+    templateValue("unfixable");
+  }
+
+  // TODO: Compare the refreshedBanned to the starting banned so that we return
+  // 'unchanged' instead if it's identical.
+  return { banned: refreshedBanned };
 }
 
 function ConfigPanel({
@@ -251,7 +359,7 @@ function ConfigPanel({
           )
         }
       />
-      {factions.willResolve() && (
+      {config.banned != null && (
         <>
           <Collapse in={showBanned}>
             <BannedCombosSelector
@@ -261,7 +369,7 @@ function ConfigPanel({
               onClick={(factionId, matId) =>
                 onChange(({ banned, ...rest }) => ({
                   ...rest,
-                  banned: toggleBannedState(banned, factionId, matId),
+                  banned: toggleBannedState(banned!, factionId, matId),
                 }))
               }
             />
@@ -359,7 +467,7 @@ function BannedCombosSelector({
         Shape.group_by(
           Vec.entries(
             Shape.filter_nulls(
-              Dict.map(banned, (bannedMats) =>
+              Dict.map(banned!, (bannedMats) =>
                 C.only(Vec.diff(availablePlayerMats, bannedMats))
               )
             )
@@ -380,7 +488,7 @@ function BannedCombosSelector({
               key={matId}
               matId={matId}
               factionIds={availableFactions}
-              bannedPerFaction={banned}
+              bannedPerFaction={banned!}
               requiredFactions={requiredFactionsForMat[matId]}
               onClick={(factionId) => onClick(factionId, matId)}
             />
