@@ -160,7 +160,7 @@ function resolve(
           ),
         [] as readonly FactionId[]
       );
-      return Factions.encode(factionIds, products!);
+      return Factions.encode(factionIds, playerMats != null, products!);
     } catch (error) {
       if (!(error instanceof FactionConstraintsError)) {
         throw error;
@@ -552,8 +552,14 @@ function InstanceVariableComponent({
   const products = useRequiredInstanceValue(productsMetaStep);
 
   const factionIds = useMemo(
-    () => Factions.decode(factionIdx, playerIds.length, products),
-    [factionIdx, playerIds.length, products]
+    () =>
+      Factions.decode(
+        factionIdx,
+        playerIds.length,
+        playerMatIds != null,
+        products
+      ),
+    [factionIdx, playerIds.length, playerMatIds, products]
   );
 
   return (

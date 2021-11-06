@@ -64,12 +64,26 @@ export const Factions = {
   decode(
     index: number,
     playersCount: number,
+    forPlayerMats: boolean,
     products: readonly ScytheProductId[]
   ): readonly FactionId[] {
     const combinations = MathUtils.combinations_lazy_array(
       availableForProducts(products),
       playersCount
     );
+
+    if (!forPlayerMats) {
+      return nullthrows(
+        combinations.at(index),
+        `Combination index ${index} overflown for combinations array ${combinations}`
+      );
+    }
+
+    // When we have player mats the number represents both the combination and
+    // the permutation of the combination (because we care about pairings of
+    // player mats and the faction), we need to do some calculations to extract
+    // them.
+
     const combinationIdx = index % combinations.length;
     const combination = nullthrows(
       combinations.at(combinationIdx),
@@ -86,16 +100,25 @@ export const Factions = {
 
   encode(
     factionIds: readonly FactionId[],
+    forPlayerMats: boolean,
     products: readonly ScytheProductId[]
   ): number {
     const combinations = MathUtils.combinations_lazy_array(
       availableForProducts(products),
       factionIds.length
     );
+
+    const combinationIdx = combinations.indexOf(factionIds);
+    if (!forPlayerMats) {
+      return combinationIdx;
+    }
+
+    // When we have player mats the order of factions matters as what we care
+    // about is pairings, therefore we need to encode the specific permutation
+    // of the selected combination.
     const permutations = MathUtils.permutations_lazy_array(factionIds);
     return (
-      combinations.length * permutations.indexOf(factionIds) +
-      combinations.indexOf(factionIds)
+      combinations.length * permutations.indexOf(factionIds) + combinationIdx
     );
   },
 
