@@ -130,7 +130,7 @@ export const scytheGame = createGame({
       InstanceManualComponent:
         "Form a pile of coins as the bank near the board.",
     }),
-    playerMatsStep,
     factionsStep,
+    playerMatsStep,
   ],
 });

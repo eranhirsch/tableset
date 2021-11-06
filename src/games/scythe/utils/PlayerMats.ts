@@ -1,4 +1,4 @@
-import { Dict, Vec } from "common";
+import { Dict, MathUtils, nullthrows, Vec } from "common";
 import { ScytheProductId } from "../ScytheProductId";
 
 export type MatId =
@@ -42,6 +42,65 @@ const MATS_IN_PRODUCTS: Readonly<
 
 export const PlayerMats = {
   ...PLAYER_MATS,
+
+  decode(
+    index: number,
+    playersCount: number,
+    forFactions: boolean,
+    products: readonly ScytheProductId[]
+  ): readonly MatId[] {
+    const combinations = MathUtils.combinations_lazy_array(
+      availableForProducts(products),
+      playersCount
+    );
+
+    if (!forFactions) {
+      return nullthrows(
+        combinations.at(index),
+        `Combination index ${index} overflown for combinations array ${combinations}`
+      );
+    }
+
+    // When we have factions the number represents both the combination and
+    // the permutation of the combination (because we care about pairings of
+    // player mats and the faction), we need to do some calculations to extract
+    // them.
+
+    const combinationIdx = index % combinations.length;
+    const combination = nullthrows(
+      combinations.at(combinationIdx),
+      `Combination index ${combinationIdx} overflown for combinations array ${combinations}`
+    );
+
+    const permutations = MathUtils.permutations_lazy_array(combination);
+    const permutationIdx = Math.floor(index / combinations.length);
+    return nullthrows(
+      permutations.at(permutationIdx),
+      `Permutations index ${permutationIdx} overflown for permutations array ${permutations}`
+    );
+  },
+
+  encode(
+    matIds: readonly MatId[],
+    forFactions: boolean,
+    products: readonly ScytheProductId[]
+  ): number {
+    const combinations = MathUtils.combinations_lazy_array(
+      availableForProducts(products),
+      matIds.length
+    );
+
+    const combinationIdx = combinations.indexOf(matIds);
+    if (!forFactions) {
+      return combinationIdx;
+    }
+
+    // When we have factions the order of player mats matters as what we care
+    // about is pairings, therefore we need to encode the specific permutation
+    // of the selected combination.
+    const permutations = MathUtils.permutations_lazy_array(matIds);
+    return combinations.length * permutations.indexOf(matIds) + combinationIdx;
+  },
 
   availableForProducts,
 } as const;

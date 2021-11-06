@@ -1,89 +1,69 @@
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import HighlightOffTwoToneIcon from "@mui/icons-material/HighlightOffTwoTone";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
-import {
-  Box,
-  Button,
-  Chip,
-  Collapse,
-  IconButton,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Typography
-} from "@mui/material";
+import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { C, Dict, Random, Shape, Vec } from "common";
-import {
-  useOptionalInstanceValue,
-  useRequiredInstanceValue
-} from "features/instance/useInstanceValue";
+import { invariant, Shape, Vec } from "common";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "../utils/Factions";
-import { MatId, PlayerMats } from "../utils/PlayerMats";
-import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
-
-const MAX_ATTEMPTS = 5;
-
-type BannedCombos = Partial<Record<MatId, readonly FactionId[]>>;
-
-const DEFAULT_BANNED_COMBOS: Readonly<BannedCombos> = {
-  // These were declared officially and added to the complete rule book
-  // IMPORTANT: Keep sorted by mat id and internally by faction id!
-  industrial: ["rusviet"],
-  patriotic: ["crimea"],
-};
 
 type TemplateConfig = {
   always: readonly FactionId[];
   never: readonly FactionId[];
-  banned: Readonly<BannedCombos>;
 };
 
 type Mode = "always" | "never" | "random";
 
-class FactionConstraintsError extends Error {
-  constructor(
-    public matId: MatId | null,
-    public always: readonly FactionId[],
-    public banned: Readonly<BannedCombos>
-  ) {
-    super();
-  }
-}
-
 export default createRandomGameStep({
   id: "factions",
-  dependencies: [playersMetaStep, productsMetaStep, playerMatsStep],
+  dependencies: [playersMetaStep, productsMetaStep],
+
+  isType: (x: unknown): x is readonly FactionId[] =>
+    Array.isArray(x) && x.every((fid) => Factions[fid as FactionId] != null),
 
   isTemplatable: () => true,
 
-  initialConfig: (): Readonly<TemplateConfig> => ({
-    always: [],
-    never: [],
-    banned: DEFAULT_BANNED_COMBOS,
-  }),
+  initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
 
-  resolve,
+  resolve(config, players, products) {
+    const available = Factions.availableForProducts(products!);
 
-  refresh({ always, never, ...rest }, players, products) {
+    const randomPool = Vec.diff(
+      Vec.diff(available, config.never),
+      config.always
+    );
+    const randomCount = players!.length - config.always.length;
+    const random = Vec.sample(randomPool, randomCount);
+    invariant(
+      random.length === randomCount,
+      `Mismatch in number of random elements chosen: ${JSON.stringify(
+        random
+      )}, expected: ${randomCount}`
+    );
+    return Vec.sort(Vec.concat(config.always, random));
+  },
+
+  willContain: (factionId, config) =>
+    config != null &&
+    (config.always.includes(factionId)
+      ? true
+      : config.never.includes(factionId)
+      ? false
+      : undefined),
+
+  refresh({ always, never }, players, products) {
     const available = Factions.availableForProducts(
       products.onlyResolvableValue()!
     );
@@ -111,7 +91,7 @@ export default createRandomGameStep({
     // The only case we need to fix is when the 'never' array contains elements
     // which aren't available anymore; for normalization, we want to remove them
     // from the 'never' array too
-    return { always, never: Vec.intersect(never, available), ...rest };
+    return { always, never: Vec.intersect(never, available) };
   },
 
   ConfigPanel,
@@ -120,340 +100,47 @@ export default createRandomGameStep({
   InstanceVariableComponent,
 });
 
-function resolve(
-  config: TemplateConfig,
-  players: readonly PlayerId[] | null,
-  products: readonly ScytheProductId[] | null,
-  playerMats: readonly MatId[] | null
-): number {
-  const available = Factions.availableForProducts(products!);
-
-  // Random factions are those that aren't required by `always` and aren't
-  // disallowed by `never`
-  const randomFactions = Vec.diff(
-    Vec.diff(available, config.never),
-    config.always
-  );
-
-  let attempts = 0;
-  while (true) {
-    // Candidates are all required factions (put first so they get priority) and
-    // then the random factions. We randomize each section separately so that all
-    // factions have the same probability of being chosen
-    const candidates = Vec.concat(
-      Random.shuffle(config.always),
-      Random.shuffle(randomFactions)
-    );
-
-    try {
-      const factionIds = Vec.range(0, players!.length - 1).reduce(
-        (ongoing, index) =>
-          Vec.concat(
-            ongoing,
-            randomFaction(
-              ongoing,
-              playerMats != null ? playerMats[index] : null,
-              players!.length,
-              candidates,
-              config
-            )
-          ),
-        [] as readonly FactionId[]
-      );
-      return Factions.encode(factionIds, playerMats != null, products!);
-    } catch (error) {
-      if (!(error instanceof FactionConstraintsError)) {
-        throw error;
-      }
-
-      if (attempts >= MAX_ATTEMPTS) {
-        throw error;
-      }
-
-      // Swallow the error and retry
-      attempts++;
-    }
-  }
-}
-
-function randomFaction(
-  ongoing: readonly FactionId[],
-  matId: MatId | null,
-  playersCount: number,
-  candidates: readonly FactionId[],
-  { always, banned }: Readonly<TemplateConfig>
-): FactionId {
-  // We might not have mats data (that step might be turned off in the template)
-  const bannedForMat = matId != null ? banned[matId] ?? [] : [];
-
-  // Remove any factions already selected
-  const unused = Vec.diff(candidates, ongoing);
-
-  // Remove banned factions (if any)
-  const unBanned = Vec.diff(unused, bannedForMat);
-
-  // We need to account for factions that are part of the always array that
-  // are banned for this specific mat, if we don't take them into account we
-  // might not use the factions as required.
-  const remainingRequired = Vec.diff(always, ongoing);
-  const bannedRequired = Vec.intersect(remainingRequired, bannedForMat);
-
-  // We  take the first elements of this array depending on how many factions we
-  // already have chosen and how many players. This makes sure we always include
-  // all `always` factions.
-  const actualCandidates = Vec.take(
-    unBanned,
-    // Take just enough elements so that we always include `always` factions
-    playersCount - ongoing.length - bannedRequired.length
-  );
-
-  if (Vec.is_empty(actualCandidates)) {
-    throw new FactionConstraintsError(matId, always, banned);
-  }
-
-  // Pick a candidates faction and add it to the ongoing arr for the reducer
-  return Vec.sample(actualCandidates, 1);
-}
-
 function ConfigPanel({
   config,
-  queries: [players, products, playerMats],
+  queries: [players, products],
   onChange,
 }: ConfigPanelProps<
   TemplateConfig,
   readonly PlayerId[],
-  readonly ScytheProductId[],
-  readonly MatId[]
+  readonly ScytheProductId[]
 >): JSX.Element {
-  const [showBanned, setShowBanned] = useState(false);
-
-  const productIds = products.onlyResolvableValue()!;
   const available = useMemo(
-    () => Vec.sort(Factions.availableForProducts(productIds)),
-    [productIds]
-  );
-
-  return (
-    <Stack direction="column" spacing={2} padding={3}>
-      <FactionsSelector
-        config={config}
-        productIds={productIds}
-        onClick={(factionId) =>
-          onChange((current) =>
-            switchModes(
-              current,
-              factionId,
-              currentMode(current, factionId),
-              nextMode(current, factionId, players, available.length)
-            )
-          )
-        }
-      />
-      {playerMats.willResolve() && (
-        <>
-          <Collapse in={showBanned}>
-            <BannedCombosSelector
-              banned={config.banned}
-              never={config.never}
-              productIds={productIds}
-              playerMatsQuery={playerMats}
-              onClick={(matId, factionId) =>
-                onChange(({ banned, ...rest }) => ({
-                  ...rest,
-                  banned: toggleBannedState(banned, matId, factionId),
-                }))
-              }
-            />
-          </Collapse>
-          <Button
-            size="small"
-            onClick={() => setShowBanned((current) => !current)}
-          >
-            {showBanned ? "Hide" : "Show"} Banned Combos
-          </Button>
-        </>
-      )}
-    </Stack>
-  );
-}
-
-function toggleBannedState(
-  banned: Readonly<BannedCombos>,
-  matId: MatId,
-  factionId: FactionId
-): Readonly<BannedCombos> {
-  const bannedForMat = banned[matId];
-  return Dict.sort({
-    ...banned,
-    [matId]:
-      bannedForMat == null
-        ? [factionId]
-        : bannedForMat.includes(factionId)
-        ? Vec.filter(bannedForMat, (fid) => fid !== factionId)
-        : Vec.sort(Vec.concat(bannedForMat, factionId)),
-  });
-}
-
-function FactionsSelector({
-  config,
-  productIds,
-  onClick,
-}: {
-  config: Readonly<TemplateConfig>;
-  productIds: readonly ScytheProductId[];
-  onClick(factionId: FactionId): void;
-}): JSX.Element {
-  const available = useMemo(
-    () => Vec.sort(Factions.availableForProducts(productIds)),
-    [productIds]
+    () =>
+      Vec.sort(Factions.availableForProducts(products.onlyResolvableValue()!)),
+    [products]
   );
   return (
-    <Box display="flex" flexWrap="wrap" justifyContent="center" gap={1}>
+    <Box
+      paddingX={4}
+      paddingY={2}
+      display="flex"
+      flexWrap="wrap"
+      justifyContent="center"
+      gap={1}
+    >
       {Vec.map(available, (factionId) => (
         <FactionChip
           key={factionId}
           factionId={factionId}
           mode={currentMode(config, factionId)}
-          onClick={() => onClick(factionId)}
+          onClick={() =>
+            onChange((current) =>
+              switchModes(
+                current,
+                factionId,
+                currentMode(current, factionId),
+                nextMode(current, factionId, players, available.length)
+              )
+            )
+          }
         />
       ))}
     </Box>
-  );
-}
-
-function BannedCombosSelector({
-  banned,
-  never,
-  productIds,
-  playerMatsQuery,
-  onClick,
-}: {
-  banned: Readonly<BannedCombos>;
-  never: readonly FactionId[];
-  productIds: readonly ScytheProductId[];
-  playerMatsQuery: Query<readonly MatId[]>;
-  onClick(matId: MatId, factionId: FactionId): void;
-}): JSX.Element {
-  const availablePlayerMats = useMemo(
-    () =>
-      Vec.filter(
-        PlayerMats.availableForProducts(productIds),
-        (matId) => playerMatsQuery.willContain(matId) !== false
-      ),
-    [playerMatsQuery, productIds]
-  );
-  const availableFactions = useMemo(
-    () => Vec.sort(Vec.diff(Factions.availableForProducts(productIds), never)),
-    [never, productIds]
-  );
-
-  const onlyFactionForMat = useMemo(
-    () =>
-      // We want the data keyed by the mat instead of the faction
-      Shape.flip(
-        // Filter out the factions that don't have one (most factions wont)
-        Shape.filter_nulls(
-          // For each faction (maybe) find a mat which is the only non-banned
-          // assignment for it.
-          Shape.from_keys(availableFactions, (factionId) => {
-            const bannedForFaction = Dict.filter(banned, (bannedFactionIds) =>
-              bannedFactionIds.includes(factionId)
-            );
-            const bannedMatsForFaction = Vec.keys(bannedForFaction);
-            const availableForFaction = Vec.diff(
-              availablePlayerMats,
-              bannedMatsForFaction
-            );
-            return C.only(availableForFaction);
-          })
-        )
-      ),
-    [availableFactions, availablePlayerMats, banned]
-  );
-
-  return (
-    <TableContainer>
-      <Table size="small" padding="none">
-        <TableBody>
-          {Vec.map(availablePlayerMats, (matId) => (
-            <BannedComboMatRow
-              key={matId}
-              matId={matId}
-              factionIds={availableFactions}
-              banned={banned[matId] ?? []}
-              requiredFaction={onlyFactionForMat[matId]}
-              onClick={(factionId) => onClick(matId, factionId)}
-            />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-}
-
-function BannedComboMatRow({
-  matId,
-  factionIds,
-  banned,
-  requiredFaction,
-  onClick,
-}: {
-  matId: MatId;
-  factionIds: readonly FactionId[];
-  banned: readonly FactionId[];
-  requiredFaction: FactionId | undefined;
-  onClick(factionId: FactionId): void;
-}): JSX.Element {
-  return (
-    <TableRow>
-      <TableCell sx={{ opacity: Vec.is_empty(banned) ? 0.25 : 1.0 }}>
-        {PlayerMats[matId].name}
-      </TableCell>
-      {Vec.map(factionIds, (factionId) => (
-        <BannedComboFactionButton
-          key={`${matId}_${factionId}`}
-          factionId={factionId}
-          mode={
-            banned.includes(factionId)
-              ? "banned"
-              : banned.length >= factionIds.length - 1 ||
-                factionId === requiredFaction
-              ? "required"
-              : "optional"
-          }
-          onClick={() => onClick(factionId)}
-        />
-      ))}
-    </TableRow>
-  );
-}
-
-function BannedComboFactionButton({
-  factionId,
-  mode,
-  onClick,
-}: {
-  factionId: FactionId;
-  mode: "banned" | "optional" | "required";
-  onClick(): void;
-}): JSX.Element {
-  return (
-    <TableCell align="center">
-      <IconButton
-        size="small"
-        color={Factions[factionId].color}
-        onClick={mode !== "required" ? onClick : undefined}
-        sx={{ padding: 0 }}
-      >
-        {mode === "banned" ? (
-          <HighlightOffTwoToneIcon fontSize="small" />
-        ) : mode === "optional" ? (
-          <AddRoundedIcon fontSize="small" sx={{ opacity: 0.25 }} />
-        ) : (
-          <CheckCircleIcon fontSize="small" />
-        )}
-      </IconButton>
-    </TableCell>
   );
 }
 
@@ -472,8 +159,9 @@ function FactionChip({
       sx={{
         opacity: mode === "never" ? 0.75 : 1.0,
         paddingX:
-          mode === "random" ? "13px" : mode === "always" ? undefined : "3px",
+          mode === "random" ? "12px" : mode === "always" ? undefined : "3px",
       }}
+      color={color}
       icon={
         mode === "always" ? (
           <CheckCircleIcon fontSize="small" />
@@ -482,7 +170,6 @@ function FactionChip({
         ) : undefined
       }
       variant={mode === "never" ? "outlined" : "filled"}
-      color={color}
       label={
         mode === "always" ? (
           <strong>{name}</strong>
@@ -552,46 +239,18 @@ function ConfigPanelTLDR({
 }
 
 function InstanceVariableComponent({
-  value: factionIdx,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
-  const playerMatIds = useOptionalInstanceValue(playerMatsStep);
-  const playerIds = useRequiredInstanceValue(playersMetaStep);
-  const products = useRequiredInstanceValue(productsMetaStep);
-
-  const factionIds = useMemo(
-    () =>
-      Factions.decode(
-        factionIdx,
-        playerIds.length,
-        playerMatIds != null,
-        products
-      ),
-    [factionIdx, playerIds.length, playerMatIds, products]
-  );
-
+  value: factionIds,
+}: VariableStepInstanceComponentProps<readonly FactionId[]>): JSX.Element {
   return (
     <Stack direction="column" spacing={1} alignItems="center">
       <Typography variant="body1" sx={{ width: "100%" }}>
-        The factions {playerMatIds != null && "and matching player mats "}are:
+        The factions are:
       </Typography>
       <Stack spacing={1} direction="column" textAlign="center">
         {React.Children.toArray(
           Vec.map_with_key(
-            // Don't use Dict.select_keys here because that uses the order from
-            // the source dict, not the keys array
-            Dict.from_keys(factionIds, (factionId) => Factions[factionId]),
-            (_, { name, color }, index) => (
-              <Chip
-                color={color}
-                label={
-                  <>
-                    {playerMatIds != null &&
-                      `${PlayerMats[playerMatIds[index]].name} `}
-                    <strong>{name}</strong>
-                  </>
-                }
-              />
-            )
+            Shape.select_keys(Factions, factionIds),
+            (_, { name, color }) => <Chip color={color} label={name} />
           )
         )}
       </Stack>
@@ -613,13 +272,13 @@ function nextMode(
   config: Readonly<TemplateConfig>,
   factionId: FactionId,
   players: Query<readonly PlayerId[]>,
-  numMats: number
+  numFactions: number
 ): Mode {
   const alwaysEnabled = players.willContainNumElements({
     min: config.always.length + 1,
   });
   const neverEnabled = players.willContainNumElements({
-    max: numMats - config.never.length - 1,
+    max: numFactions - config.never.length - 1,
   });
 
   switch (currentMode(config, factionId)) {
@@ -645,7 +304,6 @@ function switchModes(
           return config;
         case "never":
           return {
-            ...config,
             always: Vec.filter(config.always, (fid) => fid !== factionId),
             never: Vec.sort(Vec.concat(config.never, factionId)),
           };
@@ -661,7 +319,6 @@ function switchModes(
       switch (nextMode) {
         case "always":
           return {
-            ...config,
             always: Vec.sort(Vec.concat(config.always, factionId)),
             never: Vec.filter(config.never, (fid) => fid !== factionId),
           };
