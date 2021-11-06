@@ -78,10 +78,10 @@ export default createRandomGameStep({
 
   isTemplatable: () => true,
 
-  initialConfig: (_players, _products, factions): Readonly<TemplateConfig> => ({
+  initialConfig: (_players, products, factions): Readonly<TemplateConfig> => ({
     always: [],
     never: [],
-    ...(factions.willResolve() ? { banned: DEFAULT_BANNED_COMBOS } : {}),
+    ...refreshBanned(undefined, products.onlyResolvableValue()!, factions),
   }),
 
   resolve,
@@ -207,7 +207,7 @@ function refresh(
 
   let refreshedBanned = null;
   try {
-    refreshedBanned = refreshBanned(config, productIds, factions);
+    refreshedBanned = refreshBanned(config.banned, productIds, factions);
   } catch (error) {
     if (!(error instanceof UnchangedTemplateValue)) {
       // Ignore these exceptions, we want to merge their logic
@@ -264,7 +264,7 @@ function refreshAlwaysNever(
 }
 
 function refreshBanned(
-  { banned }: Readonly<TemplateConfig>,
+  banned: Readonly<BannedCombos> | undefined,
   productIds: readonly ScytheProductId[],
   factions: Query<readonly FactionId[]>
 ): Readonly<Pick<TemplateConfig, "banned">> {
