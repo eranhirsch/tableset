@@ -84,9 +84,9 @@ const colorDefs: Readonly<Record<GamePiecesColor, Readonly<PaletteColor>>> = {
     contrastText: "#ffffff",
   },
   white: {
-    main: grey[100],
+    main: grey[300],
     light: "#ffffff",
-    dark: "#c2c2c2",
+    dark: "#aeaeae",
     contrastText: "#000000",
   },
   yellow: {
