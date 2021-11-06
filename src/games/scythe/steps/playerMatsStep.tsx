@@ -486,6 +486,7 @@ function MatChip({
           <NotInterestedRoundedIcon fontSize="small" />
         ) : undefined
       }
+      color={mode === "always" ? "primary" : undefined}
       variant={mode === "never" ? "outlined" : "filled"}
       label={
         mode === "always" ? (
