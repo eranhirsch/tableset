@@ -8,6 +8,7 @@ import factionsStep from "./steps/factionsStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import modularBoardVariant from "./steps/modularBoardVariant";
+import modularHomeBasesStep from "./steps/modularHomeBasesStep";
 import modularTilesStep from "./steps/modularTilesStep";
 import objectivesDeckStep from "./steps/objectivesDeckStep";
 import playerAssignmentsStep from "./steps/playerAssignmentsStep";
@@ -37,12 +38,6 @@ export const scytheGame = createGame({
     fenris: {
       name: "The Rise of Fenris",
       bggId: 242277,
-      year: 2018,
-      isNotImplemented: true,
-    },
-    encounters: {
-      name: "Encounters",
-      bggId: 262151,
       year: 2018,
       isNotImplemented: true,
     },
@@ -118,15 +113,22 @@ export const scytheGame = createGame({
       year: 2018,
       isNotImplemented: true,
     },
+    encounters: {
+      name: "Encounters",
+      bggId: 262151,
+      year: 2018,
+      isNotImplemented: true,
+    },
   },
 
   productsMetaStep,
 
   steps: [
-    modularBoardVariant,
+    modularBoardVariant, // Templatable
 
     boardStep, // Templatable
     modularTilesStep, // Templatable
+    modularHomeBasesStep, // Templatable
 
     encounterTokensStep,
     encountersDeckStep,
