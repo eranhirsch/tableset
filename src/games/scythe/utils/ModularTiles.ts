@@ -1,4 +1,4 @@
-import { MathUtils, nullthrows, Vec } from "common";
+import { MathUtils, nullthrows, Num, Vec } from "common";
 import { HexType } from "./HexType";
 
 interface TileSide {
@@ -35,7 +35,7 @@ const TOTAL_SIDES_COMBINATIONS = 2 ** TILES.length;
 export const ModularTiles = {
   tiles: TILES,
 
-  encode(order: readonly number[], sides: readonly (0 | 1)[]): number {
+  encode(order: readonly number[], sides: readonly (0 | 1)[]): string {
     const orderStr = Vec.map(order, (idx) => idx.toString());
     const orderIdx =
       MathUtils.permutations_lazy_array(orderStr).indexOf(orderStr);
@@ -45,12 +45,14 @@ export const ModularTiles = {
     );
     const sidesIdx = Number.parseInt(sidesStr, 2);
 
-    return orderIdx * TOTAL_SIDES_COMBINATIONS + sidesIdx;
+    return Num.encode_base32(orderIdx * TOTAL_SIDES_COMBINATIONS + sidesIdx);
   },
 
   decode(
-    idx: number
+    hash: string
   ): readonly [order: readonly number[], sides: readonly (0 | 1)[]] {
+    const idx = Num.decode_base32(hash);
+
     const orderIdx = Math.floor(idx / TOTAL_SIDES_COMBINATIONS);
     const idxStr = Vec.map(Vec.range(0, TILES.length - 1), (idx) =>
       idx.toString()
@@ -62,8 +64,9 @@ export const ModularTiles = {
     const order = Vec.map(orderStr, (idxStr) => Number.parseInt(idxStr));
 
     const sidesIdx = idx % TOTAL_SIDES_COMBINATIONS;
-    const sides = Vec.map(sidesIdx.toString(2).split(""), (digit) =>
-      digit === "0" ? 0 : 1
+    const sides = Vec.map(
+      sidesIdx.toString(2).padStart(TILES.length, "0").split(""),
+      (digit) => (digit === "0" ? 0 : 1)
     );
 
     return [order, sides];

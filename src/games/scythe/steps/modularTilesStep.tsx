@@ -38,9 +38,9 @@ export default createRandomGameStep({
 });
 
 function InstanceVariableComponent({
-  value: tilesIdx,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
-  const [order, sides] = ModularTiles.decode(tilesIdx);
+  value: tilesHash,
+}: VariableStepInstanceComponentProps<string>): JSX.Element {
+  const [order, sides] = ModularTiles.decode(tilesHash);
   const tiles = Vec.map(
     order,
     (tileIdx, position) => ModularTiles.tiles[tileIdx][sides[position]]
@@ -56,6 +56,9 @@ function InstanceVariableComponent({
           <Tile key={`tile_${pos}`} corner={corner} center={center} />
         ))}
       </Grid>
+      <Typography variant="caption" sx={{ marginTop: 2 }}>
+        <pre>Hash: {tilesHash}</pre>
+      </Typography>
     </>
   );
 }
