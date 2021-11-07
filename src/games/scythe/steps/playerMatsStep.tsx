@@ -76,7 +76,7 @@ export default createRandomGameStep({
   id: "playerMats",
   dependencies: [playersMetaStep, productsMetaStep, factionsStep],
 
-  isType: (x: unknown): x is number => typeof x === "number",
+  isType: (x: unknown): x is string => typeof x === "string",
 
   isTemplatable: () => true,
 
@@ -97,7 +97,7 @@ function resolve(
   players: readonly PlayerId[] | null,
   products: readonly ScytheProductId[] | null,
   factionIds: readonly FactionId[] | null
-): number {
+): string {
   const available = PlayerMats.availableForProducts(products!);
 
   // Random mats are those that aren't required by `always` and aren't
@@ -664,8 +664,8 @@ function ConfigPanelTLDR({
 }
 
 function InstanceVariableComponent({
-  value: matIdx,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
+  value: matsHash,
+}: VariableStepInstanceComponentProps<string>): JSX.Element {
   const factionIds = useOptionalInstanceValue(factionsStep);
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const products = useRequiredInstanceValue(productsMetaStep);
@@ -674,14 +674,14 @@ function InstanceVariableComponent({
     () =>
       Vec.sort_by(
         PlayerMats.decode(
-          matIdx,
+          matsHash,
           playerIds.length,
           factionIds != null,
           products
         ),
         (mid) => PlayerMats[mid].rank
       ),
-    [factionIds, matIdx, playerIds.length, products]
+    [factionIds, matsHash, playerIds.length, products]
   );
 
   return (

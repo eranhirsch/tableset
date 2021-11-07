@@ -1,4 +1,4 @@
-import { Dict, MathUtils, nullthrows, Vec } from "common";
+import { Dict, MathUtils, nullthrows, Num, Vec } from "common";
 import { ScytheProductId } from "../ScytheProductId";
 
 export type MatId =
@@ -44,11 +44,13 @@ export const PlayerMats = {
   ...PLAYER_MATS,
 
   decode(
-    index: number,
+    hash: string,
     playersCount: number,
     forFactions: boolean,
     products: readonly ScytheProductId[]
   ): readonly MatId[] {
+    const index = Num.decode_base32(hash);
+
     const combinations = MathUtils.combinations_lazy_array(
       availableForProducts(products),
       playersCount
@@ -84,7 +86,7 @@ export const PlayerMats = {
     matIds: readonly MatId[],
     forFactions: boolean,
     products: readonly ScytheProductId[]
-  ): number {
+  ): string {
     const combinations = MathUtils.combinations_lazy_array(
       availableForProducts(products),
       matIds.length
@@ -92,14 +94,16 @@ export const PlayerMats = {
 
     const combinationIdx = combinations.indexOf(matIds);
     if (!forFactions) {
-      return combinationIdx;
+      return Num.encode_base32(combinationIdx);
     }
 
     // When we have factions the order of player mats matters as what we care
     // about is pairings, therefore we need to encode the specific permutation
     // of the selected combination.
     const permutations = MathUtils.permutations_lazy_array(matIds);
-    return combinations.length * permutations.indexOf(matIds) + combinationIdx;
+    return Num.encode_base32(
+      combinations.length * permutations.indexOf(matIds) + combinationIdx
+    );
   },
 
   availableForProducts,

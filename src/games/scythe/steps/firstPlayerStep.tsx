@@ -32,33 +32,33 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, productIds, factionIds, playerMatsIdx, order],
+  dependencies: [playerIds, productIds, factionIds, playerMatsHash, order],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly ScytheProductId[],
   readonly FactionId[],
-  number,
+  string,
   readonly PlayerId[]
 >): JSX.Element {
   const assignments = useMemo(
     () =>
       order == null
         ? null
-        : playerAssignments(order, playerMatsIdx, factionIds, productIds!),
-    [factionIds, order, playerMatsIdx, productIds]
+        : playerAssignments(order, playerMatsHash, factionIds, productIds!),
+    [factionIds, order, playerMatsHash, productIds]
   );
 
   const matIds = useMemo(
     () =>
-      playerMatsIdx == null
+      playerMatsHash == null
         ? null
         : PlayerMats.decode(
-            playerMatsIdx,
+            playerMatsHash,
             playerIds!.length,
             factionIds != null,
             productIds!
           ),
-    [factionIds, playerIds, playerMatsIdx, productIds]
+    [factionIds, playerIds, playerMatsHash, productIds]
   );
 
   const turnOrder =

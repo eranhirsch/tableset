@@ -6,7 +6,7 @@ import { Mat, PlayerMats } from "./PlayerMats";
 
 export function playerAssignments(
   order: readonly PlayerId[],
-  playerMatsIdx: number | null | undefined,
+  playerMatsHash: string | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
   productIds: readonly ScytheProductId[]
 ): Readonly<
@@ -16,15 +16,15 @@ export function playerAssignments(
   >
 > {
   invariant(
-    factionIds != null || playerMatsIdx != null,
+    factionIds != null || playerMatsHash != null,
     `Can't compute player assignments when both factions and player mats are missing`
   );
 
   const playerMatIds =
-    playerMatsIdx == null
+    playerMatsHash == null
       ? null
       : PlayerMats.decode(
-          playerMatsIdx,
+          playerMatsHash,
           order.length,
           factionIds != null,
           productIds
