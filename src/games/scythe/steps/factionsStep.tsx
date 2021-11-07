@@ -17,6 +17,7 @@ import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "../utils/Factions";
+import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
 
 type TemplateConfig = {
@@ -28,16 +29,21 @@ type Mode = "always" | "never" | "random";
 
 export default createRandomGameStep({
   id: "factions",
-  dependencies: [playersMetaStep, productsMetaStep],
+  dependencies: [playersMetaStep, productsMetaStep, modularBoardVariant],
 
   isType: (x: unknown): x is readonly FactionId[] =>
     Array.isArray(x) && x.every((fid) => Factions[fid as FactionId] != null),
 
-  isTemplatable: () => true,
+  isTemplatable: (_players, _products, modularBoardVariant) =>
+    modularBoardVariant.canResolveTo(false),
 
   initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
 
-  resolve(config, players, products) {
+  resolve(config, players, products, isModular) {
+    if (isModular) {
+      return null;
+    }
+
     const available = Factions.availableForProducts(products!);
 
     const randomPool = Vec.diff(
@@ -93,6 +99,9 @@ export default createRandomGameStep({
     // from the 'never' array too
     return { always, never: Vec.intersect(never, available) };
   },
+
+  skip: (value, [_players, _products, isModular]) =>
+    value == null && isModular!,
 
   ConfigPanel,
   ConfigPanelTLDR,
