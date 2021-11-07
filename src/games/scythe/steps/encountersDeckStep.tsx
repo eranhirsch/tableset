@@ -1,16 +1,15 @@
-import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
+import { createGameStep } from "games/core/steps/createGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 
 const ENCOUNTER_CARDS_COUNT = 28;
 
-export default createDerivedGameStep({
+export default createGameStep({
   id: "encountersDeck",
-  dependencies: [],
-  InstanceDerivedComponent,
+  InstanceManualComponent,
 });
 
-function InstanceDerivedComponent(): JSX.Element {
+function InstanceManualComponent(): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Prepare the encounters deck:">
       <BlockWithFootnotes

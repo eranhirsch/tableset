@@ -1,16 +1,6 @@
-import { Typography } from "@mui/material";
-import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
+import { createGameStep } from "games/core/steps/createGameStep";
 
-export default createDerivedGameStep({
+export default createGameStep({
   id: "map",
-  dependencies: [],
-  InstanceDerivedComponent,
+  InstanceManualComponent: "Place the board at the center of the table.",
 });
-
-function InstanceDerivedComponent(): JSX.Element {
-  return (
-    <Typography variant="body1">
-      Place the board at the center of the table.
-    </Typography>
-  );
-}

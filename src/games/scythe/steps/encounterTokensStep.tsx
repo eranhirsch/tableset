@@ -1,5 +1,5 @@
 import { MathUtils, Vec } from "common";
-import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
+import { createGameStep } from "games/core/steps/createGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { useMemo } from "react";
@@ -20,13 +20,12 @@ const ENCOUNTER_LOCATIONS: readonly (readonly number[])[] = [
 
 const ENCOUNTER_TOKENS_COUNT = 12;
 
-export default createDerivedGameStep({
+export default createGameStep({
   id: "encounterTokens",
-  dependencies: [],
-  InstanceDerivedComponent,
+  InstanceManualComponent,
 });
 
-function InstanceDerivedComponent(): JSX.Element {
+function InstanceManualComponent(): JSX.Element {
   const tokensLocationCount = useMemo(
     () =>
       MathUtils.sum(Vec.map(ENCOUNTER_LOCATIONS, (columns) => columns.length)),
