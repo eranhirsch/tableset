@@ -37,6 +37,8 @@ export default createRandomGameStep({
   resolve: (_, players) =>
     Random.index(MathUtils.permutations_lazy_array(players!)),
 
+  // TODO: Allow a config where players can be assigned partial combo options
+  // taken from the `always` arrays of factions and player mats
   ...NoConfigPanel,
 
   InstanceVariableComponent,
