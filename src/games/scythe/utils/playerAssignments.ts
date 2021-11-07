@@ -1,14 +1,13 @@
-import { Dict, invariant, MathUtils, nullthrows, Vec } from "common";
+import { Dict, invariant, Vec } from "common";
 import { PlayerId } from "model/Player";
 import { ScytheProductId } from "../ScytheProductId";
 import { Faction, FactionId, Factions } from "./Factions";
 import { Mat, PlayerMats } from "./PlayerMats";
 
 export function playerAssignments(
-  playerAssignmentIdx: number,
+  order: readonly PlayerId[],
   playerMatsIdx: number | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
-  playerIds: readonly PlayerId[],
   productIds: readonly ScytheProductId[]
 ): Readonly<
   Record<
@@ -26,38 +25,35 @@ export function playerAssignments(
       ? null
       : PlayerMats.decode(
           playerMatsIdx,
-          playerIds.length,
+          order.length,
           factionIds != null,
           productIds
         );
 
   invariant(
-    factionIds == null || factionIds.length === playerIds.length,
+    factionIds == null || factionIds.length === order.length,
     `Not enough factions: ${JSON.stringify(factionIds)}, expected ${
-      playerIds.length
+      order.length
     }`
   );
 
   invariant(
-    playerMatIds == null || playerMatIds.length === playerIds.length,
+    playerMatIds == null || playerMatIds.length === order.length,
     `Not enough player mats: ${JSON.stringify(playerMatIds)}, expected ${
-      playerIds.length
+      order.length
     }`
   );
 
   return Dict.associate(
-    nullthrows(
-      MathUtils.permutations_lazy_array(playerIds).at(playerAssignmentIdx),
-      `Idx ${playerAssignmentIdx} overflow for players ${playerIds}`
-    ),
+    order,
     // Create tuples of factions and mats
     Vec.zip(
       factionIds != null
         ? Vec.map(factionIds, (fid) => Factions[fid])
-        : Vec.fill(playerIds.length, null),
+        : Vec.fill(order.length, null),
       playerMatIds != null
         ? Vec.map(playerMatIds, (mid) => PlayerMats[mid])
-        : Vec.fill(playerIds.length, null)
+        : Vec.fill(order.length, null)
     )
   );
 }

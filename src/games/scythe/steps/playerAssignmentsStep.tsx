@@ -1,5 +1,5 @@
 import { Chip, Stack } from "@mui/material";
-import { MathUtils, Random, Vec } from "common";
+import { Random, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
@@ -14,7 +14,7 @@ import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Faction } from "../utils/Factions";
 import { playerAssignments } from "../utils/playerAssignments";
 import { Mat } from "../utils/PlayerMats";
@@ -34,8 +34,7 @@ export default createRandomGameStep({
   isTemplatable: (_players, _products, factions, playerMats) =>
     factions.willResolve() || playerMats.willResolve(),
 
-  resolve: (_, players) =>
-    Random.index(MathUtils.permutations_lazy_array(players!)),
+  resolve: (_, players) => Random.shuffle(players!),
 
   // TODO: Allow a config where players can be assigned partial combo options
   // taken from the `always` arrays of factions and player mats
@@ -45,23 +44,15 @@ export default createRandomGameStep({
 });
 
 function InstanceVariableComponent({
-  value: orderPermIdx,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
-  const playerIds = useRequiredInstanceValue(playersMetaStep);
+  value: order,
+}: VariableStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
   const productIds = useRequiredInstanceValue(productsMetaStep);
   const factionIds = useOptionalInstanceValue(factionsStep);
   const playerMatsIdx = useOptionalInstanceValue(playerMatsStep);
 
   const assignments = useMemo(
-    () =>
-      playerAssignments(
-        orderPermIdx,
-        playerMatsIdx,
-        factionIds,
-        playerIds,
-        productIds
-      ),
-    [factionIds, orderPermIdx, playerIds, playerMatsIdx, productIds]
+    () => playerAssignments(order, playerMatsIdx, factionIds, productIds),
+    [factionIds, order, playerMatsIdx, productIds]
   );
 
   return (
