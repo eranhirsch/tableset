@@ -7,6 +7,7 @@ import encounterTokensStep from "./steps/encounterTokensStep";
 import factionsStep from "./steps/factionsStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
+import modularBoardVariant from "./steps/modularBoardVariant";
 import objectivesDeckStep from "./steps/objectivesDeckStep";
 import playerAssignmentsStep from "./steps/playerAssignmentsStep";
 import playerMatsStep from "./steps/playerMatsStep";
@@ -120,7 +121,9 @@ export const scytheGame = createGame({
   productsMetaStep,
 
   steps: [
-    boardStep,
+    modularBoardVariant,
+
+    boardStep, // Templatable
     encounterTokensStep,
     encountersDeckStep,
     objectivesDeckStep,
