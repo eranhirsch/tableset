@@ -76,6 +76,8 @@ export default createRandomGameStep({
   id: "playerMats",
   dependencies: [playersMetaStep, productsMetaStep, factionsStep],
 
+  isType: (x: unknown): x is number => typeof x === "number",
+
   isTemplatable: () => true,
 
   initialConfig: (players, products, factions): Readonly<TemplateConfig> =>

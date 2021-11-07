@@ -10,7 +10,7 @@ export type MatId =
   | "militant"
   | "patriotic";
 
-interface Mat {
+export interface Mat {
   name: string;
   rank: string;
   popularity: number;

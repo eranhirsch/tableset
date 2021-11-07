@@ -15,7 +15,7 @@ export type FactionId =
   | "togawa";
 /* spell-checker: enable */
 
-interface Faction {
+export interface Faction {
   name: string;
   color: GamePiecesColor;
   power: number;
