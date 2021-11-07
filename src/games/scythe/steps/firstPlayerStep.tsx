@@ -1,5 +1,5 @@
-import { AvatarGroup, Chip, Typography } from "@mui/material";
-import { Dict, Shape, Vec } from "common";
+import { Typography } from "@mui/material";
+import { C, Dict, Shape, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createDerivedGameStep,
@@ -11,15 +11,16 @@ import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
-import { FactionId, Factions } from "../utils/Factions";
+import { FactionId } from "../utils/Factions";
 import { playerAssignments } from "../utils/playerAssignments";
+import { PlayerMats } from "../utils/PlayerMats";
 import factionsStep from "./factionsStep";
 import playerAssignmentsStep from "./playerAssignmentsStep";
 import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
 
 export default createDerivedGameStep({
-  id: "seating",
+  id: "firstPlayer",
   dependencies: [
     playersMetaStep,
     productsMetaStep,
@@ -59,80 +60,84 @@ function InstanceDerivedComponent({
     [factionIds, playerAssignmentIdx, playerIds, playerMatsIdx, productIds]
   );
 
-  const header = (
-    <>
-      Sit players around the table with each player near their faction's
-      starting base
-    </>
+  const matIds = useMemo(
+    () =>
+      playerMatsIdx == null
+        ? null
+        : PlayerMats.decode(
+            playerMatsIdx,
+            playerIds!.length,
+            factionIds != null,
+            productIds!
+          ),
+    [factionIds, playerIds, playerMatsIdx, productIds]
   );
 
-  if (factionIds == null) {
+  const turnOrder =
+    "Turn order will continue in sequence clockwise around the table";
+
+  if (matIds == null) {
     return (
       <BlockWithFootnotes
-        footnote={
+        footnotes={[
           <>
-            The order is{" "}
+            On the top right corner of the box to the right of the board, where
+            the name of the board is.
+          </>,
+          <>
+            The player with the first player mat in this order:
             <GrammaticalList>
               {Vec.map_with_key(
                 Dict.sort_by(
                   Shape.select_keys(
-                    Factions,
-                    Factions.availableForProducts(productIds!)
+                    PlayerMats,
+                    PlayerMats.availableForProducts(productIds!)
                   ),
-                  ({ order }) => order
+                  ({ rank }) => rank
                 ),
-                (_, { color, name }) => (
-                  <Chip size="small" color={color} label={name} />
-                )
+                (_, { name, rank }) => name
               )}
             </GrammaticalList>
             .
-          </>
-        }
+          </>,
+        ]}
       >
         {(Footnote) => (
           <>
-            {header} and maintaining the order of the factions on the board
-            <Footnote />.
+            The player whose player mat has the lowest number
+            <Footnote index={1} /> will go first
+            <Footnote index={2} />. {turnOrder}.
           </>
         )}
       </BlockWithFootnotes>
     );
   }
 
-  return (
-    <>
+  if (assignments == null) {
+    return (
       <Typography variant="body1">
-        {header}:
-        {assignments == null && (
-          <>
-            {" "}
-            <GrammaticalList>
-              {Vec.map_with_key(
-                Dict.sort_by(
-                  Shape.select_keys(Factions, factionIds),
-                  ({ order }) => order
-                ),
-                (_, { color, name }) => (
-                  <Chip size="small" color={color} label={name} />
-                )
-              )}
-            </GrammaticalList>
-            .
-          </>
-        )}
+        The player with the{" "}
+        <strong>
+          {
+            PlayerMats[
+              C.firstx(Vec.sort_by(matIds, (mid) => PlayerMats[mid].rank))
+            ].name
+          }
+        </strong>{" "}
+        player mat will go first. {turnOrder}.
       </Typography>
-      {assignments != null && (
-        <AvatarGroup sx={{ justifyContent: "center" }}>
-          {" "}
-          {Vec.map_with_key(
-            Dict.sort_by(assignments, ([faction]) => faction!.order),
-            (playerId) => (
-              <PlayerAvatar playerId={playerId} />
-            )
-          )}
-        </AvatarGroup>
-      )}
-    </>
+    );
+  }
+
+  return (
+    <Typography variant="body1">
+      <PlayerAvatar
+        playerId={C.firstx(
+          Vec.keys(Dict.sort_by(assignments, ([_, mat]) => mat!.rank))
+        )}
+        inline
+      />{" "}
+      will go first. {turnOrder}.
+    </Typography>
   );
 }
