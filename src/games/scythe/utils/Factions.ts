@@ -20,32 +20,74 @@ export interface Faction {
   color: GamePiecesColor;
   power: number;
   combatCards: number;
+  order: number;
 }
 const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   /* spell-checker: disable */
-  albion: { name: "Clan Albion", color: "green", power: 3, combatCards: 0 },
+  albion: {
+    name: "Clan Albion",
+    color: "green",
+    power: 3,
+    combatCards: 0,
+    order: 6,
+  },
   crimea: {
     name: "Crimean Khanate",
     color: "yellow",
     power: 5,
     combatCards: 0,
+    order: 3,
   },
-  fenris: { name: "Fenris", color: "orange", power: 4, combatCards: 2 },
-  nordic: { name: "Nordic Kingdoms", color: "blue", power: 4, combatCards: 1 },
+  fenris: {
+    name: "Fenris",
+    color: "orange",
+    power: 4,
+    combatCards: 2,
+    // TODO: this is incorrect, fix this with the setup instructions for fenris and tesla
+    order: 7,
+  },
+  nordic: {
+    name: "Nordic Kingdoms",
+    color: "blue",
+    power: 4,
+    combatCards: 1,
+    order: 0,
+  },
   polania: {
     name: "Republic of Polania",
     color: "white",
     power: 2,
     combatCards: 3,
+    order: 5,
   },
-  rusviet: { name: "Rusviet Union", color: "red", power: 3, combatCards: 2 },
-  saxony: { name: "Saxony Empire", color: "black", power: 1, combatCards: 4 },
-  tesla: { name: "Tesla", color: "cyan", power: 1, combatCards: 1 },
+  rusviet: {
+    name: "Rusviet Union",
+    color: "red",
+    power: 3,
+    combatCards: 2,
+    order: 1,
+  },
+  saxony: {
+    name: "Saxony Empire",
+    color: "black",
+    power: 1,
+    combatCards: 4,
+    order: 4,
+  },
+  tesla: {
+    name: "Tesla",
+    color: "cyan",
+    power: 1,
+    combatCards: 1,
+    // TODO: this is incorrect, fix this with the setup instructions for fenris and tesla
+    order: 7,
+  },
   togawa: {
     name: "Togawa Shogunate",
     color: "purple",
     power: 0,
     combatCards: 2,
+    order: 2,
   },
   /* spell-checker: enable */
 };

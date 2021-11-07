@@ -11,6 +11,7 @@ import playerAssignmentsStep from "./steps/playerAssignmentsStep";
 import playerMatsStep from "./steps/playerMatsStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import resourcesPilesStep from "./steps/resourcesPilesStep";
+import seatingStep from "./steps/seatingStep";
 import structureBonusStep from "./steps/structureBonusStep";
 export const scytheGame = createGame({
   id: "scythe",
@@ -134,5 +135,6 @@ export const scytheGame = createGame({
     factionsStep, // Templatable
     playerMatsStep, // Templatable
     playerAssignmentsStep, // Templatable
+    seatingStep,
   ],
 });
