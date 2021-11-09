@@ -6,7 +6,7 @@ import { Badge, BottomNavigation, BottomNavigationAction } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { C, Dict, Vec } from "common";
 import { hasActivePlayersSelector } from "features/players/playersSlice";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface Feature {
   label: string;
@@ -16,7 +16,7 @@ interface Feature {
 const FEATURES: Readonly<Record<string, Readonly<Feature>>> = {
   games: {
     label: "Games",
-    url: "/games",
+    url: "",
     icons: {
       selected: <LibraryAddIcon />,
       unselected: <LibraryAddOutlinedIcon />,
@@ -24,24 +24,26 @@ const FEATURES: Readonly<Record<string, Readonly<Feature>>> = {
   },
   players: {
     label: "Players",
-    url: "/players",
+    url: "players",
     icons: { selected: <PeopleIcon />, unselected: <PlayersIcon /> },
   },
 };
 
 export function FeaturesNav(): JSX.Element {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const value = C.first(
-    Vec.keys(Dict.filter(FEATURES, ({ url }) => location.pathname === url))
+    Vec.keys(
+      Dict.filter(FEATURES, ({ url }) => location.pathname.endsWith("/" + url))
+    )
   );
   return (
     <BottomNavigation
       component="nav"
       showLabels
       value={value}
-      onChange={(_, newActive) => history.push(FEATURES[newActive].url)}
+      onChange={(_, newActive) => navigate(FEATURES[newActive].url)}
       sx={{ flexGrow: 0 }}
     >
       {Vec.map_with_key(FEATURES, (key, { label, icons }) => (

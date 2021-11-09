@@ -1,27 +1,19 @@
-import { Box, ThemeProvider } from "@mui/material";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { store } from "app/store";
 import { themeWithGameColors } from "app/ux/themeWithGameColors";
-import { TableSetAppBar } from "./AppBar";
+import { Provider } from "react-redux";
+import { Chrome } from "./Chrome";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { FeaturesNav } from "./FeaturesNav";
-import { Main } from "./Main";
 
-export default function App(): JSX.Element | null {
+export function App(): JSX.Element | null {
   return (
-    <ErrorBoundary>
-      <ThemeProvider theme={themeWithGameColors}>
-        <Box
-          display="flex"
-          flexDirection="column"
-          height="100vh"
-          overflow="hidden"
-        >
-          <TableSetAppBar />
-          <Main />
-          <FeaturesNav />
-        </Box>
-      </ThemeProvider>
-    </ErrorBoundary>
+    <Provider store={store}>
+      <CssBaseline />
+      <ErrorBoundary>
+        <ThemeProvider theme={themeWithGameColors}>
+          <Chrome />
+        </ThemeProvider>
+      </ErrorBoundary>
+    </Provider>
   );
 }
-
-

@@ -26,7 +26,7 @@ export const gameSlice = createSlice({
 
 export const gameActions = gameSlice.actions;
 
-const gameIdSelector = ({ game: { id } }: RootState) => id;
+export const gameIdSelector = ({ game: { id } }: RootState) => id;
 export const gameSelector = createSelector(
   gameIdSelector,
   (gameId) => GAMES[gameId!]

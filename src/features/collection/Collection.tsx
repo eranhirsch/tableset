@@ -7,8 +7,10 @@ import {
   ListSubheader,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
+import { TSPage } from "app/ux/Chrome";
 import { Shape, Vec } from "common";
 import { gameSelector } from "features/game/gameSlice";
+import { useGameHomeToolbarButton } from "features/game/useGameHomeToolbarButton";
 import { ProductId } from "model/Game";
 import React from "react";
 import { collectionActions, hasProductSelector } from "./collectionSlice";
@@ -63,17 +65,21 @@ function Expansions({
 }
 
 export function Collection(): JSX.Element {
-  const { products } = useAppSelector(gameSelector);
+  const homeButton = useGameHomeToolbarButton();
+
+  const game = useAppSelector(gameSelector);
+
   const [implemented, unimplemented] = Shape.partition(
-    products,
+    game.products,
     ({ isNotImplemented }) => !isNotImplemented
   );
   const [expansions, bases] = Shape.partition(
     implemented,
     (product) => !product?.isBase
   );
+
   return (
-    <>
+    <TSPage title={`${game.name}: Collection`} buttons={[homeButton]}>
       <Expansions productIds={Vec.keys(bases)} subheader="Base" />
       <Divider />
       <Expansions productIds={Vec.keys(expansions)} subheader="Expansions" />
@@ -83,6 +89,6 @@ export function Collection(): JSX.Element {
         disabled
         subheader="Not Implemented"
       />
-    </>
+    </TSPage>
   );
 }

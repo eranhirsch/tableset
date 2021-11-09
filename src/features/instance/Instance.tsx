@@ -1,3 +1,4 @@
+import TuneIcon from "@mui/icons-material/Tune";
 import {
   Button,
   Step,
@@ -6,22 +7,25 @@ import {
   Stepper,
   Typography
 } from "@mui/material";
+import { TSPage } from "app/ux/Chrome";
 import { Dict, Vec } from "common";
 import { StepLabel } from "features/game/StepLabel";
+import { useGameHomeToolbarButton } from "features/game/useGameHomeToolbarButton";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
 import React, { useEffect, useMemo, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { StepId } from "../../model/Game";
-import { gameStepSelector } from "../game/gameSlice";
+import { gameSelector, gameStepSelector } from "../game/gameSlice";
 import {
   fullInstanceSelector,
   instanceSelectors,
-  SetupStep,
+  SetupStep
 } from "./instanceSlice";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
+
 function InstanceItemContent({
   stepId,
 }: {
@@ -64,7 +68,11 @@ function InstanceItemContent({
 }
 export function Instance(): JSX.Element | null {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
+
+  const homeButton = useGameHomeToolbarButton();
+
+  const game = useAppSelector(gameSelector);
 
   const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
 
@@ -112,80 +120,85 @@ export function Instance(): JSX.Element | null {
     [activeStepId, groups]
   );
   const setActiveStepId = (stepId: StepId | undefined) =>
-    history.push(stepId != null ? `#${stepId}` : "#");
+    navigate(stepId != null ? `#${stepId}` : "#");
   return (
-    <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
-      {groups.map((group, groupIdx) => {
-        const correctedIdx = Vec.take(groups, groupIdx).reduce(
-          (sum, group) => sum + group.length,
-          0
-        );
-        if (groupIdx !== expandedGroupIdx && group.length > 1) {
-          return (
+    <TSPage
+      title={`Table for ${game.name}`}
+      buttons={[homeButton, [<TuneIcon />, "/template"]]}
+    >
+      <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
+        {groups.map((group, groupIdx) => {
+          const correctedIdx = Vec.take(groups, groupIdx).reduce(
+            (sum, group) => sum + group.length,
+            0
+          );
+          if (groupIdx !== expandedGroupIdx && group.length > 1) {
+            return (
+              <Step
+                key={`multi_${groupIdx}`}
+                index={correctedIdx}
+                completed={group.every((stepId) =>
+                  completedSteps.includes(stepId)
+                )}
+              >
+                <StepButton
+                  icon={"\u00B7\u00B7\u00B7"}
+                  onClick={() => setActiveStepId(group[0])}
+                >
+                  <Typography variant="caption">
+                    {React.Children.toArray(
+                      Vec.map(Vec.take(group, 2), (stepId, index) => (
+                        <>
+                          {index > 0 && ", "}
+                          <StepLabel stepId={stepId} />
+                        </>
+                      ))
+                    )}
+                    {group.length > 2 && `, and ${group.length - 2} more...`}
+                  </Typography>
+                </StepButton>
+              </Step>
+            );
+          }
+          return group.map((stepId, idx) => (
             <Step
-              key={`multi_${groupIdx}`}
-              index={correctedIdx}
-              completed={group.every((stepId) =>
-                completedSteps.includes(stepId)
-              )}
+              key={stepId}
+              id={stepId}
+              index={correctedIdx + idx}
+              completed={completedSteps.includes(stepId)}
             >
               <StepButton
-                icon={"\u00B7\u00B7\u00B7"}
-                onClick={() => setActiveStepId(group[0])}
+                onClick={
+                  correctedIdx + idx !== activeStepIdx
+                    ? () => setActiveStepId(stepId)
+                    : undefined
+                }
               >
-                <Typography variant="caption">
-                  {React.Children.toArray(
-                    Vec.map(Vec.take(group, 2), (stepId, index) => (
-                      <>
-                        {index > 0 && ", "}
-                        <StepLabel stepId={stepId} />
-                      </>
-                    ))
-                  )}
-                  {group.length > 2 && `, and ${group.length - 2} more...`}
-                </Typography>
+                <StepLabel stepId={stepId} />
               </StepButton>
+              <StepContent>
+                <InstanceItemContent stepId={stepId} />
+                <Button
+                  sx={{ marginBlockStart: 10 }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setCompletedSteps((steps) =>
+                      steps.includes(stepId) ? steps : [...steps, stepId]
+                    );
+                    const nextStepId = activeSteps.find(
+                      (x) => !completedSteps.includes(x.id) && x.id !== stepId
+                    )?.id;
+                    setActiveStepId(nextStepId);
+                  }}
+                >
+                  Done
+                </Button>
+              </StepContent>
             </Step>
-          );
-        }
-        return group.map((stepId, idx) => (
-          <Step
-            key={stepId}
-            id={stepId}
-            index={correctedIdx + idx}
-            completed={completedSteps.includes(stepId)}
-          >
-            <StepButton
-              onClick={
-                correctedIdx + idx !== activeStepIdx
-                  ? () => setActiveStepId(stepId)
-                  : undefined
-              }
-            >
-              <StepLabel stepId={stepId} />
-            </StepButton>
-            <StepContent>
-              <InstanceItemContent stepId={stepId} />
-              <Button
-                sx={{ marginBlockStart: 10 }}
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setCompletedSteps((steps) =>
-                    steps.includes(stepId) ? steps : [...steps, stepId]
-                  );
-                  const nextStepId = activeSteps.find(
-                    (x) => !completedSteps.includes(x.id) && x.id !== stepId
-                  )?.id;
-                  setActiveStepId(nextStepId);
-                }}
-              >
-                Done
-              </Button>
-            </StepContent>
-          </Step>
-        ));
-      })}
-    </Stepper>
+          ));
+        })}
+      </Stepper>
+    </TSPage>
   );
 }

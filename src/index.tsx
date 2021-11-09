@@ -1,20 +1,11 @@
-import { CssBaseline } from "@mui/material";
-import { store } from "app/store";
-import App from "app/ux/App";
+import { SiteMap } from "app/SiteMap";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
-import { BrowserRouter } from "react-router-dom";
 import * as serviceWorker from "serviceWorker";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <CssBaseline />
-        <App />
-      </BrowserRouter>
-    </Provider>
+    <SiteMap />
   </React.StrictMode>,
   document.getElementById("root")
 );

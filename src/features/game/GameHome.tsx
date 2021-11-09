@@ -1,7 +1,9 @@
+import AddBoxIcon from "@mui/icons-material/AddBox";
 import { List, ListItem, ListItemButton, ListSubheader } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
+import { TSPage } from "app/ux/Chrome";
 import { Megaphone } from "app/ux/Megaphone";
-import { Vec } from "common";
+import { nullthrows, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import {
   hasGameInstanceSelector,
@@ -14,16 +16,24 @@ import {
 } from "features/template/templateSlice";
 import { GameId, GAMES } from "games/core/GAMES";
 import { Game } from "model/Game";
-import { Link, useHistory, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export function GameHomeWrapper(): JSX.Element {
-  const { gameId } = useParams<{ gameId: GameId }>();
-  return <GameHome game={GAMES[gameId]} />;
+  const { gameId } = useParams();
+  const game = nullthrows(
+    GAMES[nullthrows(gameId, `Missing routing param 'gameId'`) as GameId],
+    `Unknown game id: ${gameId}`
+  );
+  return (
+    <TSPage title={game.name} buttons={[[<AddBoxIcon />, "/collection"]]}>
+      <GameHome game={game} />
+    </TSPage>
+  );
 }
 
 function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
   const dispatch = useAppDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const products = useAppSelector(allProductIdsSelector(game));
   const hasActivePlayers = useAppSelector(hasActivePlayersSelector);
@@ -55,7 +65,7 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
           <ListItemButton
             onClick={() => {
               dispatch(templateActions.initialize(game));
-              history.push(`/template`);
+              navigate("/template");
             }}
           >
             New
@@ -74,7 +84,7 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
           <ListItemButton
             onClick={() => {
               dispatch(instanceActions.reset(game));
-              history.push(`/instance`);
+              navigate("/instance");
             }}
           >
             Manual
