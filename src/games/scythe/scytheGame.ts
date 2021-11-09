@@ -145,14 +145,14 @@ export const scytheGame = createGame({
     combatCardsDeckStep,
     factoryDeckStep,
 
+    seatingStep,
+
     resourcesPilesStep,
     createGameStep({
       id: "bank",
       InstanceManualComponent:
         "Form a pile of coins as the bank near the board.",
     }),
-
-    seatingStep,
 
     // TODO: Actual setup of player boards
 

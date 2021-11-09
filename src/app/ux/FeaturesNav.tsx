@@ -16,20 +16,20 @@ interface Feature {
   icons: { selected: React.ReactNode; unselected: React.ReactNode };
 }
 const FEATURES: Readonly<Record<string, Readonly<Feature>>> = {
-  games: {
-    label: "Games",
-    url: "",
-    icons: {
-      selected: <AppsIcon />,
-      unselected: <AppsOutlinedIcon />,
-    },
-  },
   collection: {
     label: "Collection",
     url: "collection",
     icons: {
       selected: <LibraryAddIcon />,
       unselected: <LibraryAddOutlinedIcon />,
+    },
+  },
+  games: {
+    label: "Games",
+    url: "",
+    icons: {
+      selected: <AppsIcon />,
+      unselected: <AppsOutlinedIcon />,
     },
   },
   players: {
