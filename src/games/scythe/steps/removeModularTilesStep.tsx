@@ -25,7 +25,7 @@ export default createDerivedGameStep({
     !isModular ||
     // If the number of players doesn't require removing tiles, we can simply
     // skip the step.
-    ModularTiles.inPlay(players!.length) < ModularTiles.MAX_IN_PLAY,
+    ModularTiles.inPlay(players!.length) >= ModularTiles.MAX_IN_PLAY,
 
   InstanceDerivedComponent,
 });

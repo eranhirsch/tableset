@@ -1,8 +1,17 @@
 import { MathUtils, Vec } from "common";
-import { createGameStep } from "games/core/steps/createGameStep";
+import { InstanceStepLink } from "features/instance/InstanceStepLink";
+import {
+  createDerivedGameStep,
+  DerivedStepInstanceComponentProps,
+} from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { playersMetaStep } from "games/global";
+import { PlayerId } from "model/Player";
 import { useMemo } from "react";
+import { ModularTiles } from "../utils/ModularTiles";
+import modularBoardVariant from "./modularBoardVariant";
+import removeModularTilesStep from "./removeModularTilesStep";
 
 /**
  * Each item represents a row from top to bottom, and inside each number
@@ -18,44 +27,67 @@ const ENCOUNTER_LOCATIONS: readonly (readonly number[])[] = [
   [3],
 ];
 
+const MODULAR_ENCOUNTER_TOKENS = 3;
+
 const ENCOUNTER_TOKENS_COUNT = 12;
 
-export default createGameStep({
+export default createDerivedGameStep({
   id: "encounterTokens",
-  InstanceManualComponent,
+  dependencies: [playersMetaStep, modularBoardVariant],
+  InstanceDerivedComponent,
 });
 
-function InstanceManualComponent(): JSX.Element {
+function InstanceDerivedComponent({
+  dependencies: [playerIds, isModular],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
   const tokensLocationCount = useMemo(
     () =>
-      MathUtils.sum(Vec.map(ENCOUNTER_LOCATIONS, (columns) => columns.length)),
-    []
+      isModular
+        ? MODULAR_ENCOUNTER_TOKENS + ModularTiles.inPlay(playerIds!.length) * 2
+        : MathUtils.sum(
+            Vec.map(ENCOUNTER_LOCATIONS, (columns) => columns.length)
+          ),
+    [isModular, playerIds]
   );
   const unusedTokens = ENCOUNTER_TOKENS_COUNT - tokensLocationCount;
   return (
     <BlockWithFootnotes
-      footnotes={[
+      footnotes={Vec.filter_nulls([
         <>Small green circular chits with a golden star on them.</>,
-        <>
-          Tokens are located (top to bottom and left to right){" "}
-          <GrammaticalList>
-            {Vec.filter_nulls(
-              Vec.map(ENCOUNTER_LOCATIONS, (columns, row) =>
-                Vec.is_empty(columns) ? null : (
-                  <>
-                    on row {row + 1}: column{columns.length > 1 && "s"}{" "}
-                    <GrammaticalList>
-                      {Vec.map(columns, (col) => (
-                        <>{col + 1}</>
-                      ))}
-                    </GrammaticalList>
-                  </>
+        isModular ? (
+          <>
+            There are {MODULAR_ENCOUNTER_TOKENS} encounter tokens on the main
+            board, and 2 encounters on each map tile.
+          </>
+        ) : (
+          <>
+            Tokens are located (top to bottom and left to right){" "}
+            <GrammaticalList>
+              {Vec.filter_nulls(
+                Vec.map(ENCOUNTER_LOCATIONS, (columns, row) =>
+                  Vec.is_empty(columns) ? null : (
+                    <>
+                      on row {row + 1}: column{columns.length > 1 && "s"}{" "}
+                      <GrammaticalList>
+                        {Vec.map(columns, (col) => (
+                          <>{col + 1}</>
+                        ))}
+                      </GrammaticalList>
+                    </>
+                  )
                 )
-              )
-            )}
-          </GrammaticalList>
-        </>,
-      ]}
+              )}
+            </GrammaticalList>
+          </>
+        ),
+        isModular &&
+        ModularTiles.inPlay(playerIds!.length) < ModularTiles.MAX_IN_PLAY ? (
+          <InstanceStepLink step={removeModularTilesStep} />
+        ) : null,
+      ])}
     >
       {(Footnote) => (
         <>
@@ -68,6 +100,14 @@ function InstanceManualComponent(): JSX.Element {
               <em>
                 returning {unusedTokens} unused token{unusedTokens > 1 && "s"}{" "}
                 back to the box
+                {isModular && (
+                  <>
+                    . (there might be more locations if you didn't remove{" "}
+                    {ModularTiles.inPlay(playerIds!.length) < 3 && "all "}
+                    tiles
+                    <Footnote index={3} />)
+                  </>
+                )}
               </em>
             </>
           )}
