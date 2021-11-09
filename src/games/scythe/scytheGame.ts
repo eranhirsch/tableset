@@ -130,13 +130,20 @@ export const scytheGame = createGame({
     modularTilesStep, // Templatable
     modularHomeBasesStep, // Templatable
 
+    structureBonusStep, // Templatable
+
+    factionsStep, // Templatable
+    playerMatsStep, // Templatable
+    playerAssignmentsStep, // Templatable
+
+    modularFactionDrafting,
+
     encounterTokensStep,
+
     encountersDeckStep,
     objectivesDeckStep,
     combatCardsDeckStep,
     factoryDeckStep,
-
-    structureBonusStep, // Templatable
 
     resourcesPilesStep,
     createGameStep({
@@ -145,13 +152,10 @@ export const scytheGame = createGame({
         "Form a pile of coins as the bank near the board.",
     }),
 
-    factionsStep, // Templatable
-    playerMatsStep, // Templatable
-    playerAssignmentsStep, // Templatable
-
-    modularFactionDrafting,
-
     seatingStep,
+
+    // TODO: Actual setup of player boards
+
     firstPlayerStep,
   ],
 });
