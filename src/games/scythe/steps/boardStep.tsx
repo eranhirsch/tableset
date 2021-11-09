@@ -35,10 +35,11 @@ export default createRandomGameStep({
 
 function ConfigPanel({
   config: { percentFarms },
+  queries: [isModular],
   onChange,
 }: ConfigPanelProps<TemplateConfig, boolean>): JSX.Element {
   return (
-    <Grid container>
+    <Grid container padding={1}>
       <Grid item xs={2} textAlign="right">
         <Typography variant="caption">{label("noFarms")}</Typography>
       </Grid>
@@ -52,6 +53,14 @@ function ConfigPanel({
       <Grid item xs={2} textAlign="left">
         <Typography variant="caption">{label("farms")}</Typography>
       </Grid>
+      {isModular.canResolveTo(false) && (
+        <Grid item xs={12} textAlign="center" paddingX={10}>
+          {" "}
+          <Typography color="error" variant="caption">
+            Ignored when <em>{modularBoardVariant.label}</em> isn't enabled.
+          </Typography>
+        </Grid>
+      )}
     </Grid>
   );
 }
