@@ -46,7 +46,6 @@ export const scytheGame = createGame({
       name: "Modular Board",
       bggId: 279304,
       year: 2019,
-      isNotImplemented: true,
     },
     promo1: {
       name: "Promo Pack #1 - Encounter Cards 29-32",
