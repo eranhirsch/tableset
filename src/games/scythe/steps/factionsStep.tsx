@@ -111,12 +111,13 @@ export default createRandomGameStep({
 
 function ConfigPanel({
   config,
-  queries: [players, products],
+  queries: [players, products, isModular],
   onChange,
 }: ConfigPanelProps<
   TemplateConfig,
   readonly PlayerId[],
-  readonly ScytheProductId[]
+  readonly ScytheProductId[],
+  boolean
 >): JSX.Element {
   const available = useMemo(
     () =>
@@ -149,6 +150,11 @@ function ConfigPanel({
           }
         />
       ))}
+      {isModular.canResolveTo(true) && (
+        <Typography color="error" variant="caption">
+          Ignored when <em>{modularBoardVariant.label}</em> is enabled.
+        </Typography>
+      )}
     </Box>
   );
 }
