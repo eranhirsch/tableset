@@ -8,6 +8,7 @@ import factionsStep from "./steps/factionsStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import modularBoardVariant from "./steps/modularBoardVariant";
+import modularFactionDrafting from "./steps/modularFactionDrafting";
 import modularHomeBasesStep from "./steps/modularHomeBasesStep";
 import modularTilesStep from "./steps/modularTilesStep";
 import objectivesDeckStep from "./steps/objectivesDeckStep";
@@ -148,6 +149,8 @@ export const scytheGame = createGame({
     factionsStep, // Templatable
     playerMatsStep, // Templatable
     playerAssignmentsStep, // Templatable
+
+    modularFactionDrafting,
 
     seatingStep,
     firstPlayerStep,
