@@ -108,7 +108,7 @@ function InstanceManualComponent(): JSX.Element {
           Place the {productIds.includes("modularBoard") && <em>regular</em>}{" "}
           board
         </>
-      )}
+      )}{" "}
       at the center of the table.
     </Typography>
   );

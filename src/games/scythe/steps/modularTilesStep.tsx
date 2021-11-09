@@ -15,7 +15,7 @@ export default createRandomGameStep({
 
   isTemplatable: (modular) => modular.canResolveTo(true),
 
-  resolve(isModular) {
+  resolve(_, isModular) {
     if (!isModular) {
       return null;
     }
@@ -31,6 +31,8 @@ export default createRandomGameStep({
 
     return encode(order, sides);
   },
+
+  skip: (_, [isModular]) => !isModular,
 
   ...NoConfigPanel,
 
