@@ -15,6 +15,7 @@ import objectivesDeckStep from "./steps/objectivesDeckStep";
 import playerAssignmentsStep from "./steps/playerAssignmentsStep";
 import playerMatsStep from "./steps/playerMatsStep";
 import productsMetaStep from "./steps/productsMetaStep";
+import removeModularTilesStep from "./steps/removeModularTilesStep";
 import resourcesPilesStep from "./steps/resourcesPilesStep";
 import seatingStep from "./steps/seatingStep";
 import structureBonusStep from "./steps/structureBonusStep";
@@ -137,6 +138,8 @@ export const scytheGame = createGame({
     playerAssignmentsStep, // Templatable
 
     modularFactionDrafting,
+
+    removeModularTilesStep,
 
     encounterTokensStep,
 

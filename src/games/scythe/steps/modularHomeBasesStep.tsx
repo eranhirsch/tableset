@@ -1,11 +1,13 @@
 import { Box, Chip, Stack, Typography } from "@mui/material";
-import { MathUtils, nullthrows, Num, Random, Vec } from "common";
+import { Vec } from "common";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
-import { FactionId, Factions } from "../utils/Factions";
+import { useMemo } from "react";
+import { Factions } from "../utils/Factions";
+import { HomeBases } from "../utils/HomeBases";
 import modularBoardVariant from "./modularBoardVariant";
 
 export default createRandomGameStep({
@@ -15,10 +17,9 @@ export default createRandomGameStep({
 
   isTemplatable: (modular) => modular.canResolveTo(true),
 
-  resolve: () =>
-    Num.encode_base32(
-      Random.index(MathUtils.permutations_lazy_array(availableHomeBases()))
-    ),
+  resolve: (_, isModular) => (isModular ? HomeBases.randomHash() : null),
+
+  skip: (_, [isModular]) => !isModular,
 
   ...NoConfigPanel,
 
@@ -28,12 +29,7 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: basesHash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
-  const perm = nullthrows(
-    MathUtils.permutations_lazy_array(availableHomeBases()).at(
-      Num.decode_base32(basesHash)
-    ),
-    `Hash ${basesHash} could not be converted to a permutation`
-  );
+  const perm = useMemo(() => HomeBases.decode(basesHash), [basesHash]);
 
   return (
     <Stack direction="column" spacing={1}>
@@ -66,6 +62,3 @@ function InstanceVariableComponent({
     </Stack>
   );
 }
-
-const availableHomeBases = (): readonly (FactionId | "empty")[] =>
-  Vec.concat(Factions.availableForProducts(["base", "invaders"]), "empty");

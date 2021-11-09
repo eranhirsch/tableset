@@ -11,6 +11,26 @@ interface TileSide {
   illegalLocation: number;
 }
 
+/**
+ * indexed by number of players, this array summarizes the recommended amount of
+ * tiles to remove per each player count.
+ */
+const RECOMMENDED_REMOVE_AMOUNT_PER_PLAYER_COUNT = [
+  undefined,
+  undefined,
+  3,
+  2,
+  1,
+  0,
+  0,
+  0,
+];
+
+/**
+ * We put exactly this number of tiles on the board.
+ */
+const TILE_SLOTS = 4;
+
 const TILES: readonly (readonly [TileSide, TileSide])[] = [
   [
     { corner: "village", center: "forest", illegalLocation: 1 },
@@ -30,10 +50,15 @@ const TILES: readonly (readonly [TileSide, TileSide])[] = [
   ],
 ];
 // Each tile could be on either side so...
-const TOTAL_SIDES_COMBINATIONS = 2 ** TILES.length;
+const TOTAL_SIDES_COMBINATIONS = 2 ** TILE_SLOTS;
 
 export const ModularTiles = {
   tiles: TILES,
+
+  MAX_IN_PLAY: TILE_SLOTS,
+
+  inPlay: (playerCount: number) =>
+    TILE_SLOTS - (RECOMMENDED_REMOVE_AMOUNT_PER_PLAYER_COUNT[playerCount] ?? 0),
 
   encode(order: readonly number[], sides: readonly (0 | 1)[]): string {
     const orderStr = Vec.map(order, (idx) => idx.toString());
@@ -54,7 +79,7 @@ export const ModularTiles = {
     const idx = Num.decode_base32(hash);
 
     const orderIdx = Math.floor(idx / TOTAL_SIDES_COMBINATIONS);
-    const idxStr = Vec.map(Vec.range(0, TILES.length - 1), (idx) =>
+    const idxStr = Vec.map(Vec.range(0, TILE_SLOTS - 1), (idx) =>
       idx.toString()
     );
     const orderStr = nullthrows(
@@ -65,7 +90,7 @@ export const ModularTiles = {
 
     const sidesIdx = idx % TOTAL_SIDES_COMBINATIONS;
     const sides = Vec.map(
-      sidesIdx.toString(2).padStart(TILES.length, "0").split(""),
+      sidesIdx.toString(2).padStart(TILE_SLOTS, "0").split(""),
       (digit) => (digit === "0" ? 0 : 1)
     );
 
