@@ -3,7 +3,7 @@ import { List, ListItem, ListItemButton, ListSubheader } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { TSPage } from "app/ux/Chrome";
 import { Megaphone } from "app/ux/Megaphone";
-import { nullthrows, Vec } from "common";
+import { invariant_violation, nullthrows, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import {
   hasGameInstanceSelector,
@@ -15,25 +15,33 @@ import {
   templateActions,
 } from "features/template/templateSlice";
 import { GameId, GAMES } from "games/core/GAMES";
-import { Game } from "model/Game";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 export function GameHomeWrapper(): JSX.Element {
   const { gameId } = useParams();
+  if (gameId == null) {
+    invariant_violation(`Missing routing param 'gameId'`);
+  }
   const game = nullthrows(
-    GAMES[nullthrows(gameId, `Missing routing param 'gameId'`) as GameId],
+    GAMES[gameId as GameId],
     `Unknown game id: ${gameId}`
   );
+
   return (
-    <TSPage title={game.name} buttons={[[<AddBoxIcon />, "/collection"]]}>
-      <GameHome game={game} />
+    <TSPage
+      title={game.name}
+      buttons={[[<AddBoxIcon />, `/collection?gameId=${gameId}`]]}
+    >
+      <GameHome gameId={gameId as GameId} />
     </TSPage>
   );
 }
 
-function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
+function GameHome({ gameId }: { gameId: GameId }): JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const game = GAMES[gameId]!;
 
   const products = useAppSelector(allProductIdsSelector(game));
   const hasActivePlayers = useAppSelector(hasActivePlayersSelector);
@@ -43,7 +51,7 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
   return (
     <>
       {Vec.is_empty(products) ? (
-        <NoProductsMegaphone game={game} />
+        <NoProductsMegaphone gameId={gameId} />
       ) : (
         !hasActivePlayers && (
           <Megaphone
@@ -95,17 +103,18 @@ function GameHome({ game }: { game: Readonly<Game> }): JSX.Element {
   );
 }
 
-function NoProductsMegaphone({ game }: { game: Readonly<Game> }): JSX.Element {
+function NoProductsMegaphone({ gameId }: { gameId: GameId }): JSX.Element {
+  const { name } = GAMES[gameId]!;
   return (
     <Megaphone
-      header={`There are no ${game.name} products in your collection.`}
+      header={`There are no ${name} products in your collection.`}
       body={
         <>
           For a better experience add some <em>before</em> generating tables for
           the game.
         </>
       }
-      cta={{ label: "Go to Collection", url: "/collection" }}
+      cta={{ label: "Go to Collection", url: `/collection?gameId=${gameId}` }}
     />
   );
 }

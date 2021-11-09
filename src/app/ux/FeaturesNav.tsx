@@ -1,3 +1,5 @@
+import AppsIcon from "@mui/icons-material/Apps";
+import AppsOutlinedIcon from "@mui/icons-material/AppsOutlined";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import LibraryAddOutlinedIcon from "@mui/icons-material/LibraryAddOutlined";
 import PeopleIcon from "@mui/icons-material/People";
@@ -17,6 +19,14 @@ const FEATURES: Readonly<Record<string, Readonly<Feature>>> = {
   games: {
     label: "Games",
     url: "",
+    icons: {
+      selected: <AppsIcon />,
+      unselected: <AppsOutlinedIcon />,
+    },
+  },
+  collection: {
+    label: "Collection",
+    url: "collection",
     icons: {
       selected: <LibraryAddIcon />,
       unselected: <LibraryAddOutlinedIcon />,

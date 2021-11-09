@@ -8,12 +8,18 @@ import {
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { TSPage } from "app/ux/Chrome";
-import { Shape, Vec } from "common";
+import { nullthrows, Shape, Vec } from "common";
 import { gameSelector } from "features/game/gameSlice";
 import { useGameHomeToolbarButton } from "features/game/useGameHomeToolbarButton";
+import { GameId, GAMES } from "games/core/GAMES";
 import { ProductId } from "model/Game";
 import React from "react";
-import { collectionActions, hasProductSelector } from "./collectionSlice";
+import { useSearchParams } from "react-router-dom";
+import {
+  collectionActions,
+  collectionSelectors,
+  hasProductSelector,
+} from "./collectionSlice";
 
 export function ExpansionListItem({
   productId,
@@ -64,13 +70,51 @@ function Expansions({
   );
 }
 
+function WholeCollection(): JSX.Element {
+  const everything = useAppSelector(collectionSelectors.selectAll);
+  return (
+    <>
+      {Vec.map(everything, ({ id, products }, index) => (
+        <React.Fragment key={id}>
+          {index > 0 && <Divider />}
+          <List
+            subheader={
+              <ListSubheader disableGutters>{GAMES[id].name}</ListSubheader>
+            }
+          >
+            {Vec.map(products, (pid) => (
+              <ListItem key={pid}>
+                <ListItemText>{GAMES[id].products[pid].name}</ListItemText>
+              </ListItem>
+            ))}
+          </List>
+        </React.Fragment>
+      ))}
+    </>
+  );
+}
+
 export function Collection(): JSX.Element {
+  const [searchParams] = useSearchParams();
   const homeButton = useGameHomeToolbarButton();
 
-  const game = useAppSelector(gameSelector);
+  const gameId = searchParams.get("gameId");
+
+  if (gameId == null) {
+    return (
+      <TSPage>
+        <WholeCollection />
+      </TSPage>
+    );
+  }
+
+  const { products, name } = nullthrows(
+    GAMES[gameId as GameId],
+    `Unknown game ID: ${gameId} when loading collection`
+  );
 
   const [implemented, unimplemented] = Shape.partition(
-    game.products,
+    products,
     ({ isNotImplemented }) => !isNotImplemented
   );
   const [expansions, bases] = Shape.partition(
@@ -79,7 +123,7 @@ export function Collection(): JSX.Element {
   );
 
   return (
-    <TSPage title={`${game.name}: Collection`} buttons={[homeButton]}>
+    <TSPage title={`${name}: Collection`} buttons={[homeButton]}>
       <Expansions productIds={Vec.keys(bases)} subheader="Base" />
       <Divider />
       <Expansions productIds={Vec.keys(expansions)} subheader="Expansions" />
