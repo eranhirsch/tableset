@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { Vec } from "common";
+import { invariant, Vec } from "common";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -56,26 +56,34 @@ function InstanceDerivedComponent({
     return <Typography variant="body1">{description}.</Typography>;
   }
 
+  const emptyPos = homeBases.indexOf("empty");
+  invariant(emptyPos >= 0, `Couldn't find empty home base?`);
+
   return (
     <HeaderAndSteps synopsis={<>{description}:</>}>
-      <TileSuggestion
-        label="top left"
-        bases={[homeBases[6], homeBases[7], homeBases[0]]}
-      />
-      <TileSuggestion
-        label="top right"
-        bases={[homeBases[0], homeBases[1], homeBases[2]]}
-      />
-
-      <TileSuggestion
-        label="bottom left"
-        bases={[homeBases[4], homeBases[5], homeBases[6]]}
-      />
-
-      <TileSuggestion
-        label="bottom left"
-        bases={[homeBases[2], homeBases[3], homeBases[4]]}
-      />
+      {Vec.rotate(
+        [
+          <TileSuggestion
+            label="top left"
+            bases={[homeBases[6], homeBases[7], homeBases[0]]}
+          />,
+          <TileSuggestion
+            label="top right"
+            bases={[homeBases[0], homeBases[1], homeBases[2]]}
+          />,
+          <TileSuggestion
+            label="bottom left"
+            bases={[homeBases[2], homeBases[3], homeBases[4]]}
+          />,
+          <TileSuggestion
+            label="bottom left"
+            bases={[homeBases[4], homeBases[5], homeBases[6]]}
+          />,
+        ],
+        // We rotate the suggestions based on where the empty cell is so that
+        // the suggestions which are more likely to be used show up first.
+        -Math.ceil(emptyPos / 2)
+      )}
     </HeaderAndSteps>
   );
 }
