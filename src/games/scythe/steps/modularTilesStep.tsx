@@ -1,12 +1,12 @@
 import { Grid, Paper, Typography } from "@mui/material";
-import { Random, Vec } from "common";
+import { Vec } from "common";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { HexType, HEX_TYPE_LABEL } from "../utils/HexType";
-import { ModularTiles } from "../utils/ModularTiles";
+import { ModularMapTiles } from "../utils/ModularMapTiles";
 import modularBoardVariant from "./modularBoardVariant";
 
 export default createRandomGameStep({
@@ -15,22 +15,7 @@ export default createRandomGameStep({
 
   isTemplatable: (modular) => modular.canResolveTo(true),
 
-  resolve(_, isModular) {
-    if (!isModular) {
-      return null;
-    }
-
-    const { tiles, encode } = ModularTiles;
-
-    const order = Random.shuffle(Vec.range(0, tiles.length - 1));
-    const sides = Vec.map(order, (tileIdx, position) =>
-      Random.coin_flip(0.5) && tiles[tileIdx][0].illegalLocation !== position
-        ? 0
-        : 1
-    );
-
-    return encode(order, sides);
-  },
+  resolve: (_, isModular) => (isModular ? ModularMapTiles.randomHash() : null),
 
   skip: (_, [isModular]) => !isModular,
 
@@ -42,16 +27,16 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: tilesHash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
-  const [order, sides] = ModularTiles.decode(tilesHash);
+  const [order, sides] = ModularMapTiles.decode(tilesHash);
   const tiles = Vec.map(
     order,
-    (tileIdx, position) => ModularTiles.tiles[tileIdx][sides[position]]
+    (tileIdx, position) => ModularMapTiles.tiles[tileIdx][sides[position]]
   );
 
   return (
     <>
       <Typography variant="body1">
-        Place the following modular tiles on the board:
+        Place the following map tiles on the board:
       </Typography>
       <Grid container gap={1} padding={1}>
         {Vec.map(tiles, ({ center, corner }, pos) => (
