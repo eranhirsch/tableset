@@ -10,7 +10,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/select.php
  */
 
-import { Dict } from "common";
+import { Dict, Vec as V } from "common";
 import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
@@ -165,7 +165,7 @@ const maybe_map = <Tv1, Tv2>(
 ): readonly Tv2[] =>
   arr.reduce((out, element, idx) => {
     const mapped = mapper(element, idx);
-    return mapped === undefined ? out : out.concat(out, [mapped]);
+    return mapped === undefined ? out : V.concat(out, [mapped]);
   }, [] as readonly Tv2[]);
 
 export const Vec = {
