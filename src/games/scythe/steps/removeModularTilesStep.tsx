@@ -11,7 +11,7 @@ import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { FactionId } from "../utils/Factions";
 import { HomeBases } from "../utils/HomeBases";
-import { ModularTiles } from "../utils/ModularTiles";
+import { ModularMapTiles } from "../utils/ModularMapTiles";
 import { FactionChip } from "../ux/FactionChip";
 import modularBoardVariant from "./modularBoardVariant";
 import modularHomeBasesStep from "./modularHomeBasesStep";
@@ -25,7 +25,7 @@ export default createDerivedGameStep({
     !isModular ||
     // If the number of players doesn't require removing tiles, we can simply
     // skip the step.
-    ModularTiles.inPlay(players!.length) >= ModularTiles.MAX_IN_PLAY,
+    ModularMapTiles.inPlay(players!.length) >= ModularMapTiles.MAX_IN_PLAY,
 
   InstanceDerivedComponent,
 });
@@ -43,7 +43,7 @@ function InstanceDerivedComponent({
   );
 
   const removeCount =
-    ModularTiles.MAX_IN_PLAY - ModularTiles.inPlay(playerIds!.length);
+    ModularMapTiles.MAX_IN_PLAY - ModularMapTiles.inPlay(playerIds!.length);
   const description = (
     <>
       For a tighter <em>and fairer</em> game you should remove{" "}

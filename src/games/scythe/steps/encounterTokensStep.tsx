@@ -9,7 +9,7 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import { useMemo } from "react";
-import { ModularTiles } from "../utils/ModularTiles";
+import { ModularMapTiles } from "../utils/ModularMapTiles";
 import modularBoardVariant from "./modularBoardVariant";
 import removeModularTilesStep from "./removeModularTilesStep";
 
@@ -46,7 +46,8 @@ function InstanceDerivedComponent({
   const tokensLocationCount = useMemo(
     () =>
       isModular
-        ? MODULAR_ENCOUNTER_TOKENS + ModularTiles.inPlay(playerIds!.length) * 2
+        ? MODULAR_ENCOUNTER_TOKENS +
+          ModularMapTiles.inPlay(playerIds!.length) * 2
         : MathUtils.sum(
             Vec.map(ENCOUNTER_LOCATIONS, (columns) => columns.length)
           ),
@@ -84,7 +85,8 @@ function InstanceDerivedComponent({
           </>
         ),
         isModular &&
-        ModularTiles.inPlay(playerIds!.length) < ModularTiles.MAX_IN_PLAY ? (
+        ModularMapTiles.inPlay(playerIds!.length) <
+          ModularMapTiles.MAX_IN_PLAY ? (
           <InstanceStepLink step={removeModularTilesStep} />
         ) : null,
       ])}
@@ -103,7 +105,7 @@ function InstanceDerivedComponent({
                 {isModular && (
                   <>
                     . (there might be more locations if you didn't remove{" "}
-                    {ModularTiles.inPlay(playerIds!.length) < 3 && "all "}
+                    {ModularMapTiles.inPlay(playerIds!.length) < 3 && "all "}
                     tiles
                     <Footnote index={3} />)
                   </>
