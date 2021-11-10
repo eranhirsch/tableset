@@ -49,8 +49,14 @@ const TILES: readonly (readonly [TileSide, TileSide])[] = [
     { corner: "lake", center: "farm", illegalLocations: [0] },
   ],
 ];
-// Each tile could be on either side so...
-const TOTAL_SIDES_COMBINATIONS = 2 ** TILE_SLOTS;
+
+// Each tile could be on either side but because of the lake rule there's no
+// ordering of tiles where all tiles could be placed on both sides, the max is
+// always just three out of the the four (and even that is rare) so we can make
+// our encoding even slimmer.
+// IMPORTANT: If additional tiles are ever added to the game, reconsider this
+// assumption as it might break the coding.
+const TOTAL_SIDES_COMBINATIONS = 2 ** (TILE_SLOTS -1);
 
 const ORDER_PERMUTATIONS = MathUtils.permutations_lazy_array(
   // This is just an array with: ["0", "1", "2", ...] because the permutations
