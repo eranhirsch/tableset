@@ -1,5 +1,5 @@
 import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
-import { Shape, Vec } from "common";
+import { Random, Shape, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -62,7 +62,7 @@ export default createRandomGameStep({
   isTemplatable: (_) => true,
   initialConfig: (): Readonly<TemplateConfig> => ({}),
   resolve: (config, products) =>
-    config?.fixed ?? Vec.sample(availableForProducts(products!), 1),
+    config?.fixed ?? Random.sample(availableForProducts(products!), 1),
   refresh: (config, products) =>
     templateValue(
       config.fixed == null ||

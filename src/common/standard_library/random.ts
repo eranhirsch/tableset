@@ -76,6 +76,77 @@ function shuffle<T>(arr: readonly T[]): readonly T[] {
 }
 
 /**
+ * @returns an array containing an unbiased random sample of up to sampleSize
+ * elements (fewer iff sampleSize is larger than the size of the array)
+ *
+ * The output array would maintain the same item order.
+ *
+ * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.sample/
+ */
+ function sample<Tv>(arr: readonly Tv[], sampleSize: 1): Tv;
+ function sample<Tv>(arr: readonly Tv[], sampleSize: 2): readonly [Tv, Tv];
+ function sample<Tv>(arr: readonly Tv[], sampleSize: 3): readonly [Tv, Tv, Tv];
+ function sample<Tv>(
+   arr: readonly Tv[],
+   sampleSize: 4
+ ): readonly [Tv, Tv, Tv, Tv];
+ function sample<Tv>(
+   arr: readonly Tv[],
+   sampleSize: 5
+ ): readonly [Tv, Tv, Tv, Tv, Tv];
+ function sample<Tv>(
+   arr: readonly Tv[],
+   sampleSize: 6
+ ): readonly [Tv, Tv, Tv, Tv, Tv, Tv];
+ function sample<Tv>(
+   arr: readonly Tv[],
+   sampleSize: 7
+ ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv];
+ function sample<Tv>(
+   arr: readonly Tv[],
+   sampleSize: 8
+ ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
+ function sample<Tv>(
+   arr: readonly Tv[],
+   sampleSize: 9
+ ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
+ function sample<Tv>(
+   arr: readonly Tv[],
+   sampleSize: 10
+ ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
+ function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[];
+ function sample<Tv>(
+   arr: readonly Tv[],
+   sampleSize: number
+ ): Tv | readonly Tv[] {
+   if (sampleSize >= arr.length) {
+     // Trivial solution
+     return arr.length === 1 ? arr[0] : arr;
+   }
+ 
+   if (sampleSize === 1) {
+     return arr[index(arr)];
+   }
+ 
+   // To optimize the selection we can toggle between an include and exclude
+   // logic for the sample; when sampleSize is small we will pick a set of
+   // random indices and use them to pick elements from the input array, and
+   // when sampleSize is big we will pick which indices to skip when rebuilding
+   // the array.
+ 
+   // We use a set so that we can ignore duplicates
+   const selectedIndices: Set<number> = new Set();
+   while (selectedIndices.size < Math.min(sampleSize, arr.length - sampleSize)) {
+     selectedIndices.add(index(arr));
+   }
+ 
+   return sampleSize <= arr.length - sampleSize
+     ? Vec.map(Vec.sort([...selectedIndices]), (index) => arr[index])
+     : Vec.filter(arr, (_, index) => !selectedIndices.has(index));
+ }
+
+
+/**
  * @returns a new mapper-obj with the key value pairs of the given input
  * container in a random order.
  *
@@ -86,11 +157,12 @@ const shuffle_dict = <T extends DictLike>(dict: Readonly<T>): Readonly<T> =>
   Dict.from_entries(shuffle(Vec.entries(dict)));
 
 export const Random = {
+  coin_flip,
   float,
   index,
   int,
-  string,
-  coin_flip,
-  shuffle,
+  sample,
   shuffle_dict,
+  shuffle,
+  string,
 } as const;

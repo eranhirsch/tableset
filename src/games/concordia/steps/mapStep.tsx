@@ -1,5 +1,5 @@
 import { Button, Chip, Grid, styled, Typography } from "@mui/material";
-import { C, Dict, MathUtils, nullthrows, Vec } from "common";
+import { C, Dict, MathUtils, nullthrows, Random, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -8,7 +8,7 @@ import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -58,7 +58,7 @@ export default createRandomGameStep({
   isTemplatable: (products) => products.willContainAny(productsWithMaps()),
 
   resolve: (config, products, players) =>
-    Vec.sample(relevantMapsForConfig(config, products!, players!), 1),
+    Random.sample(relevantMapsForConfig(config, products!, players!), 1),
 
   onlyResolvableValue: (config, products, players) =>
     config != null
@@ -311,7 +311,7 @@ function ConfigPanelTLDR({
       );
     }
 
-    const sample = Vec.sample(config.static, 2);
+    const sample = Random.sample(config.static, 2);
     return (
       <>
         {MAPS[sample[0]].name}, {MAPS[sample[1]].name}, and{" "}

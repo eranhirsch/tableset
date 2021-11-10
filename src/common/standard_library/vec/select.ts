@@ -10,7 +10,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/vec/select.php
  */
 
-import { Dict, Random, Vec as V } from "common";
+import { Dict } from "common";
 import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
@@ -46,76 +46,6 @@ const filter_with_key = <T extends DictLike>(
  */
 const keys = <T extends DictLike>(dict: Readonly<T>): readonly (keyof T)[] =>
   Object.keys(dict);
-
-/**
- * @returns an array containing an unbiased random sample of up to sampleSize
- * elements (fewer iff sampleSize is larger than the size of the array)
- *
- * The output array would maintain the same item order.
- *
- * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.sample/
- */
-function sample<Tv>(arr: readonly Tv[], sampleSize: 1): Tv;
-function sample<Tv>(arr: readonly Tv[], sampleSize: 2): readonly [Tv, Tv];
-function sample<Tv>(arr: readonly Tv[], sampleSize: 3): readonly [Tv, Tv, Tv];
-function sample<Tv>(
-  arr: readonly Tv[],
-  sampleSize: 4
-): readonly [Tv, Tv, Tv, Tv];
-function sample<Tv>(
-  arr: readonly Tv[],
-  sampleSize: 5
-): readonly [Tv, Tv, Tv, Tv, Tv];
-function sample<Tv>(
-  arr: readonly Tv[],
-  sampleSize: 6
-): readonly [Tv, Tv, Tv, Tv, Tv, Tv];
-function sample<Tv>(
-  arr: readonly Tv[],
-  sampleSize: 7
-): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv];
-function sample<Tv>(
-  arr: readonly Tv[],
-  sampleSize: 8
-): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
-function sample<Tv>(
-  arr: readonly Tv[],
-  sampleSize: 9
-): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
-function sample<Tv>(
-  arr: readonly Tv[],
-  sampleSize: 10
-): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
-function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[];
-function sample<Tv>(
-  arr: readonly Tv[],
-  sampleSize: number
-): Tv | readonly Tv[] {
-  if (sampleSize >= arr.length) {
-    // Trivial solution
-    return arr.length === 1 ? arr[0] : arr;
-  }
-
-  if (sampleSize === 1) {
-    return arr[Random.index(arr)];
-  }
-
-  // To optimize the selection we can toggle between an include and exclude
-  // logic for the sample; when sampleSize is small we will pick a set of
-  // random indices and use them to pick elements from the input array, and
-  // when sampleSize is big we will pick which indices to skip when rebuilding
-  // the array.
-
-  // We use a set so that we can ignore duplicates
-  const selectedIndices: Set<number> = new Set();
-  while (selectedIndices.size < Math.min(sampleSize, arr.length - sampleSize)) {
-    selectedIndices.add(Random.index(arr));
-  }
-
-  return sampleSize <= arr.length - sampleSize
-    ? V.map(V.sort([...selectedIndices]), (index) => arr[index])
-    : V.filter(arr, (_, index) => !selectedIndices.has(index));
-}
 
 /**
  * @returns an array containing the first n elements of the given array.
@@ -226,15 +156,27 @@ function filter<T>(
   return arr.filter(predicate);
 }
 
+/**
+ * A mapper that also filters out elements using the same mapper function
+ */
+const maybe_map = <Tv1, Tv2>(
+  arr: readonly Tv1[],
+  mapper: (x: Tv1, idx: number) => Tv2 | undefined
+): readonly Tv2[] =>
+  arr.reduce((out, element, idx) => {
+    const mapped = mapper(element, idx);
+    return mapped === undefined ? out : out.concat(out, [mapped]);
+  }, [] as readonly Tv2[]);
+
 export const Vec = {
+  drop,
   entries,
   filter_nulls,
   filter_with_key,
   filter,
   keys,
-  sample,
+  maybe_map,
   take,
-  drop,
   unique_by,
   unique,
   values,

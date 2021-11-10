@@ -200,7 +200,10 @@ function ConfigPanel({
           // When adding a new row we pick a random player and color so that the
           // new row is already valid in our format, otherwise we would need to
           // support empty cases for color and player in our selectors.
-          [Vec.sample(remainingPlayerIds, 1)]: Vec.sample(remainingColors, 1),
+          [Random.sample(remainingPlayerIds, 1)]: Random.sample(
+            remainingColors,
+            1
+          ),
         } as Readonly<TemplateConfig>),
         // And sort the output so that it remains normalized
         (playerId) => playerIds.indexOf(playerId)

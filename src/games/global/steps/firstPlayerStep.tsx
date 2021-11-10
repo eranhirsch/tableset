@@ -1,5 +1,5 @@
 import { Avatar, Badge, Stack, Typography } from "@mui/material";
-import { Vec } from "common";
+import { Random, Vec } from "common";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { ConfigPanelProps } from "features/template/Templatable";
@@ -30,7 +30,8 @@ export default createRandomGameStep({
       // Solo games don't need a first player
       min: 2,
     }),
-  resolve: ({ playerId }, playerIds) => playerId ?? Vec.sample(playerIds!, 1),
+  resolve: ({ playerId }, playerIds) =>
+    playerId ?? Random.sample(playerIds!, 1),
   onlyResolvableValue: (config) => config?.playerId,
   initialConfig: (): TemplateConfig => ({}),
   refresh: ({ playerId }, players) =>

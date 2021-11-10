@@ -110,7 +110,7 @@ function resolve(
     // complex logic for checking and comparing against banned combos.
     const matIds = Vec.concat(
       config.always,
-      Vec.sample(randomMats, players!.length - config.always.length)
+      Random.sample(randomMats, players!.length - config.always.length)
     );
     return PlayerMats.encode(matIds, false, products!);
   }
@@ -194,7 +194,7 @@ function randomMat(
   }
 
   // Pick a candidates faction and add it to the ongoing arr for the reducer
-  return Vec.sample(actualCandidates, 1);
+  return Random.sample(actualCandidates, 1);
 }
 
 function refresh(
