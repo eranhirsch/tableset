@@ -11,7 +11,7 @@ import { ModularMapTiles } from "../utils/ModularMapTiles";
 import modularBoardVariant from "./modularBoardVariant";
 
 export default createRandomGameStep({
-  id: "modularTiles",
+  id: "mapTiles",
   dependencies: [modularBoardVariant],
 
   isTemplatable: (modular) => modular.canResolveTo(true),
