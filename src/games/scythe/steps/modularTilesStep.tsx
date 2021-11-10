@@ -5,6 +5,7 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { useMemo } from "react";
 import { HexType, HEX_TYPE_LABEL } from "../utils/HexType";
 import { ModularMapTiles } from "../utils/ModularMapTiles";
 import modularBoardVariant from "./modularBoardVariant";
@@ -27,11 +28,7 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: tilesHash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
-  const [order, sides] = ModularMapTiles.decode(tilesHash);
-  const tiles = Vec.map(
-    order,
-    (tileIdx, position) => ModularMapTiles.tiles[tileIdx][sides[position]]
-  );
+  const tiles = useMemo(() => ModularMapTiles.decode(tilesHash), [tilesHash]);
 
   return (
     <>

@@ -8,7 +8,7 @@ interface TileSide {
   // tile locations are 0-index from left to right and then top to bottom:
   //   0 1
   //   2 3
-  illegalLocation: number;
+  illegalLocations: readonly number[];
 }
 
 /**
@@ -33,20 +33,20 @@ const TILE_SLOTS = 4;
 
 const TILES: readonly (readonly [TileSide, TileSide])[] = [
   [
-    { corner: "village", center: "forest", illegalLocation: 1 },
-    { corner: "tundra", center: "village", illegalLocation: 2 },
+    { corner: "village", center: "forest", illegalLocations: [1] },
+    { corner: "tundra", center: "village", illegalLocations: [2] },
   ],
   [
-    { corner: "tundra", center: "forest", illegalLocation: 0 },
-    { corner: "forest", center: "village", illegalLocation: 1 },
+    { corner: "tundra", center: "forest", illegalLocations: [0, 2] },
+    { corner: "forest", center: "village", illegalLocations: [1, 3] },
   ],
   [
-    { corner: "tundra", center: "lake", illegalLocation: 2 },
-    { corner: "village", center: "lake", illegalLocation: 3 },
+    { corner: "tundra", center: "lake", illegalLocations: [2] },
+    { corner: "village", center: "lake", illegalLocations: [3] },
   ],
   [
-    { corner: "village", center: "mountain", illegalLocation: 3 },
-    { corner: "lake", center: "farm", illegalLocation: 0 },
+    { corner: "village", center: "mountain", illegalLocations: [3] },
+    { corner: "lake", center: "farm", illegalLocations: [0] },
   ],
 ];
 // Each tile could be on either side so...
@@ -72,35 +72,24 @@ export const ModularMapTiles = {
     // result would be null unless we have a bug with the `common` library
     const order = ORDER_PERMUTATIONS.at(orderIdx)!;
 
-    const coefficients = Vec.map(order, (tileIdxStr, position) =>
-      // We want to pick a side randomly from those sides that are legal in
-      // this position (there would always be at least 1)
-      Random.sample(
-        Vec.maybe_map(
-          TILES[Number.parseInt(tileIdxStr)],
-          ({ illegalLocation }, sideIdx) =>
-            illegalLocation === position ? undefined : sideIdx
-        ),
-        1
+    const legalSides = Vec.map(order, (tileIdxStr, position) =>
+      Vec.maybe_map(
+        TILES[Number.parseInt(tileIdxStr)],
+        ({ illegalLocations }, sideIdx) =>
+          illegalLocations.includes(position) ? undefined : sideIdx
       )
     );
 
-    // The result of the sample would always be either 0 or 1, we use that
-    // to encode the results as a binary number.
-    const sidesIdx = MathUtils.sum(
-      Vec.map(
-        Vec.reverse(coefficients),
-        (coefficient, order) => coefficient * 2 ** order
-      )
+    const sidesIdx = fromBinaryDigits(
+      // We want to pick a side randomly from those sides that are legal in
+      // this position (there would always be at least 1)
+      Vec.map(legalSides, (sides) => Random.sample(sides, 1))
     );
 
     return Num.encode_base32(orderIdx * TOTAL_SIDES_COMBINATIONS + sidesIdx);
   },
 
-  decode(
-    hash: string
-  ): readonly [order: readonly number[], sides: readonly (0 | 1)[]] {
-    debugger;
+  decode(hash: string): readonly TileSide[] {
     const idx = Num.decode_base32(hash);
 
     const orderIdx = Math.floor(idx / TOTAL_SIDES_COMBINATIONS);
@@ -110,12 +99,26 @@ export const ModularMapTiles = {
     );
     const order = Vec.map(orderStr, (idxStr) => Number.parseInt(idxStr));
 
-    const sidesIdx = idx % TOTAL_SIDES_COMBINATIONS;
-    const sides = Vec.map(
-      sidesIdx.toString(2).padStart(TILE_SLOTS, "0").split(""),
-      (digit) => (digit === "0" ? 0 : 1)
-    );
+    const sides = asBinaryDigits(idx % TOTAL_SIDES_COMBINATIONS);
 
-    return [order, sides];
+    return Vec.map(
+      order,
+      (tileIdx, position) => ModularMapTiles.tiles[tileIdx][sides[position]]
+    );
   },
 } as const;
+
+// The result of the sample would always be either 0 or 1, we use that
+// to encode the results as a binary number.
+const fromBinaryDigits = (coefficients: readonly number[]): number =>
+  MathUtils.sum(
+    Vec.map(
+      Vec.reverse(coefficients),
+      (coefficient, order) => coefficient * 2 ** order
+    )
+  );
+
+const asBinaryDigits = (x: number): readonly number[] =>
+  Vec.map(x.toString(2).padStart(TILE_SLOTS, "0").split(""), (digit) =>
+    Number.parseInt(digit)
+  );
