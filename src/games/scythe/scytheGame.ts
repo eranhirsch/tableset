@@ -157,7 +157,11 @@ export const scytheGame = createGame({
         "Form a pile of coins as the bank near the board.",
     }),
 
-    // TODO: Actual setup of player boards
+    createGameStep({
+      id: "character",
+      InstanceManualComponent:
+        "Each player puts their character miniature on their faction's home base.",
+    }),
 
     firstPlayerStep,
   ],
