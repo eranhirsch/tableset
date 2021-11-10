@@ -1,15 +1,18 @@
-import { MathUtils, nullthrows, Num, Random, Vec } from "common";
+import {
+  invariant_violation,
+  MathUtils,
+  nullthrows,
+  Num,
+  Random,
+  Vec,
+} from "common";
 import { HexType } from "./HexType";
 
-interface TileSide {
-  center: HexType;
-  // Corner is the top left corner
-  corner: HexType;
-  // tile locations are 0-index from left to right and then top to bottom:
-  //   0 1
-  //   2 3
-  illegalLocations: readonly number[];
-}
+type TileSide = [
+  top: [left: HexType, right: HexType],
+  middle: [left: HexType, center: HexType, right: HexType],
+  bottom: [left: HexType, right: HexType]
+];
 
 /**
  * indexed by number of players, this array summarizes the recommended amount of
@@ -33,20 +36,52 @@ const TILE_SLOTS = 4;
 
 const TILES: readonly (readonly [TileSide, TileSide])[] = [
   [
-    { corner: "village", center: "forest", illegalLocations: [1] },
-    { corner: "tundra", center: "village", illegalLocations: [2] },
+    [
+      ["village", "lake"],
+      ["mountain", "forest", "village"],
+      ["farm", "tundra"],
+    ],
+    [
+      ["tundra", "farm"],
+      ["forest", "village", "village"],
+      ["lake", "mountain"],
+    ],
   ],
   [
-    { corner: "tundra", center: "forest", illegalLocations: [0, 2] },
-    { corner: "forest", center: "village", illegalLocations: [1, 3] },
+    [
+      ["tundra", "village"],
+      ["lake", "forest", "mountain"],
+      ["tundra", "farm"],
+    ],
+    [
+      ["forest", "farm"],
+      ["mountain", "village", "lake"],
+      ["tundra", "mountain"],
+    ],
   ],
   [
-    { corner: "tundra", center: "lake", illegalLocations: [2] },
-    { corner: "village", center: "lake", illegalLocations: [3] },
+    [
+      ["tundra", "village"],
+      ["farm", "lake", "mountain"],
+      ["lake", "forest"],
+    ],
+    [
+      ["village", "forest"],
+      ["tundra", "lake", "mountain"],
+      ["farm", "lake"],
+    ],
   ],
   [
-    { corner: "village", center: "mountain", illegalLocations: [3] },
-    { corner: "lake", center: "farm", illegalLocations: [0] },
+    [
+      ["village", "tundra"],
+      ["forest", "mountain", "village"],
+      ["farm", "lake"],
+    ],
+    [
+      ["lake", "tundra"],
+      ["forest", "farm", "village"],
+      ["village", "mountain"],
+    ],
   ],
 ];
 
@@ -56,7 +91,7 @@ const TILES: readonly (readonly [TileSide, TileSide])[] = [
 // our encoding even slimmer.
 // IMPORTANT: If additional tiles are ever added to the game, reconsider this
 // assumption as it might break the coding.
-const TOTAL_SIDES_COMBINATIONS = 2 ** (TILE_SLOTS -1);
+const TOTAL_SIDES_COMBINATIONS = 2 ** (TILE_SLOTS - 1);
 
 const ORDER_PERMUTATIONS = MathUtils.permutations_lazy_array(
   // This is just an array with: ["0", "1", "2", ...] because the permutations
@@ -79,10 +114,8 @@ export const ModularMapTiles = {
     const order = ORDER_PERMUTATIONS.at(orderIdx)!;
 
     const legalSides = Vec.map(order, (tileIdxStr, position) =>
-      Vec.maybe_map(
-        TILES[Number.parseInt(tileIdxStr)],
-        ({ illegalLocations }, sideIdx) =>
-          illegalLocations.includes(position) ? undefined : sideIdx
+      Vec.maybe_map(TILES[Number.parseInt(tileIdxStr)], (tileSide, sideIdx) =>
+        legalInPosition(tileSide, position) ? sideIdx : undefined
       )
     );
 
@@ -113,6 +146,27 @@ export const ModularMapTiles = {
     );
   },
 } as const;
+
+const legalInPosition = (tileSide: TileSide, position: number): boolean =>
+  !adjacentToHomeBase(tileSide, position).includes("lake");
+
+function adjacentToHomeBase(
+  [[topLeft, topRight], [left, _, right], [bottomLeft, bottomRight]]: TileSide,
+  position: number
+): [HexType, HexType] {
+  switch (position) {
+    case 0:
+      return [topLeft, left];
+    case 1:
+      return [topRight, right];
+    case 2:
+      return [left, bottomLeft];
+    case 3:
+      return [right, bottomRight];
+    default:
+      invariant_violation(`Unknown position ${position}`);
+  }
+}
 
 // The result of the sample would always be either 0 or 1, we use that
 // to encode the results as a binary number.

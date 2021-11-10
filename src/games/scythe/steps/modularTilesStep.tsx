@@ -36,8 +36,8 @@ function InstanceVariableComponent({
         Place the following map tiles on the board:
       </Typography>
       <Grid container gap={1} padding={1}>
-        {Vec.map(tiles, ({ center, corner }, pos) => (
-          <Tile key={`tile_${pos}`} corner={corner} center={center} />
+        {Vec.map(tiles, (tile, pos) => (
+          <Tile key={`tile_${pos}`} corner={tile[0][0]} center={tile[1][1]} />
         ))}
       </Grid>
       <Typography variant="caption" sx={{ marginTop: 2 }}>
