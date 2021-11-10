@@ -68,21 +68,30 @@ export const ModularMapTiles = {
 
   randomHash(): string {
     const orderIdx = Random.index(ORDER_PERMUTATIONS);
+    // We use the `!` because we just generated this idx, it's unlikely that the
+    // result would be null unless we have a bug with the `common` library
+    const order = ORDER_PERMUTATIONS.at(orderIdx)!;
 
-    const sidesIdx = Number.parseInt(
-      // Going over the order we just picked, we need to pick a side for each
-      // tile
-      Vec.map(ORDER_PERMUTATIONS.at(orderIdx)!, (tileIdxStr, position) =>
-        Random.sample(
-          Vec.maybe_map(
-            TILES[Number.parseInt(tileIdxStr)],
-            ({ illegalLocation }, idx) =>
-              illegalLocation === position ? undefined : idx
-          ),
-          1
-        ).toString()
-      ).join(""),
-      2
+    const coefficients = Vec.map(order, (tileIdxStr, position) =>
+      // We want to pick a side randomly from those sides that are legal in
+      // this position (there would always be at least 1)
+      Random.sample(
+        Vec.maybe_map(
+          TILES[Number.parseInt(tileIdxStr)],
+          ({ illegalLocation }, sideIdx) =>
+            illegalLocation === position ? undefined : sideIdx
+        ),
+        1
+      )
+    );
+
+    // The result of the sample would always be either 0 or 1, we use that
+    // to encode the results as a binary number.
+    const sidesIdx = MathUtils.sum(
+      Vec.map(
+        Vec.reverse(coefficients),
+        (coefficient, order) => coefficient * 2 ** order
+      )
     );
 
     return Num.encode_base32(orderIdx * TOTAL_SIDES_COMBINATIONS + sidesIdx);
