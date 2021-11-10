@@ -18,6 +18,7 @@ import productsMetaStep from "./steps/productsMetaStep";
 import removeModularTilesStep from "./steps/removeModularTilesStep";
 import resourcesPilesStep from "./steps/resourcesPilesStep";
 import seatingStep from "./steps/seatingStep";
+import startingWorkersStep from "./steps/startingWorkersStep";
 import structureBonusStep from "./steps/structureBonusStep";
 
 export const scytheGame = createGame({
@@ -162,6 +163,7 @@ export const scytheGame = createGame({
       InstanceManualComponent:
         "Each player puts their character miniature on their faction's home base.",
     }),
+    startingWorkersStep,
 
     firstPlayerStep,
   ],

@@ -1,6 +1,7 @@
 import { Dict, MathUtils, nullthrows, Vec } from "common";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { ScytheProductId } from "../ScytheProductId";
+import { HexType } from "./HexType";
 
 export type FactionId =
   /* spell-checker: disable */
@@ -21,6 +22,7 @@ export interface Faction {
   power: number;
   combatCards: number;
   order: number;
+  startingWorkersLocations: [HexType, HexType];
 }
 const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   /* spell-checker: disable */
@@ -30,6 +32,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     power: 3,
     combatCards: 0,
     order: 6,
+    startingWorkersLocations: ["mountain", "farm"],
   },
   crimea: {
     name: "Crimean Khanate",
@@ -37,6 +40,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     power: 5,
     combatCards: 0,
     order: 3,
+    startingWorkersLocations: ["farm", "village"],
   },
   fenris: {
     name: "Fenris",
@@ -45,6 +49,8 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     combatCards: 2,
     // TODO: this is incorrect, fix this with the setup instructions for fenris and tesla
     order: 7,
+    // This is obviously wrong and needs to be fixed when fenris is implemented
+    startingWorkersLocations: ["factory", "factory"],
   },
   nordic: {
     name: "Nordic Kingdoms",
@@ -52,6 +58,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     power: 4,
     combatCards: 1,
     order: 0,
+    startingWorkersLocations: ["forest", "tundra"],
   },
   polania: {
     name: "Republic of Polania",
@@ -59,6 +66,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     power: 2,
     combatCards: 3,
     order: 5,
+    startingWorkersLocations: ["forest", "farm"],
   },
   rusviet: {
     name: "Rusviet Union",
@@ -66,6 +74,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     power: 3,
     combatCards: 2,
     order: 1,
+    startingWorkersLocations: ["village", "mountain"],
   },
   saxony: {
     name: "Saxony Empire",
@@ -73,6 +82,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     power: 1,
     combatCards: 4,
     order: 4,
+    startingWorkersLocations: ["mountain", "tundra"],
   },
   tesla: {
     name: "Tesla",
@@ -81,6 +91,8 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     combatCards: 1,
     // TODO: this is incorrect, fix this with the setup instructions for fenris and tesla
     order: 7,
+    // TODO: this is obviously incorrect, fix this once we implement tesla
+    startingWorkersLocations: ["factory", "factory"],
   },
   togawa: {
     name: "Togawa Shogunate",
@@ -88,6 +100,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     power: 0,
     combatCards: 2,
     order: 2,
+    startingWorkersLocations: ["tundra", "farm"],
   },
   /* spell-checker: enable */
 };

@@ -1,11 +1,4 @@
-import {
-  invariant_violation,
-  MathUtils,
-  nullthrows,
-  Num,
-  Random,
-  Vec,
-} from "common";
+import { MathUtils, nullthrows, Num, Random, Vec } from "common";
 import { HexType } from "./HexType";
 
 type TileSide = [
@@ -115,7 +108,11 @@ export const ModularMapTiles = {
 
     const legalSides = Vec.map(order, (tileIdxStr, position) =>
       Vec.maybe_map(TILES[Number.parseInt(tileIdxStr)], (tileSide, sideIdx) =>
-        legalInPosition(tileSide, position) ? sideIdx : undefined
+        adjacentToHomeBase(tileSide, homeBaseIdxAtTile(position))!.includes(
+          "lake"
+        )
+          ? undefined
+          : sideIdx
       )
     );
 
@@ -145,26 +142,36 @@ export const ModularMapTiles = {
       (tileIdx, position) => ModularMapTiles.tiles[tileIdx][sides[position]]
     );
   },
+
+  homeBaseIdxAtTile,
+  adjacentToHomeBase,
 } as const;
 
-const legalInPosition = (tileSide: TileSide, position: number): boolean =>
-  !adjacentToHomeBase(tileSide, position).includes("lake");
+/**
+ * What a mess, home bases are ordered in clockwise order around the board but
+ * our map tiles are ordered in reading order (left to right, top to bottom) so
+ * we have this ugly conversion to do.
+ */
+function homeBaseIdxAtTile(tileIdx: number): number {
+  return tileIdx === 0 ? 7 : tileIdx === 1 ? 1 : tileIdx === 2 ? 5 : 3;
+}
 
+/**
+ * The home bases array starts at the top of the map and goes in clockwise
+ */
 function adjacentToHomeBase(
   [[topLeft, topRight], [left, _, right], [bottomLeft, bottomRight]]: TileSide,
-  position: number
-): [HexType, HexType] {
-  switch (position) {
-    case 0:
-      return [topLeft, left];
+  homeBaseIdx: number
+): [HexType, HexType] | undefined {
+  switch (homeBaseIdx) {
     case 1:
       return [topRight, right];
-    case 2:
-      return [left, bottomLeft];
     case 3:
       return [right, bottomRight];
-    default:
-      invariant_violation(`Unknown position ${position}`);
+    case 5:
+      return [left, bottomLeft];
+    case 7:
+      return [topLeft, left];
   }
 }
 

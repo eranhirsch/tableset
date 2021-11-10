@@ -13,7 +13,7 @@ import productsMetaStep from "./productsMetaStep";
 
 type TemplateConfig = { percentFarms: number };
 
-type BoardId = "farms" | "noFarms";
+export type BoardId = "farms" | "noFarms";
 
 export default createRandomGameStep({
   id: "map",

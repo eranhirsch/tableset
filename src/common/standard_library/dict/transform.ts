@@ -120,7 +120,7 @@ function from_entries<Tk extends keyof any, Tv>(
  */
 const from_values = <Tk extends keyof any, Tv>(
   values: readonly Tv[],
-  keyFunc: (value: Tv) => Tk
+  keyFunc: (value: Tv, index: number) => Tk
 ): Readonly<Record<Tk, Tv>> => pull(values, (value) => value, keyFunc);
 
 /**
