@@ -1,4 +1,12 @@
-import { MathUtils, nullthrows, Num, Random, Vec } from "common";
+import {
+  C,
+  invariant_violation,
+  MathUtils,
+  nullthrows,
+  Num,
+  Random,
+  Vec,
+} from "common";
 import { HexType } from "./HexType";
 
 type TileSide = [
@@ -28,6 +36,7 @@ const RECOMMENDED_REMOVE_AMOUNT_PER_PLAYER_COUNT = [
 const TILE_SLOTS = 4;
 
 const TILES: readonly (readonly [TileSide, TileSide])[] = [
+  // Tile 0
   [
     [
       ["village", "lake"],
@@ -40,6 +49,7 @@ const TILES: readonly (readonly [TileSide, TileSide])[] = [
       ["lake", "mountain"],
     ],
   ],
+  // Tile 1
   [
     [
       ["tundra", "village"],
@@ -52,6 +62,7 @@ const TILES: readonly (readonly [TileSide, TileSide])[] = [
       ["tundra", "mountain"],
     ],
   ],
+  // Tile 2
   [
     [
       ["tundra", "village"],
@@ -64,6 +75,7 @@ const TILES: readonly (readonly [TileSide, TileSide])[] = [
       ["farm", "lake"],
     ],
   ],
+  // Tile 3
   [
     [
       ["village", "tundra"],
@@ -78,13 +90,7 @@ const TILES: readonly (readonly [TileSide, TileSide])[] = [
   ],
 ];
 
-// Each tile could be on either side but because of the lake rule there's no
-// ordering of tiles where all tiles could be placed on both sides, the max is
-// always just three out of the the four (and even that is rare) so we can make
-// our encoding even slimmer.
-// IMPORTANT: If additional tiles are ever added to the game, reconsider this
-// assumption as it might break the coding.
-const TOTAL_SIDES_COMBINATIONS = 2 ** (TILE_SLOTS - 1);
+const TOTAL_SIDES_COMBINATIONS = 2 ** TILE_SLOTS;
 
 const ORDER_PERMUTATIONS = MathUtils.permutations_lazy_array(
   // This is just an array with: ["0", "1", "2", ...] because the permutations
@@ -102,50 +108,53 @@ export const ModularMapTiles = {
 
   randomHash(): string {
     const orderIdx = Random.index(ORDER_PERMUTATIONS);
-    // We use the `!` because we just generated this idx, it's unlikely that the
-    // result would be null unless we have a bug with the `common` library
-    const order = ORDER_PERMUTATIONS.at(orderIdx)!;
 
-    const legalSides = Vec.map(order, (tileIdxStr, position) =>
-      Vec.maybe_map(TILES[Number.parseInt(tileIdxStr)], (tileSide, sideIdx) =>
-        adjacentToHomeBase(tileSide, homeBaseIdxAtTile(position))!.includes(
-          "lake"
-        )
-          ? undefined
-          : sideIdx
+    const tilesReordered = reorderTilesByIdx(orderIdx);
+    const legalSides = Vec.map(tilesReordered, (tiles, position) =>
+      Vec.filter(
+        [0, 1],
+        (side) =>
+          !adjacentToHomeBase(
+            tiles[side],
+            homeBaseIdxAtTile(position)
+          )!.includes("lake")
       )
     );
-
-    const sidesIdx = fromBinaryDigits(
-      // We want to pick a side randomly from those sides that are legal in
-      // this position (there would always be at least 1)
-      Vec.map(legalSides, (sides) => Random.sample(sides, 1))
+    const sides = Vec.map(
+      legalSides,
+      (sides) => C.only(sides) ?? Random.sample(sides, 1)
     );
+    const sidesIdx = fromBinaryDigits(sides);
 
-    return Num.encode_base32(orderIdx * TOTAL_SIDES_COMBINATIONS + sidesIdx);
+    const idx = orderIdx * TOTAL_SIDES_COMBINATIONS + sidesIdx;
+    return Num.encode_base32(idx);
   },
 
   decode(hash: string): readonly TileSide[] {
     const idx = Num.decode_base32(hash);
 
     const orderIdx = Math.floor(idx / TOTAL_SIDES_COMBINATIONS);
-    const orderStr = nullthrows(
-      ORDER_PERMUTATIONS.at(orderIdx),
-      `Idx ${orderIdx} is out of range`
-    );
-    const order = Vec.map(orderStr, (idxStr) => Number.parseInt(idxStr));
+    const reorderedTiles = reorderTilesByIdx(orderIdx);
 
-    const sides = asBinaryDigits(idx % TOTAL_SIDES_COMBINATIONS);
+    const sidesIdx = idx % TOTAL_SIDES_COMBINATIONS;
+    const sides = asBinaryDigits(sidesIdx);
 
     return Vec.map(
-      order,
-      (tileIdx, position) => ModularMapTiles.tiles[tileIdx][sides[position]]
+      Vec.zip(reorderedTiles, sides),
+      ([tile, side]) => tile[side]
     );
   },
 
   homeBaseIdxAtTile,
+  tileIdxAtHomeBase,
   adjacentToHomeBase,
 } as const;
+
+const reorderTilesByIdx = (idx: number): typeof TILES =>
+  Vec.map(
+    nullthrows(ORDER_PERMUTATIONS.at(idx), `Idx ${idx} is out of range`),
+    (idxStr) => TILES[Number.parseInt(idxStr)]
+  );
 
 /**
  * What a mess, home bases are ordered in clockwise order around the board but
@@ -153,7 +162,48 @@ export const ModularMapTiles = {
  * we have this ugly conversion to do.
  */
 function homeBaseIdxAtTile(tileIdx: number): number {
-  return tileIdx === 0 ? 7 : tileIdx === 1 ? 1 : tileIdx === 2 ? 5 : 3;
+  switch (tileIdx) {
+    case 0:
+      // The upper left tile:
+      // This is the last home base because it's exactly 1 counter-clockwise of
+      // the home base location we start at (the top one) and we go clockwise.
+      return 7;
+    case 1:
+      // The upper right tile
+      return 1;
+    case 2:
+      // The lower left tile:
+      // Notice that although home bases go in clockwise, tiles go in reading
+      // order, so this home base is "out of order" from the home base for tile
+      // 1 and 3
+      return 5;
+    case 3:
+      // The lower right tile
+      return 3;
+    default:
+      invariant_violation(`Unexpected tileIdx ${tileIdx}`);
+  }
+}
+
+/**
+ * What a mess, home bases are ordered in clockwise order around the board but
+ * our map tiles are ordered in reading order (left to right, top to bottom) so
+ * we have this ugly conversion to do.
+ */
+function tileIdxAtHomeBase(homeBaseIdx: number): number | undefined {
+  switch (homeBaseIdx) {
+    case 1:
+      return 1;
+    case 3:
+      return 3;
+    case 5:
+      return 2;
+    case 7:
+      return 0;
+    default:
+      // Other home bases are on the board itself and not on the tiles
+      return;
+  }
 }
 
 /**
