@@ -1,4 +1,5 @@
 import { Vec } from "common";
+import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -13,6 +14,7 @@ import { HomeBases } from "../utils/HomeBases";
 import { ModularMapTiles } from "../utils/ModularMapTiles";
 import { FactionChip } from "../ux/FactionChip";
 import boardStep, { BoardId } from "./boardStep";
+import factionMatComponentsStep from "./factionMatComponentsStep";
 import factionsStep from "./factionsStep";
 import modularBoardVariant from "./modularBoardVariant";
 import modularHomeBasesStep from "./modularHomeBasesStep";
@@ -65,16 +67,17 @@ function InstanceDerivedComponent({
   const manualInstructions = (
     <BlockWithFootnotes
       footnotes={[
+        <InstanceStepLink step={factionMatComponentsStep} />,
         <>That aren't lakes.</>,
         <>Directly, with no rivers dividing them.</>,
       ]}
     >
       {(Footnote) => (
         <>
-          Players place <strong>1</strong> worker on each of exactly{" "}
-          <strong>2</strong> territories
-          <Footnote index={1} /> adjacent to their home-base
-          <Footnote index={2} />
+          Players place the remaining <strong>2</strong> workers
+          <Footnote index={1} /> on the 2 territories
+          <Footnote index={2} /> adjacent to their home-bases
+          <Footnote index={3} />
           {((isModular &&
             boardType != null &&
             tilesHash != null &&

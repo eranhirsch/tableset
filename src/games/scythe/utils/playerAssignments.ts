@@ -1,10 +1,10 @@
-import { Dict, invariant, Vec } from "common";
+import { Dict, invariant, tuple, Vec } from "common";
 import { PlayerId } from "model/Player";
 import { ScytheProductId } from "../ScytheProductId";
 import { Faction, FactionId, Factions } from "./Factions";
-import { Mat, PlayerMats } from "./PlayerMats";
+import { Mat, MatId, PlayerMats } from "./PlayerMats";
 
-export function playerAssignments(
+export const playerAssignments = (
   order: readonly PlayerId[],
   playerMatsHash: string | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
@@ -14,6 +14,23 @@ export function playerAssignments(
     PlayerId,
     readonly [faction: Readonly<Faction> | null, mat: Readonly<Mat> | null]
   >
+> =>
+  Dict.map(
+    playerAssignmentIds(order, playerMatsHash, factionIds, productIds),
+    ([factionId, matId]) =>
+      tuple(
+        factionId != null ? Factions[factionId] : null,
+        matId != null ? PlayerMats[matId] : null
+      )
+  );
+
+export function playerAssignmentIds(
+  order: readonly PlayerId[],
+  playerMatsHash: string | null | undefined,
+  factionIds: readonly FactionId[] | null | undefined,
+  productIds: readonly ScytheProductId[]
+): Readonly<
+  Record<PlayerId, readonly [faction: FactionId | null, mat: MatId | null]>
 > {
   invariant(
     factionIds != null || playerMatsHash != null,
@@ -48,12 +65,8 @@ export function playerAssignments(
     order,
     // Create tuples of factions and mats
     Vec.zip(
-      factionIds != null
-        ? Vec.map(factionIds, (fid) => Factions[fid])
-        : Vec.fill(order.length, null),
-      playerMatIds != null
-        ? Vec.map(playerMatIds, (mid) => PlayerMats[mid])
-        : Vec.fill(order.length, null)
+      factionIds ?? Vec.fill(order.length, null),
+      playerMatIds ?? Vec.fill(order.length, null)
     )
   );
 }

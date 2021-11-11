@@ -5,6 +5,7 @@ import combatCardsDeckStep from "./steps/combatCardsDeckStep";
 import encountersDeckStep from "./steps/encountersDeckStep";
 import encounterTokensStep from "./steps/encounterTokensStep";
 import factionCombatCardsStep from "./steps/factionCombatCardsStep";
+import factionMatComponentsStep from "./steps/factionMatComponentsStep";
 import factionsStep from "./steps/factionsStep";
 import factionStartingPowerStep from "./steps/factionStartingPowerStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
@@ -161,8 +162,8 @@ export const scytheGame = createGame({
         "Form a pile of coins as the bank near the board.",
     }),
 
-    // Setup player mat and faction mat first, so that the player has all components sorted out first
     playerMatComponentsStep,
+    factionMatComponentsStep,
 
     createGameStep({
       id: "character",
