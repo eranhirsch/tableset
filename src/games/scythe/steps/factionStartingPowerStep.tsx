@@ -1,69 +1,90 @@
 import { Stack, Typography } from "@mui/material";
-import { Vec } from "common";
+import { Shape, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { PlayerId } from "model/Player";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "../utils/Factions";
 import { playerAssignments } from "../utils/playerAssignments";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
 import playerAssignmentsStep from "./playerAssignmentsStep";
-import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
 
 export default createDerivedGameStep({
   id: "startingPower",
 
-  dependencies: [
-    productsMetaStep,
-    factionsStep,
-    playerMatsStep,
-    playerAssignmentsStep,
-  ],
+  dependencies: [productsMetaStep, factionsStep, playerAssignmentsStep],
 
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [productIds, factionIds, boardsHash, order],
+  dependencies: [productIds, factionIds, order],
 }: DerivedStepInstanceComponentProps<
   readonly ScytheProductId[],
   readonly FactionId[],
-  string,
   readonly PlayerId[]
 >): JSX.Element {
   const assignments = useMemo(
     () =>
       order == null
         ? null
-        : playerAssignments(order, boardsHash, factionIds, productIds!),
-    [boardsHash, factionIds, order, productIds]
+        : playerAssignments(
+            order,
+            null /* boardsHash */,
+            factionIds,
+            productIds!
+          ),
+    [factionIds, order, productIds]
   );
 
-  const generalInstructions =
-    "Each player puts the power token of their faction's color on the power track";
+  const generalInstructions = (
+    <>
+      Each player puts their <strong>power token</strong> on the power track
+    </>
+  );
 
   if (factionIds == null) {
     return (
       <BlockWithFootnotes
-        footnote={
+        footnotes={[
           <>
             The number printed on the power icon, in the box at the right side
-            of the mat.
-          </>
-        }
+            of the <em>faction mat</em>.
+          </>,
+          // TODO: When we introduce fenris and tesla some factions wouldn't be
+          // available (for example in the modular board) so we can depend on
+          // the home bases to filter out those factions.
+          <GrammaticalList>
+            {React.Children.toArray(
+              Vec.map_with_key(
+                Shape.select_keys(
+                  Factions,
+                  Factions.availableForProducts(productIds!)
+                ),
+                (fid, { power }) => (
+                  <>
+                    <FactionChip factionId={fid} />: {power} power
+                  </>
+                )
+              )
+            )}
+          </GrammaticalList>,
+        ]}
       >
         {(Footnote) => (
-          <span>
-            {generalInstructions}, using the faction mat
-            <Footnote /> to determine the position.
-          </span>
+          <>
+            {generalInstructions}, using the <em>faction mat</em>
+            <Footnote index={1} /> to determine the position
+            <Footnote index={2} />.
+          </>
         )}
       </BlockWithFootnotes>
     );
@@ -71,7 +92,9 @@ function InstanceDerivedComponent({
 
   return (
     <Stack direction="column" spacing={1}>
-      <Typography variant="body1">{generalInstructions}:</Typography>
+      <Typography variant="body1">
+        {generalInstructions} on the matching position:
+      </Typography>
       {assignments != null
         ? Vec.map_with_key(assignments, (playerId, [faction]) => (
             <span key={playerId}>

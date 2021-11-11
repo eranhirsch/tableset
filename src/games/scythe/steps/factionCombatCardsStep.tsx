@@ -1,55 +1,55 @@
 import { Stack } from "@mui/material";
-import { Vec } from "common";
+import { Shape, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps
+  DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { PlayerId } from "model/Player";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "../utils/Factions";
 import { playerAssignments } from "../utils/playerAssignments";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
 import playerAssignmentsStep from "./playerAssignmentsStep";
-import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
 
 export default createDerivedGameStep({
   id: "initialCombatCards",
 
-  dependencies: [
-    productsMetaStep,
-    factionsStep,
-    playerMatsStep,
-    playerAssignmentsStep,
-  ],
+  dependencies: [productsMetaStep, factionsStep, playerAssignmentsStep],
 
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [productIds, factionIds, boardsHash, order],
+  dependencies: [productIds, factionIds, order],
 }: DerivedStepInstanceComponentProps<
   readonly ScytheProductId[],
   readonly FactionId[],
-  string,
   readonly PlayerId[]
 >): JSX.Element {
   const assignments = useMemo(
     () =>
       order == null
         ? null
-        : playerAssignments(order, boardsHash, factionIds, productIds!),
-    [boardsHash, factionIds, order, productIds]
+        : playerAssignments(
+            order,
+            null /* boardsHash */,
+            factionIds,
+            productIds!
+          ),
+    [factionIds, order, productIds]
   );
 
   const generalFootnote = (
     <>
-      Players should keep the card content secret (but the number of cards is
-      public).
+      Players should keep the card <strong>values</strong> <em>secret</em> (but
+      the <strong>number</strong> of cards is
+      <em>public information</em>).
     </>
   );
 
@@ -59,18 +59,37 @@ function InstanceDerivedComponent({
         footnotes={[
           <>
             The number printed on the yellow card icon, in the box at the right
-            side of the mat.
+            side of the <em>faction mat</em>.
           </>,
+          // TODO: When we introduce fenris and tesla some factions wouldn't be
+          // available (for example in the modular board) so we can depend on
+          // the home bases to filter out those factions.
+          <GrammaticalList>
+            {React.Children.toArray(
+              Vec.map_with_key(
+                Shape.select_keys(
+                  Factions,
+                  Factions.availableForProducts(productIds!)
+                ),
+                (fid, { combatCards }) => (
+                  <>
+                    <FactionChip factionId={fid} />: {combatCards} cards
+                  </>
+                )
+              )
+            )}
+          </GrammaticalList>,
           generalFootnote,
         ]}
       >
         {(Footnote) => (
-          <span>
-            Deal each player a starting hand of combat cards using the faction
-            mat
+          <>
+            Deal each player a starting hand of <strong>combat cards</strong>{" "}
+            using the <em>faction mat</em>
             <Footnote index={1} /> to determine the number of cards to deal
             <Footnote index={2} />
-          </span>
+            <Footnote index={3} />.
+          </>
         )}
       </BlockWithFootnotes>
     );
