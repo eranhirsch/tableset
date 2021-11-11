@@ -15,6 +15,7 @@ import modularHomeBasesStep from "./steps/modularHomeBasesStep";
 import modularTilesStep from "./steps/modularTilesStep";
 import objectivesDeckStep from "./steps/objectivesDeckStep";
 import playerAssignmentsStep from "./steps/playerAssignmentsStep";
+import playerMatComponentsStep from "./steps/playerMatComponentsStep";
 import playerMatsStep from "./steps/playerMatsStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import removeModularTilesStep from "./steps/removeModularTilesStep";
@@ -161,6 +162,7 @@ export const scytheGame = createGame({
     }),
 
     // Setup player mat and faction mat first, so that the player has all components sorted out first
+    playerMatComponentsStep,
 
     createGameStep({
       id: "character",
