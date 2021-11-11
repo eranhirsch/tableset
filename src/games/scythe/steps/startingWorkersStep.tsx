@@ -93,16 +93,18 @@ function InstanceDerivedComponent({
 
     return (
       <HeaderAndSteps synopsis={manualInstructions}>
-        {Vec.maybe_map(HomeBases.decode(homeBasesHash), (fid, homeBaseIdx) =>
-          fid === "empty" ? undefined : (
-            <ModularFaction
-              key={fid}
-              factionId={fid}
-              homeBaseIdx={homeBaseIdx}
-              boardType={boardType}
-              tilesHash={tilesHash}
-            />
-          )
+        {Vec.maybe_map(
+          Vec.sort(HomeBases.decode(homeBasesHash)),
+          (fid, homeBaseIdx) =>
+            fid === "empty" ? undefined : (
+              <ModularFaction
+                key={fid}
+                factionId={fid}
+                homeBaseIdx={homeBaseIdx}
+                boardType={boardType}
+                tilesHash={tilesHash}
+              />
+            )
         )}
       </HeaderAndSteps>
     );
@@ -141,12 +143,13 @@ function ModularFaction({
 }): JSX.Element {
   const hexTypes = useMemo(
     () =>
+      // The home base might be either on the actual board:
       MODULAR_BOARD_WORKER_STARTING_LOCATION[boardType][homeBaseIdx] ??
+      // Or on one of the modular map tiles:
       ModularMapTiles.adjacentToHomeBase(
-        ModularMapTiles.decode(tilesHash).find(
-          (_, tileIdx) =>
-            ModularMapTiles.homeBaseIdxAtTile(tileIdx) === homeBaseIdx
-        )!,
+        ModularMapTiles.decode(tilesHash)[
+          ModularMapTiles.tileIdxAtHomeBase(homeBaseIdx)!
+        ],
         homeBaseIdx
       )!,
     [boardType, homeBaseIdx, tilesHash]
