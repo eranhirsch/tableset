@@ -308,7 +308,7 @@ function InstanceManualComponent(): JSX.Element {
       >
         {(Footnote) => (
           <>
-            Shuffle <strong>all {factionIds.length}</strong> faction mats
+            Shuffle all faction mats
             <Footnote index={1} />
             <Footnote index={2} />.
           </>

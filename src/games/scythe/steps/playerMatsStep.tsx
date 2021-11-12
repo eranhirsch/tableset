@@ -752,7 +752,7 @@ function InstanceManualComponent(): JSX.Element {
     >
       {(Footnote) => (
         <>
-          Shuffle <strong>all {matIds.length}</strong> player mats
+          Shuffle all player mats
           <Footnote index={1} />
           <Footnote index={2} />.
         </>
