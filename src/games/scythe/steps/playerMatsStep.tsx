@@ -672,22 +672,30 @@ function ConfigPanelTLDR({
 function InstanceVariableComponent({
   value: matsHash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
-  const factionIds = useOptionalInstanceValue(factionsStep);
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const products = useRequiredInstanceValue(productsMetaStep);
+  const factionIds = useOptionalInstanceValue(factionsStep);
 
   const matIds = useMemo(
     () =>
-      Vec.sort_by(
-        PlayerMats.decode(
-          matsHash,
-          playerIds.length,
-          factionIds != null,
-          products
-        ),
-        (mid) => PlayerMats[mid].rank
+      PlayerMats.decode(
+        matsHash,
+        playerIds.length,
+        factionIds != null,
+        products
       ),
     [factionIds, matsHash, playerIds.length, products]
+  );
+
+  const pairs = Vec.zip(
+    // Don't use Dict.select_keys here because that uses the order from
+    // the source dict, not the keys array
+    Vec.map(matIds, (matId) => PlayerMats[matId]),
+    factionIds != null
+      ? // Don't use Dict.select_keys here because that uses the order from
+        // the source dict, not the keys array
+        Vec.map(factionIds, (fid) => Factions[fid])
+      : Vec.fill(matIds.length, null)
   );
 
   return (
@@ -697,28 +705,19 @@ function InstanceVariableComponent({
       </Typography>
       <Stack spacing={1} direction="column" textAlign="center">
         {React.Children.toArray(
-          Vec.map(
-            // Don't use Dict.select_keys here because that uses the order from
-            // the source dict, not the keys array
-            Vec.zip(
-              Vec.map(matIds, (matId) => PlayerMats[matId]),
-              factionIds != null
-                ? Vec.map(factionIds, (fid) => Factions[fid])
-                : Vec.fill(matIds.length, null)
-            ),
-            ([{ name }, faction]) =>
-              faction == null ? (
-                <strong>{name}</strong>
-              ) : (
-                <Chip
-                  color={faction.color}
-                  label={
-                    <>
-                      <em>{name}</em> {faction.name}
-                    </>
-                  }
-                />
-              )
+          Vec.map(pairs, ([{ name }, faction]) =>
+            faction == null ? (
+              <strong>{name}</strong>
+            ) : (
+              <Chip
+                color={faction.color}
+                label={
+                  <>
+                    <em>{name}</em> {faction.name}
+                  </>
+                }
+              />
+            )
           )
         )}
       </Stack>

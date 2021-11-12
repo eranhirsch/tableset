@@ -14,11 +14,12 @@ import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
-import { useMemo } from "react";
-import { Faction } from "../utils/Factions";
+import React, { useMemo } from "react";
+import { Faction, Factions } from "../utils/Factions";
 import { playerAssignments } from "../utils/playerAssignments";
-import { Mat } from "../utils/PlayerMats";
+import { Mat, PlayerMats } from "../utils/PlayerMats";
 import factionsStep from "./factionsStep";
+import modularBoardVariant from "./modularBoardVariant";
 import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
 
@@ -41,6 +42,7 @@ export default createRandomGameStep({
   ...NoConfigPanel,
 
   InstanceVariableComponent,
+  InstanceManualComponent,
 });
 
 function InstanceVariableComponent({
@@ -119,5 +121,94 @@ function PlayerAssignment({
         mat!.name
       )}
     </span>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+  const productIds = useRequiredInstanceValue(productsMetaStep);
+  const factionIds = useOptionalInstanceValue(factionsStep);
+  const matHash = useOptionalInstanceValue(playerMatsStep);
+  const isModular = useRequiredInstanceValue(modularBoardVariant);
+
+  const matIds = useMemo(
+    () =>
+      matHash == null
+        ? null
+        : PlayerMats.decode(
+            matHash,
+            playerIds.length,
+            factionIds != null,
+            productIds
+          ),
+    [factionIds, matHash, playerIds.length, productIds]
+  );
+
+  const generalInstructions = `Randomly assign a player board ${
+    isModular ? "" : "and faction pairing"
+  } to each player`;
+
+  if (matIds == null && factionIds == null) {
+    return (
+      <BlockWithFootnotes footnote={<InstanceStepLink step={playerMatsStep} />}>
+        {(Footnote) => (
+          <>
+            {generalInstructions}
+            <Footnote />.
+          </>
+        )}
+      </BlockWithFootnotes>
+    );
+  }
+
+  const pairs = Vec.zip(
+    matIds != null
+      ? // Don't use Dict.select_keys here because that uses the order from
+        // the source dict, not the keys array
+        Vec.map(matIds, (matId) => PlayerMats[matId])
+      : Vec.fill(playerIds.length, null),
+    factionIds != null
+      ? // Don't use Dict.select_keys here because that uses the order from
+        // the source dict, not the keys array
+        Vec.map(factionIds, (fid) => Factions[fid])
+      : Vec.fill(playerIds.length, null)
+  );
+
+  return (
+    <Stack direction="column" spacing={1} alignItems="center">
+      <BlockWithFootnotes footnote={<InstanceStepLink step={playerMatsStep} />}>
+        {(Footnote) => (
+          <span>
+            {generalInstructions}
+            <Footnote />:
+          </span>
+        )}
+      </BlockWithFootnotes>
+      <Stack spacing={1} direction="column" textAlign="center">
+        {React.Children.toArray(
+          Vec.map(pairs, ([mat, faction]) =>
+            faction == null ? (
+              <span>
+                <strong>{mat!.name}</strong>
+                {!isModular && " and it's paired faction"}
+              </span>
+            ) : (
+              <span>
+                <Chip
+                  color={faction.color}
+                  label={
+                    <>
+                      {mat != null && <em>{mat.name} </em>}
+                      {faction.name}
+                    </>
+                  }
+                />
+                {mat == null && " and it's paired player mat"}
+              </span>
+            )
+          )
+        )}
+      </Stack>
+    </Stack>
   );
 }

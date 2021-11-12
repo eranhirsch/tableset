@@ -76,10 +76,12 @@ export const PlayerMats = {
 
     const permutations = MathUtils.permutations_lazy_array(combination);
     const permutationIdx = Math.floor(index / combinations.length);
-    return nullthrows(
+
+    const matIds = nullthrows(
       permutations.at(permutationIdx),
       `Permutations index ${permutationIdx} overflown for permutations array ${permutations}`
     );
+    return matIds;
   },
 
   encode(
@@ -101,9 +103,10 @@ export const PlayerMats = {
     // about is pairings, therefore we need to encode the specific permutation
     // of the selected combination.
     const permutations = MathUtils.permutations_lazy_array(matIds);
-    return Num.encode_base32(
-      combinations.length * permutations.indexOf(matIds) + combinationIdx
-    );
+    const permutationIdx = permutations.indexOf(matIds);
+    const idx =
+      combinations.length * permutationIdx + combinationIdx;
+    return Num.encode_base32(idx);
   },
 
   availableForProducts,
