@@ -19,6 +19,7 @@ import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { Faction, FactionId, Factions } from "../utils/Factions";
 import {
+  factionPlayerMatIdPairs,
   factionPlayerMatPairs,
   playerAssignments,
 } from "../utils/playerAssignments";
@@ -46,8 +47,34 @@ export default createRandomGameStep({
   isTemplatable: (_players, _products, factions, playerMats) =>
     factions.willResolve() || playerMats.willResolve(),
 
-  resolve(config, players) {
-    return Random.shuffle(players!);
+  resolve(config, playerIds, productIds, factionIds, matsHash) {
+    if (matsHash == null && factionIds == null) {
+      return null;
+    }
+
+    const pairs = factionPlayerMatIdPairs(
+      playerIds!.length,
+      matsHash,
+      factionIds,
+      productIds!
+    );
+
+    const byPreferences = pairs.reduce((ongoing, [factionId, matId]) => {
+      const relevantPreferences = Vec.filter(
+        config,
+        ({ playerId }) => !ongoing.includes(playerId)
+      );
+      const fulfilledPreference = relevantPreferences.find(
+        (preference) =>
+          ("factionId" in preference && preference.factionId === factionId) ||
+          ("matId" in preference && preference.matId === matId)
+      );
+      return Vec.concat(ongoing, fulfilledPreference?.playerId);
+    }, [] as readonly (PlayerId | undefined)[]);
+
+    const remaining = [...Random.shuffle(Vec.diff(playerIds!, byPreferences))];
+
+    return Vec.map(byPreferences, (playerId) => playerId ?? remaining.pop());
   },
 
   initialConfig: (): Readonly<TemplateConfig> => [],
