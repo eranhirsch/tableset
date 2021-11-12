@@ -6,22 +6,29 @@ import {
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { ConfigPanelProps } from "features/template/Templatable";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
-import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
-import { Faction, Factions } from "../utils/Factions";
+import { ScytheProductId } from "../ScytheProductId";
+import { Faction, FactionId, Factions } from "../utils/Factions";
 import { playerAssignments } from "../utils/playerAssignments";
-import { Mat, PlayerMats } from "../utils/PlayerMats";
+import { Mat, MatId, PlayerMats } from "../utils/PlayerMats";
 import factionsStep from "./factionsStep";
 import modularBoardVariant from "./modularBoardVariant";
 import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
+
+type PlayerPreference = { playerId: PlayerId } & (
+  | { factionId: FactionId }
+  | { matId: MatId }
+);
+type TemplateConfig = readonly Readonly<PlayerPreference>[];
 
 export default createRandomGameStep({
   id: "playerAssignments",
@@ -37,13 +44,55 @@ export default createRandomGameStep({
 
   resolve: (_, players) => Random.shuffle(players!),
 
-  // TODO: Allow a config where players can be assigned partial combo options
-  // taken from the `always` arrays of factions and player mats
-  ...NoConfigPanel,
+  initialConfig: (): Readonly<TemplateConfig> => [],
+
+  refresh(config: Readonly<TemplateConfig>, players, products) {
+    const playerIds = players.onlyResolvableValue()!;
+
+    const productIds = products.onlyResolvableValue()!;
+    const availableFactions = Factions.availableForProducts(productIds);
+    const availableMats = PlayerMats.availableForProducts(productIds);
+
+    const refreshed = Vec.filter(
+      config,
+      ({ playerId, ...pref }) =>
+        playerIds.includes(playerId) &&
+        (("factionId" in pref && availableFactions.includes(pref.factionId)) ||
+          ("matId" in pref && availableMats.includes(pref.matId)))
+    );
+    return refreshed.length < config.length
+      ? refreshed
+      : templateValue("unchanged");
+  },
+
+  ConfigPanel,
+  ConfigPanelTLDR,
 
   InstanceVariableComponent,
   InstanceManualComponent,
 });
+
+function ConfigPanel({
+  config,
+  queries: [players, products, factions, mats],
+  onChange,
+}: ConfigPanelProps<
+  TemplateConfig,
+  readonly PlayerId[],
+  readonly ScytheProductId[],
+  readonly FactionId[],
+  string
+>): JSX.Element {
+  return <div>TODO</div>;
+}
+
+function ConfigPanelTLDR({
+  config,
+}: {
+  config: Readonly<TemplateConfig>;
+}): JSX.Element {
+  return <>TODO</>;
+}
 
 function InstanceVariableComponent({
   value: order,
