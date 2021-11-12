@@ -5,6 +5,7 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { useMemo } from "react";
 import { HexType, HEX_TYPE_LABEL } from "../utils/HexType";
 import { ModularMapTiles } from "../utils/ModularMapTiles";
@@ -23,6 +24,7 @@ export default createRandomGameStep({
   ...NoConfigPanel,
 
   InstanceVariableComponent,
+  InstanceManualComponent,
 });
 
 function InstanceVariableComponent({
@@ -92,3 +94,18 @@ function HexDescription({
   );
 }
 
+function InstanceManualComponent(): JSX.Element {
+  return (
+    <HeaderAndSteps synopsis="Lay out the map:">
+      <>Shuffle all map tiles, also randomly determining each tile's side.</>
+      <>
+        Place a map tile on each of the <em>4 quadrants</em> of the map,
+        aligning it's graphics with the graphics on the board.
+      </>
+      <>
+        For any tile that has a <em>{HEX_TYPE_LABEL.lake}</em> adjacent to a{" "}
+        <strong>home base</strong>, flip that tile to it's other side.
+      </>
+    </HeaderAndSteps>
+  );
+}
