@@ -18,29 +18,34 @@ import {
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { C, Dict, Random, Shape, Vec } from "common";
+import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import {
   templateValue,
-  UnchangedTemplateValue
+  UnchangedTemplateValue,
 } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
+import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "../utils/Factions";
 import { MatId, PlayerMats } from "../utils/PlayerMats";
+import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
+import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
 
 const MAX_ATTEMPTS = 5;
@@ -90,6 +95,7 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
 
   InstanceVariableComponent,
+  InstanceManualComponent,
 });
 
 function resolve(
@@ -717,6 +723,83 @@ function InstanceVariableComponent({
         )}
       </Stack>
     </Stack>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+  const productIds = useRequiredInstanceValue(productsMetaStep);
+  const isModular = useRequiredInstanceValue(modularBoardVariant);
+  const factionIds = useOptionalInstanceValue(factionsStep);
+
+  const matIds = useMemo(
+    () => PlayerMats.availableForProducts(productIds),
+    [productIds]
+  );
+
+  const shuffleStep = (
+    <BlockWithFootnotes
+      footnotes={[
+        <>The 2-layer boards with a lot of green and red boxes on them.</>,
+        <>
+          The player mats are:{" "}
+          <GrammaticalList>
+            {Vec.map(matIds, (mid) => PlayerMats[mid].name)}
+          </GrammaticalList>
+          .
+        </>,
+      ]}
+    >
+      {(Footnote) => (
+        <>
+          Shuffle <strong>all {matIds.length}</strong> player mats
+          <Footnote index={1} />
+          <Footnote index={2} />.
+        </>
+      )}
+    </BlockWithFootnotes>
+  );
+
+  if (isModular) {
+    return (
+      <HeaderAndSteps synopsis="Select player mats:">
+        {shuffleStep}
+        <>
+          Randomly draw <strong>{playerIds.length}</strong> mats;{" "}
+          <em>one per player</em>.
+        </>
+      </HeaderAndSteps>
+    );
+  }
+
+  return (
+    <HeaderAndSteps synopsis="Select player mats:">
+      {shuffleStep}
+      <BlockWithFootnotes footnote={<InstanceStepLink step={factionsStep} />}>
+        {(Footnote) => (
+          <>
+            Randomly draw a mat and pair it with each faction mat
+            <Footnote /> until you have {playerIds.length} pairings of factions
+            to player boards.
+          </>
+        )}
+      </BlockWithFootnotes>
+      {Vec.map_with_key(DEFAULT_BANNED_COMBOS, (fid, mids) =>
+        factionIds == null || factionIds.includes(fid) ? (
+          <>
+            If{" "}
+            <GrammaticalList finalConjunction="or">
+              {Vec.map(mids, (mid) => (
+                <strong key={mid}>{PlayerMats[mid].name}</strong>
+              ))}
+            </GrammaticalList>{" "}
+            {mids.length > 1 ? "are" : "is"} paired with{" "}
+            <FactionChip factionId={fid} />: discard that player board and draw
+            a new one instead.
+          </>
+        ) : null
+      )}
+    </HeaderAndSteps>
   );
 }
 

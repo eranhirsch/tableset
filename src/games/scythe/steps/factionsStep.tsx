@@ -3,6 +3,7 @@ import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { invariant, Random, Shape, Vec } from "common";
+import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -11,12 +12,15 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
+import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "../utils/Factions";
+import { FactionChip } from "../ux/FactionChip";
 import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
 
@@ -107,6 +111,7 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
 
   InstanceVariableComponent,
+  InstanceManualComponent,
 });
 
 function ConfigPanel({
@@ -134,7 +139,7 @@ function ConfigPanel({
       gap={1}
     >
       {Vec.map(available, (factionId) => (
-        <FactionChip
+        <FactionSelector
           key={factionId}
           factionId={factionId}
           mode={currentMode(config, factionId)}
@@ -159,7 +164,7 @@ function ConfigPanel({
   );
 }
 
-function FactionChip({
+function FactionSelector({
   factionId,
   mode,
   onClick,
@@ -270,6 +275,50 @@ function InstanceVariableComponent({
         )}
       </Stack>
     </Stack>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+  const productIds = useRequiredInstanceValue(productsMetaStep);
+
+  const factionIds = useMemo(
+    () => Factions.availableForProducts(productIds),
+    [productIds]
+  );
+
+  return (
+    <HeaderAndSteps synopsis="Select factions:">
+      <BlockWithFootnotes
+        footnotes={[
+          <>
+            The boards with the faction logo at the top left, and the leader and
+            faction name next to it.
+          </>,
+          <>
+            The factions are:{" "}
+            <GrammaticalList>
+              {Vec.map(factionIds, (fid) => (
+                <FactionChip key={fid} factionId={fid} />
+              ))}
+            </GrammaticalList>
+            .
+          </>,
+        ]}
+      >
+        {(Footnote) => (
+          <>
+            Shuffle <strong>all {factionIds.length}</strong> faction mats
+            <Footnote index={1} />
+            <Footnote index={2} />.
+          </>
+        )}
+      </BlockWithFootnotes>
+      <>
+        Randomly draw <strong>{playerIds.length}</strong> mats;{" "}
+        <em>one per player</em>.
+      </>
+    </HeaderAndSteps>
   );
 }
 
