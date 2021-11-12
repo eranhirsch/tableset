@@ -18,6 +18,8 @@ import objectivesDeckStep from "./steps/objectivesDeckStep";
 import playerAssignmentsStep from "./steps/playerAssignmentsStep";
 import playerMatComponentsStep from "./steps/playerMatComponentsStep";
 import playerMatsStep from "./steps/playerMatsStep";
+import playerMatStartingMoneyStep from "./steps/playerMatStartingMoneyStep";
+import playerMatStartingPopularityStep from "./steps/playerMatStartingPopularityStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import removeModularTilesStep from "./steps/removeModularTilesStep";
 import resourcesPilesStep from "./steps/resourcesPilesStep";
@@ -164,7 +166,6 @@ export const scytheGame = createGame({
 
     playerMatComponentsStep,
     factionMatComponentsStep,
-
     createGameStep({
       id: "character",
       InstanceManualComponent:
@@ -173,6 +174,8 @@ export const scytheGame = createGame({
     startingWorkersStep,
     factionCombatCardsStep,
     factionStartingPowerStep,
+    playerMatStartingPopularityStep,
+    playerMatStartingMoneyStep,
 
     firstPlayerStep,
   ],

@@ -47,7 +47,8 @@ function InstanceDerivedComponent({
 
   const generalInstructions = (
     <>
-      Each player puts their <strong>power token</strong> on the power track
+      Each player puts their wooden <strong>power token</strong> on the power
+      track on the bottom right side of the board
     </>
   );
 
@@ -56,8 +57,8 @@ function InstanceDerivedComponent({
       <BlockWithFootnotes
         footnotes={[
           <>
-            The number printed on the power icon, in the box at the right side
-            of the mat.
+            The number printed on the black <strong>power icon</strong>, in the
+            box at the right side of the mat.
           </>,
           // TODO: When we introduce fenris and tesla some factions wouldn't be
           // available (for example in the modular board) so we can depend on

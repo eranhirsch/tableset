@@ -57,8 +57,8 @@ function InstanceDerivedComponent({
       <BlockWithFootnotes
         footnotes={[
           <>
-            The number printed on the yellow card icon, in the box at the right
-            side of the mat.
+            The number printed on the <strong>yellow card icon</strong>, in the
+            box at the right side of the mat.
           </>,
           // TODO: When we introduce fenris and tesla some factions wouldn't be
           // available (for example in the modular board) so we can depend on
