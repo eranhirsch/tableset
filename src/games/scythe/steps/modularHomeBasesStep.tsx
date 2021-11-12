@@ -5,6 +5,8 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { useMemo } from "react";
 import { Factions } from "../utils/Factions";
 import { HomeBases } from "../utils/HomeBases";
@@ -24,6 +26,7 @@ export default createRandomGameStep({
   ...NoConfigPanel,
 
   InstanceVariableComponent,
+  InstanceManualComponent,
 });
 
 function InstanceVariableComponent({
@@ -60,5 +63,49 @@ function InstanceVariableComponent({
         <pre>Hash: {basesHash}</pre>
       </Typography>
     </Stack>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  return (
+    <HeaderAndSteps synopsis="Assign a home base for each faction:">
+      <BlockWithFootnotes
+        footnote={
+          <>
+            Cardboard discs with faction logos on one side and a tent on the the
+            other side. One of the discs depicts a tent on the other side too,
+            this is for the empty home base.
+          </>
+        }
+      >
+        {(Footnote) => (
+          <>
+            Flip all home-base tiles
+            <Footnote /> so their faction side is hidden.
+          </>
+        )}
+      </BlockWithFootnotes>
+      <>Shuffle the tiles.</>
+      <BlockWithFootnotes
+        footnote={
+          <>A encircled tent, inside a hex, on the perimeter of the map.</>
+        }
+      >
+        {(Footnote) => (
+          <>
+            Randomly put a tile on each home-base space on the board
+            <Footnote />.
+          </>
+        )}
+      </BlockWithFootnotes>
+      <>
+        Flip the tiles so that their faction side is showing;{" "}
+        <em>
+          one tile would show a tent, this is an empty home-base that isn't used
+          by any faction
+        </em>
+        .
+      </>
+    </HeaderAndSteps>
   );
 }

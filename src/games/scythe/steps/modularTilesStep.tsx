@@ -5,6 +5,7 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { useMemo } from "react";
 import { HexType, HEX_TYPE_LABEL } from "../utils/HexType";
@@ -97,7 +98,18 @@ function HexDescription({
 function InstanceManualComponent(): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Lay out the map:">
-      <>Shuffle all map tiles, also randomly determining each tile's side.</>
+      <BlockWithFootnotes
+        footnote={
+          <>4 cardboard tiles made of 7 hexes each, printed on both sides.</>
+        }
+      >
+        {(Footnote) => (
+          <>
+            Shuffle all map tiles
+            <Footnote />, also randomly determining each tile's side.
+          </>
+        )}
+      </BlockWithFootnotes>
       <>
         Place a map tile on each of the <em>4 quadrants</em> of the map,
         aligning it's graphics with the graphics on the board.
