@@ -42,6 +42,7 @@ import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "../utils/Factions";
+import { factionPlayerMatPairs } from "../utils/playerAssignments";
 import { MatId, PlayerMats } from "../utils/PlayerMats";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
@@ -673,29 +674,13 @@ function InstanceVariableComponent({
   value: matsHash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
-  const products = useRequiredInstanceValue(productsMetaStep);
+  const productIds = useRequiredInstanceValue(productsMetaStep);
   const factionIds = useOptionalInstanceValue(factionsStep);
 
-  const matIds = useMemo(
+  const pairs = useMemo(
     () =>
-      PlayerMats.decode(
-        matsHash,
-        playerIds.length,
-        factionIds != null,
-        products
-      ),
-    [factionIds, matsHash, playerIds.length, products]
-  );
-
-  const pairs = Vec.zip(
-    // Don't use Dict.select_keys here because that uses the order from
-    // the source dict, not the keys array
-    Vec.map(matIds, (matId) => PlayerMats[matId]),
-    factionIds != null
-      ? // Don't use Dict.select_keys here because that uses the order from
-        // the source dict, not the keys array
-        Vec.map(factionIds, (fid) => Factions[fid])
-      : Vec.fill(matIds.length, null)
+      factionPlayerMatPairs(playerIds.length, matsHash, factionIds, productIds),
+    [factionIds, matsHash, playerIds.length, productIds]
   );
 
   return (
@@ -705,15 +690,15 @@ function InstanceVariableComponent({
       </Typography>
       <Stack spacing={1} direction="column" textAlign="center">
         {React.Children.toArray(
-          Vec.map(pairs, ([{ name }, faction]) =>
+          Vec.map(pairs, ([faction, mat]) =>
             faction == null ? (
-              <strong>{name}</strong>
+              <strong>{mat!.name}</strong>
             ) : (
               <Chip
                 color={faction.color}
                 label={
                   <>
-                    <em>{name}</em> {faction.name}
+                    <em>{mat!.name}</em> {faction.name}
                   </>
                 }
               />

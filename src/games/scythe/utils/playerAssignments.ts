@@ -24,49 +24,83 @@ export const playerAssignments = (
       )
   );
 
-export function playerAssignmentIds(
+export const playerAssignmentIds = (
   order: readonly PlayerId[],
   playerMatsHash: string | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
   productIds: readonly ScytheProductId[]
 ): Readonly<
   Record<PlayerId, readonly [faction: FactionId | null, mat: MatId | null]>
-> {
+> =>
+  Dict.associate(
+    order,
+    factionPlayerMatIdPairs(
+      order.length,
+      playerMatsHash,
+      factionIds,
+      productIds
+    )
+  );
+
+export const factionPlayerMatPairs = (
+  playersCount: number,
+  playerMatsHash: string | null | undefined,
+  factionIds: readonly FactionId[] | null | undefined,
+  productIds: readonly ScytheProductId[]
+): readonly (readonly [
+  faction: Readonly<Faction> | null,
+  mat: Readonly<Mat> | null
+])[] =>
+  Vec.map(
+    factionPlayerMatIdPairs(
+      playersCount,
+      playerMatsHash,
+      factionIds,
+      productIds
+    ),
+    ([fid, mid]) =>
+      tuple(
+        fid != null ? Factions[fid] : null,
+        mid != null ? PlayerMats[mid] : null
+      )
+  );
+
+export function factionPlayerMatIdPairs(
+  playersCount: number,
+  playerMatsHash: string | null | undefined,
+  factionIds: readonly FactionId[] | null | undefined,
+  productIds: readonly ScytheProductId[]
+): readonly (readonly [faction: FactionId | null, mat: MatId | null])[] {
   invariant(
     factionIds != null || playerMatsHash != null,
     `Can't compute player assignments when both factions and player mats are missing`
   );
 
-  const playerMatIds =
+  invariant(
+    factionIds == null || factionIds.length === playersCount,
+    `Not enough factions: ${JSON.stringify(
+      factionIds
+    )}, expected ${playersCount}`
+  );
+
+  const matIds =
     playerMatsHash == null
       ? null
       : PlayerMats.decode(
           playerMatsHash,
-          order.length,
+          playersCount,
           factionIds != null,
           productIds
         );
 
   invariant(
-    factionIds == null || factionIds.length === order.length,
-    `Not enough factions: ${JSON.stringify(factionIds)}, expected ${
-      order.length
-    }`
+    matIds == null || matIds.length === playersCount,
+    `Not enough mats: ${JSON.stringify(matIds)}, expected ${playersCount}`
   );
 
-  invariant(
-    playerMatIds == null || playerMatIds.length === order.length,
-    `Not enough player mats: ${JSON.stringify(playerMatIds)}, expected ${
-      order.length
-    }`
-  );
-
-  return Dict.associate(
-    order,
-    // Create tuples of factions and mats
-    Vec.zip(
-      factionIds ?? Vec.fill(order.length, null),
-      playerMatIds ?? Vec.fill(order.length, null)
-    )
+  return Vec.zip(
+    factionIds ?? Vec.fill(playersCount, null),
+    matIds ?? Vec.fill(playersCount, null)
   );
 }
+

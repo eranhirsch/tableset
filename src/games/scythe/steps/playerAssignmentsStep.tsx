@@ -7,6 +7,7 @@ import {
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { ConfigPanelProps } from "features/template/Templatable";
+import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -17,7 +18,10 @@ import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { Faction, FactionId, Factions } from "../utils/Factions";
-import { playerAssignments } from "../utils/playerAssignments";
+import {
+  factionPlayerMatPairs,
+  playerAssignments,
+} from "../utils/playerAssignments";
 import { Mat, MatId, PlayerMats } from "../utils/PlayerMats";
 import factionsStep from "./factionsStep";
 import modularBoardVariant from "./modularBoardVariant";
@@ -42,7 +46,9 @@ export default createRandomGameStep({
   isTemplatable: (_players, _products, factions, playerMats) =>
     factions.willResolve() || playerMats.willResolve(),
 
-  resolve: (_, players) => Random.shuffle(players!),
+  resolve(config, players) {
+    return Random.shuffle(players!);
+  },
 
   initialConfig: (): Readonly<TemplateConfig> => [],
 
@@ -177,27 +183,27 @@ function InstanceManualComponent(): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const productIds = useRequiredInstanceValue(productsMetaStep);
   const factionIds = useOptionalInstanceValue(factionsStep);
-  const matHash = useOptionalInstanceValue(playerMatsStep);
+  const matsHash = useOptionalInstanceValue(playerMatsStep);
   const isModular = useRequiredInstanceValue(modularBoardVariant);
 
-  const matIds = useMemo(
+  const pairs = useMemo(
     () =>
-      matHash == null
+      matsHash == null && factionIds == null
         ? null
-        : PlayerMats.decode(
-            matHash,
+        : factionPlayerMatPairs(
             playerIds.length,
-            factionIds != null,
+            matsHash,
+            factionIds,
             productIds
           ),
-    [factionIds, matHash, playerIds.length, productIds]
+    [factionIds, matsHash, playerIds.length, productIds]
   );
 
   const generalInstructions = `Randomly assign a player board ${
     isModular ? "" : "and faction pairing"
   } to each player`;
 
-  if (matIds == null && factionIds == null) {
+  if (pairs == null) {
     return (
       <BlockWithFootnotes footnote={<InstanceStepLink step={playerMatsStep} />}>
         {(Footnote) => (
@@ -209,19 +215,6 @@ function InstanceManualComponent(): JSX.Element {
       </BlockWithFootnotes>
     );
   }
-
-  const pairs = Vec.zip(
-    matIds != null
-      ? // Don't use Dict.select_keys here because that uses the order from
-        // the source dict, not the keys array
-        Vec.map(matIds, (matId) => PlayerMats[matId])
-      : Vec.fill(playerIds.length, null),
-    factionIds != null
-      ? // Don't use Dict.select_keys here because that uses the order from
-        // the source dict, not the keys array
-        Vec.map(factionIds, (fid) => Factions[fid])
-      : Vec.fill(playerIds.length, null)
-  );
 
   return (
     <Stack direction="column" spacing={1} alignItems="center">
@@ -235,7 +228,7 @@ function InstanceManualComponent(): JSX.Element {
       </BlockWithFootnotes>
       <Stack spacing={1} direction="column" textAlign="center">
         {React.Children.toArray(
-          Vec.map(pairs, ([mat, faction]) =>
+          Vec.map(pairs, ([faction, mat]) =>
             faction == null ? (
               <span>
                 <strong>{mat!.name}</strong>
