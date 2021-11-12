@@ -34,7 +34,7 @@ function InstanceDerivedComponent({
 >): JSX.Element {
   const assignments = useMemo(
     () =>
-      order == null
+      order == null || factionIds == null
         ? null
         : playerAssignments(
             order,
@@ -48,8 +48,7 @@ function InstanceDerivedComponent({
   const generalFootnote = (
     <>
       Players should keep the card <strong>values</strong> <em>secret</em> (but
-      the <strong>number</strong> of cards is
-      <em>public information</em>).
+      the <strong>number</strong> of cards is <em>public information</em>).
     </>
   );
 
@@ -59,7 +58,7 @@ function InstanceDerivedComponent({
         footnotes={[
           <>
             The number printed on the yellow card icon, in the box at the right
-            side of the <em>faction mat</em>.
+            side of the mat.
           </>,
           // TODO: When we introduce fenris and tesla some factions wouldn't be
           // available (for example in the modular board) so we can depend on
