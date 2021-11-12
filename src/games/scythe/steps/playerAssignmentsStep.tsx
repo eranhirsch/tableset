@@ -124,7 +124,7 @@ function ConfigPanelTLDR({
 }: {
   config: Readonly<TemplateConfig>;
 }): JSX.Element {
-  return <>TODO</>;
+  return <>Random{!Vec.is_empty(config) && " (with player preferences)"}</>;
 }
 
 function InstanceVariableComponent({
