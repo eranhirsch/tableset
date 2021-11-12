@@ -57,7 +57,7 @@ function InstanceDerivedComponent({
   return (
     <BlockWithFootnotes
       footnotes={Vec.filter_nulls([
-        <>Small green circular chits with a golden star on them.</>,
+        <>Small green circular chits with a golden compass on them.</>,
         isModular ? (
           <>
             There are {MODULAR_ENCOUNTER_TOKENS} encounter tokens on the main
