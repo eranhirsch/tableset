@@ -20,6 +20,7 @@ import playerMatComponentsStep from "./steps/playerMatComponentsStep";
 import playerMatsStep from "./steps/playerMatsStep";
 import playerMatStartingMoneyStep from "./steps/playerMatStartingMoneyStep";
 import playerMatStartingPopularityStep from "./steps/playerMatStartingPopularityStep";
+import playerObjectivesStep from "./steps/playerObjectivesStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import removeModularTilesStep from "./steps/removeModularTilesStep";
 import resourcesPilesStep from "./steps/resourcesPilesStep";
@@ -172,10 +173,11 @@ export const scytheGame = createGame({
         "Each player puts their character miniature on their faction's home base.",
     }),
     startingWorkersStep,
-    factionCombatCardsStep,
-    factionStartingPowerStep,
     playerMatStartingPopularityStep,
+    factionStartingPowerStep,
+    factionCombatCardsStep,
     playerMatStartingMoneyStep,
+    playerObjectivesStep,
 
     firstPlayerStep,
   ],

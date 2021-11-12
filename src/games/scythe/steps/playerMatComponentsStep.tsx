@@ -73,6 +73,9 @@ function InstanceManualComponent(): JSX.Element {
         <strong>Cylinder recruits (4):</strong> on the bottom right corner of
         each column.
       </>
+      <>
+        <strong>Action Pawn (1):</strong> near (but not on) the board.
+      </>
     </HeaderAndSteps>
   );
 }
