@@ -179,6 +179,12 @@ export const scytheGame = createGame({
     playerMatStartingMoneyStep,
     playerObjectivesStep,
 
+    createGameStep({
+      id: "playerAids",
+      InstanceManualComponent:
+        "Hand each player a riverwalk card, and for new players a quick-start card too.",
+    }),
+
     firstPlayerStep,
   ],
 });

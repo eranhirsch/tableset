@@ -109,7 +109,8 @@ function InstanceDerivedComponent({
         circles.
       </>
       <>
-        <strong>Stars (wooden) (6)</strong>.
+        <strong>Stars (wooden) (6)</strong>: near the faction logo, at the top
+        left corner.
       </>
       {actualFactionIds.includes("albion") && (
         <>
