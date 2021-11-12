@@ -3,7 +3,7 @@ import { List, ListItem, ListItemButton, ListSubheader } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { TSPage } from "app/ux/Chrome";
 import { Megaphone } from "app/ux/Megaphone";
-import { invariant_violation, nullthrows, Vec } from "common";
+import { invariant_violation, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import {
   hasGameInstanceSelector,
@@ -14,7 +14,7 @@ import {
   hasGameTemplateSelector,
   templateActions,
 } from "features/template/templateSlice";
-import { GameId, GAMES } from "games/core/GAMES";
+import { GameId, GAMES, isGameId } from "games/core/GAMES";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 export function GameHomeWrapper(): JSX.Element {
@@ -22,19 +22,12 @@ export function GameHomeWrapper(): JSX.Element {
   if (gameId == null) {
     invariant_violation(`Missing routing param 'gameId'`);
   }
-  const game = nullthrows(
-    GAMES[gameId as GameId],
-    `Unknown game id: ${gameId}`
-  );
 
-  return (
-    <TSPage
-      title={game.name}
-      buttons={[[<AddBoxIcon />, `/collection?gameId=${gameId}`]]}
-    >
-      <GameHome gameId={gameId as GameId} />
-    </TSPage>
-  );
+  if (!isGameId(gameId)) {
+    invariant_violation(`Unknown gameId ${gameId}`);
+  }
+
+  return <GameHome gameId={gameId} />;
 }
 
 function GameHome({ gameId }: { gameId: GameId }): JSX.Element {
@@ -49,7 +42,10 @@ function GameHome({ gameId }: { gameId: GameId }): JSX.Element {
   const hasInstance = useAppSelector(hasGameInstanceSelector(game));
 
   return (
-    <>
+    <TSPage
+      title={game.name}
+      buttons={[[<AddBoxIcon />, `/collection?gameId=${gameId}`]]}
+    >
       {Vec.is_empty(products) ? (
         <NoProductsMegaphone gameId={gameId} />
       ) : (
@@ -99,7 +95,7 @@ function GameHome({ gameId }: { gameId: GameId }): JSX.Element {
           </ListItemButton>
         </ListItem>
       </List>
-    </>
+    </TSPage>
   );
 }
 
@@ -118,3 +114,4 @@ function NoProductsMegaphone({ gameId }: { gameId: GameId }): JSX.Element {
     />
   );
 }
+

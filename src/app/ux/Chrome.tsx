@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ReactUtils, Vec } from "common";
+import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import { FeaturesNav } from "./FeaturesNav";
 import { OverflowMenu } from "./OverflowMenu";
@@ -41,11 +42,13 @@ export function TSPage({
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
               {title}
             </Typography>
-            {Vec.map(buttons, ([icon, url]) => (
-              <IconButton component={Link} color="inherit" to={url}>
-                {icon}
-              </IconButton>
-            ))}
+            {React.Children.toArray(
+              Vec.map(buttons, ([icon, url]) => (
+                <IconButton component={Link} color="inherit" to={url}>
+                  {icon}
+                </IconButton>
+              ))
+            )}
             <OverflowMenu />
           </Toolbar>
         </AppBar>

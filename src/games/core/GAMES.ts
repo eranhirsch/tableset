@@ -8,3 +8,5 @@ export const GAMES: Record<GameId, Readonly<Game>> = {
   concordia: concordiaGame,
   scythe: scytheGame,
 };
+
+export const isGameId = (x: unknown): x is GameId => GAMES[x as GameId] != null;
