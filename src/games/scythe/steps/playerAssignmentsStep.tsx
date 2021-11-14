@@ -1,13 +1,16 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import DragHandleIcon from "@mui/icons-material/DragHandle";
 import {
+  Box,
   Button,
   Chip,
-  Grid,
   IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemIcon,
+  ListItemText,
   Stack,
-  Typography,
 } from "@mui/material";
 import { Dict, Random, tuple, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
@@ -25,7 +28,13 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+} from "react-beautiful-dnd";
 import { ScytheProductId } from "../ScytheProductId";
 import { Faction, FactionId, Factions } from "../utils/Factions";
 import {
@@ -127,54 +136,62 @@ function ConfigPanel({
   readonly FactionId[],
   string
 >): JSX.Element {
+  const onDragEnd = useCallback(
+    ({ reason, destination, draggableId, source }: DropResult) => {
+      if (reason === "CANCEL") {
+        return;
+      }
+
+      if (destination == null) {
+        return;
+      }
+
+      const destIdx = destination.index;
+      const sourceIdx = source.index;
+
+      onChange((current) => {
+        const filtered = Vec.filter(current, (_, i) => i !== sourceIdx);
+        return Vec.concat(
+          Vec.take(filtered, destIdx),
+          current[sourceIdx],
+          Vec.drop(filtered, destIdx)
+        );
+      });
+    },
+    [onChange]
+  );
+
   return (
-    <Grid
-      container
-      padding={1}
-      rowGap={1}
-      alignItems="center"
-      textAlign="center"
-    >
-      {Vec.map(config, (preference, index) => (
-        <React.Fragment
-          key={`${preference.playerId}_${
-            "factionId" in preference ? preference.factionId : preference.matId
-          }`}
-        >
-          <PlayerPreferenceRow preference={preference} />
-          <PreferenceControls
-            isFirst={index === 0}
-            isLast={index === config.length - 1}
-            onDelete={() =>
-              onChange((current) =>
-                Vec.filter(current, (pref) => !Dict.equal(pref, preference))
-              )
-            }
-            onUp={() =>
-              onChange((current) =>
-                Vec.map(current, (pref, i) =>
-                  i === index - 1
-                    ? preference
-                    : i === index
-                    ? current[i - 1]
-                    : pref
-                )
-              )
-            }
-            onDown={() =>
-              onChange((current) =>
-                Vec.map(current, (pref, i) =>
-                  i === index + 1
-                    ? preference
-                    : i === index
-                    ? current[i + 1]
-                    : pref
-                )
-              )
-            }
-          />
-        </React.Fragment>
-      ))}
+    <Stack direction="column" spacing={1}>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="preferences" direction="vertical">
+          {(droppableProvided) => (
+            <List
+              ref={droppableProvided.innerRef}
+              {...droppableProvided.droppableProps}
+            >
+              {Vec.map(config, (preference, index) => (
+                <PreferenceListItem
+                  key={`${preference.playerId}_${
+                    "factionId" in preference
+                      ? preference.factionId
+                      : preference.matId
+                  }`}
+                  preference={preference}
+                  index={index}
+                  withDrag={config.length > 2}
+                  onDelete={() =>
+                    onChange((current) =>
+                      Vec.filter(current, (_, idx) => idx !== index)
+                    )
+                  }
+                />
+              ))}
+              {droppableProvided.placeholder}
+            </List>
+          )}
+        </Droppable>
+      </DragDropContext>
       <NewPreferencePanel
         playerIds={players.onlyResolvableValue()!}
         productIds={products.onlyResolvableValue()!}
@@ -183,64 +200,66 @@ function ConfigPanel({
           onChange((current) => Vec.concat(current, preference))
         }
       />
-    </Grid>
+    </Stack>
   );
 }
 
-function PreferenceControls({
-  isFirst,
-  isLast,
-  onDelete,
-  onUp,
-  onDown,
-}: {
-  isFirst: boolean;
-  isLast: boolean;
-  onDelete(): void;
-  onUp(): void;
-  onDown(): void;
-}): JSX.Element {
-  return (
-    <>
-      <Grid item xs={1}>
-        <IconButton disabled={isFirst} onClick={onUp}>
-          <KeyboardArrowUpIcon fontSize="small" />
-        </IconButton>
-      </Grid>
-      <Grid item xs={1}>
-        <IconButton disabled={isLast} onClick={onDown}>
-          <KeyboardArrowDownIcon fontSize="small" />
-        </IconButton>
-      </Grid>
-      <Grid item xs={1}>
-        <IconButton onClick={onDelete}>
-          <DeleteIcon fontSize="small" />
-        </IconButton>
-      </Grid>
-    </>
-  );
-}
-
-function PlayerPreferenceRow({
+function PreferenceListItem({
   preference,
+  index,
+  withDrag,
+  onDelete,
 }: {
-  preference: PlayerPreference;
+  preference: Readonly<PlayerPreference>;
+  index: number;
+  withDrag: boolean;
+  onDelete(): void;
 }): JSX.Element {
   return (
-    <>
-      <Grid item xs={2} textAlign="right">
-        <PlayerAvatar playerId={preference.playerId} inline />
-      </Grid>
-      <Grid item xs={7}>
-        {"factionId" in preference ? (
-          <FactionChip factionId={preference.factionId} />
-        ) : (
-          <Typography fontSize="small">
-            <strong>{PlayerMats[preference.matId].name}</strong>
-          </Typography>
-        )}
-      </Grid>
-    </>
+    <Draggable
+      isDragDisabled={!withDrag}
+      draggableId={`${preference.playerId}_${
+        "factionId" in preference ? preference.factionId : preference.matId
+      }`}
+      index={index}
+    >
+      {(draggableProvided) => (
+        <ListItem
+          dense
+          divider
+          ref={draggableProvided.innerRef}
+          {...draggableProvided.draggableProps}
+          secondaryAction={
+            <IconButton onClick={onDelete}>
+              <DeleteIcon />
+            </IconButton>
+          }
+        >
+          <ListItemIcon
+            sx={{ flexGrow: 0 }}
+            {...draggableProvided.dragHandleProps}
+          >
+            <DragHandleIcon />
+          </ListItemIcon>
+          <ListItemAvatar>
+            <PlayerAvatar playerId={preference.playerId} inline />
+          </ListItemAvatar>
+          <ListItemText
+            primary={
+              "factionId" in preference ? (
+                <FactionChip factionId={preference.factionId} />
+              ) : (
+                <Chip
+                  size="small"
+                  variant="outlined"
+                  label={<em>{PlayerMats[preference.matId].name}</em>}
+                />
+              )
+            }
+          />
+        </ListItem>
+      )}
+    </Draggable>
   );
 }
 
@@ -341,54 +360,47 @@ function NewPreferencePanel({
     }
 
     return (
-      <Grid
-        item
-        xs={12}
+      <Box
         display="flex"
         flexWrap="wrap"
         gap={0.5}
         justifyContent="center"
         paddingX={3}
+        paddingBottom={2}
       >
         {chips}
-      </Grid>
+      </Box>
     );
   }
 
   if (selectedPlayerId != null) {
     // We need a type
     return (
-      <>
-        <Grid item xs={2} />
-        <Grid item xs={4}>
-          <Button
-            disabled={Vec.is_empty(notPreferredByPlayer[selectedPlayerId][0])}
-            size="small"
-            variant="text"
-            onClick={() => setSelectedType("faction")}
-          >
-            Faction
-          </Button>
-        </Grid>
-        <Grid item xs={4}>
-          <Button
-            disabled={Vec.is_empty(notPreferredByPlayer[selectedPlayerId][1])}
-            size="small"
-            variant="text"
-            onClick={() => setSelectedType("mat")}
-          >
-            Player Mat
-          </Button>
-        </Grid>
-        <Grid item xs={2} />
-      </>
+      <Box display="flex" justifyContent="space-evenly" paddingBottom={2}>
+        <Button
+          disabled={Vec.is_empty(notPreferredByPlayer[selectedPlayerId][0])}
+          size="small"
+          variant="outlined"
+          onClick={() => setSelectedType("faction")}
+        >
+          Faction
+        </Button>
+        <Button
+          disabled={Vec.is_empty(notPreferredByPlayer[selectedPlayerId][1])}
+          size="small"
+          variant="outlined"
+          onClick={() => setSelectedType("mat")}
+        >
+          Player Mat
+        </Button>
+      </Box>
     );
   }
 
   if (!showNewButton) {
     // we need a player
     return (
-      <Grid item xs={12} display="flex" justifyContent="center" columnGap={1}>
+      <Box display="flex" justifyContent="center" gap={1} paddingBottom={2}>
         {Vec.maybe_map_with_key(
           notPreferredByPlayer,
           (playerId, [factions, mats]) =>
@@ -400,20 +412,21 @@ function NewPreferencePanel({
               />
             )
         )}
-      </Grid>
+      </Box>
     );
   }
 
   return (
-    <Grid item xs={12}>
+    <Box paddingBottom={2} alignSelf="center">
       <Button
         size="small"
         variant="text"
         onClick={() => setShowNewButton(false)}
+        sx={{ flexGrow: 0 }}
       >
         + New Player Preference
       </Button>
-    </Grid>
+    </Box>
   );
 }
 
