@@ -12,7 +12,7 @@ import {
   ListItemText,
   Stack,
 } from "@mui/material";
-import { Dict, Random, tuple, Vec } from "common";
+import { C, Dict, Random, tuple, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
@@ -99,12 +99,22 @@ export default createRandomGameStep({
 
   initialConfig: (): Readonly<TemplateConfig> => [],
 
-  refresh(config: Readonly<TemplateConfig>, players, products) {
+  refresh(
+    config: Readonly<TemplateConfig>,
+    players,
+    products,
+    factions,
+    playerMats
+  ) {
     const playerIds = players.onlyResolvableValue()!;
 
     const productIds = products.onlyResolvableValue()!;
-    const availableFactions = Factions.availableForProducts(productIds);
-    const availableMats = PlayerMats.availableForProducts(productIds);
+    const availableFactions = factions.willResolve()
+      ? Factions.availableForProducts(productIds)
+      : [];
+    const availableMats = playerMats.willResolve()
+      ? PlayerMats.availableForProducts(productIds)
+      : [];
 
     const refreshed = Vec.filter(
       config,
@@ -127,7 +137,7 @@ export default createRandomGameStep({
 
 function ConfigPanel({
   config,
-  queries: [players, products],
+  queries: [players, products, factions, playerMats],
   onChange,
 }: ConfigPanelProps<
   TemplateConfig,
@@ -195,6 +205,10 @@ function ConfigPanel({
       <NewPreferencePanel
         playerIds={players.onlyResolvableValue()!}
         productIds={products.onlyResolvableValue()!}
+        types={Vec.filter_nulls([
+          factions.willResolve() ? "faction" : null,
+          playerMats.willResolve() ? "mat" : null,
+        ])}
         currentPreferences={config}
         onNewPreference={(preference) =>
           onChange((current) => Vec.concat(current, preference))
@@ -268,15 +282,20 @@ function NewPreferencePanel({
   productIds,
   currentPreferences,
   onNewPreference,
+  types,
 }: {
   playerIds: readonly PlayerId[];
   productIds: readonly ScytheProductId[];
   currentPreferences: Readonly<TemplateConfig>;
   onNewPreference(preference: PlayerPreference): void;
+  types: readonly ("faction" | "mat")[];
 }): JSX.Element {
+  const onlyType = types.length === 1 ? C.onlyx(types) : undefined;
+
   const [showNewButton, setShowNewButton] = useState(true);
   const [selectedPlayerId, setSelectedPlayerId] = useState<PlayerId>();
-  const [selectedType, setSelectedType] = useState<"faction" | "mat">();
+
+  const [selectedType, setSelectedType] = useState(onlyType);
 
   const availableFactions = useMemo(
     () => Factions.availableForProducts(productIds),
@@ -335,7 +354,7 @@ function NewPreferencePanel({
                 });
                 setShowNewButton(true);
                 setSelectedPlayerId(undefined);
-                setSelectedType(undefined);
+                setSelectedType(onlyType);
               }}
             />
           )
@@ -352,7 +371,7 @@ function NewPreferencePanel({
               onNewPreference({ playerId: selectedPlayerId, matId });
               setShowNewButton(true);
               setSelectedPlayerId(undefined);
-              setSelectedType(undefined);
+              setSelectedType(onlyType);
             }}
           />
         ));
