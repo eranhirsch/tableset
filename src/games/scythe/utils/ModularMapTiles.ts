@@ -1,5 +1,4 @@
 import {
-  C,
   invariant_violation,
   MathUtils,
   nullthrows,
@@ -107,27 +106,22 @@ export const ModularMapTiles = {
     TILE_SLOTS - (RECOMMENDED_REMOVE_AMOUNT_PER_PLAYER_COUNT[playerCount] ?? 0),
 
   randomHash(): string {
-    const orderIdx = Random.index(ORDER_PERMUTATIONS);
+    while (true) {
+      const orderIdx = Random.index(ORDER_PERMUTATIONS);
+      const sidesIdx = Random.int(0, TOTAL_SIDES_COMBINATIONS);
 
-    const tilesReordered = reorderTilesByIdx(orderIdx);
-    const legalSides = Vec.map(tilesReordered, (tiles, position) =>
-      Vec.filter(
-        [0, 1],
-        (side) =>
-          !adjacentToHomeBase(
-            tiles[side],
-            homeBaseIdxAtTile(position)
-          )!.includes("lake")
-      )
-    );
-    const sides = Vec.map(
-      legalSides,
-      (sides) => C.only(sides) ?? Random.sample(sides, 1)
-    );
-    const sidesIdx = fromBinaryDigits(sides);
-
-    const idx = orderIdx * TOTAL_SIDES_COMBINATIONS + sidesIdx;
-    return Num.encode_base32(idx);
+      const tiles = Vec.map(
+        Vec.zip(reorderTilesByIdx(orderIdx), asBinaryDigits(sidesIdx)),
+        ([tiles, side]) => tiles[side]
+      );
+      const lakesOnHomeBases = tiles.some((tile, position) =>
+        adjacentToHomeBase(tile, homeBaseIdxAtTile(position))!.includes("lake")
+      );
+      if (!lakesOnHomeBases) {
+        const idx = orderIdx * TOTAL_SIDES_COMBINATIONS + sidesIdx;
+        return Num.encode_base32(idx);
+      }
+    }
   },
 
   decode(hash: string): readonly TileSide[] {
@@ -224,16 +218,6 @@ function adjacentToHomeBase(
       return [topLeft, left];
   }
 }
-
-// The result of the sample would always be either 0 or 1, we use that
-// to encode the results as a binary number.
-const fromBinaryDigits = (coefficients: readonly number[]): number =>
-  MathUtils.sum(
-    Vec.map(
-      Vec.reverse(coefficients),
-      (coefficient, order) => coefficient * 2 ** order
-    )
-  );
 
 const asBinaryDigits = (x: number): readonly number[] =>
   Vec.map(x.toString(2).padStart(TILE_SLOTS, "0").split(""), (digit) =>
