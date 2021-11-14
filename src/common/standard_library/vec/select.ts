@@ -161,12 +161,18 @@ function filter<T>(
  */
 const maybe_map = <Tv1, Tv2>(
   arr: readonly Tv1[],
-  mapper: (x: Tv1, idx: number) => Tv2 | undefined
+  mapperFunc: (x: Tv1, idx: number) => Tv2 | undefined
 ): readonly Tv2[] =>
   arr.reduce((out, element, idx) => {
-    const mapped = mapper(element, idx);
+    const mapped = mapperFunc(element, idx);
     return mapped === undefined ? out : V.concat(out, [mapped]);
   }, [] as readonly Tv2[]);
+
+const maybe_map_with_key = <T extends DictLike, Tv>(
+  dict: Readonly<T>,
+  mapperFunc: (key: keyof T, value: ValueOf<T>) => Tv | undefined
+): readonly Tv[] =>
+  maybe_map(entries(dict), ([key, value]) => mapperFunc(key, value));
 
 export const Vec = {
   drop,
@@ -176,6 +182,7 @@ export const Vec = {
   filter,
   keys,
   maybe_map,
+  maybe_map_with_key,
   take,
   unique_by,
   unique,

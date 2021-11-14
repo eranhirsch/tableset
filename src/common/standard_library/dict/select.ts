@@ -157,14 +157,30 @@ const unique_by = <T extends DictLike>(
     ).values(),
   ]);
 
+export const maybe_map = <T extends DictLike, Tv>(
+  dict: Readonly<T>,
+  mapperFunc: (value: ValueOf<T>) => Tv | undefined
+): Readonly<RemappedDict<T, Tv>> =>
+  maybe_map_with_key(dict, (_, value) => mapperFunc(value));
+
+export const maybe_map_with_key = <T extends DictLike, Tv>(
+  dict: Readonly<T>,
+  mapperFunc: (key: keyof T, value: ValueOf<T>) => Tv | undefined
+): Readonly<RemappedDict<T, Tv>> =>
+  // TODO: See why typing here isn't detecting the type for `filter_nulls`
+  // properly, requiring this cast :(
+  filter_nulls(D.map_with_key(dict, mapperFunc)) as RemappedDict<T, Tv>;
+
 export const Dict = {
   diff_by_key,
   drop,
-  filter,
-  filter_with_keys,
   filter_nulls,
+  filter_with_keys,
+  filter,
+  maybe_map_with_key,
+  maybe_map,
   select_keys,
   take,
-  unique,
   unique_by,
+  unique,
 } as const;
