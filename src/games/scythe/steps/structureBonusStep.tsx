@@ -11,19 +11,19 @@ import productsMetaStep from "./productsMetaStep";
 
 const BONUS_TILES = {
   adjEncounters: "Adjacent Encounters",
-  adjHomeFactory: "Adjacent to Home Bases or The Factory",
   adjLakes: "Adjacent Lakes",
   adjNoStructures: "Not Adjacent to Other Structures",
-  adjSameEncounter: "Adjacent to The Same Encounter",
-  adjSameLake: "Adjacent to The Same Lake",
+  adjToHomeFactory: "Adjacent to Home Bases or The Factory",
+  adjToSameEncounter: "Adjacent to The Same Encounter",
+  adjToSameLake: "Adjacent to The Same Lake",
   adjTunnels: "Adjacent Tunnels",
-  diamond: "In A Diamond Formation",
+  inDiamond: "In A Diamond Formation",
+  inLine: "In A Straight Line",
   onEncounters: "On Encounters",
   onFarmTundra: "On Farms and Tundras",
   onMountainForest: "On Mountains and Forests",
   onTunnels: "On Tunnels",
   onVillages: "On Villages",
-  row: "In A Straight Line",
 } as const;
 type TileKey = keyof typeof BONUS_TILES;
 
@@ -31,29 +31,28 @@ const TILES_IN_PRODUCTS: Readonly<
   Partial<Record<ScytheProductId, readonly TileKey[]>>
 > = {
   base: [
-    "adjTunnels",
-    "adjLakes",
     "adjEncounters",
-    "onTunnels",
-    "row",
+    "adjLakes",
+    "adjTunnels",
+    "inLine",
     "onFarmTundra",
+    "onTunnels",
   ],
   modularBoard: [
-    "adjHomeFactory",
-    "adjSameLake",
-    "onVillages",
-    "onEncounters",
     "adjNoStructures",
-    "diamond",
+    "adjToHomeFactory",
+    "adjToSameEncounter",
+    "adjToSameLake",
+    "inDiamond",
+    "onEncounters",
     "onMountainForest",
-    "adjSameEncounter",
+    "onVillages",
   ],
 };
 
 export default createTrivialSingleItemSelector({
   id: "structureBonus",
   productsMetaStep,
-  isTemplatable: (_) => true,
   availableForProducts,
   labelForId: (tileId) => BONUS_TILES[tileId],
   InstanceVariableComponent,

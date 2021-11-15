@@ -10,6 +10,7 @@ import factionsStep from "./steps/factionsStep";
 import factionStartingPowerStep from "./steps/factionStartingPowerStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
+import missionPossibleStep from "./steps/missionPossibleStep";
 import modularBoardVariant from "./steps/modularBoardVariant";
 import modularFactionDrafting from "./steps/modularFactionDrafting";
 import modularHomeBasesStep from "./steps/modularHomeBasesStep";
@@ -23,6 +24,8 @@ import playerMatStartingPopularityStep from "./steps/playerMatStartingPopularity
 import playerObjectivesStep from "./steps/playerObjectivesStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import removeModularTilesStep from "./steps/removeModularTilesStep";
+import resolutionTileStep from "./steps/resolutionTileStep";
+import resolutionVariant from "./steps/resolutionVariant";
 import resourcesPilesStep from "./steps/resourcesPilesStep";
 import seatingStep from "./steps/seatingStep";
 import startingWorkersStep from "./steps/startingWorkersStep";
@@ -133,6 +136,7 @@ export const scytheGame = createGame({
   productsMetaStep,
 
   steps: [
+    resolutionVariant, // Templatable
     modularBoardVariant, // Templatable
 
     boardStep, // Templatable
@@ -140,6 +144,9 @@ export const scytheGame = createGame({
     modularHomeBasesStep, // Templatable
 
     structureBonusStep, // Templatable
+
+    resolutionTileStep, // Templatable
+    missionPossibleStep, // Templatable
 
     factionsStep, // Templatable
     playerMatsStep, // Templatable

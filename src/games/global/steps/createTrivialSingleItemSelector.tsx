@@ -7,26 +7,31 @@ import {
   Select,
 } from "@mui/material";
 import { C, Random, Shape, Vec } from "common";
+import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
-import { Query } from "games/core/steps/Query";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { ProductId, StepId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
+import alwaysOnMetaStep from "./alwaysOnMetaStep";
 
-type TemplateConfig<ItemId extends string> = { never: readonly ItemId[] };
+type TemplateConfig<ItemId extends string | number> = {
+  never: readonly ItemId[];
+};
 
-interface Options<ItemId extends string, Pid extends ProductId> {
-  id: StepId;
+interface Options<ItemId extends string | number, Pid extends ProductId> {
   productsMetaStep: VariableGameStep<readonly Pid[]>;
-  isTemplatable(products: Query<readonly Pid[]>): boolean;
+  variantStep?: VariableGameStep<boolean>;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
+
+  // Required fields for createRandomGameStep
+  id: StepId;
   InstanceVariableComponent(
     props: VariableStepInstanceComponentProps<ItemId>
   ): JSX.Element;
@@ -34,30 +39,48 @@ interface Options<ItemId extends string, Pid extends ProductId> {
 }
 
 const createTrivialSingleItemSelector = <
-  ItemId extends string,
+  ItemId extends string | number,
   Pid extends ProductId
 >({
-  id,
-  productsMetaStep,
-  isTemplatable,
   availableForProducts,
   labelForId,
-  InstanceVariableComponent,
-  InstanceManualComponent,
+  productsMetaStep,
+  variantStep,
+  ...randomGameStepOptions
 }: Options<ItemId, Pid>) =>
   createRandomGameStep({
-    id,
-    dependencies: [productsMetaStep],
-    isTemplatable,
+    ...randomGameStepOptions,
+
+    dependencies: [productsMetaStep, variantStep ?? alwaysOnMetaStep],
+
+    isTemplatable: (products, isOn) =>
+      isOn.canResolveTo(true) &&
+      !Vec.is_empty(availableForProducts(products.onlyResolvableValue()!)),
+
     initialConfig: (): Readonly<TemplateConfig<ItemId>> => ({ never: [] }),
-    resolve: ({ never }, products) =>
-      Random.sample(Vec.diff(availableForProducts(products!), never), 1),
+
+    resolve: ({ never }, products, isOn) => {
+      if (!isOn) {
+        return null;
+      }
+      debugger;
+      const x = availableForProducts(products!);
+      const y = Vec.diff(x, never);
+      const z = Random.sample(y, 1);
+      console.log(z);
+      return z;
+    },
+
     refresh({ never }, products) {
       const available = availableForProducts(products.onlyResolvableValue()!);
       return Vec.contained_in(never, available)
         ? templateValue("unchanged")
         : { never: Vec.intersect(never, available) };
     },
+
+    skip: (_, [productIds, isOn]) =>
+      !isOn || Vec.is_empty(availableForProducts(productIds!)),
+
     ConfigPanel: (props) => (
       <ConfigPanel
         {...props}
@@ -66,41 +89,53 @@ const createTrivialSingleItemSelector = <
       />
     ),
     ConfigPanelTLDR: (props) => (
-      <ConfigPanelTLDR {...props} labelForId={labelForId} />
+      <ConfigPanelTLDR
+        {...props}
+        productsMetaStep={productsMetaStep}
+        availableForProducts={availableForProducts}
+        labelForId={labelForId}
+      />
     ),
-    InstanceVariableComponent,
-    InstanceManualComponent,
+
+    canResolveTo: (value, config, productIds) =>
+      config != null &&
+      !config.never.includes(value) &&
+      availableForProducts(productIds.onlyResolvableValue()!).includes(value),
   });
 export default createTrivialSingleItemSelector;
 
 interface SpecialItem {
   label: string;
-  itemizer<ItemId extends string>(
+  itemizer<ItemId extends string | number>(
     available: readonly ItemId[]
   ): readonly ItemId[];
 }
 const SPECIAL_ITEMS = {
-  __all: { label: "Any", itemizer: (_) => [] } as SpecialItem,
-  __none: { label: "None", itemizer: (available) => available } as SpecialItem,
+  __all: { label: "Select All", itemizer: (_) => [] } as SpecialItem,
+  __none: { label: "Clear", itemizer: (available) => available } as SpecialItem,
 } as const;
 
-function ConfigPanel<ItemId extends string, Pid extends ProductId>({
+function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   config: { never },
   queries: [products],
   onChange,
   availableForProducts,
   labelForId,
-}: ConfigPanelProps<TemplateConfig<ItemId>, readonly Pid[]> & {
+}: ConfigPanelProps<TemplateConfig<ItemId>, readonly Pid[], boolean> & {
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
 }): JSX.Element {
   const available = useMemo(
     () =>
-      Vec.sort_by(
-        availableForProducts(products.onlyResolvableValue()!),
-        labelForId
+      Vec.sort_by(availableForProducts(products.onlyResolvableValue()!), (id) =>
+        labelForId(id)
       ),
     [availableForProducts, labelForId, products]
+  );
+
+  const selected: readonly (ItemId | keyof typeof SPECIAL_ITEMS)[] = useMemo(
+    () => Vec.diff(available, never),
+    [available, never]
   );
 
   const isError = never.length === available.length;
@@ -111,19 +146,13 @@ function ConfigPanel<ItemId extends string, Pid extends ProductId>({
         <Select
           multiple
           displayEmpty
-          value={
-            Vec.diff(available, never) as readonly (
-              | ItemId
-              | keyof typeof SPECIAL_ITEMS
-            )[]
-          }
+          value={selected}
           renderValue={() =>
             `${isError ? "Error: " : ""}${
               available.length - never.length
             } Selected`
           }
           onChange={({ target: { value } }) => {
-            console.log(value);
             if (typeof value !== "string") {
               const special = C.only(
                 Vec.values(
@@ -133,15 +162,20 @@ function ConfigPanel<ItemId extends string, Pid extends ProductId>({
                 )
               );
               onChange({
-                never: Vec.sort(
-                  special?.itemizer(available) ?? Vec.diff(available, value)
+                never: Vec.sort_by(
+                  special?.itemizer(available) ?? Vec.diff(available, value),
+                  (id) => labelForId(id)
                 ),
               });
             }
           }}
         >
-          {Vec.map_with_key(SPECIAL_ITEMS, (itemId, { label }) => (
-            <MenuItem key={itemId} value={itemId}>
+          {Vec.map_with_key(SPECIAL_ITEMS, (itemId, { label, itemizer }) => (
+            <MenuItem
+              key={itemId}
+              value={itemId}
+              disabled={Vec.equal(itemizer(available), never)}
+            >
               <em>{label}</em>
             </MenuItem>
           ))}
@@ -158,15 +192,48 @@ function ConfigPanel<ItemId extends string, Pid extends ProductId>({
   );
 }
 
-function ConfigPanelTLDR<ItemId extends string>({
+function ConfigPanelTLDR<
+  ItemId extends string | number,
+  Pid extends ProductId
+>({
   config: { never },
   labelForId,
+  availableForProducts,
+  productsMetaStep,
 }: {
   config: Readonly<TemplateConfig<ItemId>>;
   labelForId(itemId: ItemId): string;
+  availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
+  productsMetaStep: VariableGameStep<readonly Pid[]>;
 }): JSX.Element {
+  const productIds = useRequiredInstanceValue(productsMetaStep);
+
+  const allowed = useMemo(
+    () => Vec.diff(availableForProducts(productIds), never),
+    [availableForProducts, never, productIds]
+  );
+
   if (Vec.is_empty(never)) {
     return <>Random</>;
+  }
+
+  if (allowed.length <= never.length) {
+    return (
+      <GrammaticalList finalConjunction="or">
+        {Vec.concat(
+          Vec.map(Random.sample(allowed, 2), (itemId) => (
+            <>{labelForId(itemId)}</>
+          )),
+          allowed.length > 2
+            ? [
+                <>
+                  {allowed.length - 2} other item{allowed.length > 3 && "s"}
+                </>,
+              ]
+            : []
+        )}
+      </GrammaticalList>
+    );
   }
 
   return (
@@ -177,10 +244,15 @@ function ConfigPanelTLDR<ItemId extends string>({
           Vec.map(Random.sample(never, 2), (itemId) => (
             <em>{labelForId(itemId)}</em>
           )),
-          never.length > 2 ? [<>{never.length - 2} other items</>] : []
+          never.length > 2
+            ? [
+                <>
+                  {never.length - 2} other item{never.length > 3 && "s"}
+                </>,
+              ]
+            : []
         )}
       </GrammaticalList>
-      .
     </>
   );
 }

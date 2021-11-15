@@ -119,9 +119,9 @@ function shuffle<T>(arr: readonly T[]): readonly T[] {
    arr: readonly Tv[],
    sampleSize: number
  ): Tv | readonly Tv[] {
-  if (sampleSize === 1) {
-    return arr[index(arr)];
-  }
+   if (sampleSize === 1) {
+     return arr[index(arr)];
+   }
 
   if (sampleSize >= arr.length) {
     // Trivial solution
