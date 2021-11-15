@@ -75,7 +75,6 @@ export const scytheGame = createGame({
       name: "Promo Pack #3 - Objective Cards 24-27",
       bggId: 211732,
       year: 2016,
-      isNotImplemented: true,
     },
     promo4: {
       name: "Promo Pack #4 - Factory Cards 13-18",

@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import { Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
+import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -8,53 +9,11 @@ import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { useMemo } from "react";
+import { ScytheProductId } from "../ScytheProductId";
+import { Objectives } from "../utils/Objectives";
 import productsMetaStep from "./productsMetaStep";
 import resolutionTileStep from "./resolutionTileStep";
 import resolutionVariant from "./resolutionVariant";
-
-const OBJECTIVES = [
-  // skip this, it's just here to make the array 1-based to match the cards
-  "__ERROR",
-
-  // 1
-  "Higher Ground Advantage",
-  "Underworld Advantage",
-  "Harvest Advantage",
-  "Northern Advantage",
-  "King of the Hill",
-
-  // 6
-  "Send One Back as a Warning",
-  "Machine Over Muscle",
-  "Roll Up Your Sleeves with the Common Man",
-  "Stockpile for the Winter",
-  "Woodland Advantage",
-
-  // 11
-  "Population Advantage",
-  "Get Rich or Cry Trying",
-  "Foundations of the Empire",
-  "Hedge Your Bets",
-  "Balanced Workforce",
-
-  // 16
-  "A Wolf Among the Sheep",
-  "Divide and Conquer",
-  "Become a Beloved Pacifist",
-  "Shore up the Shore",
-  "Create a Permanent Foothold",
-
-  // 21
-  "Monopolize the Market",
-  "Technological Breakthrough",
-  "Achieve Tactical Mastery",
-] as const;
-
-const PAIRS_ARRAY = MathUtils.combinations_lazy_array(
-  // Remove the first dud item
-  Vec.drop(OBJECTIVES, 1),
-  2
-);
 
 /**
  * This is the tile number for "Mission Possible", we use a 1-based array to
@@ -71,9 +30,9 @@ export default createRandomGameStep({
     isResolution.canResolveTo(true) &&
     resolutionTile.canResolveTo(MISSION_POSSIBLE_IDX),
 
-  resolve: (_config, _productIds, isResolution, resolutionTile) =>
+  resolve: (_config, productIds, isResolution, resolutionTile) =>
     isResolution && resolutionTile === MISSION_POSSIBLE_IDX
-      ? Num.encode_base32(Random.index(PAIRS_ARRAY))
+      ? Num.encode_base32(Random.index(pairsArrayForProducts(productIds!)))
       : null,
 
   skip: (_value, [_productIds, isResolution, resolutionTile]) =>
@@ -88,18 +47,20 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: hash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
+  const productIds = useRequiredInstanceValue(productsMetaStep);
+
   const cards = useMemo(
     () =>
       Dict.sort_by_key(
-        Dict.from_values(
+        Dict.from_keys(
           nullthrows(
-            PAIRS_ARRAY.at(Num.decode_base32(hash)),
-            `Hash ${hash} is out of range for ${PAIRS_ARRAY}`
+            pairsArrayForProducts(productIds).at(Num.decode_base32(hash)),
+            `Hash ${hash} is out of range`
           ),
-          (card) => OBJECTIVES.indexOf(card)
+          (cardIdx) => Objectives.cards[cardIdx]
         )
       ),
-    [hash]
+    [hash, productIds]
   );
 
   return (
@@ -122,3 +83,8 @@ function InstanceVariableComponent({
   );
 }
 
+const pairsArrayForProducts = (productIds: readonly ScytheProductId[]) =>
+  MathUtils.combinations_lazy_array(
+    Objectives.availableForProducts(productIds),
+    2
+  );
