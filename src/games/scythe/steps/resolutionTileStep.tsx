@@ -1,7 +1,8 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { Vec } from "common";
 import { VariableStepInstanceComponentProps } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
+import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createTrivialSingleItemSelector } from "games/global";
 import productsMetaStep from "./productsMetaStep";
@@ -44,10 +45,7 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
   return (
     <Box>
-      Place the{" "}
-      <Typography component="span" color="primary">
-        <strong>{RESOLUTION_TILES[index]}</strong>
-      </Typography>{" "}
+      Place the <ChosenElement>{RESOLUTION_TILES[index]}</ChosenElement>{" "}
       <em>resolution</em> tile face-up near the triumph track.
     </Box>
   );

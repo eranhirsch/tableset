@@ -1,8 +1,8 @@
-import { Typography } from "@mui/material";
 import { Shape, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { VariableStepInstanceComponentProps } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
+import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createTrivialSingleItemSelector } from "games/global";
 import { useMemo } from "react";
@@ -66,10 +66,7 @@ function InstanceVariableComponent({
     <BlockWithFootnotes footnote={<>Near the bottom left corner.</>}>
       {(Footnote) => (
         <>
-          Place the{" "}
-          <Typography component="span" color="primary">
-            <strong>{BONUS_TILES[value]}</strong>
-          </Typography>{" "}
+          Place the <ChosenElement>{BONUS_TILES[value]}</ChosenElement>{" "}
           <em>Structure Bonus</em> tile on it's designated spot on the board
           <Footnote />.
         </>

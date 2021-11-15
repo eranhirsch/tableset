@@ -5,6 +5,7 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { useMemo } from "react";
 import productsMetaStep from "./productsMetaStep";
@@ -97,10 +98,9 @@ function InstanceVariableComponent({
         Find objective cards{" "}
         <GrammaticalList>
           {Vec.map_with_key(cards, (cardId, text) => (
-            <Typography key={cardId} component="span" color="primary">
-              <strong>{text}</strong>
-              {"\u00A0"}({cardId})
-            </Typography>
+            <ChosenElement key={cardId} extraInfo={`(${cardId})`}>
+              {text}
+            </ChosenElement>
           ))}
         </GrammaticalList>{" "}
         and place them near the triumph track.

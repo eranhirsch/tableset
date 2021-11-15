@@ -7,6 +7,7 @@ import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
+import { ChosenElement } from "games/core/ux/ChosenElement";
 import { PercentSlider } from "games/core/ux/PercentSlider";
 import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
@@ -96,9 +97,9 @@ function InstanceVariableComponent({
     <Typography variant="body1">
       Place the <em>modular</em> board at the center of the table, on the side
       showing{" "}
-      <strong>
+      <ChosenElement>
         {value === "farms" ? "farm hexes" : "no farm hexes at all"}
-      </strong>
+      </ChosenElement>
       .
     </Typography>
   );
