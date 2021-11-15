@@ -1,5 +1,9 @@
 import { createGameStep } from "games/core/steps/createGameStep";
 import { createGame } from "model/Game";
+import airshipAggressiveStep from "./steps/airshipAggressiveStep";
+import airshipPassiveStep from "./steps/airshipPassiveStep";
+import airshipPlacementStep from "./steps/airshipPlacementStep";
+import airshipVariant from "./steps/airshipVariant";
 import boardStep from "./steps/boardStep";
 import combatCardsDeckStep from "./steps/combatCardsDeckStep";
 import encountersDeckStep from "./steps/encountersDeckStep";
@@ -46,7 +50,6 @@ export const scytheGame = createGame({
       name: "The Wind Gambit",
       bggId: 223555,
       year: 2017,
-      isNotImplemented: true,
     },
     fenris: {
       name: "The Rise of Fenris",
@@ -135,6 +138,7 @@ export const scytheGame = createGame({
   productsMetaStep,
 
   steps: [
+    airshipVariant, // Templatable
     resolutionVariant, // Templatable
     modularBoardVariant, // Templatable
 
@@ -144,9 +148,6 @@ export const scytheGame = createGame({
 
     structureBonusStep, // Templatable
 
-    resolutionTileStep, // Templatable
-    missionPossibleStep, // Templatable
-
     factionsStep, // Templatable
     playerMatsStep, // Templatable
     playerAssignmentsStep, // Templatable
@@ -155,12 +156,18 @@ export const scytheGame = createGame({
 
     removeModularTilesStep,
 
+    resolutionTileStep, // Templatable
+    missionPossibleStep, // Templatable
+
     encounterTokensStep,
 
     encountersDeckStep,
     objectivesDeckStep,
     combatCardsDeckStep,
     factoryDeckStep,
+
+    airshipAggressiveStep, // Templatable
+    airshipPassiveStep, // Templatable
 
     seatingStep,
 
@@ -178,6 +185,7 @@ export const scytheGame = createGame({
       InstanceManualComponent:
         "Each player puts their character miniature on their faction's home base.",
     }),
+    airshipPlacementStep,
     startingWorkersStep,
     playerMatStartingPopularityStep,
     factionStartingPowerStep,

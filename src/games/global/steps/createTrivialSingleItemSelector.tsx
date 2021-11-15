@@ -4,7 +4,7 @@ import {
   Divider,
   FormControl,
   MenuItem,
-  Select,
+  Select
 } from "@mui/material";
 import { C, Random, Shape, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
@@ -12,7 +12,7 @@ import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { ProductId, StepId } from "model/Game";
@@ -32,6 +32,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
 
   // Required fields for createRandomGameStep
   id: StepId;
+  labelOverride?: string;
   InstanceVariableComponent(
     props: VariableStepInstanceComponentProps<ItemId>
   ): JSX.Element;
