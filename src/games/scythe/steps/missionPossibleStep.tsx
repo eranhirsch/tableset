@@ -3,11 +3,13 @@ import { Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { Objectives } from "../utils/Objectives";
@@ -19,7 +21,7 @@ import resolutionVariant from "./resolutionVariant";
  * This is the tile number for "Mission Possible", we use a 1-based array to
  * index the result of the `resolutionTileStep`
  */
-const MISSION_POSSIBLE_IDX = 6;
+export const MISSION_POSSIBLE_IDX = 6;
 
 export default createRandomGameStep({
   id: "missionPossible",
@@ -42,6 +44,7 @@ export default createRandomGameStep({
   ...NoConfigPanel,
 
   InstanceVariableComponent,
+  InstanceManualComponent,
 });
 
 function InstanceVariableComponent({
@@ -80,6 +83,32 @@ function InstanceVariableComponent({
         <pre>Hash: {hash}</pre>
       </Typography>
     </>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  return (
+    <HeaderAndSteps
+      synopsis={
+        <>
+          Assign global objectives for the <em>Mission Possible</em> resolution:
+        </>
+      }
+    >
+      <>Shuffle all objective cards.</>
+      <>
+        Draw <strong>2</strong> cards from the deck and put them near the
+        triumph track.
+      </>
+      <BlockWithFootnotes footnote={<>At the bottom.</>}>
+        {(Footnote) => (
+          <>
+            Put the deck face down on the designated area on the board
+            <Footnote />.
+          </>
+        )}
+      </BlockWithFootnotes>
+    </HeaderAndSteps>
   );
 }
 
