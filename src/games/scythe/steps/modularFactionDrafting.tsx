@@ -17,6 +17,7 @@ import productsMetaStep from "./productsMetaStep";
 
 export default createDerivedGameStep({
   id: "factionDrafting",
+  labelOverride: "Modular: Faction Drafting",
   dependencies: [
     playersMetaStep,
     productsMetaStep,

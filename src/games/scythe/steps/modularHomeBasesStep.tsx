@@ -15,6 +15,8 @@ import modularBoardVariant from "./modularBoardVariant";
 export default createRandomGameStep({
   id: "homeBases",
 
+  labelOverride: "Modular: Home Bases",
+
   dependencies: [modularBoardVariant],
 
   isTemplatable: (modular) => modular.canResolveTo(true),

@@ -14,6 +14,8 @@ import modularBoardVariant from "./modularBoardVariant";
 
 export default createRandomGameStep({
   id: "mapTiles",
+  labelOverride: "Modular: Map Tiles",
+
   dependencies: [modularBoardVariant],
 
   isTemplatable: (modular) => modular.canResolveTo(true),
