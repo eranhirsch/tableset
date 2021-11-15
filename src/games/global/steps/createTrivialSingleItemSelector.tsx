@@ -189,7 +189,9 @@ function MobileSelect<ItemId extends string | number>({
   );
 }
 
-function RichSelect<ItemId extends string | number>({
+// TODO: Not really exported, this is currently unused until we add logic to
+// pick this or the native impl depending on the user agent.
+export function RichSelect<ItemId extends string | number>({
   all,
   unselected,
   labelForId,
