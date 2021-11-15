@@ -1,3 +1,5 @@
+import { invariant } from "common";
+
 /**
  * These characters are too similar in most fonts, making it hard to tell what
  * character to use when copying the string manually. We change them in the
@@ -11,20 +13,30 @@ const REPLACEMENTS = [
   ["I", "Z"],
 ] as const;
 
-const encode_base32 = (x: number): string =>
+/**
+ * This was computed by doing `encode_base32(Number.MAX_SAFE_INTEGER)`
+ */
+const MAX_SAFE_INTEGER_ENCODED = "7VVVVVVVVVV";
+
+const encode_base32 = (x: number | bigint): string =>
   REPLACEMENTS.reduce(
     (out, [from, to]) => out.replace(new RegExp(from, "g"), to),
     x.toString(32).toUpperCase()
   );
 
-const decode_base32 = (x: string): number =>
-  Number.parseInt(
+function decode_base32(x: string): number {
+  invariant(
+    x.length < MAX_SAFE_INTEGER_ENCODED.length,
+    `Encoded string ${x} might overflow a regular number`
+  );
+  return Number.parseInt(
     REPLACEMENTS.reduce(
       (out, [to, from]) => out.replace(new RegExp(from, "g"), to),
       x
     ),
     32
   );
+}
 
 export const Num = {
   encode_base32,
