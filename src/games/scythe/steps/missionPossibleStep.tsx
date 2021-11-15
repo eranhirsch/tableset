@@ -1,10 +1,11 @@
 import { Typography } from "@mui/material";
-import { MathUtils, nullthrows, Num, Random, Vec } from "common";
+import { Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { useMemo } from "react";
 import productsMetaStep from "./productsMetaStep";
 import resolutionTileStep from "./resolutionTileStep";
@@ -76,19 +77,38 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: hash,
 }: VariableStepInstanceComponentProps<string>): JSX.Element {
-  const [a, b] = useMemo(
+  const cards = useMemo(
     () =>
-      nullthrows(
-        PAIRS_ARRAY.at(Num.decode_base32(hash)),
-        `Hash ${hash} is out of range for ${PAIRS_ARRAY}`
+      Dict.sort_by_key(
+        Dict.from_values(
+          nullthrows(
+            PAIRS_ARRAY.at(Num.decode_base32(hash)),
+            `Hash ${hash} is out of range for ${PAIRS_ARRAY}`
+          ),
+          (card) => OBJECTIVES.indexOf(card)
+        )
       ),
     [hash]
   );
+
   return (
-    <Typography variant="body1">
-      Find objective cards <strong>{a}</strong> and <strong>{b}</strong> and
-      place them near the triumph track.
-    </Typography>
+    <>
+      <Typography variant="body1">
+        Find objective cards{" "}
+        <GrammaticalList>
+          {Vec.map_with_key(cards, (cardId, text) => (
+            <Typography key={cardId} component="span" color="primary">
+              <strong>{text}</strong>
+              {"\u00A0"}({cardId})
+            </Typography>
+          ))}
+        </GrammaticalList>{" "}
+        and place them near the triumph track.
+      </Typography>
+      <Typography variant="caption" sx={{ marginTop: 2 }}>
+        <pre>Hash: {hash}</pre>
+      </Typography>
+    </>
   );
 }
 
