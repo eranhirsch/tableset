@@ -26,6 +26,8 @@ export const MISSION_POSSIBLE_IDX = 6;
 export default createRandomGameStep({
   id: "missionPossible",
 
+  labelOverride: "Resolution: Mission Possible",
+
   dependencies: [productsMetaStep, resolutionVariant, resolutionTileStep],
 
   isTemplatable: (_, isResolution, resolutionTile) =>
