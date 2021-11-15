@@ -59,17 +59,10 @@ const createTrivialSingleItemSelector = <
 
     initialConfig: (): Readonly<TemplateConfig<ItemId>> => ({ never: [] }),
 
-    resolve: ({ never }, products, isOn) => {
-      if (!isOn) {
-        return null;
-      }
-      debugger;
-      const x = availableForProducts(products!);
-      const y = Vec.diff(x, never);
-      const z = Random.sample(y, 1);
-      console.log(z);
-      return z;
-    },
+    resolve: ({ never }, products, isOn) =>
+      isOn
+        ? Random.sample(Vec.diff(availableForProducts(products!), never), 1)
+        : null,
 
     refresh({ never }, products) {
       const available = availableForProducts(products.onlyResolvableValue()!);
