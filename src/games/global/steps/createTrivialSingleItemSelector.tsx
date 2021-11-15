@@ -132,7 +132,15 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   return (
     <Box width="100%" padding={2}>
       <FormControl fullWidth color={isError ? "error" : undefined}>
-        <RichSelect
+        {/* <RichSelect
+          all={available}
+          unselected={never}
+          labelForId={labelForId}
+          onChange={(unselected) =>
+            onChange({ never: Vec.sort_by(unselected, labelForId) })
+          }
+        /> */}
+        <MobileSelect
           all={available}
           unselected={never}
           labelForId={labelForId}
@@ -142,6 +150,42 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
         />
       </FormControl>
     </Box>
+  );
+}
+
+function MobileSelect<ItemId extends string | number>({
+  all,
+  unselected,
+  onChange,
+  labelForId,
+}: {
+  all: readonly ItemId[];
+  unselected: readonly ItemId[];
+  onChange(unselected: readonly ItemId[]): void;
+  labelForId(itemId: ItemId): string;
+}): JSX.Element {
+  const selected: readonly (ItemId | keyof typeof SPECIAL_ITEMS)[] = useMemo(
+    () => Vec.diff(all, unselected),
+    [all, unselected]
+  );
+
+  return (
+    <select
+      multiple
+      value={selected as readonly string[]}
+      onChange={(event) => {
+        const target = event.target;
+        const selected = Vec.maybe_map(
+          [...target.options],
+          ({ value, selected }) => (selected ? value : undefined)
+        );
+        onChange(Vec.diff(all, selected));
+      }}
+    >
+      {Vec.map(all, (itemId) => (
+        <option value={itemId}>{labelForId(itemId)}</option>
+      ))}
+    </select>
   );
 }
 
