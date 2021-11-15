@@ -7,7 +7,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/random/pseudo.php
  */
 
-import { Dict, Vec } from "common";
+import { Dict, invariant, invariant_violation, Vec } from "common";
 import { DictLike } from "./_private/typeUtils";
 
 const ALPHA_NUMERIC =
@@ -17,7 +17,7 @@ const ALPHA_NUMERIC =
  * @returns a random number between 0 (inclusive) and `a` (exclusive), or
  * between `a` (inclusive) and `b` (exclusive) as a floating-point number.
  */
-function float(a: number, b?: number) {
+function float(a: number, b?: number): number {
   const start = b == null ? 0 : a;
   const end = b ?? a;
   return start + Math.random() * (end - start);
@@ -34,13 +34,52 @@ const coin_flip = (ratio: number) => Math.random() < ratio;
  * @returns a random number between 0 (inclusive) and `a` (exclusive), or
  * between `a` (inclusive) and `b` (exclusive) as an integer.
  */
-const int = (a: number, b?: number) => Math.floor(float(a, b));
+function int(a: number, b?: number): number;
+function int(a: bigint, b?: bigint): bigint;
+function int(a: number | bigint, b?: number | bigint): number | bigint {
+  if (typeof a === "bigint") {
+    if (b == null) {
+      // TODO: We can't simply fallback to non-bigint numbers but there's no
+      // easy way to generate a random number in range for bigint's...
+      // This might return bogus results.
+      invariant(
+        a < BigInt(Number.MAX_SAFE_INTEGER),
+        `Ranges bigger than ${
+          Number.MAX_SAFE_INTEGER
+        } are not supported, attempted with ${a.toString()}`
+      );
+      return BigInt(int(Number(a)));
+    }
+
+    if (typeof b === "bigint") {
+      // TODO: Just like above, this is an approximation and would work only in
+      // cases where the range itself is small and fits inside a regular number.
+      invariant(
+        b - a < BigInt(Number.MAX_SAFE_INTEGER),
+        `Ranges bigger than ${
+          Number.MAX_SAFE_INTEGER
+        } are not supported, attempted with ${(b - a).toString()}`
+      );
+      return a + BigInt(int(Number(b - a)));
+    }
+  }
+
+  if (typeof a === "number" && (b == null || typeof b === "number")) {
+    return Math.floor(float(a, b));
+  }
+
+  invariant_violation(`Got mismatching types for a ${a} and b ${b}`);
+}
 
 /**
  * @returns a random index into the object. Using the result of this method on
  * the same object's index accessor (x[]) should return a valid element.
  */
-const index = ({ length }: { length: number }): number => int(length);
+function index({ length }: { length: number }): number;
+function index({ length }: { length: bigint }): bigint;
+function index({ length }: { length: number | bigint }): number | bigint {
+  return typeof length === "bigint" ? int(length) : int(length);
+}
 
 /**
  * @returns a pseudorandom string of length `length`. The string is composed of
