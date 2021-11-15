@@ -4,7 +4,8 @@ import {
   Divider,
   FormControl,
   MenuItem,
-  Select
+  Select,
+  Typography,
 } from "@mui/material";
 import { C, Random, Shape, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
@@ -12,9 +13,9 @@ import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
-import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
 import { ProductId, StepId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
@@ -211,42 +212,32 @@ function ConfigPanelTLDR<
     return <>Random</>;
   }
 
+  if (Vec.is_empty(allowed)) {
+    return (
+      <Typography component="span" variant="body2" color="error">
+        Error: None!
+      </Typography>
+    );
+  }
+
   if (allowed.length <= never.length) {
     return (
-      <GrammaticalList finalConjunction="or">
-        {Vec.concat(
-          Vec.map(Random.sample(allowed, 2), (itemId) => (
-            <>{labelForId(itemId)}</>
-          )),
-          allowed.length > 2
-            ? [
-                <>
-                  {allowed.length - 2} other item{allowed.length > 3 && "s"}
-                </>,
-              ]
-            : []
-        )}
-      </GrammaticalList>
+      <AbbreviatedList finalConjunction="or">
+        {Vec.map(allowed, (itemId) => (
+          <em>{labelForId(itemId)}</em>
+        ))}
+      </AbbreviatedList>
     );
   }
 
   return (
     <>
       Without{" "}
-      <GrammaticalList finalConjunction="or">
-        {Vec.concat(
-          Vec.map(Random.sample(never, 2), (itemId) => (
-            <em>{labelForId(itemId)}</em>
-          )),
-          never.length > 2
-            ? [
-                <>
-                  {never.length - 2} other item{never.length > 3 && "s"}
-                </>,
-              ]
-            : []
-        )}
-      </GrammaticalList>
+      <AbbreviatedList finalConjunction="or">
+        {Vec.map(never, (itemId) => (
+          <em>{labelForId(itemId)}</em>
+        ))}
+      </AbbreviatedList>
     </>
   );
 }
