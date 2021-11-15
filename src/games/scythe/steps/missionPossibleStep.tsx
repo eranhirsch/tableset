@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { MathUtils, Random } from "common";
+import { MathUtils, nullthrows, Num, Random, Vec } from "common";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -38,10 +38,20 @@ const OBJECTIVES = [
   "Achieve Tactical Mastery",
 ] as const;
 
-const MISSION_POSSIBLE_IDX = 5;
+const PAIRS_ARRAY = MathUtils.combinations_lazy_array(
+  // Remove the first dud item
+  Vec.drop(OBJECTIVES, 1),
+  2
+);
+
+/**
+ * This is the tile number for "Mission Possible", we use a 1-based array to
+ * index the result of the `resolutionTileStep`
+ */
+const MISSION_POSSIBLE_IDX = 6;
 
 export default createRandomGameStep({
-  id: "missionPossibleEncounters",
+  id: "missionPossible",
 
   dependencies: [productsMetaStep, resolutionVariant, resolutionTileStep],
 
@@ -51,7 +61,7 @@ export default createRandomGameStep({
 
   resolve: (_config, _productIds, isResolution, resolutionTile) =>
     isResolution && resolutionTile === MISSION_POSSIBLE_IDX
-      ? Random.index(MathUtils.combinations_lazy_array(OBJECTIVES, 2))
+      ? Num.encode_base32(Random.index(PAIRS_ARRAY))
       : null,
 
   skip: (_value, [_productIds, isResolution, resolutionTile]) =>
@@ -64,11 +74,15 @@ export default createRandomGameStep({
 });
 
 function InstanceVariableComponent({
-  value: index,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
+  value: hash,
+}: VariableStepInstanceComponentProps<string>): JSX.Element {
   const [a, b] = useMemo(
-    () => MathUtils.combinations_lazy_array(OBJECTIVES, 2).at(index)!,
-    [index]
+    () =>
+      nullthrows(
+        PAIRS_ARRAY.at(Num.decode_base32(hash)),
+        `Hash ${hash} is out of range for ${PAIRS_ARRAY}`
+      ),
+    [hash]
   );
   return (
     <Typography variant="body1">
@@ -77,3 +91,4 @@ function InstanceVariableComponent({
     </Typography>
   );
 }
+
