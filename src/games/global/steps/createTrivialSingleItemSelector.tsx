@@ -127,62 +127,80 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
     [availableForProducts, labelForId, products]
   );
 
-  const selected: readonly (ItemId | keyof typeof SPECIAL_ITEMS)[] = useMemo(
-    () => Vec.diff(available, never),
-    [available, never]
-  );
-
   const isError = never.length === available.length;
 
   return (
     <Box width="100%" padding={2}>
       <FormControl fullWidth color={isError ? "error" : undefined}>
-        <Select
-          multiple
-          displayEmpty
-          value={selected}
-          renderValue={() =>
-            `${isError ? "Error: " : ""}${
-              available.length - never.length
-            } Selected`
+        <RichSelect
+          all={available}
+          unselected={never}
+          labelForId={labelForId}
+          onChange={(unselected) =>
+            onChange({ never: Vec.sort_by(unselected, labelForId) })
           }
-          onChange={({ target: { value } }) => {
-            if (typeof value !== "string") {
-              const special = C.only(
-                Vec.values(
-                  Shape.filter_with_keys(SPECIAL_ITEMS, (itemId) =>
-                    value.includes(itemId)
-                  )
-                )
-              );
-              onChange({
-                never: Vec.sort_by(
-                  special?.itemizer(available) ?? Vec.diff(available, value),
-                  (id) => labelForId(id)
-                ),
-              });
-            }
-          }}
-        >
-          {Vec.map_with_key(SPECIAL_ITEMS, (itemId, { label, itemizer }) => (
-            <MenuItem
-              key={itemId}
-              value={itemId}
-              disabled={Vec.equal(itemizer(available), never)}
-            >
-              <em>{label}</em>
-            </MenuItem>
-          ))}
-          <Divider />
-          {Vec.map(available, (key) => (
-            <MenuItem key={key} value={key}>
-              <Checkbox checked={!never.includes(key)} />
-              {labelForId(key)}
-            </MenuItem>
-          ))}
-        </Select>
+        />
       </FormControl>
     </Box>
+  );
+}
+
+function RichSelect<ItemId extends string | number>({
+  all,
+  unselected,
+  labelForId,
+  onChange,
+}: {
+  all: readonly ItemId[];
+  unselected: readonly ItemId[];
+  labelForId(itemId: ItemId): string;
+  onChange(unselected: readonly ItemId[]): void;
+}): JSX.Element {
+  const selected: readonly (ItemId | keyof typeof SPECIAL_ITEMS)[] = useMemo(
+    () => Vec.diff(all, unselected),
+    [all, unselected]
+  );
+
+  return (
+    <Select
+      multiple
+      displayEmpty
+      value={selected}
+      renderValue={() =>
+        `${unselected.length === all.length ? "Error: " : ""}${
+          all.length - unselected.length
+        } Selected`
+      }
+      onChange={({ target: { value } }) => {
+        if (typeof value !== "string") {
+          const special = C.only(
+            Vec.values(
+              Shape.filter_with_keys(SPECIAL_ITEMS, (itemId) =>
+                value.includes(itemId)
+              )
+            )
+          );
+          onChange(special?.itemizer(all) ?? Vec.diff(all, value));
+        }
+      }}
+    >
+      {Vec.map_with_key(SPECIAL_ITEMS, (itemId, { label, itemizer }) => (
+        <MenuItem
+          key={itemId}
+          value={itemId}
+          disabled={Vec.equal(itemizer(all), unselected)}
+        >
+          <em>{label}</em>
+        </MenuItem>
+      ))}
+      <Divider />
+      {Vec.map(all, (key) => (
+        <MenuItem key={key} value={key}>
+          <Checkbox checked={!unselected.includes(key)} />
+          {labelForId(key)}
+        </MenuItem>
+      ))}
+    </Select>
   );
 }
 
