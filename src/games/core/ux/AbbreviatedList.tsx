@@ -21,16 +21,18 @@ export function AbbreviatedList({
 
   return (
     <GrammaticalList finalConjunction={finalConjunction}>
-      {Vec.concat(
-        Random.sample(React.Children.toArray(children), 2),
-        React.Children.count(children) > 2
-          ? [
-              <>
-                {React.Children.count(children) - 2} other {noun}
-                {React.Children.count(children) > 3 && "s"}
-              </>,
-            ]
-          : []
+      {React.Children.toArray(
+        Vec.concat(
+          Random.sample(React.Children.toArray(children), 2),
+          React.Children.count(children) > 2
+            ? [
+                <>
+                  {React.Children.count(children) - 2} other {noun}
+                  {React.Children.count(children) > 3 && "s"}
+                </>,
+              ]
+            : []
+        )
       )}
     </GrammaticalList>
   );
