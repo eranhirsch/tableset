@@ -191,15 +191,6 @@ function MobileSelect<ItemId extends string | number>({
         onChange(Vec.diff(all, selected));
       }}
     >
-      {Vec.map_with_key(SPECIAL_ITEMS, (itemId, { label, itemizer }) => (
-        <option
-          disabled={Vec.equal(itemizer(all), unselected)}
-          onClick={() => onChange(itemizer(all))}
-        >
-          {label}
-        </option>
-      ))}
-      <option disabled>----------------</option>
       {Vec.map(all, (itemId) => (
         <option value={itemId}>{labelForId(itemId)}</option>
       ))}
