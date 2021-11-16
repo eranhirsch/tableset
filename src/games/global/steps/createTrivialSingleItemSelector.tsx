@@ -18,6 +18,7 @@ import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
 import { ProductId, StepId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
+import UAParser from "ua-parser-js";
 import alwaysOnMetaStep from "./alwaysOnMetaStep";
 
 type TemplateConfig<ItemId extends string | number> = {
@@ -129,25 +130,33 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
 
   const isError = never.length === available.length;
 
+  const isMobile = useMemo(
+    () => UAParser().device.type === UAParser.DEVICE.MOBILE,
+    []
+  );
+
   return (
     <Box width="100%" padding={2}>
       <FormControl fullWidth color={isError ? "error" : undefined}>
-        {/* <RichSelect
-          all={available}
-          unselected={never}
-          labelForId={labelForId}
-          onChange={(unselected) =>
-            onChange({ never: Vec.sort_by(unselected, labelForId) })
-          }
-        /> */}
-        <MobileSelect
-          all={available}
-          unselected={never}
-          labelForId={labelForId}
-          onChange={(unselected) =>
-            onChange({ never: Vec.sort_by(unselected, labelForId) })
-          }
-        />
+        {isMobile ? (
+          <MobileSelect
+            all={available}
+            unselected={never}
+            labelForId={labelForId}
+            onChange={(unselected) =>
+              onChange({ never: Vec.sort_by(unselected, labelForId) })
+            }
+          />
+        ) : (
+          <RichSelect
+            all={available}
+            unselected={never}
+            labelForId={labelForId}
+            onChange={(unselected) =>
+              onChange({ never: Vec.sort_by(unselected, labelForId) })
+            }
+          />
+        )}
       </FormControl>
     </Box>
   );
@@ -189,9 +198,7 @@ function MobileSelect<ItemId extends string | number>({
   );
 }
 
-// TODO: Not really exported, this is currently unused until we add logic to
-// pick this or the native impl depending on the user agent.
-export function RichSelect<ItemId extends string | number>({
+function RichSelect<ItemId extends string | number>({
   all,
   unselected,
   labelForId,
