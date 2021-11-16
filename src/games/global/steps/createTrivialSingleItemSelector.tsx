@@ -21,6 +21,17 @@ import { useMemo } from "react";
 import UAParser from "ua-parser-js";
 import alwaysOnMetaStep from "./alwaysOnMetaStep";
 
+interface SpecialItem {
+  label: string;
+  itemizer<ItemId extends string | number>(
+    available: readonly ItemId[]
+  ): readonly ItemId[];
+}
+const SPECIAL_ITEMS = {
+  __all: { label: "Select All", itemizer: (_) => [] } as SpecialItem,
+  __none: { label: "Clear", itemizer: (available) => available } as SpecialItem,
+} as const;
+
 type TemplateConfig<ItemId extends string | number> = {
   never: readonly ItemId[];
 };
@@ -98,17 +109,6 @@ const createTrivialSingleItemSelector = <
       availableForProducts(productIds.onlyResolvableValue()!).includes(value),
   });
 export default createTrivialSingleItemSelector;
-
-interface SpecialItem {
-  label: string;
-  itemizer<ItemId extends string | number>(
-    available: readonly ItemId[]
-  ): readonly ItemId[];
-}
-const SPECIAL_ITEMS = {
-  __all: { label: "Select All", itemizer: (_) => [] } as SpecialItem,
-  __none: { label: "Clear", itemizer: (available) => available } as SpecialItem,
-} as const;
 
 function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   config: { never },
@@ -188,9 +188,22 @@ function MobileSelect<ItemId extends string | number>({
           [...target.options],
           ({ value, selected }) => (selected ? value : undefined)
         );
-        onChange(Vec.diff(all, selected));
+        const special = C.only(
+          Vec.values(
+            Shape.filter_with_keys(SPECIAL_ITEMS, (itemId) =>
+              selected.includes(itemId)
+            )
+          )
+        );
+        onChange(special?.itemizer(all) ?? Vec.diff(all, selected));
       }}
     >
+      {Vec.map_with_key(SPECIAL_ITEMS, (itemId, { label, itemizer }) => (
+        <option value={itemId} disabled={Vec.equal(itemizer(all), unselected)}>
+          {label}
+        </option>
+      ))}
+      <option disabled>----------------</option>
       {Vec.map(all, (itemId) => (
         <option value={itemId}>{labelForId(itemId)}</option>
       ))}
