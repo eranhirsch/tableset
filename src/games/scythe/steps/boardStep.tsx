@@ -95,10 +95,10 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<BoardId>): JSX.Element {
   return (
     <Typography variant="body1">
-      Place the <em>modular</em> board at the center of the table, on the side
-      showing{" "}
-      <ChosenElement>
-        {value === "farms" ? "farm hexes" : "no farm hexes at all"}
+      Place the <ChosenElement>Modular</ChosenElement> board at the center of
+      the table, on the side showing{" "}
+      <ChosenElement extraInfo={value === "farms" ? "hexes" : "hexes at all"}>
+        {value === "farms" ? "Farm" : "No Farm"}
       </ChosenElement>
       .
     </Typography>
@@ -115,7 +115,10 @@ function InstanceManualComponent(): JSX.Element {
         "Pick which side of the modular board to play on and place it face-up"
       ) : (
         <>
-          Place the {productIds.includes("modularBoard") && <em>regular</em>}{" "}
+          Place the{" "}
+          {productIds.includes("modularBoard") && (
+            <ChosenElement>Regular</ChosenElement>
+          )}{" "}
           board
         </>
       )}{" "}
