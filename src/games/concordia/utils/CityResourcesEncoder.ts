@@ -1,21 +1,21 @@
 import {
+  $,
   Dict,
   invariant,
   MathUtils,
   nullthrows,
   Num,
   Random,
-  Shape,
   tuple,
   Vec,
 } from "common";
-import { MapId, MAPS, Zone } from "./MAPS";
+import { MapId, MAPS, ZoneId } from "./MAPS";
 import { Resource, RESOURCE_COST } from "./resource";
 
 const HASH_SEPARATOR = "-";
 
 export const CITY_TILES: Readonly<
-  Record<Zone, Readonly<Record<Exclude<Resource, "salt">, number>>>
+  Record<ZoneId, Readonly<Record<Exclude<Resource, "salt">, number>>>
 > = {
   A: { bricks: 2, food: 2, tools: 1, wine: 1, cloth: 1 },
   B: { bricks: 2, food: 3, tools: 1, wine: 1, cloth: 1 },
@@ -28,7 +28,7 @@ export const CITY_TILES: Readonly<
  * playing without salt, these need to be fulfilled with tiles from unused
  * zones via the following mapping.
  */
-export const SALT_MAP_EXTRA_RESOURCE: Readonly<Record<Zone, Resource>> = {
+export const SALT_MAP_EXTRA_RESOURCE: Readonly<Record<ZoneId, Resource>> = {
   A: "tools",
   B: "wine",
   C: "cloth",
@@ -40,12 +40,13 @@ export const SALT_MAP_EXTRA_RESOURCE: Readonly<Record<Zone, Resource>> = {
  * zone) we need to remove one regular resource tile per-zone to make room for
  * the salt one.
  */
-export const REGULAR_MAPS_SALT_ALTERNATIVE: Readonly<Record<Zone, Resource>> = {
-  A: "food",
-  B: "tools",
-  C: "wine",
-  D: "bricks",
-};
+export const REGULAR_MAPS_SALT_ALTERNATIVE: Readonly<Record<ZoneId, Resource>> =
+  {
+    A: "food",
+    B: "tools",
+    C: "wine",
+    D: "bricks",
+  };
 
 type CityResources = Readonly<Record<string /* cityName */, Resource>>;
 type ProvinceCityResources = Readonly<
@@ -57,13 +58,12 @@ type ProvinceBonusResource = Readonly<
 
 export default {
   randomHash: (mapId: MapId, withSalsa: boolean): string =>
-    Vec.map_with_key(MAPS[mapId].provinces, (zone) =>
-      Num.encode_base32(
-        Random.index(
-          MathUtils.permutations_lazy_array(
-            withSalsa ? saltTiles(zone, mapId) : noSaltTiles(zone, mapId)
-          )
-        )
+    Vec.map_with_key(MAPS[mapId].provinces, (zoneId) =>
+      $(
+        getTiles(zoneId, withSalsa, MAPS[mapId].isSaltMap ?? false),
+        MathUtils.permutations_lazy_array,
+        ($$) => Random.index($$),
+        Num.encode_base32
       )
     ).join(HASH_SEPARATOR),
 
@@ -74,16 +74,20 @@ export default {
     withSalsa: boolean,
     hash: string
   ): ProvinceBonusResource {
-    const bonusTiles = Dict.map(
-      decodeCityResources(mapId, withSalsa, hash),
-      (cityResources) =>
-        nullthrows(
-          MathUtils.max_by(
-            Vec.values(cityResources).filter((resource) => resource !== "salt"),
-            (resource) => RESOURCE_COST[resource]
-          ),
-          `Empty city resources encountered for ${mapId} and ${hash}`
+    const bonusTiles = $(decodeCityResources(mapId, withSalsa, hash), ($$) =>
+      Dict.map($$, (cityResources) =>
+        $(
+          cityResources,
+          Vec.values,
+          ($$) => Vec.filter($$, (resource) => resource !== "salt"),
+          ($$) => MathUtils.max_by($$, (resource) => RESOURCE_COST[resource]),
+          ($$) =>
+            nullthrows(
+              $$,
+              `Empty city resources encountered for ${mapId} and ${hash}`
+            )
         )
+      )
     );
 
     if (mapId === "creta") {
@@ -100,67 +104,99 @@ function decodeCityResources(
   withSalsa: boolean,
   hash: string
 ): ProvinceCityResources {
-  const zonesWithoutSalt = Dict.from_keys(Vec.keys(CITY_TILES), (zone) =>
-    withSalsa ? saltTiles(zone, mapId) : noSaltTiles(zone, mapId)
-  );
-  const allPerms = Dict.map(
-    zonesWithoutSalt,
-    MathUtils.permutations_lazy_array
-  );
-  const withHashIndices = Vec.zip(
-    Vec.values(Shape.inner_join(MAPS[mapId].provinces, allPerms)),
-    hash.split(HASH_SEPARATOR).map(Num.decode_base32)
-  );
-  const zoneResources = Vec.map(
-    withHashIndices,
-    ([[provinces, permutations], permutationIndex]) =>
-      tuple(
-        provinces,
-        nullthrows(
-          permutations.at(permutationIndex),
-          `Index ${permutationIndex} is out of bounds for permutations ${permutations}`
+  return $(
+    // Start by looking at what provinces on this map
+    MAPS[mapId].provinces,
+    // pair each zone provinces definition with the permutations array of tiles
+    // for that zone
+    ($$) =>
+      Vec.map_with_key($$, (zoneId, provinces) =>
+        tuple(
+          provinces,
+          $(
+            getTiles(zoneId, withSalsa, MAPS[mapId].isSaltMap ?? false),
+            MathUtils.permutations_lazy_array
+          )
         )
-      )
+      ),
+    // Zip the zones with the hashes for each zone
+    ($$) => Vec.zip($$, hash.split(HASH_SEPARATOR)),
+    // For each zone we now have everything we need to determine what the
+    // resource is for each city in that zone.
+    ($$) =>
+      Vec.map($$, ([[provinces, permutations], permutationHash]) =>
+        $(
+          permutationHash,
+          Num.decode_base32,
+          // Get the permutation at the encoded index
+          ($$) => permutations.at($$),
+          ($$) =>
+            nullthrows(
+              $$,
+              `Hash ${permutationHash} is out of bounds for permutations ${permutations}`
+            ),
+          // We now have a permutation of resources on this zone, we need to
+          // match them up to the cities in each province
+          (zoneResources) =>
+            Dict.map(provinces, (cities) => {
+              const cityResources = Vec.take(zoneResources, cities.length);
+              invariant(
+                cityResources.length === cities.length,
+                `Not enough resources remaining for cities ${JSON.stringify(
+                  provinces
+                )}`
+              );
+
+              // IMPORTANT: We are deliberately updating the value of resources
+              // (the function input param), this enables us to keep "memory"
+              // between iterations of this loop.
+              zoneResources = Vec.drop(zoneResources, cities.length);
+
+              return Dict.associate(cities, cityResources);
+            })
+        )
+      ),
+    // We don't care about zones in the final output, just provinces, so we can
+    // flatten/merge them together.
+    Dict.flatten
   );
-  const provincesResources = Vec.map(zoneResources, ([provinces, resources]) =>
-    Dict.map(provinces, (cities) => {
-      const cityResources = Vec.zip(cities, resources);
-      invariant(
-        cityResources.length === cities.length,
-        `Number of resources ${cityResources.length} didn't match number of cities ${cities.length}`
-      );
-      resources = Vec.drop(resources, cities.length);
-      return Dict.from_entries(cityResources);
-    })
-  );
-  return Dict.flatten(provincesResources);
 }
+
+const getTiles = (
+  zoneId: ZoneId,
+  withSalsa: boolean,
+  isSaltMap: boolean
+): typeof CITY_TILES[ZoneId] =>
+  withSalsa ? saltTiles(zoneId, isSaltMap) : noSaltTiles(zoneId, isSaltMap);
 
 /**
  * Return the city tiles for the zone, when playing without salsa
  */
-const noSaltTiles = (zone: Zone, mapId: MapId): typeof CITY_TILES[Zone] =>
-  MAPS[mapId].isSaltMap
+const noSaltTiles = (
+  zoneId: ZoneId,
+  isSaltMap: boolean
+): typeof CITY_TILES[ZoneId] =>
+  isSaltMap
     ? Dict.map_with_key(
-        CITY_TILES[zone],
+        CITY_TILES[zoneId],
         (resource, count) =>
-          count + (resource === SALT_MAP_EXTRA_RESOURCE[zone] ? 1 : 0)
+          count + (resource === SALT_MAP_EXTRA_RESOURCE[zoneId] ? 1 : 0)
       )
-    : CITY_TILES[zone];
+    : CITY_TILES[zoneId];
 
 const saltTiles = (
-  zone: Zone,
-  mapId: MapId
+  zoneId: ZoneId,
+  isSaltMap: boolean
 ): Readonly<Record<Resource, number>> =>
-  Dict.merge(
-    MAPS[mapId].isSaltMap
-      ? CITY_TILES[zone]
+  $(
+    isSaltMap
+      ? CITY_TILES[zoneId]
       : // Remove one tile from each zone in regular maps
         Dict.map_with_key(
-          CITY_TILES[zone],
+          CITY_TILES[zoneId],
           (resource, count) =>
-            count - (resource === REGULAR_MAPS_SALT_ALTERNATIVE[zone] ? 1 : 0)
+            count - (resource === REGULAR_MAPS_SALT_ALTERNATIVE[zoneId] ? 1 : 0)
         ),
     // Add the salt tile to the zone tiles
-    { salt: 1 }
+    ($$) => Dict.merge($$, { salt: 1 })
   );

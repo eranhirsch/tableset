@@ -18,7 +18,7 @@ export type MapId =
   | "ioniumSmall"
   | "italia";
 
-export type Zone = "A" | "B" | "C" | "D";
+export type ZoneId = "A" | "B" | "C" | "D";
 
 export interface StartingColonistLocation {
   locationName: string;
@@ -56,7 +56,7 @@ interface MapBoard {
    */
   hasLegacyProvincesSection?: true;
 
-  provinces: Readonly<Partial<Record<Zone, Provinces>>>;
+  provinces: Readonly<Partial<Record<ZoneId, Provinces>>>;
 
   /**
    * The Salsa expansion added maps which have an extra city in each zone, and

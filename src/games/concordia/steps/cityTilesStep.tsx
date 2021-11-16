@@ -18,7 +18,7 @@ import CityResourcesEncoder, {
   REGULAR_MAPS_SALT_ALTERNATIVE,
   SALT_MAP_EXTRA_RESOURCE,
 } from "../utils/CityResourcesEncoder";
-import { MapId, MAPS, Zone } from "../utils/MAPS";
+import { MapId, MAPS, ZoneId } from "../utils/MAPS";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
 import mapStep from "./mapStep";
@@ -143,7 +143,10 @@ function GatherStep(): JSX.Element {
       <BlockWithFootnotes
         footnotes={[
           <GrammaticalList finalConjunction="or">{allZones}</GrammaticalList>,
-          <TilesCountFootnote withSalsa={withSalsaProduct} zones={allZones} />,
+          <TilesCountFootnote
+            withSalsa={withSalsaProduct}
+            zoneIds={allZones}
+          />,
         ]}
       >
         {(Footnote) => (
@@ -166,7 +169,7 @@ function GatherStep(): JSX.Element {
   return (
     <BlockWithFootnotes
       footnote={
-        <TilesCountFootnote withSalsa={withSalsaProduct} zones={usedZones} />
+        <TilesCountFootnote withSalsa={withSalsaProduct} zoneIds={usedZones} />
       }
     >
       {(Footnote) => (
@@ -302,16 +305,16 @@ function maybeRenderSaltPostStep(mapId: MapId | null): JSX.Element | null {
 
 function TilesCountFootnote({
   withSalsa,
-  zones,
+  zoneIds,
 }: {
   withSalsa: boolean;
-  zones: readonly Zone[];
+  zoneIds: readonly ZoneId[];
 }) {
   return (
     <GrammaticalList>
       {React.Children.toArray(
         Vec.map_with_key(
-          Shape.select_keys(CITY_TILES, zones),
+          Shape.select_keys(CITY_TILES, zoneIds),
           (zone, tiles) => (
             <>
               {zone}: {MathUtils.sum(Vec.values(tiles)) + (withSalsa ? 1 : 0)}{" "}
