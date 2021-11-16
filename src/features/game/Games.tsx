@@ -11,7 +11,7 @@ export function Games(): JSX.Element {
   const dispatch = useAppDispatch();
 
   return (
-    <TSPage>
+    <TSPage header="Games">
       <List>
         {Vec.map_with_key(GAMES, (gameId, game) => (
           <ListItem key={gameId} disablePadding>

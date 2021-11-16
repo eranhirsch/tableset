@@ -26,11 +26,13 @@ export function Chrome(): JSX.Element {
 
 export function TSPage({
   title,
+  header,
   buttons = [],
   element,
   children,
 }: React.PropsWithChildren<{
   title?: string;
+  header?: string;
   element?: React.ReactElement;
   buttons?: readonly ToolbarButton[];
 }>): JSX.Element {
@@ -62,6 +64,11 @@ export function TSPage({
           ...ReactUtils.SX_SCROLL_WITHOUT_SCROLLBARS,
         }}
       >
+        {header && (
+          <Typography component="header" variant="h2">
+            {header}
+          </Typography>
+        )}
         {element ?? children}
       </Container>
     </>

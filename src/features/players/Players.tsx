@@ -17,7 +17,7 @@ export function Players(): JSX.Element | null {
   );
 
   return (
-    <TSPage>
+    <TSPage header="Players">
       <Stack direction="column" spacing={1}>
         {Vec.is_empty(players) ? (
           <Megaphone

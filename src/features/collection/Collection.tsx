@@ -102,7 +102,7 @@ export function Collection(): JSX.Element {
 
   if (gameId == null) {
     return (
-      <TSPage>
+      <TSPage header="Collection">
         <WholeCollection />
       </TSPage>
     );
