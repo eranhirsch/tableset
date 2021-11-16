@@ -1,8 +1,6 @@
-import CasinoIcon from "@mui/icons-material/Casino";
 import {
   Collapse,
   ListItemButton,
-  ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   Paper,
@@ -62,9 +60,6 @@ export function TemplateItem({
           element != null ? (selected ? onCollapse : onExpand) : undefined
         }
       >
-        <ListItemIcon>
-          <CasinoIcon />
-        </ListItemIcon>
         <ListItemText
           secondary={<ItemLabel templatable={templatable} element={element} />}
         >
