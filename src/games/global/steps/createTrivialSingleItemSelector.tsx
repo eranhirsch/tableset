@@ -188,18 +188,14 @@ function MobileSelect<ItemId extends string | number>({
           [...target.options],
           ({ value, selected }) => (selected ? value : undefined)
         );
-        const special = C.only(
-          Vec.values(
-            Shape.filter_with_keys(SPECIAL_ITEMS, (itemId) =>
-              selected.includes(itemId)
-            )
-          )
-        );
-        onChange(special?.itemizer(all) ?? Vec.diff(all, selected));
+        onChange(Vec.diff(all, selected));
       }}
     >
       {Vec.map_with_key(SPECIAL_ITEMS, (itemId, { label, itemizer }) => (
-        <option value={itemId} disabled={Vec.equal(itemizer(all), unselected)}>
+        <option
+          disabled={Vec.equal(itemizer(all), unselected)}
+          onClick={() => onChange(itemizer(all))}
+        >
           {label}
         </option>
       ))}
