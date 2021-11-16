@@ -22,7 +22,7 @@ export function TemplateFab(): JSX.Element {
       disabled={isStale}
       component={RouterLink}
       to="/instance"
-      sx={{ position: "absolute", bottom: 16, right: 16 }}
+      sx={{ position: "absolute", bottom: 16, right: 16, zIndex: 999 }}
       color="primary"
       aria-label="go"
       onClick={() => dispatch(instanceActions.created(wholeTemplate, context))}
