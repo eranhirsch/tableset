@@ -333,6 +333,7 @@ export const MAPS: Readonly<Record<MapId, Readonly<MapBoard>>> = {
       },
       C: {
         "Aegyptvs Svperior": ["Syene", "Thebae"],
+        Arcadia: ["Lyopolis", "Oxyrhynchvs"],
         Kvsh: ["Meroe", "Napata"],
         Litvs: ["Berenice", "Myos Hormos"],
         Nvbia: ["Abv Simbel", "Kerma"],
