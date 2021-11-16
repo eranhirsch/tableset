@@ -131,12 +131,12 @@ function ConfigPanel({
   );
   return (
     <Box
-      paddingX={4}
+      paddingX={2}
       paddingY={2}
       display="flex"
       flexWrap="wrap"
       justifyContent="center"
-      gap={1}
+      gap={0.5}
     >
       {Vec.map(available, (factionId) => (
         <FactionSelector
@@ -176,6 +176,7 @@ function FactionSelector({
   const { name, color } = Factions[factionId];
   return (
     <Chip
+      size="small"
       sx={{
         opacity: mode === "never" ? 0.75 : 1.0,
         paddingX:
