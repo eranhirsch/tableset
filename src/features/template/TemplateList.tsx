@@ -1,4 +1,4 @@
-import { List } from "@mui/material";
+import { List, ListSubheader } from "@mui/material";
 import { ReactUtils, Vec } from "common";
 import { gameStepsSelectorByType } from "features/game/gameSlice";
 import { useFeaturesContext } from "features/useFeaturesContext";
@@ -13,6 +13,11 @@ export function TemplateList(): JSX.Element {
   const templatables = useActiveTemplateSteps();
   const [selectedStepId, setSelectedStepId] = useState<StepId>();
 
+  const [variants, others] = useMemo(
+    () => Vec.partition(templatables, ({ isVariant }) => isVariant ?? false),
+    [templatables]
+  );
+
   return (
     <List
       sx={{
@@ -21,7 +26,18 @@ export function TemplateList(): JSX.Element {
         ...ReactUtils.SX_SCROLL_WITHOUT_SCROLLBARS,
       }}
     >
-      {Vec.map(templatables, (templatable) => (
+      <ListSubheader>Variants</ListSubheader>
+      {Vec.map(variants, (templatable) => (
+        <TemplateItem
+          key={templatable.id}
+          templatable={templatable}
+          selected={templatable.id === selectedStepId}
+          onExpand={() => setSelectedStepId(templatable.id)}
+          onCollapse={() => setSelectedStepId(undefined)}
+        />
+      ))}
+      <ListSubheader>Components</ListSubheader>
+      {Vec.map(others, (templatable) => (
         <TemplateItem
           key={templatable.id}
           templatable={templatable}

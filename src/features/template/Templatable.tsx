@@ -50,8 +50,8 @@ export type ConfigPanelProps<
   ): void;
 }>;
 
-export interface Templatable<T = unknown, C = unknown>
-  extends WithDependencies {
+export interface Templatable<T = unknown, C = unknown> extends WithDependencies {
+  isVariant?: true;
   resolve(
     config: C,
     upstreamInstance: Readonly<Record<StepId, SetupStep>>,

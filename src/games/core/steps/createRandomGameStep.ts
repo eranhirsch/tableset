@@ -29,7 +29,6 @@ export interface RandomGameStep<T = unknown, C = unknown>
     Skippable,
     Templatable<T, C> {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
-  isVariant?: true;
 }
 
 type Options<
@@ -348,11 +347,3 @@ export function createRandomGameStep<T, C>({
 
   return variableStep;
 }
-
-/**
- * Check that an object is a random game step. We use the only unique field
- * defined in this file for that, but technically we can use any field that
- * would be unique enough for this cause.
- */
-export const isRandomGameStep = (x: unknown): x is RandomGameStep =>
-  (x as Partial<RandomGameStep>).InstanceVariableComponent != null;

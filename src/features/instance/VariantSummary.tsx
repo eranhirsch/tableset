@@ -3,7 +3,8 @@ import { Box, Chip, Collapse, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, Vec } from "common";
 import { gameStepsSelector } from "features/game/gameSlice";
-import { isRandomGameStep } from "games/core/steps/createRandomGameStep";
+import { isTemplatable } from "features/template/Templatable";
+import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { StepId } from "model/Game";
 import { useMemo, useRef, useState } from "react";
 import { instanceIntersectIdsSelector } from "./instanceSlice";
@@ -16,7 +17,7 @@ export function VariantSummary(): JSX.Element | null {
   const variants = useMemo(
     () =>
       Dict.filter(
-        Dict.filter(allSteps, isRandomGameStep),
+        Dict.filter(allSteps, isTemplatable),
         ({ isVariant }) => isVariant ?? false
       ),
     [allSteps]
@@ -24,7 +25,11 @@ export function VariantSummary(): JSX.Element | null {
 
   const expandedElement = useRef<React.ReactNode>();
   if (expandedStepId != null) {
-    const { InstanceVariableComponent } = variants[expandedStepId];
+    // TODO: We need to pull this method into the templatable interface so that
+    // we don't need awkward casts.
+    const { InstanceVariableComponent } = variants[
+      expandedStepId
+    ] as RandomGameStep;
     expandedElement.current = <InstanceVariableComponent value={true} />;
   }
 

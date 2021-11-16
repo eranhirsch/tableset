@@ -1,7 +1,7 @@
 import { useAppSelector } from "app/hooks";
 import { Vec } from "common";
 import { gameStepsSelector } from "features/game/gameSlice";
-import { isRandomGameStep } from "games/core/steps/createRandomGameStep";
+import { isTemplatable } from "features/template/Templatable";
 import { GameStepBase } from "model/GameStepBase";
 import { isSkippable } from "model/Skippable";
 import { useMemo } from "react";
@@ -17,7 +17,7 @@ export function useInstanceActiveSteps(): readonly GameStepBase[] {
         (step) =>
           !(
             (isSkippable(step) && step.skip(instanceContext)) ||
-            (isRandomGameStep(step) && step.isVariant)
+            (isTemplatable(step) && step.isVariant)
           )
       ),
     [allSteps, instanceContext]
