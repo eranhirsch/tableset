@@ -1,4 +1,4 @@
-import { nullthrows } from "common";
+import { invariant, nullthrows } from "common";
 
 export function $<A, B>(funcOrValueA: (() => A) | A, funcB: (a: A) => B): B;
 export function $<A, B, C>(
@@ -187,3 +187,13 @@ export const $nullthrows =
   <T>(msg?: string): ((x: T | null | undefined) => T) =>
   (x) =>
     nullthrows(x, msg);
+
+export const $invariant =
+  <T>(
+    predicate: (x: T) => boolean,
+    msg?: string | ((x: T) => string)
+  ): ((x: T) => T) =>
+  (x) => {
+    invariant(predicate(x), typeof msg === "function" ? msg(x) : msg);
+    return x;
+  };

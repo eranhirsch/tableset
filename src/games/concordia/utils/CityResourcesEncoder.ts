@@ -1,5 +1,7 @@
 import {
   $,
+  $invariant,
+  $log,
   $nullthrows,
   Dict,
   invariant,
@@ -9,10 +11,9 @@ import {
   tuple,
   Vec,
 } from "common";
+import { PermutationsLazyArray } from "common/standard_library/math/permutationsLazyArray";
 import { MapId, MAPS, ZoneId } from "./MAPS";
 import { Resource, RESOURCE_COST } from "./resource";
-
-const HASH_SEPARATOR = "-";
 
 export const CITY_TILES: Readonly<
   Record<ZoneId, Readonly<Record<Exclude<Resource, "salt">, number>>>
@@ -58,14 +59,19 @@ type ProvinceBonusResource = Readonly<
 
 export default {
   randomHash: (mapId: MapId, withSalsa: boolean): string =>
-    Vec.map_with_key(MAPS[mapId].provinces, (zoneId) =>
-      $(
-        getTiles(zoneId, withSalsa, MAPS[mapId].isSaltMap ?? false),
-        MathUtils.permutations_lazy_array,
-        ($$) => Random.index($$),
-        Num.encode_base32
-      )
-    ).join(HASH_SEPARATOR),
+    $(
+      Vec.map_with_key(MAPS[mapId].provinces, (zoneId) =>
+        $(
+          getTiles(zoneId, withSalsa, MAPS[mapId].isSaltMap ?? false),
+          MathUtils.permutations_lazy_array,
+          ($$) => tuple($$.length, Random.index($$))
+        )
+      ),
+      ($$) =>
+        $$.reduce((ongoing, [radix, digit]) => ongoing * radix + digit, 0),
+      $log(),
+      Num.encode_base32
+    ),
 
   decodeCityResources,
 
@@ -118,45 +124,69 @@ function decodeCityResources(
         )
       ),
     // Zip the zones with the hashes for each zone
-    ($$) => Vec.zip($$, hash.split(HASH_SEPARATOR)),
+    ($$) =>
+      Vec.zip(
+        Vec.map($$, ([provinces]) => provinces),
+        decodeHash(
+          hash,
+          Vec.map($$, ([_, perms]) => perms)
+        )
+      ),
     // For each zone we now have everything we need to determine what the
     // resource is for each city in that zone.
     ($$) =>
-      Vec.map($$, ([[provinces, permutations], permutationHash]) =>
-        $(
-          permutationHash,
-          Num.decode_base32,
-          // Get the permutation at the encoded index
-          ($$) => permutations.at($$),
-          $nullthrows(
-            `Hash ${permutationHash} is out of bounds for permutations ${permutations}`
-          ),
-          // We now have a permutation of resources on this zone, we need to
-          // match them up to the cities in each province
-          (zoneResources) =>
-            Dict.map(provinces, (cities) => {
-              const cityResources = Vec.take(zoneResources, cities.length);
-              invariant(
-                cityResources.length === cities.length,
-                `Not enough resources remaining for cities ${JSON.stringify(
-                  provinces
-                )}`
-              );
+      Vec.map($$, ([provinces, zoneResources]) =>
+        Dict.map(provinces, (cities) => {
+          const cityResources = Vec.take(zoneResources, cities.length);
+          invariant(
+            cityResources.length === cities.length,
+            `Not enough resources remaining for cities ${JSON.stringify(
+              provinces
+            )}`
+          );
 
-              // IMPORTANT: We are deliberately updating the value of resources
-              // (the function input param), this enables us to keep "memory"
-              // between iterations of this loop.
-              zoneResources = Vec.drop(zoneResources, cities.length);
+          // IMPORTANT: We are deliberately updating the value of resources
+          // (the function input param), this enables us to keep "memory"
+          // between iterations of this loop.
+          zoneResources = Vec.drop(zoneResources, cities.length);
 
-              return Dict.associate(cities, cityResources);
-            })
-        )
+          return Dict.associate(cities, cityResources);
+        })
       ),
     // We don't care about zones in the final output, just provinces, so we can
     // flatten/merge them together.
     Dict.flatten
   );
 }
+
+const decodeHash = (
+  hash: string,
+  permsArr: readonly PermutationsLazyArray<Resource>[]
+): readonly (readonly Resource[])[] =>
+  $(
+    hash,
+    Num.decode_base32,
+    ($$) =>
+      // We reduce from the right side to "undo" the logic done when encoding
+      permsArr.reduceRight(
+        ([zoneResources, remainder], perms) =>
+          $(
+            remainder % perms.length,
+            ($$) => perms.at($$),
+            $nullthrows(
+              `Hash ${hash} caused and out-of-bounds error for permutations ${perms}`
+            ),
+            ($$) => Vec.concat([$$], zoneResources),
+            ($$) => tuple($$, Math.floor(remainder / perms.length))
+          ),
+        [[], $$] as [readonly (readonly Resource[])[], number]
+      ),
+    $invariant(
+      ($$) => $$[1] === 0,
+      ($$) => `Error decoding hash, remainder was not 0: ${$$[1]}`
+    ),
+    ($$) => $$[0]
+  );
 
 const getTiles = (
   zoneId: ZoneId,
