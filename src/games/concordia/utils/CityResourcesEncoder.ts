@@ -1,9 +1,9 @@
 import {
   $,
+  $nullthrows,
   Dict,
   invariant,
   MathUtils,
-  nullthrows,
   Num,
   Random,
   tuple,
@@ -81,11 +81,9 @@ export default {
           Vec.values,
           ($$) => Vec.filter($$, (resource) => resource !== "salt"),
           ($$) => MathUtils.max_by($$, (resource) => RESOURCE_COST[resource]),
-          ($$) =>
-            nullthrows(
-              $$,
-              `Empty city resources encountered for ${mapId} and ${hash}`
-            )
+          $nullthrows(
+            `Empty city resources encountered for ${mapId} and ${hash}`
+          )
         )
       )
     );
@@ -130,11 +128,9 @@ function decodeCityResources(
           Num.decode_base32,
           // Get the permutation at the encoded index
           ($$) => permutations.at($$),
-          ($$) =>
-            nullthrows(
-              $$,
-              `Hash ${permutationHash} is out of bounds for permutations ${permutations}`
-            ),
+          $nullthrows(
+            `Hash ${permutationHash} is out of bounds for permutations ${permutations}`
+          ),
           // We now have a permutation of resources on this zone, we need to
           // match them up to the cities in each province
           (zoneResources) =>

@@ -1,3 +1,5 @@
+import { nullthrows } from "common";
+
 export function $<A, B>(funcOrValueA: (() => A) | A, funcB: (a: A) => B): B;
 export function $<A, B, C>(
   funcOrValueA: (() => A) | A,
@@ -180,3 +182,8 @@ export const $log =
     console.log(...args, x);
     return x;
   };
+
+export const $nullthrows =
+  <T>(msg?: string): ((x: T | null | undefined) => T) =>
+  (x) =>
+    nullthrows(x, msg);
