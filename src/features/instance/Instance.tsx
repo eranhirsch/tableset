@@ -25,6 +25,7 @@ import {
   SetupStep
 } from "./instanceSlice";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
+import { VariantSummary } from "./VariantSummary";
 
 function InstanceItemContent({
   stepId,
@@ -126,6 +127,7 @@ export function Instance(): JSX.Element | null {
       title={`Table for ${game.name}`}
       buttons={[homeButton, [<TuneIcon />, "/template"]]}
     >
+      <VariantSummary />
       <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
         {groups.map((group, groupIdx) => {
           const correctedIdx = Vec.take(groups, groupIdx).reduce(

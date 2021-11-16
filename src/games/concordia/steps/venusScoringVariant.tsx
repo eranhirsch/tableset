@@ -18,7 +18,8 @@ export default createRandomGameStep<
   boolean
 >({
   id: "variant_venusScoring",
-  labelOverride: "Variant: Venus Scoring",
+  labelOverride: "Venus Scoring",
+  isVariant: true,
   isType: (x: unknown): x is boolean => typeof x === "boolean",
   dependencies: [productsMetaStep, teamPlayVariant],
   isTemplatable: (products, isTeamPlay) =>

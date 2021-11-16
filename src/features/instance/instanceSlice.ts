@@ -5,7 +5,7 @@ import {
   Dictionary,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { Dict } from "common";
+import { Dict, Vec } from "common";
 import { TemplateElement } from "features/template/templateSlice";
 import { templateSteps } from "features/template/templateSteps";
 import { GameId } from "games/core/GAMES";
@@ -105,3 +105,8 @@ export const fullInstanceSelector = createSelector(
       ({ id }) => id
     )
 );
+
+export const instanceIntersectIdsSelector = (stepIds: readonly StepId[]) =>
+  createSelector(instanceSelectors.selectIds, (instanceIds) =>
+    Vec.intersect(instanceIds, stepIds)
+  );

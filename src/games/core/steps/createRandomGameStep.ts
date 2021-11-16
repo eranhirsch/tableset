@@ -29,8 +29,7 @@ export interface RandomGameStep<T = unknown, C = unknown>
     Skippable,
     Templatable<T, C> {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
-
-  TemplateFixedValueLabel?: ((props: { value: T }) => JSX.Element) | string;
+  isVariant?: true;
 }
 
 type Options<
@@ -144,6 +143,7 @@ type Options<
     ): JSX.Element;
     ConfigPanelTLDR(props: { config: C }): JSX.Element;
     disabledTLDROverride?: string;
+    isVariant?: true;
   };
 
 interface OptionsInternal<T, C>
@@ -209,6 +209,7 @@ export function createRandomGameStep<T, C>({
   InstanceVariableComponent,
   isTemplatable,
   isType,
+  isVariant,
   onlyResolvableValue,
   refresh,
   resolve,
@@ -224,6 +225,8 @@ export function createRandomGameStep<T, C>({
 
   const variableStep: RandomGameStep<T, C> = {
     ...baseStep,
+
+    isVariant,
 
     coerceInstanceEntry: (entry) =>
       entry == null
@@ -345,3 +348,11 @@ export function createRandomGameStep<T, C>({
 
   return variableStep;
 }
+
+/**
+ * Check that an object is a random game step. We use the only unique field
+ * defined in this file for that, but technically we can use any field that
+ * would be unique enough for this cause.
+ */
+export const isRandomGameStep = (x: unknown): x is RandomGameStep =>
+  (x as Partial<RandomGameStep>).InstanceVariableComponent != null;

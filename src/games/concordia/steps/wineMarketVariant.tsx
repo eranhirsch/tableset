@@ -17,7 +17,8 @@ type TemplateConfig = { percent: number; saltPercent?: number };
 
 export default createRandomGameStep({
   id: "variant_wineMarket",
-  labelOverride: "Variant: Prices in Wine (Cards Market)",
+  labelOverride: "Prices in Wine (Cards Market)",
+  isVariant: true,
   dependencies: [productsMetaStep, saltVariantStep],
   isTemplatable: (products) =>
     products.willContainAny(["aegyptusCreta", "venus", "venusBase"]),

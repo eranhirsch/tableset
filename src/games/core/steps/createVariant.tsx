@@ -1,12 +1,14 @@
 import { Box } from "@mui/material";
 import { Dict, Random, type_invariant, Vec } from "common";
-import { ConfigPanelProps, Templatable } from "features/template/Templatable";
+import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
-import { Skippable } from "model/Skippable";
-import { VariableGameStep } from "model/VariableGameStep";
 import { PercentSlider } from "../ux/PercentSlider";
 import { createGameStep } from "./createGameStep";
-import { InstanceContext, TemplateContext } from "./createRandomGameStep";
+import {
+  InstanceContext,
+  RandomGameStep,
+  TemplateContext,
+} from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
 import { buildQuery, Query } from "./Query";
 
@@ -23,7 +25,7 @@ interface Options<
   D10 = never
 > extends OptionsWithDependencies<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10> {
   id: string;
-  name: String;
+  name: string;
   isTemplatable(
     query1: Query<D1>,
     query2: Query<D2>,
@@ -57,12 +59,7 @@ interface OptionsInternal
 
 type TemplateConfig = { percent: number };
 
-export interface VariantGameStep
-  extends VariableGameStep<boolean>,
-    Skippable,
-    Templatable<true, TemplateConfig> {
-  InstanceVariableComponent(props: { value: boolean }): JSX.Element;
-}
+type VariantGameStep = RandomGameStep<boolean, TemplateConfig>;
 
 export function createVariant<
   D1 = never,
@@ -85,7 +82,7 @@ export function createVariant({
 }: OptionsInternal): VariantGameStep {
   const baseStep = createGameStep({
     id: `variant_${id}`,
-    labelOverride: `Variant: ${name}`,
+    labelOverride: name,
   });
 
   const extractInstanceValue: VariantGameStep["extractInstanceValue"] = (
@@ -94,6 +91,8 @@ export function createVariant({
 
   return {
     ...baseStep,
+
+    isVariant: true,
 
     dependencies,
 
