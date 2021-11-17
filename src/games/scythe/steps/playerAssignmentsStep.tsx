@@ -10,20 +10,21 @@ import {
   ListItemAvatar,
   ListItemIcon,
   ListItemText,
-  Stack,
+  ListSubheader,
+  Stack
 } from "@mui/material";
 import { C, Dict, Random, tuple, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { playersMetaStep } from "games/global";
@@ -33,14 +34,14 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
 import { ScytheProductId } from "../ScytheProductId";
 import { Faction, FactionId, Factions } from "../utils/Factions";
 import {
   factionPlayerMatIdPairs,
   factionPlayerMatPairs,
-  playerAssignments,
+  playerAssignments
 } from "../utils/playerAssignments";
 import { Mat, MatId, PlayerMats } from "../utils/PlayerMats";
 import { FactionChip } from "../ux/FactionChip";
@@ -178,6 +179,13 @@ function ConfigPanel({
           {(droppableProvided) => (
             <List
               ref={droppableProvided.innerRef}
+              subheader={
+                !Vec.is_empty(config) ? (
+                  <ListSubheader>
+                    Preferences{config.length > 1 && " (ordered by priority)"}
+                  </ListSubheader>
+                ) : undefined
+              }
               {...droppableProvided.droppableProps}
             >
               {Vec.map(config, (preference, index) => (
@@ -189,6 +197,7 @@ function ConfigPanel({
                   }`}
                   preference={preference}
                   index={index}
+                  withDivider={index < config.length - 1}
                   withDrag={config.length >= 2}
                   onDelete={() =>
                     onChange((current) =>
@@ -222,11 +231,13 @@ function PreferenceListItem({
   preference,
   index,
   withDrag,
+  withDivider,
   onDelete,
 }: {
   preference: Readonly<PlayerPreference>;
   index: number;
   withDrag: boolean;
+  withDivider: boolean;
   onDelete(): void;
 }): JSX.Element {
   return (
@@ -240,7 +251,7 @@ function PreferenceListItem({
       {(draggableProvided) => (
         <ListItem
           dense
-          divider
+          divider={withDivider}
           ref={draggableProvided.innerRef}
           secondaryAction={
             withDrag && <DragHandleIcon color="action" fontSize="small" />
