@@ -136,7 +136,7 @@ export default {
         [resourcesIndex, leftoversIndex],
         useSalsaTiles ? [SALSA_TILES_INDEX] : []
       ),
-      Num.encode_base32
+      ($$) => Num.encode_base32($$)
     ).join(DIVIDER);
   },
 
