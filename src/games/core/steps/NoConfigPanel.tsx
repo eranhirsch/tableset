@@ -14,9 +14,8 @@ export const NoConfigPanel = {
 
 function ConfigPanel(): JSX.Element {
   return (
-    <Typography variant="body2">
-      A value would be determined at random, there are no settings for this
-      step.
+    <Typography paddingX={2} variant="body2" textAlign="center">
+      <em>(No settings).</em>
     </Typography>
   );
 }

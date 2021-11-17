@@ -64,6 +64,7 @@ export function TemplateItem({
       >
         <ListItemText
           primaryTypographyProps={{
+            textAlign: element == null ? "center" : undefined,
             color: element == null ? "gray" : undefined,
           }}
           secondaryTypographyProps={{ sx: { marginInlineEnd: 5 } }}
@@ -73,7 +74,7 @@ export function TemplateItem({
             )
           }
         >
-          {templatable.label}
+          {element == null ? <em>{templatable.label}</em> : templatable.label}
         </ListItemText>
         {element != null && selected && (
           <ListItemSecondaryAction>
@@ -88,7 +89,11 @@ export function TemplateItem({
           </ListItemSecondaryAction>
         )}
       </ListItemButton>
-      <Collapse in={element != null && selected} unmountOnExit>
+      <Collapse
+        in={element != null && selected}
+        sx={{ padding: 1 }}
+        unmountOnExit
+      >
         <StepConfigPanelWrapper templatable={templatable} />
       </Collapse>
     </Paper>
