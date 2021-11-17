@@ -14,8 +14,6 @@ function int(x: any): number | undefined {
     ? Math.round(x)
     : typeof x === "string" && !isNaN(x as any) && !isNaN(parseInt(x))
     ? parseInt(x)
-    : typeof x === "bigint"
-    ? Number(x)
     : undefined;
 }
 

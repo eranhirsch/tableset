@@ -6,7 +6,7 @@ import {
   MenuItem,
   Select
 } from "@mui/material";
-import { C, Random, Shape, Vec } from "common";
+import { $, C, Num, Random, Shape, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
@@ -182,17 +182,22 @@ function MobileSelect<ItemId extends string | number>({
     <select
       multiple
       value={selected as readonly string[]}
-      onChange={(event) => {
-        const target = event.target;
-        const selected = Vec.maybe_map(
-          [...target.options],
-          ({ value, selected }) => (selected ? value : undefined)
-        );
-        onChange(Vec.diff(all, selected));
-      }}
+      onChange={(event) =>
+        $(
+          [...event.target.options],
+          ($$) =>
+            Vec.maybe_map($$, ({ value, selected }) =>
+              selected ? Num.int(value) ?? value : undefined
+            ),
+          ($$) => Vec.diff(all, $$),
+          onChange
+        )
+      }
     >
       {Vec.map(all, (itemId) => (
-        <option value={itemId}>{labelForId(itemId)}</option>
+        <option key={itemId} value={itemId}>
+          {labelForId(itemId)}
+        </option>
       ))}
     </select>
   );
