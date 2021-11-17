@@ -1,14 +1,15 @@
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Collapse,
+  IconButton,
   ListItemButton,
   ListItemSecondaryAction,
   ListItemText,
   Paper,
-  Switch,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { useFeaturesContext } from "features/useFeaturesContext";
-import React, { ChangeEvent, useCallback } from "react";
+import React from "react";
 import { StepConfigPanelWrapper } from "./StepConfigPanelWrapper";
 import { Templatable } from "./Templatable";
 import {
@@ -34,19 +35,6 @@ export function TemplateItem({
 
   const element = useAppSelector(templateElementSelectorNullable(templatable));
 
-  const onChange = useCallback(
-    (_: ChangeEvent, checked: boolean) => {
-      if (checked) {
-        onExpand();
-        dispatch(templateActions.enabled(templatable, context));
-      } else {
-        onCollapse();
-        dispatch(templateActions.disabled(templatable));
-      }
-    },
-    [context, dispatch, onCollapse, onExpand, templatable]
-  );
-
   if (element?.isStale) {
     // TODO: Actual loading visualization
     return <div>Loading...</div>;
@@ -64,7 +52,14 @@ export function TemplateItem({
     >
       <ListItemButton
         onClick={
-          element != null ? (selected ? onCollapse : onExpand) : undefined
+          element != null
+            ? selected
+              ? onCollapse
+              : onExpand
+            : () => {
+                onExpand();
+                dispatch(templateActions.enabled(templatable, context));
+              }
         }
       >
         <ListItemText
@@ -80,9 +75,18 @@ export function TemplateItem({
         >
           {templatable.label}
         </ListItemText>
-        <ListItemSecondaryAction>
-          <Switch edge="end" checked={element != null} onChange={onChange} />
-        </ListItemSecondaryAction>
+        {element != null && selected && (
+          <ListItemSecondaryAction>
+            <IconButton
+              onClick={() => {
+                onCollapse();
+                dispatch(templateActions.disabled(templatable));
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        )}
       </ListItemButton>
       <Collapse in={element != null && selected} unmountOnExit>
         <StepConfigPanelWrapper templatable={templatable} />
