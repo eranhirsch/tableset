@@ -40,18 +40,18 @@ function ConfigPanel({
   onChange,
 }: ConfigPanelProps<TemplateConfig, boolean>): JSX.Element {
   return (
-    <Grid container padding={1}>
-      <Grid item xs={2} textAlign="right">
+    <Grid container textAlign="center">
+      <Grid item xs={2}>
         <Typography variant="caption">{label("noFarms")}</Typography>
       </Grid>
-      <Grid item xs={8} textAlign="center">
+      <Grid item xs={8}>
         <PercentSlider
           track={false}
           percent={percentFarms}
           onChange={(percentFarms) => onChange({ percentFarms })}
         />
       </Grid>
-      <Grid item xs={2} textAlign="left">
+      <Grid item xs={2}>
         <Typography variant="caption">{label("farms")}</Typography>
       </Grid>
       {isModular.canResolveTo(false) && (

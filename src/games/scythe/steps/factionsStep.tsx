@@ -131,7 +131,7 @@ function ConfigPanel({
   );
 
   return (
-    <Stack padding={1} spacing={1} alignItems="center">
+    <Stack spacing={1} alignItems="center">
       <FactionsSelector
         factionIds={available}
         factionMode={(fid) => currentMode(config, fid)}

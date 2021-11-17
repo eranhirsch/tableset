@@ -174,43 +174,45 @@ function ConfigPanel({
 
   return (
     <Stack direction="column" spacing={1}>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="preferences" direction="vertical">
-          {(droppableProvided) => (
-            <List
-              ref={droppableProvided.innerRef}
-              subheader={
-                !Vec.is_empty(config) ? (
-                  <ListSubheader>
-                    Preferences{config.length > 1 && " (ordered by priority)"}
-                  </ListSubheader>
-                ) : undefined
-              }
-              {...droppableProvided.droppableProps}
-            >
-              {Vec.map(config, (preference, index) => (
-                <PreferenceListItem
-                  key={`${preference.playerId}_${
-                    "factionId" in preference
-                      ? preference.factionId
-                      : preference.matId
-                  }`}
-                  preference={preference}
-                  index={index}
-                  withDivider={index < config.length - 1}
-                  withDrag={config.length >= 2}
-                  onDelete={() =>
-                    onChange((current) =>
-                      Vec.filter(current, (_, idx) => idx !== index)
-                    )
-                  }
-                />
-              ))}
-              {droppableProvided.placeholder}
-            </List>
-          )}
-        </Droppable>
-      </DragDropContext>
+      {!Vec.is_empty(config) && (
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="preferences" direction="vertical">
+            {(droppableProvided) => (
+              <List
+                ref={droppableProvided.innerRef}
+                subheader={
+                  !Vec.is_empty(config) ? (
+                    <ListSubheader>
+                      Preferences{config.length > 1 && " (ordered by priority)"}
+                    </ListSubheader>
+                  ) : undefined
+                }
+                {...droppableProvided.droppableProps}
+              >
+                {Vec.map(config, (preference, index) => (
+                  <PreferenceListItem
+                    key={`${preference.playerId}_${
+                      "factionId" in preference
+                        ? preference.factionId
+                        : preference.matId
+                    }`}
+                    preference={preference}
+                    index={index}
+                    withDivider={index < config.length - 1}
+                    withDrag={config.length >= 2}
+                    onDelete={() =>
+                      onChange((current) =>
+                        Vec.filter(current, (_, idx) => idx !== index)
+                      )
+                    }
+                  />
+                ))}
+                {droppableProvided.placeholder}
+              </List>
+            )}
+          </Droppable>
+        </DragDropContext>
+      )}
       <NewPreferencePanel
         playerIds={players.onlyResolvableValue()!}
         productIds={products.onlyResolvableValue()!}
@@ -388,14 +390,7 @@ function NewPreferencePanel({
     }
 
     return (
-      <Box
-        display="flex"
-        flexWrap="wrap"
-        gap={0.5}
-        justifyContent="center"
-        paddingX={3}
-        paddingBottom={2}
-      >
+      <Box display="flex" flexWrap="wrap" gap={0.5} justifyContent="center">
         {chips}
       </Box>
     );
@@ -404,10 +399,9 @@ function NewPreferencePanel({
   if (selectedPlayerId != null) {
     // We need a type
     return (
-      <Box display="flex" justifyContent="space-evenly" paddingBottom={2}>
+      <Box display="flex" justifyContent="space-evenly">
         <Button
           disabled={Vec.is_empty(notPreferredByPlayer[selectedPlayerId][0])}
-          size="small"
           variant="outlined"
           onClick={() => setSelectedType("faction")}
         >
@@ -415,7 +409,6 @@ function NewPreferencePanel({
         </Button>
         <Button
           disabled={Vec.is_empty(notPreferredByPlayer[selectedPlayerId][1])}
-          size="small"
           variant="outlined"
           onClick={() => setSelectedType("mat")}
         >
@@ -428,7 +421,7 @@ function NewPreferencePanel({
   if (!showNewButton) {
     // we need a player
     return (
-      <Box display="flex" justifyContent="center" gap={1} paddingBottom={2}>
+      <Box display="flex" justifyContent="center" gap={1}>
         {Vec.maybe_map_with_key(
           notPreferredByPlayer,
           (playerId, [factions, mats]) =>
@@ -445,7 +438,7 @@ function NewPreferencePanel({
   }
 
   return (
-    <Box paddingBottom={2} alignSelf="center">
+    <Box alignSelf="center">
       <Button
         size="small"
         variant="text"
@@ -507,7 +500,7 @@ function InstanceVariableComponent({
           </>
         )}
       </BlockWithFootnotes>
-      <Stack direction="column" spacing={1} padding={1}>
+      <Stack direction="column" spacing={1}>
         {Vec.map_with_key(assignments, (playerId, [faction, mat]) => (
           <PlayerAssignment
             key={`${playerId}_assignment`}

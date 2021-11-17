@@ -176,7 +176,7 @@ function ConfigPanel<D0, D1, D2, D3, D4, D5, D6, D7, D8, D9>({
   D9
 >): JSX.Element {
   return (
-    <Box textAlign="center">
+    <Box textAlign="center" paddingX={2}>
       <PercentSlider
         percent={percent}
         onChange={(percent) => onChange({ percent })}

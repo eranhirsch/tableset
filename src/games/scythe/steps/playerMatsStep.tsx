@@ -358,7 +358,7 @@ function ConfigPanel({
   );
 
   return (
-    <Stack direction="column" spacing={2} padding={3}>
+    <Stack direction="column" spacing={2}>
       <MatsSelector
         config={config}
         productIds={productIds}

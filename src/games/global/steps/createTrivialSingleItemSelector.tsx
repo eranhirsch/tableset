@@ -136,7 +136,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   );
 
   return (
-    <Box width="100%" padding={2}>
+    <Box width="100%">
       <FormControl fullWidth color={isError ? "error" : undefined}>
         {isMobile ? (
           <MobileSelect

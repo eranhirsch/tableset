@@ -18,12 +18,11 @@ export function PercentSlider({
     <Slider
       track={track}
       disabled={disabled}
-      sx={{ width: "75%" }}
       value={percent}
       min={0}
       max={100}
       step={5}
-      marks={[{ value: 50, label: "\u25B2" }]}
+      marks={[{ value: 50, label: "" }]}
       onChange={(_, newValue) =>
         newValue !== percent && (!preventZero || newValue !== 0)
           ? onChange(type_invariant(newValue, isNumber))
