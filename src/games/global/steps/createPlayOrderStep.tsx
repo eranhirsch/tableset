@@ -190,7 +190,7 @@ function ConfigPanel({
   );
 
   return (
-    <Stack direction="column" spacing={1} paddingY={1}>
+    <Stack direction="column" spacing={1}>
       <Collapse in={fixedOrder != null}>
         <FixedSelector
           order={fixedOrder ?? playerIds}

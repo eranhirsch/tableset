@@ -83,7 +83,7 @@ function ConfigPanel({
     // show a single percent slider. It's only when it could be either that we
     // need both sliders.
     return (
-      <Box textAlign="center">
+      <Box textAlign="center" paddingX={1}>
         <ConfigPanelSlider value={config.percent} onChange={onChange} />
       </Box>
     );
@@ -143,18 +143,18 @@ function MultiSliderConfigPanel({
   }, [saltPercent, isSync, onChange]);
 
   return (
-    <Grid container paddingX={2}>
-      <Grid item xs={2} textAlign="right">
+    <Grid container paddingX={1} textAlign="center">
+      <Grid item xs={2}>
         <Typography variant="caption">Main</Typography>
       </Grid>
-      <Grid item xs={8} textAlign="center">
+      <Grid item xs={8}>
         <ConfigPanelSlider value={percent} onChange={onChange} />
       </Grid>
       <Grid item xs={2} />
-      <Grid item xs={2} textAlign="right">
+      <Grid item xs={2}>
         <Typography variant="caption">With Salt</Typography>
       </Grid>
-      <Grid item xs={8} textAlign="center">
+      <Grid item xs={8}>
         <PercentSlider
           disabled={isSync}
           percent={saltPercent ?? percent}
@@ -169,7 +169,7 @@ function MultiSliderConfigPanel({
           }
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={2} alignItems="center" justifyContent="center">
         <IconButton
           size="small"
           color={isSync ? "default" : "primary"}

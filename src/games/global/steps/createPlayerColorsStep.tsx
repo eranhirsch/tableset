@@ -212,7 +212,7 @@ function ConfigPanel({
   }, [onChange, playerIds, remainingColors, remainingPlayerIds]);
 
   return (
-    <Grid container rowSpacing={1} paddingY={1}>
+    <Grid container rowSpacing={1}>
       {Vec.map_with_key(sorted, (playerId, color, index) => (
         <React.Fragment key={playerId}>
           {index > 0 && (

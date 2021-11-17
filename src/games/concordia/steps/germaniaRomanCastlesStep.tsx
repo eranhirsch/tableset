@@ -94,7 +94,7 @@ function ConfigPanel({
   }
 
   return (
-    <Box textAlign="center">
+    <Box>
       <FormControlLabel
         control={
           <Checkbox

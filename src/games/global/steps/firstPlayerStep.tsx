@@ -51,7 +51,7 @@ function ConfigPanel({
   onChange,
 }: ConfigPanelProps<TemplateConfig, readonly PlayerId[]>): JSX.Element {
   return (
-    <Stack direction="row" justifyContent="center" paddingY={1}>
+    <Stack direction="row" justifyContent="center">
       {React.Children.toArray(
         Vec.map(players.onlyResolvableValue()!, (playerId) => (
           <Badge

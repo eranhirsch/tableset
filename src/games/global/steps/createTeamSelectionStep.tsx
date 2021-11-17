@@ -265,7 +265,7 @@ function ConfigPanel({
   });
 
   return (
-    <Grid container rowSpacing={1} paddingY={1}>
+    <Grid container rowSpacing={1}>
       {React.Children.toArray(
         Vec.map(internalConfig.current, (team, index) => (
           <>

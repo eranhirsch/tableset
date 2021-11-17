@@ -137,7 +137,7 @@ function ConfigPanel({
   const onClear = useCallback(() => onChange({ static: [] }), [onChange]);
 
   return (
-    <Grid container paddingX={1} paddingY={0.5}>
+    <Grid container>
       <StaticChips
         config={config}
         products={products}
@@ -176,7 +176,16 @@ function StaticChips({
   );
 
   return (
-    <Grid item xs={7} alignSelf="center" textAlign="center" padding={0.5}>
+    <Grid
+      item
+      xs={7}
+      alignSelf="center"
+      textAlign="center"
+      display="flex"
+      flexWrap="wrap"
+      justifyContent="space-evenly"
+      gap={0.5}
+    >
       {React.Children.toArray(
         Vec.map(
           // Sort the maps by tightness with tight maps first
@@ -189,8 +198,7 @@ function StaticChips({
               variant={relevantMapIds.includes(mapId) ? "filled" : "outlined"}
               size="small"
               sx={{
-                margin: 0.5,
-                padding: relevantMapIds.includes(mapId) ? "1px" : undefined,
+                marginX: relevantMapIds.includes(mapId) ? "1px" : undefined,
               }}
               onClick={() => onClick(mapId)}
             />

@@ -45,7 +45,7 @@ function ConfigPanel({
   onChange,
 }: ConfigPanelProps<TemplateConfig>): JSX.Element {
   return (
-    <Box textAlign="center">
+    <Box textAlign="center" paddingX={1}>
       <PercentSlider
         percent={percent}
         onChange={(percent) => onChange({ percent })}
