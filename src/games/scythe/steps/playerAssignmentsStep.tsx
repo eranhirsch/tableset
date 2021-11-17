@@ -1,4 +1,4 @@
-import DeleteIcon from "@mui/icons-material/Delete";
+import ClearIcon from "@mui/icons-material/Clear";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import {
   Box,
@@ -189,7 +189,7 @@ function ConfigPanel({
                   }`}
                   preference={preference}
                   index={index}
-                  withDrag={config.length > 2}
+                  withDrag={config.length >= 2}
                   onDelete={() =>
                     onChange((current) =>
                       Vec.filter(current, (_, idx) => idx !== index)
@@ -242,18 +242,16 @@ function PreferenceListItem({
           dense
           divider
           ref={draggableProvided.innerRef}
-          {...draggableProvided.draggableProps}
           secondaryAction={
-            <IconButton onClick={onDelete}>
-              <DeleteIcon />
-            </IconButton>
+            withDrag && <DragHandleIcon color="action" fontSize="small" />
           }
+          {...draggableProvided.draggableProps}
+          {...draggableProvided.dragHandleProps}
         >
-          <ListItemIcon
-            sx={{ flexGrow: 0 }}
-            {...draggableProvided.dragHandleProps}
-          >
-            <DragHandleIcon />
+          <ListItemIcon sx={{ flexGrow: 0 }}>
+            <IconButton onClick={onDelete}>
+              <ClearIcon color="action" fontSize="small" />
+            </IconButton>
           </ListItemIcon>
           <ListItemAvatar>
             <PlayerAvatar playerId={preference.playerId} inline />
