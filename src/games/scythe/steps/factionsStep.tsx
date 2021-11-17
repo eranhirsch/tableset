@@ -129,37 +129,51 @@ function ConfigPanel({
       Vec.sort(Factions.availableForProducts(products.onlyResolvableValue()!)),
     [products]
   );
+
   return (
-    <Box
-      paddingX={2}
-      paddingY={2}
-      display="flex"
-      flexWrap="wrap"
-      justifyContent="center"
-      gap={0.5}
-    >
-      {Vec.map(available, (factionId) => (
-        <FactionSelector
-          key={factionId}
-          factionId={factionId}
-          mode={currentMode(config, factionId)}
-          onClick={() =>
-            onChange((current) =>
-              switchModes(
-                current,
-                factionId,
-                currentMode(current, factionId),
-                nextMode(current, factionId, players, available.length)
-              )
+    <Stack padding={1} spacing={1} alignItems="center">
+      <FactionsSelector
+        factionIds={available}
+        factionMode={(fid) => currentMode(config, fid)}
+        onChange={(fid) =>
+          onChange((current) =>
+            switchModes(
+              current,
+              fid,
+              currentMode(current, fid),
+              nextMode(current, fid, players, available.length)
             )
-          }
-        />
-      ))}
+          )
+        }
+      />
       {isModular.canResolveTo(true) && (
         <Typography color="error" variant="caption">
           Ignored when <em>{modularBoardVariant.label}</em> is enabled.
         </Typography>
       )}
+    </Stack>
+  );
+}
+
+function FactionsSelector({
+  factionIds,
+  factionMode,
+  onChange,
+}: {
+  factionIds: readonly FactionId[];
+  factionMode(factionId: FactionId): Mode;
+  onChange(factionId: FactionId): void;
+}): JSX.Element {
+  return (
+    <Box display="flex" flexWrap="wrap" justifyContent="center" gap={1}>
+      {Vec.map(factionIds, (factionId) => (
+        <FactionSelector
+          key={factionId}
+          factionId={factionId}
+          mode={factionMode(factionId)}
+          onClick={() => onChange(factionId)}
+        />
+      ))}
     </Box>
   );
 }
@@ -176,11 +190,10 @@ function FactionSelector({
   const { name, color } = Factions[factionId];
   return (
     <Chip
-      size="small"
       sx={{
         opacity: mode === "never" ? 0.75 : 1.0,
-        paddingX:
-          mode === "random" ? "12px" : mode === "always" ? undefined : "3px",
+        marginX:
+          mode === "random" ? "14px" : mode === "never" ? "4px" : undefined,
       }}
       color={color}
       icon={
@@ -224,13 +237,13 @@ function ConfigPanelTLDR({
       {Vec.concat(
         Vec.map_with_key(
           Shape.select_keys(Factions, always),
-          (fid, { name, color }) => (
+          (fid, { abbreviated, color }) => (
             <Chip
               key={fid}
               component="span"
               color={color}
               size="small"
-              label={name}
+              label={`${abbreviated}.`}
             />
           )
         ),
@@ -245,7 +258,7 @@ function ConfigPanelTLDR({
                     (but not{" "}
                     <GrammaticalList finalConjunction="or">
                       {React.Children.toArray(
-                        Vec.map(never, (fid) => Factions[fid].name)
+                        Vec.map(never, (fid) => `${Factions[fid].abbreviated}.`)
                       )}
                     </GrammaticalList>
                     )

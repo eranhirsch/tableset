@@ -642,8 +642,15 @@ function ConfigPanelTLDR({
     <GrammaticalList>
       {Vec.concat(
         Vec.map_with_key(
-          Dict.select_keys(PlayerMats, always),
-          (mid, { name }) => <React.Fragment key={mid}>{name}</React.Fragment>
+          Shape.select_keys(PlayerMats, always),
+          (mid, { abbreviated }) => (
+            <Chip
+              key={mid}
+              size="small"
+              variant="outlined"
+              label={`${abbreviated}.`}
+            />
+          )
         ),
         unassignedCount > 0
           ? [
@@ -656,7 +663,10 @@ function ConfigPanelTLDR({
                     (but not{" "}
                     <GrammaticalList finalConjunction="or">
                       {React.Children.toArray(
-                        Vec.map(never, (mid) => PlayerMats[mid].name)
+                        Vec.map(
+                          never,
+                          (mid) => `${PlayerMats[mid].abbreviated}.`
+                        )
                       )}
                     </GrammaticalList>
                     )

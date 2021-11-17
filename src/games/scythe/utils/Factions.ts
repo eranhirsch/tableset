@@ -18,6 +18,7 @@ export type FactionId =
 
 export interface Faction {
   name: string;
+  abbreviated: string;
   color: GamePiecesColor;
   power: number;
   combatCards: number;
@@ -28,6 +29,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   /* spell-checker: disable */
   albion: {
     name: "Clan Albion",
+    abbreviated: "Al",
     color: "green",
     power: 3,
     combatCards: 0,
@@ -36,6 +38,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   },
   crimea: {
     name: "Crimean Khanate",
+    abbreviated: "Crim",
     color: "yellow",
     power: 5,
     combatCards: 0,
@@ -44,6 +47,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   },
   fenris: {
     name: "Fenris",
+    abbreviated: "Fen",
     color: "orange",
     power: 4,
     combatCards: 2,
@@ -54,6 +58,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   },
   nordic: {
     name: "Nordic Kingdoms",
+    abbreviated: "Nord",
     color: "blue",
     power: 4,
     combatCards: 1,
@@ -62,6 +67,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   },
   polania: {
     name: "Republic of Polania",
+    abbreviated: "Pol",
     color: "white",
     power: 2,
     combatCards: 3,
@@ -70,6 +76,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   },
   rusviet: {
     name: "Rusviet Union",
+    abbreviated: "Rus",
     color: "red",
     power: 3,
     combatCards: 2,
@@ -78,6 +85,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   },
   saxony: {
     name: "Saxony Empire",
+    abbreviated: "Sax",
     color: "black",
     power: 1,
     combatCards: 4,
@@ -86,6 +94,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   },
   tesla: {
     name: "Tesla",
+    abbreviated: "Tes",
     color: "cyan",
     power: 1,
     combatCards: 1,
@@ -96,6 +105,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   },
   togawa: {
     name: "Togawa Shogunate",
+    abbreviated: "Tog",
     color: "purple",
     power: 0,
     combatCards: 2,
