@@ -61,6 +61,7 @@ export function TemplateItem({
         }
       >
         <ListItemText
+          secondaryTypographyProps={{ sx: { marginInlineEnd: 5 } }}
           secondary={<ItemLabel templatable={templatable} element={element} />}
         >
           <StepLabel stepId={templatable.id} />
@@ -86,8 +87,6 @@ const ItemLabel = React.memo(
   }): JSX.Element | null =>
     element == null ? (
       <>{disabledTLDROverride ?? "Disabled"}</>
-    ) : typeof ConfigPanelTLDR === "string" ? (
-      <>{ConfigPanelTLDR}</>
     ) : (
       <ConfigPanelTLDR config={element.config} />
     )
