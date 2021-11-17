@@ -23,6 +23,7 @@ export function TemplateList(): JSX.Element {
       sx={{
         maxHeight: "100%",
         paddingBottom: 10,
+        paddingX: 0.5,
         ...ReactUtils.SX_SCROLL_WITHOUT_SCROLLBARS,
       }}
     >

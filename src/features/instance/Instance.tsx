@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { TSPage } from "app/ux/Chrome";
 import { Dict, Vec } from "common";
-import { StepLabel } from "features/game/StepLabel";
 import { useGameHomeToolbarButton } from "features/game/useGameHomeToolbarButton";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
@@ -22,7 +21,7 @@ import { gameSelector, gameStepSelector } from "../game/gameSlice";
 import {
   fullInstanceSelector,
   instanceSelectors,
-  SetupStep
+  SetupStep,
 } from "./instanceSlice";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
 import { VariantSummary } from "./VariantSummary";
@@ -203,4 +202,9 @@ export function Instance(): JSX.Element | null {
       </Stepper>
     </TSPage>
   );
+}
+
+function StepLabel({ stepId }: { stepId: StepId }): JSX.Element {
+  const gameStep = useAppSelector(gameStepSelector(stepId));
+  return <>{gameStep.label}</>;
 }

@@ -7,7 +7,6 @@ import {
   Switch,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { StepLabel } from "features/game/StepLabel";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import React, { ChangeEvent, useCallback } from "react";
 import { StepConfigPanelWrapper } from "./StepConfigPanelWrapper";
@@ -54,17 +53,32 @@ export function TemplateItem({
   }
 
   return (
-    <Paper sx={{ marginBottom: 1 }} elevation={selected ? 1 : 0}>
+    <Paper
+      sx={{
+        marginY: 1,
+        borderStyle: element == null ? "dashed" : undefined,
+        borderWidth: element == null ? "2px" : undefined,
+      }}
+      variant={element == null ? "outlined" : "elevation"}
+      elevation={element == null ? undefined : selected ? 3 : 1}
+    >
       <ListItemButton
         onClick={
           element != null ? (selected ? onCollapse : onExpand) : undefined
         }
       >
         <ListItemText
+          primaryTypographyProps={{
+            color: element == null ? "gray" : undefined,
+          }}
           secondaryTypographyProps={{ sx: { marginInlineEnd: 5 } }}
-          secondary={<ItemLabel templatable={templatable} element={element} />}
+          secondary={
+            element == null ? undefined : (
+              <ItemLabel templatable={templatable} element={element} />
+            )
+          }
         >
-          <StepLabel stepId={templatable.id} />
+          {templatable.label}
         </ListItemText>
         <ListItemSecondaryAction>
           <Switch edge="end" checked={element != null} onChange={onChange} />

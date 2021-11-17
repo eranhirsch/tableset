@@ -1,5 +1,6 @@
 import { Link } from "@mui/material";
-import { StepLabel } from "features/game/StepLabel";
+import { useAppSelector } from "app/hooks";
+import { gameStepSelector } from "features/game/gameSlice";
 import { StepId } from "model/Game";
 import { GameStepBase } from "model/GameStepBase";
 import { Link as RouterLink } from "react-router-dom";
@@ -18,4 +19,9 @@ export function InstanceStepLink(
       Step {stepIdx + 1}: <StepLabel stepId={stepId} />
     </Link>
   );
+}
+
+function StepLabel({ stepId }: { stepId: StepId }): JSX.Element {
+  const gameStep = useAppSelector(gameStepSelector(stepId));
+  return <>{gameStep.label}</>;
 }
