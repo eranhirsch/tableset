@@ -18,6 +18,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { StepId } from "../../model/Game";
 import { gameSelector, gameStepSelector } from "../game/gameSlice";
+import { AtAGlance } from "./AtAGlance";
 import {
   fullInstanceSelector,
   instanceSelectors,
@@ -127,6 +128,7 @@ export function Instance(): JSX.Element | null {
       buttons={[homeButton, [<TuneIcon />, "/template"]]}
     >
       <VariantSummary />
+      <AtAGlance />
       <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
         {groups.map((group, groupIdx) => {
           const correctedIdx = Vec.take(groups, groupIdx).reduce(

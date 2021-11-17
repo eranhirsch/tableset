@@ -5,11 +5,12 @@ import {
   Dictionary,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { Dict, Vec } from "common";
+import { $, Dict, Vec } from "common";
 import { TemplateElement } from "features/template/templateSlice";
 import { templateSteps } from "features/template/templateSteps";
 import { GameId } from "games/core/GAMES";
 import { ContextBase } from "model/ContextBase";
+import { GameStepBase } from "model/GameStepBase";
 import { RootState } from "../../app/store";
 import { Game, StepId } from "../../model/Game";
 
@@ -109,4 +110,19 @@ export const fullInstanceSelector = createSelector(
 export const instanceIntersectIdsSelector = (stepIds: readonly StepId[]) =>
   createSelector(instanceSelectors.selectIds, (instanceIds) =>
     Vec.intersect(instanceIds, stepIds)
+  );
+
+export const instanceValuesSelector = <T extends GameStepBase>(
+  steps: readonly T[]
+) =>
+  createSelector(instanceSelectors.selectEntities, (entities) =>
+    $(
+      Dict.from_values(steps, ({ id }) => id),
+      ($$) =>
+        Dict.inner_join(
+          $$,
+          Dict.map(entities, ({ value }) => value)
+        ),
+      Vec.values
+    )
   );
