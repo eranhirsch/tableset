@@ -1,7 +1,6 @@
 import {
   $,
   $invariant,
-  $log,
   $nullthrows,
   Dict,
   invariant,
@@ -69,7 +68,6 @@ export default {
       ),
       ($$) =>
         $$.reduce((ongoing, [radix, digit]) => ongoing * radix + digit, 0),
-      $log(),
       Num.encode_base32
     ),
 

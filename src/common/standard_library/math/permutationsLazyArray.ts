@@ -1,9 +1,10 @@
 import {
+  $,
   Dict,
   invariant,
   invariant_violation,
   MathUtils as MU,
-  Num,
+  Vec,
 } from "common";
 
 const permutations_lazy_array = <T extends keyof any>(
@@ -32,11 +33,16 @@ export class PermutationsLazyArray<K extends keyof any> {
   }
 
   get length(): number {
-    return (
-      Num.int(MU.factorial(this.permutationLength)) /
-      MU.product(
-        this.definition.map(([_, count]) => Num.int(MU.factorial(count)))
-      )
+    return $(
+      this.permutationLength,
+      MU.factorial,
+      ($$) =>
+        $$ /
+        $(
+          Vec.map(this.definition, ([_, count]) => MU.factorial(count)),
+          MU.product
+        ),
+      Number
     );
   }
 
