@@ -1,9 +1,10 @@
-import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import { List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { IndexHash } from "games/core/ux/IndexHash";
 import { useMemo } from "react";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
@@ -29,7 +30,7 @@ export default createRandomGameStep({
 
   isTemplatable: () => true,
   resolve: (_, venusScoring, teamPlay) =>
-    MarketDisplayEncoder.randomHash(
+    MarketDisplayEncoder.randomIdx(
       (venusScoring ?? false) || (teamPlay ?? false)
     ),
 
@@ -37,22 +38,22 @@ export default createRandomGameStep({
 });
 
 function InstanceVariableComponent({
-  value: hash,
-}: VariableStepInstanceComponentProps<string>): JSX.Element {
+  value: index,
+}: VariableStepInstanceComponentProps<number>): JSX.Element {
   const venusScoring = useOptionalInstanceValue(venusScoringVariant);
   const teamPlay = useRequiredInstanceValue(teamPlayVariant);
 
   const market = useMemo(
     () =>
       MarketDisplayEncoder.decode(
-        (venusScoring ?? false) || (teamPlay ?? false),
-        hash
+        index,
+        (venusScoring ?? false) || (teamPlay ?? false)
       ),
-    [hash, teamPlay, venusScoring]
+    [index, teamPlay, venusScoring]
   );
 
   return (
-    <>
+    <Stack>
       <BlockWithFootnotes
         footnote={<InstanceStepLink step={marketCardsStep} />}
       >
@@ -64,21 +65,17 @@ function InstanceVariableComponent({
           </Typography>
         )}
       </BlockWithFootnotes>
-      <figure>
-        <List component="ol">
-          {market.map((cardName) => (
-            <ListItem key={cardName} dense>
-              <ListItemText primaryTypographyProps={{ variant: "body2" }}>
-                <RomanTitle>{cardName}</RomanTitle>
-              </ListItemText>
-            </ListItem>
-          ))}
-          <Typography component="figcaption" variant="caption">
-            <pre>Hash: {hash}</pre>
-          </Typography>
-        </List>
-      </figure>
-    </>
+      <List component="ol">
+        {market.map((cardName) => (
+          <ListItem key={cardName} dense>
+            <ListItemText primaryTypographyProps={{ variant: "body2" }}>
+              <RomanTitle>{cardName}</RomanTitle>
+            </ListItemText>
+          </ListItem>
+        ))}
+      </List>
+      <IndexHash idx={index} />
+    </Stack>
   );
 }
 

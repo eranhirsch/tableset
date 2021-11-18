@@ -1,4 +1,4 @@
-import { MathUtils, nullthrows, Num, Random, Vec } from "common";
+import { $, $nullthrows, MathUtils, Random, Vec } from "common";
 
 export const MARKET_DECK_I = {
   base: [
@@ -23,22 +23,19 @@ export const MARKET_DECK_I = {
 } as const;
 
 export default {
-  randomHash: (venusScoring: boolean): string =>
-    Num.encode_base32(
-      Random.index(
-        MathUtils.permutations_lazy_array(
-          MARKET_DECK_I[venusScoring ? "venus" : "base"]
-        )
-      )
+  randomIdx: (venusScoring: boolean): number =>
+    $(
+      MARKET_DECK_I[venusScoring ? "venus" : "base"],
+      ($$) => MathUtils.permutations_lazy_array($$),
+      ($$) => Random.index($$)
     ),
 
-  decode: (venusScoring: boolean, hash: string): readonly string[] =>
-    Vec.take(
-      nullthrows(
-        MathUtils.permutations_lazy_array(
-          MARKET_DECK_I[venusScoring ? "venus" : "base"]
-        ).at(Num.decode_base32(hash))
-      ),
-      7
+  decode: (index: number, venusScoring: boolean): readonly string[] =>
+    $(
+      MARKET_DECK_I[venusScoring ? "venus" : "base"],
+      ($$) => MathUtils.permutations_lazy_array($$),
+      ($$) => $$.at(index),
+      $nullthrows(),
+      ($$) => Vec.take($$, 7)
     ),
 } as const;
