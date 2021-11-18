@@ -6,7 +6,7 @@ import { Mat, MatId, PlayerMats } from "./PlayerMats";
 
 export const playerAssignments = (
   order: readonly PlayerId[],
-  playerMatsHash: string | null | undefined,
+  playerMatsIdx: number | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
   productIds: readonly ScytheProductId[]
 ): Readonly<
@@ -16,7 +16,7 @@ export const playerAssignments = (
   >
 > =>
   Dict.map(
-    playerAssignmentIds(order, playerMatsHash, factionIds, productIds),
+    playerAssignmentIds(order, playerMatsIdx, factionIds, productIds),
     ([factionId, matId]) =>
       tuple(
         factionId != null ? Factions[factionId] : null,
@@ -26,7 +26,7 @@ export const playerAssignments = (
 
 export const playerAssignmentIds = (
   order: readonly PlayerId[],
-  playerMatsHash: string | null | undefined,
+  playerMatsIdx: number | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
   productIds: readonly ScytheProductId[]
 ): Readonly<
@@ -34,17 +34,12 @@ export const playerAssignmentIds = (
 > =>
   Dict.associate(
     order,
-    factionPlayerMatIdPairs(
-      order.length,
-      playerMatsHash,
-      factionIds,
-      productIds
-    )
+    factionPlayerMatIdPairs(order.length, playerMatsIdx, factionIds, productIds)
   );
 
 export const factionPlayerMatPairs = (
   playersCount: number,
-  playerMatsHash: string | null | undefined,
+  playerMatsIdx: number | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
   productIds: readonly ScytheProductId[]
 ): readonly (readonly [
@@ -54,7 +49,7 @@ export const factionPlayerMatPairs = (
   Vec.map(
     factionPlayerMatIdPairs(
       playersCount,
-      playerMatsHash,
+      playerMatsIdx,
       factionIds,
       productIds
     ),
@@ -67,12 +62,12 @@ export const factionPlayerMatPairs = (
 
 export function factionPlayerMatIdPairs(
   playersCount: number,
-  playerMatsHash: string | null | undefined,
+  playerMatsIdx: number | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
   productIds: readonly ScytheProductId[]
 ): readonly (readonly [faction: FactionId | null, mat: MatId | null])[] {
   invariant(
-    factionIds != null || playerMatsHash != null,
+    factionIds != null || playerMatsIdx != null,
     `Can't compute player assignments when both factions and player mats are missing`
   );
 
@@ -84,10 +79,10 @@ export function factionPlayerMatIdPairs(
   );
 
   const matIds =
-    playerMatsHash == null
+    playerMatsIdx == null
       ? null
       : PlayerMats.decode(
-          playerMatsHash,
+          playerMatsIdx,
           playersCount,
           factionIds != null,
           productIds

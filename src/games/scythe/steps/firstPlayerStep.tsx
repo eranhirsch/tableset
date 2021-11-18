@@ -3,7 +3,7 @@ import { C, Dict, Shape, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps,
+  DerivedStepInstanceComponentProps
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
@@ -32,33 +32,33 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, productIds, factionIds, playerMatsHash, order],
+  dependencies: [playerIds, productIds, factionIds, playerMatsIdx, order],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly ScytheProductId[],
   readonly FactionId[],
-  string,
+  number,
   readonly PlayerId[]
 >): JSX.Element {
   const assignments = useMemo(
     () =>
       order == null
         ? null
-        : playerAssignments(order, playerMatsHash, factionIds, productIds!),
-    [factionIds, order, playerMatsHash, productIds]
+        : playerAssignments(order, playerMatsIdx, factionIds, productIds!),
+    [factionIds, order, playerMatsIdx, productIds]
   );
 
   const matIds = useMemo(
     () =>
-      playerMatsHash == null
+    playerMatsIdx == null
         ? null
         : PlayerMats.decode(
-            playerMatsHash,
+          playerMatsIdx,
             playerIds!.length,
             factionIds != null,
             productIds!
           ),
-    [factionIds, playerIds, playerMatsHash, productIds]
+    [factionIds, playerIds, playerMatsIdx, productIds]
   );
 
   const turnOrder =

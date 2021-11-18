@@ -17,7 +17,7 @@ import {
   Typography
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { C, Dict, Random, Shape, Vec } from "common";
+import { C, Dict, Num, Random, Shape, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
@@ -82,7 +82,7 @@ export default createRandomGameStep({
   id: "playerMats",
   dependencies: [playersMetaStep, productsMetaStep, factionsStep],
 
-  isType: (x: unknown): x is string => typeof x === "string",
+  isType: (x: unknown): x is number => typeof x === "number",
 
   isTemplatable: () => true,
 
@@ -104,7 +104,7 @@ function resolve(
   players: readonly PlayerId[] | null,
   products: readonly ScytheProductId[] | null,
   factionIds: readonly FactionId[] | null
-): string {
+): number {
   const available = PlayerMats.availableForProducts(products!);
 
   // Random mats are those that aren't required by `always` and aren't
@@ -681,24 +681,29 @@ function ConfigPanelTLDR({
 }
 
 function InstanceVariableComponent({
-  value: matsHash,
-}: VariableStepInstanceComponentProps<string>): JSX.Element {
+  value: matsIdx,
+}: VariableStepInstanceComponentProps<number>): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const productIds = useRequiredInstanceValue(productsMetaStep);
   const factionIds = useOptionalInstanceValue(factionsStep);
 
   const pairs = useMemo(
     () =>
-      factionPlayerMatPairs(playerIds.length, matsHash, factionIds, productIds),
-    [factionIds, matsHash, playerIds.length, productIds]
+      factionPlayerMatPairs(playerIds.length, matsIdx, factionIds, productIds),
+    [factionIds, matsIdx, playerIds.length, productIds]
   );
 
   return (
-    <Stack direction="column" spacing={1} alignItems="center">
+    <Stack direction="column" spacing={1}>
       <Typography variant="body1" sx={{ width: "100%" }}>
         The player mats {factionIds != null && "and matching factions "}are:
       </Typography>
-      <Stack spacing={1} direction="column" textAlign="center">
+      <Stack
+        spacing={1}
+        direction="column"
+        textAlign="center"
+        alignSelf="center"
+      >
         {React.Children.toArray(
           Vec.map(pairs, ([faction, mat]) =>
             faction == null ? (
@@ -716,6 +721,9 @@ function InstanceVariableComponent({
           )
         )}
       </Stack>
+      <Typography variant="caption" sx={{ marginTop: 2 }}>
+        <pre>Hash: {Num.encode_base32(matsIdx)}</pre>
+      </Typography>
     </Stack>
   );
 }

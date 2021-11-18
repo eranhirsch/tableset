@@ -145,10 +145,10 @@ function ConfigPanel({
   readonly PlayerId[],
   readonly ScytheProductId[],
   readonly FactionId[],
-  string
+  number
 >): JSX.Element {
   const onDragEnd = useCallback(
-    ({ reason, destination, draggableId, source }: DropResult) => {
+    ({ reason, destination, source }: DropResult) => {
       if (reason === "CANCEL") {
         return;
       }
