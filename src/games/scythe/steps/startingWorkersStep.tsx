@@ -56,12 +56,12 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [factionIds, isModular, boardType, tilesHash, homeBasesIdx],
+  dependencies: [factionIds, isModular, boardType, tilesIdx, homeBasesIdx],
 }: DerivedStepInstanceComponentProps<
   readonly FactionId[],
   boolean,
   BoardId,
-  string,
+  number,
   number
 >): JSX.Element {
   const manualInstructions = (
@@ -80,7 +80,7 @@ function InstanceDerivedComponent({
           <Footnote index={3} />
           {((isModular &&
             boardType != null &&
-            tilesHash != null &&
+            tilesIdx != null &&
             homeBasesIdx != null) ||
             factionIds != null) &&
             ":"}
@@ -90,7 +90,7 @@ function InstanceDerivedComponent({
   );
 
   if (isModular) {
-    if (boardType == null || tilesHash == null || homeBasesIdx == null) {
+    if (boardType == null || tilesIdx == null || homeBasesIdx == null) {
       return manualInstructions;
     }
 
@@ -105,7 +105,7 @@ function InstanceDerivedComponent({
                 factionId={fid}
                 homeBaseIdx={homeBaseIdx}
                 boardType={boardType}
-                tilesHash={tilesHash}
+                tilesIdx={tilesIdx}
               />
             )
         )}
@@ -137,12 +137,12 @@ function ModularFaction({
   factionId,
   boardType,
   homeBaseIdx,
-  tilesHash,
+  tilesIdx,
 }: {
   factionId: FactionId;
   boardType: BoardId;
   homeBaseIdx: number;
-  tilesHash: string;
+  tilesIdx: number;
 }): JSX.Element {
   const hexTypes = useMemo(
     () =>
@@ -150,12 +150,12 @@ function ModularFaction({
       MODULAR_BOARD_WORKER_STARTING_LOCATION[boardType][homeBaseIdx] ??
       // Or on one of the modular map tiles:
       ModularMapTiles.adjacentToHomeBase(
-        ModularMapTiles.decode(tilesHash)[
+        ModularMapTiles.decode(tilesIdx)[
           ModularMapTiles.tileIdxAtHomeBase(homeBaseIdx)!
         ],
         homeBaseIdx
       )!,
-    [boardType, homeBaseIdx, tilesHash]
+    [boardType, homeBaseIdx, tilesIdx]
   );
 
   return (

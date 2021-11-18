@@ -2,7 +2,6 @@ import {
   invariant_violation,
   MathUtils,
   nullthrows,
-  Num,
   Random,
   Vec,
 } from "common";
@@ -105,7 +104,7 @@ export const ModularMapTiles = {
   inPlay: (playerCount: number) =>
     TILE_SLOTS - (RECOMMENDED_REMOVE_AMOUNT_PER_PLAYER_COUNT[playerCount] ?? 0),
 
-  randomHash(): string {
+  randomIdx(): number {
     while (true) {
       const orderIdx = Random.index(ORDER_PERMUTATIONS);
       const sidesIdx = Random.int(0, TOTAL_SIDES_COMBINATIONS);
@@ -119,14 +118,12 @@ export const ModularMapTiles = {
       );
       if (!lakesOnHomeBases) {
         const idx = orderIdx * TOTAL_SIDES_COMBINATIONS + sidesIdx;
-        return Num.encode_base32(idx);
+        return idx;
       }
     }
   },
 
-  decode(hash: string): readonly TileSide[] {
-    const idx = Num.decode_base32(hash);
-
+  decode(idx: number): readonly TileSide[] {
     const orderIdx = Math.floor(idx / TOTAL_SIDES_COMBINATIONS);
     const reorderedTiles = reorderTilesByIdx(orderIdx);
 
