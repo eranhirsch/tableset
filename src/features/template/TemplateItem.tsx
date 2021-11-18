@@ -1,11 +1,13 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
+  Box,
   Collapse,
   IconButton,
   ListItemButton,
   ListItemSecondaryAction,
   ListItemText,
   Paper,
+  useTheme,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { useFeaturesContext } from "features/useFeaturesContext";
@@ -29,6 +31,7 @@ export function TemplateItem({
   onExpand(): void;
   onCollapse(): void;
 }): JSX.Element {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
 
   const context = useFeaturesContext();
@@ -43,12 +46,15 @@ export function TemplateItem({
   return (
     <Paper
       sx={{
-        marginY: 1,
+        marginY: selected ? 3 : 1,
+        marginX: selected ? 0.5 : undefined,
         borderStyle: element == null ? "dashed" : undefined,
         borderWidth: element == null ? "2px" : undefined,
+        borderRadius: 3,
+        transition: theme.transitions.create("margin"),
       }}
       variant={element == null ? "outlined" : "elevation"}
-      elevation={element == null ? undefined : selected ? 3 : 1}
+      elevation={element == null ? undefined : selected ? 5 : 2}
     >
       <ListItemButton
         onClick={
@@ -89,12 +95,10 @@ export function TemplateItem({
           </ListItemSecondaryAction>
         )}
       </ListItemButton>
-      <Collapse
-        in={element != null && selected}
-        sx={{ padding: 1 }}
-        unmountOnExit
-      >
-        <StepConfigPanelWrapper templatable={templatable} />
+      <Collapse in={element != null && selected} unmountOnExit>
+        <Box padding={1}>
+          <StepConfigPanelWrapper templatable={templatable} />
+        </Box>
       </Collapse>
     </Paper>
   );
