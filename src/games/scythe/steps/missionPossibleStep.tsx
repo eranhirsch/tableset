@@ -1,15 +1,16 @@
 import { Typography } from "@mui/material";
-import { Dict, MathUtils, nullthrows, Num, Random, Vec } from "common";
+import { Dict, MathUtils, nullthrows, Random, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { IndexHash } from "games/core/ux/IndexHash";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { Objectives } from "../utils/Objectives";
@@ -36,7 +37,7 @@ export default createRandomGameStep({
 
   resolve: (_config, productIds, isResolution, resolutionTile) =>
     isResolution && resolutionTile === MISSION_POSSIBLE_IDX
-      ? Num.encode_base32(Random.index(pairsArrayForProducts(productIds!)))
+      ? Random.index(pairsArrayForProducts(productIds!))
       : null,
 
   skip: (_value, [_productIds, isResolution, resolutionTile]) =>
@@ -50,8 +51,8 @@ export default createRandomGameStep({
 });
 
 function InstanceVariableComponent({
-  value: hash,
-}: VariableStepInstanceComponentProps<string>): JSX.Element {
+  value: idx,
+}: VariableStepInstanceComponentProps<number>): JSX.Element {
   const productIds = useRequiredInstanceValue(productsMetaStep);
 
   const cards = useMemo(
@@ -59,13 +60,13 @@ function InstanceVariableComponent({
       Dict.sort_by_key(
         Dict.from_keys(
           nullthrows(
-            pairsArrayForProducts(productIds).at(Num.decode_base32(hash)),
-            `Hash ${hash} is out of range`
+            pairsArrayForProducts(productIds).at(idx),
+            `Index ${idx} is out of range`
           ),
           (cardIdx) => Objectives.cards[cardIdx]
         )
       ),
-    [hash, productIds]
+    [idx, productIds]
   );
 
   return (
@@ -81,9 +82,7 @@ function InstanceVariableComponent({
         </GrammaticalList>{" "}
         and place them near the triumph track.
       </Typography>
-      <Typography variant="caption" sx={{ marginTop: 2 }}>
-        <pre>Hash: {hash}</pre>
-      </Typography>
+      <IndexHash idx={idx} />
     </>
   );
 }

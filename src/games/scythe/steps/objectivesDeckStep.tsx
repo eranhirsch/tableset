@@ -30,12 +30,12 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [productIds, isResolutions, resolution, missionPossibleHash],
+  dependencies: [productIds, isResolutions, resolution, _],
 }: DerivedStepInstanceComponentProps<
   readonly ScytheProductId[],
   boolean,
   number,
-  string
+  number
 >): JSX.Element {
   const isMissionPossible =
     isResolutions && resolution === MISSION_POSSIBLE_IDX;
