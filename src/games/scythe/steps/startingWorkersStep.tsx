@@ -56,13 +56,13 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [factionIds, isModular, boardType, tilesHash, homeBasesHash],
+  dependencies: [factionIds, isModular, boardType, tilesHash, homeBasesIdx],
 }: DerivedStepInstanceComponentProps<
   readonly FactionId[],
   boolean,
   BoardId,
   string,
-  string
+  number
 >): JSX.Element {
   const manualInstructions = (
     <BlockWithFootnotes
@@ -81,7 +81,7 @@ function InstanceDerivedComponent({
           {((isModular &&
             boardType != null &&
             tilesHash != null &&
-            homeBasesHash != null) ||
+            homeBasesIdx != null) ||
             factionIds != null) &&
             ":"}
         </>
@@ -90,14 +90,14 @@ function InstanceDerivedComponent({
   );
 
   if (isModular) {
-    if (boardType == null || tilesHash == null || homeBasesHash == null) {
+    if (boardType == null || tilesHash == null || homeBasesIdx == null) {
       return manualInstructions;
     }
 
     return (
       <HeaderAndSteps synopsis={manualInstructions}>
         {Vec.maybe_map(
-          Vec.sort(HomeBases.decode(homeBasesHash)),
+          Vec.sort(HomeBases.decode(homeBasesIdx)),
           (fid, homeBaseIdx) =>
             fid === "empty" ? undefined : (
               <ModularFaction

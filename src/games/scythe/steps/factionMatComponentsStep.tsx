@@ -2,7 +2,7 @@ import { C, Dict, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps,
+  DerivedStepInstanceComponentProps
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
@@ -43,7 +43,7 @@ function InstanceDerivedComponent({
     factionIds,
     order,
     isModular,
-    homeBasesHash,
+    homeBasesIdx,
   ],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
@@ -51,16 +51,16 @@ function InstanceDerivedComponent({
   readonly FactionId[],
   readonly PlayerId[],
   boolean,
-  string
+  number
 >): JSX.Element {
   const actualFactionIds = useMemo(
     () =>
       factionIds != null
         ? factionIds
-        : homeBasesHash != null
-        ? HomeBases.decode(homeBasesHash)
+        : homeBasesIdx != null
+        ? HomeBases.decode(homeBasesIdx)
         : Factions.availableForProducts(productIds!),
-    [factionIds, homeBasesHash, productIds]
+    [factionIds, homeBasesIdx, productIds]
   );
 
   return (

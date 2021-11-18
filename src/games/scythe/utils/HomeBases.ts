@@ -1,20 +1,24 @@
-import { MathUtils, nullthrows, Num, Random, Vec } from "common";
+import { $, $nullthrows, MathUtils, Random, Vec } from "common";
 import { FactionId, Factions } from "./Factions";
 
+type HomeBaseId = FactionId | "empty";
+
 export const HomeBases = {
-  randomHash: () =>
-    Num.encode_base32(
-      Random.index(MathUtils.permutations_lazy_array(availableHomeBases()))
+  randomIdx: (): number =>
+    $(
+      availableHomeBases,
+      ($$) => MathUtils.permutations_lazy_array($$),
+      ($$) => Random.index($$)
     ),
 
-  decode: (hash: string) =>
-    nullthrows(
-      MathUtils.permutations_lazy_array(availableHomeBases()).at(
-        Num.decode_base32(hash)
-      ),
-      `Hash ${hash} could not be converted to a permutation`
+  decode: (idx: number): readonly HomeBaseId[] =>
+    $(
+      availableHomeBases,
+      ($$) => MathUtils.permutations_lazy_array($$),
+      ($$) => $$.at(idx),
+      $nullthrows(`Hash ${idx} could not be converted to a permutation`)
     ),
 } as const;
 
-const availableHomeBases = (): readonly (FactionId | "empty")[] =>
+const availableHomeBases = (): readonly HomeBaseId[] =>
   Vec.concat(Factions.availableForProducts(["base", "invaders"]), "empty");

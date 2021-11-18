@@ -7,6 +7,7 @@ import {
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { IndexHash } from "games/core/ux/IndexHash";
 import { useMemo } from "react";
 import { Factions } from "../utils/Factions";
 import { HomeBases } from "../utils/HomeBases";
@@ -21,7 +22,7 @@ export default createRandomGameStep({
 
   isTemplatable: (modular) => modular.canResolveTo(true),
 
-  resolve: (_, isModular) => (isModular ? HomeBases.randomHash() : null),
+  resolve: (_, isModular) => (isModular ? HomeBases.randomIdx() : null),
 
   skip: (_, [isModular]) => !isModular,
 
@@ -32,9 +33,9 @@ export default createRandomGameStep({
 });
 
 function InstanceVariableComponent({
-  value: basesHash,
-}: VariableStepInstanceComponentProps<string>): JSX.Element {
-  const perm = useMemo(() => HomeBases.decode(basesHash), [basesHash]);
+  value: basesIdx,
+}: VariableStepInstanceComponentProps<number>): JSX.Element {
+  const perm = useMemo(() => HomeBases.decode(basesIdx), [basesIdx]);
 
   return (
     <Stack direction="column" spacing={1}>
@@ -61,9 +62,7 @@ function InstanceVariableComponent({
           )
         )}
       </Box>
-      <Typography variant="caption" sx={{ marginTop: 2 }}>
-        <pre>Hash: {basesHash}</pre>
-      </Typography>
+      <IndexHash idx={basesIdx} />
     </Stack>
   );
 }

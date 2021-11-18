@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { invariant, Vec } from "common";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps,
+  DerivedStepInstanceComponentProps
 } from "games/core/steps/createDerivedGameStep";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
@@ -31,15 +31,15 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, _, homeBasesHash],
+  dependencies: [playerIds, _, homeBasesIdx],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   boolean,
-  string
+  number
 >): JSX.Element {
   const homeBases = useMemo(
-    () => (homeBasesHash == null ? null : HomeBases.decode(homeBasesHash)),
-    [homeBasesHash]
+    () => (homeBasesIdx == null ? null : HomeBases.decode(homeBasesIdx)),
+    [homeBasesIdx]
   );
 
   const removeCount =
