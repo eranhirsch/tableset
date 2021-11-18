@@ -4,12 +4,7 @@
  * @see https://github.com/facebook/hhvm/blob/master/hphp/hsl/src/dict/combine.php
  */
 import { Dict as D, tuple, Vec } from "common";
-import {
-  DictLike,
-  RemappedDict,
-  TransformedDict,
-  ValueOf,
-} from "../_private/typeUtils";
+import { DictLike, TransformedDict, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj where each element in `keys` maps to the
@@ -71,15 +66,10 @@ const inner_join = <
   right: Readonly<Tright>
 ): Readonly<
   Record<keyof Tleft, [left: ValueOf<Tleft>, right: ValueOf<Tright>]>
-> => {
-  return D.filter_nulls(
-    // We dont use left-join here because it's harder to do the null checks
-    // inside the tuples cleanly without casts.
-    D.map_with_key(left, (key, value) =>
-      key in right ? tuple(value, right[key]) : undefined
-    )
+> =>
+  D.maybe_map_with_key(left, (key, value) =>
+    key in right ? tuple(value, right[key]) : undefined
   );
-};
 
 const outer_join = <Tleft extends DictLike, Tright extends DictLike>(
   left: Readonly<Tleft>,
@@ -106,7 +96,7 @@ const compose = <
 >(
   inner: Readonly<Tinner>,
   outer: Readonly<Touter>
-): Readonly<RemappedDict<Tinner, ValueOf<Touter> | undefined>> =>
+): Readonly<Required<Record<keyof Tinner, ValueOf<Touter> | undefined>>> =>
   D.map(inner, (innerValue) => outer[innerValue]);
 
 export const Dict = {

@@ -5,12 +5,7 @@
  */
 
 import { Dict as D, tuple, Vec } from "common";
-import {
-  DictLike,
-  RekeyedDict,
-  RemappedDict,
-  ValueOf
-} from "../_private/typeUtils";
+import { DictLike, ValueOf } from "../_private/typeUtils";
 
 /**
  * @returns a new mapper-obj mapping each value to the number of times it
@@ -155,7 +150,7 @@ const group_by = <Tk extends keyof any, Tv>(
 const map = <T extends DictLike, Tv>(
   dict: Readonly<T>,
   valueFunc: (value: ValueOf<T>, index: number) => Tv
-): Readonly<RemappedDict<T, Tv>> =>
+): Readonly<Required<Record<keyof T, Tv>>> =>
   map_with_key(dict, (_, value, index) => valueFunc(value, index));
 
 /**
@@ -165,18 +160,14 @@ const map = <T extends DictLike, Tv>(
  */
 const map_keys = <T extends DictLike, Tk extends keyof any>(
   dict: Readonly<T>,
-  keyFunc: (key: keyof T) => Tk
-): Readonly<RekeyedDict<T, Tk>> =>
-  pull_with_key(
-    dict,
-    (_, value) => value,
-    (key) => keyFunc(key)
-  );
+  keyFunc: (key: keyof T, index: number) => Tk
+): Readonly<Required<Record<Tk, ValueOf<T>>>> =>
+  pull_with_key(dict, (_, value) => value, keyFunc);
 
 const map_with_key = <T extends DictLike, Tv>(
   dict: Readonly<T>,
   valueFunc: (key: keyof T, value: ValueOf<T>, index: number) => Tv
-): Readonly<RemappedDict<T, Tv>> =>
+): Readonly<Required<Record<keyof T, Tv>>> =>
   pull_with_key(dict, valueFunc, (key) => key);
 
 /**

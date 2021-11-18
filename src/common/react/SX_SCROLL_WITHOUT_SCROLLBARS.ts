@@ -1,5 +1,5 @@
 import { Theme } from "@emotion/react";
-import { SxProps } from "@mui/material/node_modules/@mui/system";
+import { SxProps } from "@mui/system";
 
 /**
  * Spread this into an SX prop in a component to enable scrolling it but hiding

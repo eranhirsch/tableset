@@ -169,7 +169,10 @@ export const maybe_map_with_key = <T extends DictLike, Tv>(
 ): Readonly<RemappedDict<T, Tv>> =>
   // TODO: See why typing here isn't detecting the type for `filter_nulls`
   // properly, requiring this cast :(
-  filter_nulls(D.map_with_key(dict, mapperFunc)) as RemappedDict<T, Tv>;
+  filter_nulls(D.map_with_key(dict, mapperFunc)) as unknown as RemappedDict<
+    T,
+    Tv
+  >;
 
 export const Dict = {
   diff_by_key,
