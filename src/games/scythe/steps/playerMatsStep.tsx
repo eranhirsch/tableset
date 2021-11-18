@@ -17,7 +17,7 @@ import {
   Typography
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { C, Dict, Num, Random, Shape, Vec } from "common";
+import { C, Dict, Random, Shape, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
@@ -37,6 +37,7 @@ import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { IndexHash } from "games/core/ux/IndexHash";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
@@ -721,9 +722,7 @@ function InstanceVariableComponent({
           )
         )}
       </Stack>
-      <Typography variant="caption" sx={{ marginTop: 2 }}>
-        <pre>Hash: {Num.encode_base32(matsIdx)}</pre>
-      </Typography>
+      <IndexHash idx={matsIdx} />
     </Stack>
   );
 }
