@@ -57,6 +57,7 @@ export function TemplateItem({
       elevation={element == null ? undefined : selected ? 5 : 2}
     >
       <ListItemButton
+        selected={false}
         onClick={
           element != null
             ? selected
