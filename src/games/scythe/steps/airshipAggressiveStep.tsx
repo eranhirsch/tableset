@@ -24,7 +24,10 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
   return (
     <Typography variant="body1">
-      Find the <ChosenElement>{Airships.tiles[tileId]}</ChosenElement>{" "}
+      Find the{" "}
+      <ChosenElement extraInfo={`(${tileId + 1})`}>
+        {Airships.tiles[tileId]}
+      </ChosenElement>{" "}
       <em>aggressive airship tile</em> and place it near the{" "}
       <em>encounters deck</em>.
     </Typography>
