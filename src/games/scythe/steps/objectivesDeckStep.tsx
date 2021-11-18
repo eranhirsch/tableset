@@ -7,11 +7,9 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { ScytheProductId } from "../ScytheProductId";
 import { Objectives } from "../utils/Objectives";
-import missionPossibleStep, {
-  MISSION_POSSIBLE_IDX,
-} from "./missionPossibleStep";
+import missionPossibleStep from "./missionPossibleStep";
 import productsMetaStep from "./productsMetaStep";
-import resolutionTileStep from "./resolutionTileStep";
+import resolutionTileStep, { MISSION_POSSIBLE_ID } from "./resolutionTileStep";
 import resolutionVariant from "./resolutionVariant";
 
 export default createDerivedGameStep({
@@ -24,7 +22,7 @@ export default createDerivedGameStep({
   ],
   skip: ([_products, isResolution, resolutionTile, missionPossibleHash]) =>
     isResolution! &&
-    resolutionTile === MISSION_POSSIBLE_IDX &&
+    resolutionTile === MISSION_POSSIBLE_ID &&
     missionPossibleHash == null,
   InstanceDerivedComponent,
 });
@@ -37,8 +35,7 @@ function InstanceDerivedComponent({
   number,
   number
 >): JSX.Element {
-  const isMissionPossible =
-    isResolutions && resolution === MISSION_POSSIBLE_IDX;
+  const isMissionPossible = isResolutions && resolution === MISSION_POSSIBLE_ID;
   return (
     <HeaderAndSteps synopsis="Prepare the objectives deck:">
       <BlockWithFootnotes

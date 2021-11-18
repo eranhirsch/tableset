@@ -15,14 +15,8 @@ import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { Objectives } from "../utils/Objectives";
 import productsMetaStep from "./productsMetaStep";
-import resolutionTileStep from "./resolutionTileStep";
+import resolutionTileStep, { MISSION_POSSIBLE_ID } from "./resolutionTileStep";
 import resolutionVariant from "./resolutionVariant";
-
-/**
- * This is the tile number for "Mission Possible", we use a 1-based array to
- * index the result of the `resolutionTileStep`
- */
-export const MISSION_POSSIBLE_IDX = 6;
 
 export default createRandomGameStep({
   id: "missionPossible",
@@ -33,16 +27,16 @@ export default createRandomGameStep({
 
   isTemplatable: (_, isResolution, resolutionTile) =>
     isResolution.canResolveTo(true) &&
-    resolutionTile.canResolveTo(MISSION_POSSIBLE_IDX),
+    resolutionTile.canResolveTo(MISSION_POSSIBLE_ID),
 
   resolve: (_config, productIds, isResolution, resolutionTile) =>
-    isResolution && resolutionTile === MISSION_POSSIBLE_IDX
+    isResolution && resolutionTile === MISSION_POSSIBLE_ID
       ? Random.index(pairsArrayForProducts(productIds!))
       : null,
 
   skip: (_value, [_productIds, isResolution, resolutionTile]) =>
     !isResolution ||
-    (resolutionTile != null && resolutionTile !== MISSION_POSSIBLE_IDX),
+    (resolutionTile != null && resolutionTile !== MISSION_POSSIBLE_ID),
 
   ...NoConfigPanel,
 

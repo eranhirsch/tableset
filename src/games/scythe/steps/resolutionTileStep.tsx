@@ -8,19 +8,19 @@ import { createTrivialSingleItemSelector } from "games/global";
 import productsMetaStep from "./productsMetaStep";
 import resolutionVariant from "./resolutionVariant";
 
-const RESOLUTION_TILES = [
-  // skip this, it's just here to make the array 1-based to match the cards
-  "__ERROR",
 
+const MISSION_POSSIBLE = "Mission Possible";
+const RESOLUTION_TILES = [
   "Land Rush",
   "Factory Explosion",
   "Spoils of War",
   "King of the Hill",
   "Deja Vu",
-  "Mission Possible",
+  MISSION_POSSIBLE,
   "Doomsday Clock",
   "Backup Plan",
 ] as const;
+export const MISSION_POSSIBLE_ID = RESOLUTION_TILES.indexOf(MISSION_POSSIBLE);
 
 export default createTrivialSingleItemSelector({
   id: "resolution",
@@ -31,7 +31,7 @@ export default createTrivialSingleItemSelector({
 
   availableForProducts: (productIds) =>
     productIds.includes("windGambit")
-      ? Vec.range(1, RESOLUTION_TILES.length - 1)
+      ? Vec.range(0, RESOLUTION_TILES.length - 1)
       : [],
 
   labelForId: (resolutionId) => RESOLUTION_TILES[resolutionId],
@@ -45,7 +45,10 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
   return (
     <Box>
-      Place the <ChosenElement>{RESOLUTION_TILES[index]}</ChosenElement>{" "}
+      Place the{" "}
+      <ChosenElement extraInfo={`(${index + 1})`}>
+        {RESOLUTION_TILES[index]}
+      </ChosenElement>{" "}
       <em>resolution</em> tile face-up near the triumph track.
     </Box>
   );
