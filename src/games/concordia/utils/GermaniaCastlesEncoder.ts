@@ -1,4 +1,5 @@
 import {
+  $,
   Dict,
   invariant,
   MathUtils,
@@ -9,7 +10,7 @@ import {
 } from "common";
 import { CombinationsLazyArray } from "common/standard_library/math/combinationsLazyArray";
 import { PermutationsLazyArray } from "common/standard_library/math/permutationsLazyArray";
-import CityResourcesEncoder from "./CityResourcesEncoder";
+import { CityResources } from "./CityResources";
 import { MAPS } from "./MAPS";
 import { Resource } from "./resource";
 
@@ -39,6 +40,7 @@ const EXTRA_BONUS_TILES_IN_SALSA: Readonly<Record<Resource, number>> = {
 };
 
 export const LOCATIONS = [
+  /* spell-checker: disable */
   "Vbii",
   "Belgica",
   "Francia (near Mogonatiacvm)",
@@ -49,13 +51,14 @@ export const LOCATIONS = [
   "Gallia",
   "Alpes",
   "Helvetia",
+  /* spell-checker: enable */
 ] as const;
 
 type CastleResource = Readonly<Record<typeof LOCATIONS[number], Resource>>;
 
 const remainingResources = (
   withSalsa: boolean,
-  citiesHash: string,
+  citiesIndex: number,
   useSalsaTiles: boolean
 ): readonly Resource[] =>
   Vec.diff(
@@ -73,11 +76,7 @@ const remainingResources = (
     ),
     // Tiles used as bonus resources for provinces
     Vec.values(
-      CityResourcesEncoder.decodeProvinceBonuses(
-        "germania",
-        withSalsa,
-        citiesHash
-      )
+      CityResources.decodeProvinceBonuses(citiesIndex, "germania", withSalsa)
     )
   );
 
@@ -93,13 +92,13 @@ export const EXPECTED_REMAINING_RESOURCES_COUNT =
 export const NUM_LEFT_OVER =
   EXPECTED_REMAINING_RESOURCES_COUNT - LOCATIONS.length;
 
-export default {
+export const GermaniaCastles = {
   randomHash(
     withSalsa: boolean,
-    citiesHash: string,
+    citiesIndex: number,
     useSalsaTiles: boolean
   ): string {
-    const remaining = remainingResources(withSalsa, citiesHash, useSalsaTiles);
+    const remaining = remainingResources(withSalsa, citiesIndex, useSalsaTiles);
 
     // Pick tiles in excess of the number of tiles we need to fulfil all
     // locations to be returned to the box
@@ -131,18 +130,17 @@ export default {
       }
     }
 
-    return Vec.map(
-      Vec.concat(
-        [resourcesIndex, leftoversIndex],
-        useSalsaTiles ? [SALSA_TILES_INDEX] : []
-      ),
-      ($$) => Num.encode_base32($$)
-    ).join(DIVIDER);
+    return $(
+      [resourcesIndex, leftoversIndex],
+      ($$) => Vec.concat($$, useSalsaTiles ? [SALSA_TILES_INDEX] : []),
+      ($$) => Vec.map($$, (item) => Num.encode_base32(item)),
+      ($$) => $$.join(DIVIDER)
+    );
   },
 
   decode(
     withSalsa: boolean,
-    citiesHash: string,
+    citiesIndex: number,
     castlesHash: string
   ): CastleResource {
     const [resourcesIndex, leftoversIndex, useSalsaTilesIndex] = Vec.map(
@@ -152,7 +150,7 @@ export default {
 
     const useSalsaTiles = useSalsaTilesIndex === SALSA_TILES_INDEX;
 
-    const remaining = remainingResources(withSalsa, citiesHash, useSalsaTiles);
+    const remaining = remainingResources(withSalsa, citiesIndex, useSalsaTiles);
     const leftoverCombinations = leftoverTilesCombinations(
       remaining,
       useSalsaTiles

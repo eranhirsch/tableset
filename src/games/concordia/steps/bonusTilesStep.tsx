@@ -3,13 +3,13 @@ import { Dict, Vec } from "common";
 import React, { useMemo } from "react";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps,
+  DerivedStepInstanceComponentProps
 } from "../../core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
 import { ConcordiaProductId } from "../ConcordiaProductId";
-import CityResourcesEncoder from "../utils/CityResourcesEncoder";
+import { CityResources } from "../utils/CityResources";
 import { MapId, MAPS } from "../utils/MAPS";
 import { RESOURCE_COST, RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
@@ -35,23 +35,23 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [products, mapId, withSalt, hash, withFish],
+  dependencies: [products, mapId, withSalt, index, withFish],
 }: DerivedStepInstanceComponentProps<
   readonly ConcordiaProductId[],
   MapId,
   boolean,
-  string,
+  number,
   boolean
 >): JSX.Element {
   if (withFish) {
     return <FishMarket products={products!} />;
   }
 
-  return mapId != null && hash != null ? (
+  return mapId != null && index != null ? (
     <ComputedInstanceComponent
       mapId={mapId}
       withSalt={withSalt ?? false}
-      hash={hash}
+      index={index}
     />
   ) : (
     <IncompleteInstanceDerivedComponent
@@ -197,15 +197,15 @@ function IncompleteInstanceDerivedComponent({
 function ComputedInstanceComponent({
   mapId,
   withSalt,
-  hash,
+  index,
 }: {
   mapId: MapId;
   withSalt: boolean;
-  hash: string;
+  index: number;
 }): JSX.Element | null {
   const provinceResource = useMemo(
-    () => CityResourcesEncoder.decodeProvinceBonuses(mapId, withSalt, hash),
-    [hash, mapId, withSalt]
+    () => CityResources.decodeProvinceBonuses(index, mapId, withSalt),
+    [index, mapId, withSalt]
   );
 
   return (

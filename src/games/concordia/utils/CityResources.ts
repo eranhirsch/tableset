@@ -5,7 +5,6 @@ import {
   Dict,
   invariant,
   MathUtils,
-  Num,
   Random,
   tuple,
   Vec,
@@ -48,16 +47,16 @@ export const REGULAR_MAPS_SALT_ALTERNATIVE: Readonly<Record<ZoneId, Resource>> =
     D: "bricks",
   };
 
-type CityResources = Readonly<Record<string /* cityName */, Resource>>;
+type Cities = Readonly<Record<string /* cityName */, Resource>>;
 type ProvinceCityResources = Readonly<
-  Record<string /* provinceName */, CityResources>
+  Record<string /* provinceName */, Cities>
 >;
 type ProvinceBonusResource = Readonly<
   Record<string /* provinceName */, Resource | null>
 >;
 
-export default {
-  randomHash: (mapId: MapId, withSalsa: boolean): string =>
+export const CityResources = {
+  randomIndex: (mapId: MapId, withSalsa: boolean): number =>
     $(
       Vec.map_with_key(MAPS[mapId].provinces, (zoneId) =>
         $(
@@ -66,30 +65,28 @@ export default {
           ($$) => tuple($$.length, Random.index($$))
         )
       ),
-      ($$) =>
-        $$.reduce((ongoing, [radix, digit]) => ongoing * radix + digit, 0),
-      Num.encode_base32
+      ($$) => $$.reduce((ongoing, [radix, digit]) => ongoing * radix + digit, 0)
     ),
 
   decodeCityResources,
 
   decodeProvinceBonuses(
+    index: number,
     mapId: MapId,
-    withSalsa: boolean,
-    hash: string
+    withSalsa: boolean
   ): ProvinceBonusResource {
-    const bonusTiles = $(decodeCityResources(mapId, withSalsa, hash), ($$) =>
-      Dict.map($$, (cityResources) =>
+    const bonusTiles = Dict.map(
+      decodeCityResources(index, mapId, withSalsa),
+      (cityResources) =>
         $(
           cityResources,
           Vec.values,
           ($$) => Vec.filter($$, (resource) => resource !== "salt"),
           ($$) => MathUtils.max_by($$, (resource) => RESOURCE_COST[resource]),
           $nullthrows(
-            `Empty city resources encountered for ${mapId} and ${hash}`
+            `Empty city resources encountered for ${mapId} and ${index}`
           )
         )
-      )
     );
 
     if (mapId === "creta") {
@@ -102,9 +99,9 @@ export default {
 } as const;
 
 function decodeCityResources(
+  index: number,
   mapId: MapId,
-  withSalsa: boolean,
-  hash: string
+  withSalsa: boolean
 ): ProvinceCityResources {
   return $(
     // Start by looking at what provinces on this map
@@ -126,7 +123,7 @@ function decodeCityResources(
       Vec.zip(
         Vec.map($$, ([provinces]) => provinces),
         decodeHash(
-          hash,
+          index,
           Vec.map($$, ([_, perms]) => perms)
         )
       ),
@@ -158,27 +155,24 @@ function decodeCityResources(
 }
 
 const decodeHash = (
-  hash: string,
+  index: number,
   permsArr: readonly PermutationsLazyArray<Resource>[]
 ): readonly (readonly Resource[])[] =>
   $(
-    hash,
-    Num.decode_base32,
-    ($$) =>
-      // We reduce from the right side to "undo" the logic done when encoding
-      permsArr.reduceRight(
-        ([zoneResources, remainder], perms) =>
-          $(
-            remainder % perms.length,
-            ($$) => perms.at($$),
-            $nullthrows(
-              `Hash ${hash} caused and out-of-bounds error for permutations ${perms}`
-            ),
-            ($$) => Vec.concat([$$], zoneResources),
-            ($$) => tuple($$, Math.floor(remainder / perms.length))
+    // We reduce from the right side to "undo" the logic done when encoding
+    permsArr.reduceRight(
+      ([zoneResources, remainder], perms) =>
+        $(
+          remainder % perms.length,
+          ($$) => perms.at($$),
+          $nullthrows(
+            `Index ${index} caused and out-of-bounds error for permutations ${perms}`
           ),
-        [[], $$] as [readonly (readonly Resource[])[], number]
-      ),
+          ($$) => Vec.concat([$$], zoneResources),
+          ($$) => tuple($$, Math.floor(remainder / perms.length))
+        ),
+      [[], index] as [readonly (readonly Resource[])[], number]
+    ),
     $invariant(
       ($$) => $$[1] === 0,
       ($$) => `Error decoding hash, remainder was not 0: ${$$[1]}`

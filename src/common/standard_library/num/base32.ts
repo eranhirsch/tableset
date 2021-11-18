@@ -1,7 +1,5 @@
 import { $, $invariant, $log } from "common";
 
-const DEFAULT_SEPARATOR = "-";
-
 /**
  * These characters are too similar in most fonts, making it hard to tell what
  * character to use when copying the string manually. We change them in the
@@ -20,10 +18,7 @@ const REPLACEMENTS = [
  */
 const MAX_SAFE_INTEGER_ENCODED = "7VVVVVVVVVV";
 
-const encode_base32 = (
-  x: number | bigint,
-  separator: string | undefined = DEFAULT_SEPARATOR
-): string =>
+const encode_base32 = (x: number | bigint, separator?: string): string =>
   $(
     x.toString(32).toUpperCase(),
     ($$) =>

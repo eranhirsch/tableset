@@ -1,23 +1,25 @@
-import { Divider, Grid, Stack, Typography, useTheme } from "@mui/material";
+import { Divider, Grid, Stack, Typography } from "@mui/material";
 import { Dict, MathUtils, Shape, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { IndexHash } from "games/core/ux/IndexHash";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { HeaderAndSteps } from "../../core/ux/HeaderAndSteps";
-import CityResourcesEncoder, {
+import {
+  CityResources,
   CITY_TILES,
   REGULAR_MAPS_SALT_ALTERNATIVE,
-  SALT_MAP_EXTRA_RESOURCE,
-} from "../utils/CityResourcesEncoder";
+  SALT_MAP_EXTRA_RESOURCE
+} from "../utils/CityResources";
 import { MapId, MAPS, ZoneId } from "../utils/MAPS";
 import { RESOURCE_NAME } from "../utils/resource";
 import RomanTitle from "../ux/RomanTitle";
@@ -31,14 +33,14 @@ export default createRandomGameStep({
 
   dependencies: [productsMetaStep, mapStep, saltVariantStep],
 
-  isType: (x): x is string => typeof x === "string",
+  isType: (x): x is number => typeof x === "number" && x >= 0,
 
   InstanceVariableComponent,
   InstanceManualComponent,
 
   isTemplatable: (_, map) => map.willResolve(),
   resolve: (_config, _products, mapId, withSalt) =>
-    CityResourcesEncoder.randomHash(
+    CityResources.randomIndex(
       // We can force mapId here with `!` because the element is only
       // templatable when map will resolve (see isTemplatable)
       mapId!,
@@ -49,17 +51,15 @@ export default createRandomGameStep({
 });
 
 function InstanceVariableComponent({
-  value: hash,
-}: VariableStepInstanceComponentProps<string>): JSX.Element {
-  const theme = useTheme();
-
+  value: index,
+}: VariableStepInstanceComponentProps<number>): JSX.Element {
   // TODO: Move this to dependencies
   const mapId = useRequiredInstanceValue(mapStep);
   const withSalt = useRequiredInstanceValue(saltVariantStep);
 
   const provinces = useMemo(
-    () => CityResourcesEncoder.decodeCityResources(mapId, withSalt, hash),
-    [hash, mapId, withSalt]
+    () => CityResources.decodeCityResources(index, mapId, withSalt),
+    [index, mapId, withSalt]
   );
 
   return (
@@ -100,9 +100,7 @@ function InstanceVariableComponent({
             </>
           ))
         )}
-        <Typography variant="caption" sx={{ marginTop: theme.spacing(2) }}>
-          <pre>Hash: {hash}</pre>
-        </Typography>
+        <IndexHash idx={index} />
       </Stack>
     </>
   );

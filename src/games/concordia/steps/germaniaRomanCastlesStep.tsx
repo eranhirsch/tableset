@@ -6,7 +6,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Dict, Vec } from "common";
+import { $, Dict, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
@@ -24,8 +24,9 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import React, { useMemo } from "react";
 import { ConcordiaProductId } from "../ConcordiaProductId";
-import GermaniaCastlesEncoder, {
+import {
   EXPECTED_REMAINING_RESOURCES_COUNT,
+  GermaniaCastles,
   LOCATIONS,
   NUM_LEFT_OVER,
 } from "../utils/GermaniaCastlesEncoder";
@@ -60,7 +61,7 @@ export default createRandomGameStep({
     cities.willResolve(),
   resolve: (config, products, map, withSalt, cities) =>
     map === "germania"
-      ? GermaniaCastlesEncoder.randomHash(
+      ? GermaniaCastles.randomHash(
           withSalt ?? false,
           // We can force non-null because we make sure it will resolve in
           // isTemplatable
@@ -87,7 +88,7 @@ function ConfigPanel({
   readonly ConcordiaProductId[],
   MapId,
   boolean,
-  string
+  number
 >): JSX.Element {
   if (!products.willContain("salsa")) {
     return <NoConfigPanel.ConfigPanel />;
@@ -132,7 +133,7 @@ function InstanceVariableComponent({
   const cityTilesHash = useRequiredInstanceValue(cityTilesStep);
 
   const resourceLocations = useMemo(
-    () => GermaniaCastlesEncoder.decode(withSalt, cityTilesHash, castlesHash),
+    () => GermaniaCastles.decode(withSalt, cityTilesHash, castlesHash),
     [castlesHash, cityTilesHash, withSalt]
   );
 
@@ -172,16 +173,16 @@ function InstanceVariableComponent({
 function InstanceManualComponent(): JSX.Element {
   const mapId = useOptionalInstanceValue(mapStep);
   const withSalt = useRequiredInstanceValue(saltVariantStep);
-  const citiesHash = useOptionalInstanceValue(cityTilesStep);
+  const citiesIndex = useOptionalInstanceValue(cityTilesStep);
 
   return (
     <HeaderAndSteps synopsis={<Header mapId={mapId} />}>
       <BlockWithFootnotes
         footnote={
-          citiesHash != null ? (
+          citiesIndex != null ? (
             <>
               The remaining tiles would be:{" "}
-              <RemainingTiles withSalt={withSalt} citiesHash={citiesHash} />
+              <RemainingTiles withSalt={withSalt} citiesIndex={citiesIndex} />
             </>
           ) : (
             <>You should have {EXPECTED_REMAINING_RESOURCES_COUNT} tiles.</>
@@ -236,30 +237,31 @@ function Header({ mapId }: { mapId: MapId | null }): JSX.Element {
 
 function RemainingTiles({
   withSalt,
-  citiesHash,
+  citiesIndex,
 }: {
   withSalt: boolean;
-  citiesHash: string;
+  citiesIndex: number;
 }): JSX.Element {
   return (
     <GrammaticalList>
-      {Vec.map_with_key(
-        Dict.sort_by_key(
-          Dict.count_values(
-            GermaniaCastlesEncoder.remainingResources(
-              withSalt,
-              citiesHash,
-              // TODO: We abuse the withSalt param here to guess that the user
-              // has the extra salsa tiles and that they want to use them.
-              // ideally we should either check for the product explicitly,
-              // or even tell the user about the extra tiles so they can decide
-              // themselves.
-              withSalt /* useSalsaTiles */
-            )
-          ),
-          (resource) => -RESOURCE_COST[resource]
+      {$(
+        GermaniaCastles.remainingResources(
+          withSalt,
+          citiesIndex,
+          // TODO: We abuse the withSalt param here to guess that the user
+          // has the extra salsa tiles and that they want to use them.
+          // ideally we should either check for the product explicitly,
+          // or even tell the user about the extra tiles so they can decide
+          // themselves.
+          withSalt /* useSalsaTiles */
         ),
-        (resource, count) => `${count} ${RESOURCE_NAME[resource]}`
+        Dict.count_values,
+        ($$) => Dict.sort_by_key($$, (resource) => -RESOURCE_COST[resource]),
+        ($$) =>
+          Vec.map_with_key(
+            $$,
+            (resource, count) => `${count} ${RESOURCE_NAME[resource]}`
+          )
       )}
     </GrammaticalList>
   );
