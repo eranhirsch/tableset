@@ -4,7 +4,7 @@ import {
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
-import { IndexHash } from "games/core/ux/IndexHash";
+import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { useMemo } from "react";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
@@ -74,7 +74,7 @@ function InstanceVariableComponent({
           </ListItem>
         ))}
       </List>
-      <IndexHash idx={index} />
+      <IndexHashCaption idx={index} />
     </Stack>
   );
 }

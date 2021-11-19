@@ -7,7 +7,8 @@ import {
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { IndexHash } from "games/core/ux/IndexHash";
+import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
+import { IndexHashInstanceCardContents } from "games/core/ux/IndexHashInstanceCardContents";
 import { isIndexType } from "games/global/coercers/isIndexType";
 import { useMemo } from "react";
 import { Factions } from "../utils/Factions";
@@ -33,6 +34,7 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
+  InstanceCardContents: IndexHashInstanceCardContents,
 });
 
 function InstanceVariableComponent({
@@ -65,7 +67,7 @@ function InstanceVariableComponent({
           )
         )}
       </Box>
-      <IndexHash idx={basesIdx} />
+      <IndexHashCaption idx={basesIdx} />
     </Stack>
   );
 }

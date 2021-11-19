@@ -12,6 +12,7 @@ import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
+  InstanceCardContentsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
@@ -50,6 +51,9 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
     props: VariableStepInstanceComponentProps<ItemId>
   ): JSX.Element;
   InstanceManualComponent(): JSX.Element;
+  InstanceCardContents?(
+    props: InstanceCardContentsProps<ItemId, readonly Pid[], boolean>
+  ): JSX.Element;
 }
 
 const createTrivialSingleItemSelector = <
@@ -88,7 +92,9 @@ const createTrivialSingleItemSelector = <
     skip: (_, [productIds, isOn]) =>
       !isOn || Vec.is_empty(availableForProducts(productIds!)),
 
-    ConfigPanel: (props) => (
+    ConfigPanel: (
+      props: ConfigPanelProps<TemplateConfig<ItemId>, readonly Pid[], boolean>
+    ) => (
       <ConfigPanel
         {...props}
         availableForProducts={availableForProducts}

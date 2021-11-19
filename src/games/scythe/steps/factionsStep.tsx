@@ -2,13 +2,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { invariant, Random, Shape, Vec } from "common";
+import { $, Dict, invariant, Random, Shape, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
+  InstanceCardContentsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
@@ -112,6 +113,7 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
+  InstanceCardContents,
 });
 
 function ConfigPanel({
@@ -333,6 +335,28 @@ function InstanceManualComponent(): JSX.Element {
         <em>one per player</em>.
       </>
     </HeaderAndSteps>
+  );
+}
+
+function InstanceCardContents({
+  value: factionIds,
+  dependencies: [_playerIds, _productIds, _isModular],
+}: InstanceCardContentsProps<
+  readonly FactionId[],
+  readonly PlayerId[],
+  readonly ScytheProductId[],
+  boolean
+>): JSX.Element {
+  return (
+    <>
+      {$(
+        Dict.from_keys(factionIds, (fid) => Factions[fid]),
+        ($$) =>
+          Vec.map_with_key($$, (fid, { color, abbreviated }) => (
+            <Chip key={fid} size="small" label={abbreviated} color={color} />
+          ))
+      )}
+    </>
   );
 }
 

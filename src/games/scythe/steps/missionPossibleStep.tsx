@@ -10,7 +10,9 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { IndexHash } from "games/core/ux/IndexHash";
+import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
+import { IndexHashInstanceCardContents } from "games/core/ux/IndexHashInstanceCardContents";
+import { isIndexType } from "games/global/coercers/isIndexType";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { Objectives } from "../utils/Objectives";
@@ -22,6 +24,8 @@ export default createRandomGameStep({
   id: "missionPossible",
 
   labelOverride: "Resolution: Mission Possible",
+
+  isType: isIndexType,
 
   dependencies: [productsMetaStep, resolutionVariant, resolutionTileStep],
 
@@ -42,6 +46,7 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
+  InstanceCardContents: IndexHashInstanceCardContents,
 });
 
 function InstanceVariableComponent({
@@ -76,7 +81,7 @@ function InstanceVariableComponent({
         </GrammaticalList>{" "}
         and place them near the triumph track.
       </Typography>
-      <IndexHash idx={idx} />
+      <IndexHashCaption idx={idx} />
     </>
   );
 }

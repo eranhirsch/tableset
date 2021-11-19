@@ -5,11 +5,11 @@ import {
   useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
-import { IndexHash } from "games/core/ux/IndexHash";
+import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
@@ -18,7 +18,7 @@ import {
   CityResources,
   CITY_TILES,
   REGULAR_MAPS_SALT_ALTERNATIVE,
-  SALT_MAP_EXTRA_RESOURCE
+  SALT_MAP_EXTRA_RESOURCE,
 } from "../utils/CityResources";
 import { MapId, MAPS, ZoneId } from "../utils/MAPS";
 import { RESOURCE_NAME } from "../utils/resource";
@@ -100,7 +100,7 @@ function InstanceVariableComponent({
             </>
           ))
         )}
-        <IndexHash idx={index} />
+        <IndexHashCaption idx={index} />
       </Stack>
     </>
   );

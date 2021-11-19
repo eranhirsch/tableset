@@ -12,7 +12,7 @@ import {
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { IndexHash } from "games/core/ux/IndexHash";
+import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { firstPlayerStep, fullPlayOrder, playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
@@ -229,7 +229,7 @@ function InstancePatricians({
         {patricians.length % 3 > 0 && <Grid item xs={4} />}
         {patricians.length % 3 === 1 && <Grid item xs={4} />}
       </Grid>
-      <IndexHash idx={forumIndex} />
+      <IndexHashCaption idx={forumIndex} />
     </>
   );
 }

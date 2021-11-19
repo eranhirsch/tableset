@@ -21,23 +21,24 @@ import { C, Dict, Random, Shape, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import {
   templateValue,
-  UnchangedTemplateValue,
+  UnchangedTemplateValue
 } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  InstanceCardContentsProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { IndexHash } from "games/core/ux/IndexHash";
+import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
@@ -80,7 +81,7 @@ class MatConstraintsError extends Error {
 }
 
 export default createRandomGameStep({
-  id: "playerMats",
+  id: "mats",
   dependencies: [playersMetaStep, productsMetaStep, factionsStep],
 
   isType: (x: unknown): x is number => typeof x === "number",
@@ -98,6 +99,7 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
+  InstanceCardContents,
 });
 
 function resolve(
@@ -722,7 +724,7 @@ function InstanceVariableComponent({
           )
         )}
       </Stack>
-      <IndexHash idx={matsIdx} />
+      <IndexHashCaption idx={matsIdx} />
     </Stack>
   );
 }
@@ -801,6 +803,36 @@ function InstanceManualComponent(): JSX.Element {
         ) : null
       )}
     </HeaderAndSteps>
+  );
+}
+
+function InstanceCardContents({
+  value: index,
+  dependencies: [playerIds, productIds, factionIds],
+}: InstanceCardContentsProps<
+  number,
+  readonly PlayerId[],
+  readonly ScytheProductId[],
+  readonly FactionId[]
+>): JSX.Element {
+  const pairs = useMemo(
+    () =>
+      factionPlayerMatPairs(playerIds!.length, index, factionIds, productIds!),
+    [factionIds, index, playerIds, productIds]
+  );
+
+  return (
+    <>
+      {Vec.map(pairs, ([faction, mat]) => (
+        <Chip
+          key={mat!.abbreviated}
+          size="small"
+          variant={faction != null ? "filled" : "outlined"}
+          color={faction != null ? faction.color : undefined}
+          label={mat!.abbreviated}
+        />
+      ))}
+    </>
   );
 }
 
