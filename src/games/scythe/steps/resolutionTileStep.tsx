@@ -1,13 +1,16 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Vec } from "common";
-import { VariableStepInstanceComponentProps } from "games/core/steps/createRandomGameStep";
+import {
+  InstanceCardContentsProps,
+  VariableStepInstanceComponentProps,
+} from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createTrivialSingleItemSelector } from "games/global";
+import { ScytheProductId } from "../ScytheProductId";
 import productsMetaStep from "./productsMetaStep";
 import resolutionVariant from "./resolutionVariant";
-
 
 const MISSION_POSSIBLE = "Mission Possible";
 const RESOLUTION_TILES = [
@@ -41,6 +44,7 @@ export default createTrivialSingleItemSelector({
 
   InstanceVariableComponent,
   InstanceManualComponent,
+  InstanceCardContents,
 });
 
 function InstanceVariableComponent({
@@ -80,5 +84,21 @@ function InstanceManualComponent(): JSX.Element {
       </>
       <>Put the tile face-up near the triumph track.</>
     </HeaderAndSteps>
+  );
+}
+
+function InstanceCardContents({
+  value: itemId,
+  dependencies: [_productIds, _isResolution],
+}: InstanceCardContentsProps<
+  number,
+  readonly ScytheProductId[],
+  boolean
+>): JSX.Element {
+  return (
+    <Typography variant="subtitle1" color="primary">
+      <strong>{RESOLUTION_TILES[itemId]}</strong>
+      <br />({itemId + 1})
+    </Typography>
   );
 }

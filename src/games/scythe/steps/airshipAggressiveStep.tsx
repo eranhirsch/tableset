@@ -1,16 +1,20 @@
 import { Typography } from "@mui/material";
-import { VariableStepInstanceComponentProps } from "games/core/steps/createRandomGameStep";
+import {
+  InstanceCardContentsProps,
+  VariableStepInstanceComponentProps,
+} from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createTrivialSingleItemSelector } from "games/global";
+import { ScytheProductId } from "../ScytheProductId";
 import { Airships } from "../utils/Airships";
 import airshipVariant from "./airshipVariant";
 import productsMetaStep from "./productsMetaStep";
 
 export default createTrivialSingleItemSelector({
   id: "airshipAggressive",
-  labelOverride: "Airship: Aggressive Ability",
+  labelOverride: "Airship: Aggressive",
 
   isType: (x: unknown): x is number =>
     typeof x === "number" && Airships.aggressive.includes(x),
@@ -21,6 +25,7 @@ export default createTrivialSingleItemSelector({
   labelForId: (tileId) => Airships.tiles[tileId],
   InstanceVariableComponent,
   InstanceManualComponent,
+  InstanceCardContents,
 });
 
 function InstanceVariableComponent({
@@ -67,5 +72,21 @@ function InstanceManualComponent(): JSX.Element {
         encounters deck.
       </>
     </HeaderAndSteps>
+  );
+}
+
+function InstanceCardContents({
+  value: itemId,
+  dependencies: [_productIds, _isAirships],
+}: InstanceCardContentsProps<
+  number,
+  readonly ScytheProductId[],
+  boolean
+>): JSX.Element {
+  return (
+    <Typography variant="subtitle1" color="primary">
+      <strong>{Airships.tiles[itemId]}</strong>
+      <br />({itemId + 1})
+    </Typography>
   );
 }

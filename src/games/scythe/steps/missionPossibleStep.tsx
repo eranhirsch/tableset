@@ -1,8 +1,9 @@
 import { Typography } from "@mui/material";
-import { Dict, MathUtils, nullthrows, Random, Vec } from "common";
+import { $, $nullthrows, Dict, MathUtils, Random, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
+  InstanceCardContentsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
@@ -11,7 +12,6 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
-import { IndexHashInstanceCardContents } from "games/core/ux/IndexHashInstanceCardContents";
 import { isIndexType } from "games/global/coercers/isIndexType";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
@@ -46,7 +46,7 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCardContents: IndexHashInstanceCardContents,
+  InstanceCardContents,
 });
 
 function InstanceVariableComponent({
@@ -55,16 +55,7 @@ function InstanceVariableComponent({
   const productIds = useRequiredInstanceValue(productsMetaStep);
 
   const cards = useMemo(
-    () =>
-      Dict.sort_by_key(
-        Dict.from_keys(
-          nullthrows(
-            pairsArrayForProducts(productIds).at(idx),
-            `Index ${idx} is out of range`
-          ),
-          (cardIdx) => Objectives.cards[cardIdx]
-        )
-      ),
+    () => pairFromIndex(idx, productIds),
     [idx, productIds]
   );
 
@@ -74,7 +65,7 @@ function InstanceVariableComponent({
         Find objective cards{" "}
         <GrammaticalList>
           {Vec.map_with_key(cards, (cardId, text) => (
-            <ChosenElement key={cardId} extraInfo={`(${cardId})`}>
+            <ChosenElement key={cardId} extraInfo={`(${cardId + 1})`}>
               {text}
             </ChosenElement>
           ))}
@@ -112,8 +103,46 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
+function InstanceCardContents({
+  value: index,
+  dependencies: [productIds, _isResolution, _resolutionIndex],
+}: InstanceCardContentsProps<
+  number,
+  readonly ScytheProductId[],
+  boolean,
+  number
+>): JSX.Element {
+  const [a, b] = useMemo(
+    () => Vec.values(pairFromIndex(index, productIds!)),
+    [index, productIds]
+  );
+
+  return (
+    <>
+      <Typography variant="body2" color="primary">
+        {a},
+      </Typography>
+      <Typography variant="body2" color="primary">
+        {b}
+      </Typography>
+    </>
+  );
+}
+
 const pairsArrayForProducts = (productIds: readonly ScytheProductId[]) =>
   MathUtils.combinations_lazy_array(
     Objectives.availableForProducts(productIds),
     2
+  );
+
+const pairFromIndex = (
+  index: number,
+  productIds: readonly ScytheProductId[]
+): Readonly<Record<number, string>> =>
+  $(
+    pairsArrayForProducts(productIds),
+    ($$) => $$.at(index),
+    $nullthrows(`Index ${index} is out of range`),
+    ($$) => Dict.from_keys($$, (cardIdx) => Objectives.cards[cardIdx]),
+    Dict.sort_by_key
   );

@@ -93,6 +93,7 @@ function InstanceCard({
           ":last-child": { paddingBottom: 0 },
           flex: "0 0 75%",
           display: "flex",
+          flexWrap: "wrap",
           justifyContent: "center",
           alignItems: "center",
           textAlign: "center",

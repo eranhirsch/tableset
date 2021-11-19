@@ -2,9 +2,6 @@ import { Vec } from "common";
 import { ScytheProductId } from "../ScytheProductId";
 
 const CARDS = [
-  // skip this, it's just here to make the array 1-based to match the cards
-  "__ERROR",
-
   // 1
   "Higher Ground Advantage",
   "Underworld Advantage",
@@ -49,7 +46,7 @@ export const Objectives = {
   cards: CARDS,
   availableForProducts: (productIds: readonly ScytheProductId[]) =>
     Vec.concat(
-      productIds.includes("base") ? Vec.range(1, 23) : [],
-      productIds.includes("promo3") ? Vec.range(24, 27) : []
+      productIds.includes("base") ? Vec.range(0, 22) : [],
+      productIds.includes("promo3") ? Vec.range(23, 26) : []
     ),
 } as const;
