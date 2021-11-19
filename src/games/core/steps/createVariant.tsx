@@ -1,10 +1,10 @@
 import { Box } from "@mui/material";
-import { Dict, Random, type_invariant, Vec } from "common";
-import { ConfigPanelProps } from "features/template/Templatable";
+import { Dict, invariant_violation, Random, type_invariant, Vec } from "common";
 import { templateValue } from "features/template/templateSlice";
 import { PercentSlider } from "../ux/PercentSlider";
 import { createGameStep } from "./createGameStep";
 import {
+  ConfigPanelProps,
   InstanceContext,
   RandomGameStep,
   TemplateContext,
@@ -154,6 +154,11 @@ export function createVariant({
 
     ConfigPanel,
     ConfigPanelTLDR,
+
+    InstanceCardContents: () =>
+      invariant_violation(
+        `Variant ${baseStep.id} should not be displayed as a card!`
+      ),
 
     disabledTLDROverride: "Never",
   };

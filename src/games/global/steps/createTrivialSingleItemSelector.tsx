@@ -8,11 +8,11 @@ import {
 } from "@mui/material";
 import { $, C, Num, Random, Shape, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
-import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
+  ConfigPanelProps,
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
 import { ProductId, StepId } from "model/Game";
@@ -44,6 +44,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
 
   // Required fields for createRandomGameStep
   id: StepId;
+  isType(x: unknown): x is ItemId;
   labelOverride?: string;
   InstanceVariableComponent(
     props: VariableStepInstanceComponentProps<ItemId>

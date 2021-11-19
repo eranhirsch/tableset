@@ -24,12 +24,12 @@ import {
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
-import { ConfigPanelProps } from "features/template/Templatable";
 import {
   templateValue,
   UnchangedTemplateValue,
 } from "features/template/templateSlice";
 import {
+  ConfigPanelProps,
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";

@@ -2,9 +2,11 @@ import LinkIcon from "@mui/icons-material/Link";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
 import { Box, Grid, IconButton, Typography } from "@mui/material";
 import { Random } from "common";
-import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
-import { createRandomGameStep } from "games/core/steps/createRandomGameStep";
+import {
+  ConfigPanelProps,
+  createRandomGameStep,
+} from "games/core/steps/createRandomGameStep";
 import { PercentSlider } from "games/core/ux/PercentSlider";
 import { useEffect, useState } from "react";
 import { ConcordiaProductId } from "../ConcordiaProductId";

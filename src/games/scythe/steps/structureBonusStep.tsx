@@ -52,6 +52,10 @@ const TILES_IN_PRODUCTS: Readonly<
 
 export default createTrivialSingleItemSelector({
   id: "structureBonus",
+
+  isType: (x: unknown): x is TileKey =>
+    typeof x === "string" && BONUS_TILES[x as TileKey] != null,
+
   productsMetaStep,
   availableForProducts,
   labelForId: (tileId) => BONUS_TILES[tileId],

@@ -11,6 +11,10 @@ import productsMetaStep from "./productsMetaStep";
 export default createTrivialSingleItemSelector({
   id: "airshipAggressive",
   labelOverride: "Airship: Aggressive Ability",
+
+  isType: (x: unknown): x is number =>
+    typeof x === "number" && Airships.aggressive.includes(x),
+
   productsMetaStep,
   variantStep: airshipVariant,
   availableForProducts: () => Airships.aggressive,

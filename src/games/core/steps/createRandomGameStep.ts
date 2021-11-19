@@ -1,6 +1,6 @@
 import { Dict, nullthrows, type_invariant, Vec } from "common";
 import { SetupStep } from "features/instance/instanceSlice";
-import { ConfigPanelProps, Templatable } from "features/template/Templatable";
+import { Templatable } from "features/template/Templatable";
 import { TemplateElement } from "features/template/templateSlice";
 import { StepId } from "model/Game";
 import { Skippable } from "model/Skippable";
@@ -30,6 +30,65 @@ export interface RandomGameStep<T = unknown, C = unknown>
     Templatable<T, C> {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
 }
+
+export type ConfigPanelProps<
+  C,
+  D0 = never,
+  D1 = never,
+  D2 = never,
+  D3 = never,
+  D4 = never,
+  D5 = never,
+  D6 = never,
+  D7 = never,
+  D8 = never,
+  D9 = never
+> = Readonly<{
+  config: Readonly<C>;
+  queries: readonly [
+    Query<D0>,
+    Query<D1>,
+    Query<D2>,
+    Query<D3>,
+    Query<D4>,
+    Query<D5>,
+    Query<D6>,
+    Query<D7>,
+    Query<D8>,
+    Query<D9>
+  ];
+  onChange(
+    newConfig: Readonly<C> | ((currentConfig: Readonly<C>) => Readonly<C>)
+  ): void;
+}>;
+
+export type InstanceCardContentsProps<
+  T,
+  D0 = never,
+  D1 = never,
+  D2 = never,
+  D3 = never,
+  D4 = never,
+  D5 = never,
+  D6 = never,
+  D7 = never,
+  D8 = never,
+  D9 = never
+> = Readonly<{
+  value: T;
+  dependencies: readonly [
+    D0 | undefined,
+    D1 | undefined,
+    D2 | undefined,
+    D3 | undefined,
+    D4 | undefined,
+    D5 | undefined,
+    D6 | undefined,
+    D7 | undefined,
+    D8 | undefined,
+    D9 | undefined
+  ];
+}>;
 
 type Options<
   T,
@@ -141,6 +200,21 @@ type Options<
       props: ConfigPanelProps<C, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
     ): JSX.Element;
     ConfigPanelTLDR(props: { config: C }): JSX.Element;
+    InstanceCardContents?(
+      props: InstanceCardContentsProps<
+        T,
+        D1,
+        D2,
+        D3,
+        D4,
+        D5,
+        D6,
+        D7,
+        D8,
+        D9,
+        D10
+      >
+    ): JSX.Element;
     disabledTLDROverride?: string;
     isVariant?: true;
   };
@@ -180,6 +254,10 @@ interface OptionsInternal<T, C>
       newConfig: Readonly<C> | ((currentConfig: Readonly<C>) => Readonly<C>)
     ): void;
   }): JSX.Element;
+  InstanceCardContents?(props: {
+    value: T;
+    dependencies: readonly unknown[];
+  }): JSX.Element;
 }
 
 export function createRandomGameStep<
@@ -205,6 +283,7 @@ export function createRandomGameStep<T, C>({
   dependencies,
   disabledTLDROverride,
   initialConfig,
+  InstanceCardContents,
   InstanceVariableComponent,
   isTemplatable,
   isType,
@@ -342,6 +421,9 @@ export function createRandomGameStep<T, C>({
 
     ConfigPanel,
     ConfigPanelTLDR,
+
+    InstanceCardContents,
+
     disabledTLDROverride,
   };
 

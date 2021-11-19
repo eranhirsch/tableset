@@ -1,8 +1,10 @@
 import { Grid, Typography } from "@mui/material";
 import { Random } from "common";
-import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
-import { createRandomGameStep } from "games/core/steps/createRandomGameStep";
+import {
+  ConfigPanelProps,
+  createRandomGameStep,
+} from "games/core/steps/createRandomGameStep";
 import { PercentSlider } from "games/core/ux/PercentSlider";
 import fishMarketVariant from "./fishMarketVariant";
 

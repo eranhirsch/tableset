@@ -2,12 +2,12 @@ import { Avatar, Badge, Stack, Typography } from "@mui/material";
 import { Random, Vec } from "common";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
-import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import React from "react";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerId } from "../../../model/Player";
 import {
+  ConfigPanelProps,
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";

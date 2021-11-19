@@ -8,6 +8,7 @@ import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHash } from "games/core/ux/IndexHash";
+import { isIndexType } from "games/global/coercers/isIndexType";
 import { useMemo } from "react";
 import { HexType, HEX_TYPE_LABEL } from "../utils/HexType";
 import { ModularMapTiles } from "../utils/ModularMapTiles";
@@ -16,6 +17,8 @@ import modularBoardVariant from "./modularBoardVariant";
 export default createRandomGameStep({
   id: "mapTiles",
   labelOverride: "Modular: Map Tiles",
+
+  isType: isIndexType,
 
   dependencies: [modularBoardVariant],
 

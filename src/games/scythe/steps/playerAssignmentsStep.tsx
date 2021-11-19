@@ -20,11 +20,11 @@ import {
   useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
-import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
+  ConfigPanelProps,
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { playersMetaStep } from "games/global";
@@ -34,14 +34,14 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult
+  DropResult,
 } from "react-beautiful-dnd";
 import { ScytheProductId } from "../ScytheProductId";
 import { Faction, FactionId, Factions } from "../utils/Factions";
 import {
   factionPlayerMatIdPairs,
   factionPlayerMatPairs,
-  playerAssignments
+  playerAssignments,
 } from "../utils/playerAssignments";
 import { Mat, MatId, PlayerMats } from "../utils/PlayerMats";
 import { FactionChip } from "../ux/FactionChip";
@@ -64,6 +64,9 @@ export default createRandomGameStep({
     factionsStep,
     playerMatsStep,
   ],
+
+  isType: (x: unknown): x is readonly PlayerId[] =>
+    Array.isArray(x) && (x.length === 0 || typeof x[0] === "string"),
 
   isTemplatable: (_players, _products, factions, playerMats) =>
     factions.willResolve() || playerMats.willResolve(),

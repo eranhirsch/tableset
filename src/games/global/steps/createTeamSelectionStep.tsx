@@ -13,8 +13,8 @@ import { C, invariant, Random, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { playersSelectors } from "features/players/playersSlice";
-import { ConfigPanelProps } from "features/template/Templatable";
 import {
+  ConfigPanelProps,
   createRandomGameStep,
   RandomGameStep,
   VariableStepInstanceComponentProps,

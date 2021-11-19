@@ -1,11 +1,11 @@
 import { Grid, Typography } from "@mui/material";
 import { Random } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
-import { ConfigPanelProps } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import {
+  ConfigPanelProps,
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { PercentSlider } from "games/core/ux/PercentSlider";
@@ -19,6 +19,9 @@ export type BoardId = "farms" | "noFarms";
 export default createRandomGameStep({
   id: "map",
   dependencies: [modularBoardVariant],
+
+  isType: (x: unknown): x is BoardId => x === "farms" || x ==="noFarms",
+
   isTemplatable: (modular) => modular.canResolveTo(true),
   initialConfig: () => ({ percentFarms: 50 }),
   resolve: (config, modular) =>

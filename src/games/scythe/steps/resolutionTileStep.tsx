@@ -25,6 +25,9 @@ export const MISSION_POSSIBLE_ID = RESOLUTION_TILES.indexOf(MISSION_POSSIBLE);
 export default createTrivialSingleItemSelector({
   id: "resolution",
 
+  isType: (x: unknown): x is number =>
+    typeof x === "number" && x < RESOLUTION_TILES.length,
+
   productsMetaStep,
 
   variantStep: resolutionVariant,

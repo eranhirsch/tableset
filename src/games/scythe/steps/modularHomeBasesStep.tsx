@@ -8,6 +8,7 @@ import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHash } from "games/core/ux/IndexHash";
+import { isIndexType } from "games/global/coercers/isIndexType";
 import { useMemo } from "react";
 import { Factions } from "../utils/Factions";
 import { HomeBases } from "../utils/HomeBases";
@@ -17,6 +18,8 @@ export default createRandomGameStep({
   id: "homeBases",
 
   labelOverride: "Modular: Home Bases",
+
+  isType: isIndexType,
 
   dependencies: [modularBoardVariant],
 
