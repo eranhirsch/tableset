@@ -5,7 +5,8 @@ import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  InstanceCardContentsProps,
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { PercentSlider } from "games/core/ux/PercentSlider";
@@ -20,7 +21,7 @@ export default createRandomGameStep({
   id: "map",
   dependencies: [modularBoardVariant],
 
-  isType: (x: unknown): x is BoardId => x === "farms" || x ==="noFarms",
+  isType: (x: unknown): x is BoardId => x === "farms" || x === "noFarms",
 
   isTemplatable: (modular) => modular.canResolveTo(true),
   initialConfig: () => ({ percentFarms: 50 }),
@@ -35,6 +36,7 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
   InstanceVariableComponent,
   InstanceManualComponent,
+  InstanceCardContents,
 });
 
 function ConfigPanel({
@@ -126,6 +128,17 @@ function InstanceManualComponent(): JSX.Element {
         </>
       )}{" "}
       at the center of the table.
+    </Typography>
+  );
+}
+
+function InstanceCardContents({
+  value,
+  dependencies: [_isModular],
+}: InstanceCardContentsProps<BoardId, boolean>): JSX.Element {
+  return (
+    <Typography variant="h6" color="primary">
+      <strong>{label(value)}</strong>
     </Typography>
   );
 }

@@ -95,6 +95,7 @@ function InstanceCard({
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          textAlign: "center",
         }}
       >
         {children}
