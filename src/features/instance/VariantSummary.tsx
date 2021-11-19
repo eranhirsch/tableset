@@ -43,12 +43,15 @@ export function VariantSummary(): JSX.Element | null {
   }
 
   return (
-    <Stack direction="column" paddingY={3}>
-      <Box display="flex" gap={1} flexWrap="wrap">
-        <Typography variant="overline">Variants:</Typography>
+    <Stack component="section" direction="column" paddingY={3}>
+      <Box component="section" display="flex" gap={1} flexWrap="wrap">
+        <Typography component="header" variant="overline">
+          Variants:
+        </Typography>
         {Vec.map_with_key(variants, (stepId, step) => (
           <Chip
             key={stepId}
+            component="article"
             label={step.label}
             color={expandedStepId === stepId ? "secondary" : "primary"}
             icon={
@@ -65,9 +68,11 @@ export function VariantSummary(): JSX.Element | null {
           />
         ))}
       </Box>
-      <Collapse in={expandedStepId != null} unmountOnExit>
+      <Collapse component="section" in={expandedStepId != null} unmountOnExit>
         <Box paddingTop={1}>
-          <Typography variant="caption">Description</Typography>
+          <Typography component="header" variant="caption">
+            Description
+          </Typography>
           {expandedElement.current}
         </Box>
       </Collapse>
