@@ -8,6 +8,9 @@ export function FactionChip({
   factionId: FactionId;
   onClick?(): void;
 }): JSX.Element {
-  const { color, name } = Factions[factionId];
-  return <Chip size="small" color={color} label={name} onClick={onClick} />;
+  const {
+    color,
+    name: { short },
+  } = Factions[factionId];
+  return <Chip size="small" color={color} label={short} onClick={onClick} />;
 }

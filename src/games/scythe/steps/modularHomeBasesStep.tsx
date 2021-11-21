@@ -64,7 +64,7 @@ function InstanceVariableComponent({
             <Chip
               key={fid}
               color={Factions[fid].color}
-              label={Factions[fid].name}
+              label={Factions[fid].name.full}
             />
           )
         )}

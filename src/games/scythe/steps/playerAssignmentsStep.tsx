@@ -537,7 +537,9 @@ function PlayerAssignment({
       {faction != null ? (
         <Chip
           color={faction.color}
-          label={mat != null ? `${mat.name} ${faction.name}` : faction.name}
+          label={
+            mat != null ? `${mat.name} ${faction.name.short}` : faction.name
+          }
         />
       ) : (
         mat!.name
@@ -608,7 +610,7 @@ function InstanceManualComponent(): JSX.Element {
                   label={
                     <>
                       {mat != null && <em>{mat.name} </em>}
-                      {faction.name}
+                      {faction.name.short}
                     </>
                   }
                 />

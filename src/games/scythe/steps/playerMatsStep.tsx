@@ -719,7 +719,7 @@ function InstanceVariableComponent({
                 color={faction.color}
                 label={
                   <>
-                    <em>{mat!.name}</em> {faction.name}
+                    <em>{mat!.name}</em> {faction.name.short}
                   </>
                 }
               />

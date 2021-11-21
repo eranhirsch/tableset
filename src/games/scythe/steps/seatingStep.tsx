@@ -66,8 +66,8 @@ function InstanceDerivedComponent({
                   ),
                   ({ order }) => order
                 ),
-                (_, { color, name }) => (
-                  <Chip size="small" color={color} label={name} />
+                (_, { color, name: { short } }) => (
+                  <Chip size="small" color={color} label={short} />
                 )
               )}
             </GrammaticalList>
