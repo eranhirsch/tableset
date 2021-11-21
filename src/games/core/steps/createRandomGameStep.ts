@@ -202,7 +202,7 @@ type Options<
     ConfigPanelTLDR(props: { config: C }): JSX.Element;
     InstanceCards?(
       props: InstanceCardsProps<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
-    ): JSX.Element;
+    ): JSX.Element | null;
     disabledTLDROverride?: string;
     isVariant?: true;
   };
@@ -245,7 +245,7 @@ interface OptionsInternal<T, C>
   InstanceCards?(props: {
     value: T;
     dependencies: readonly unknown[];
-  }): JSX.Element;
+  }): JSX.Element | null;
 }
 
 export function createRandomGameStep<

@@ -4,7 +4,10 @@ import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { $, Dict, invariant, Random, Shape, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
-import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
+import {
+  useHasDownstreamInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import {
@@ -25,6 +28,7 @@ import { FactionId, Factions } from "../utils/Factions";
 import { FactionChip } from "../ux/FactionChip";
 import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
+import { ScytheStepId } from "./ScytheStepId";
 
 type TemplateConfig = {
   always: readonly FactionId[];
@@ -350,7 +354,16 @@ function InstanceCards({
   readonly PlayerId[],
   readonly ScytheProductId[],
   boolean
->): JSX.Element {
+>): JSX.Element | null {
+  const willRenderPlayerMatsCards = useHasDownstreamInstanceValue(
+    ScytheStepId.MATS
+  );
+  if (willRenderPlayerMatsCards) {
+    // We render the factions information as part of the player mats step so we
+    // can drop these cards.
+    return null;
+  }
+
   return (
     <>
       {$(

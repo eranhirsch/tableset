@@ -51,6 +51,7 @@ import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
 import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
+import { ScytheStepId } from "./ScytheStepId";
 
 const MAX_ATTEMPTS = 5;
 
@@ -82,7 +83,7 @@ class MatConstraintsError extends Error {
 }
 
 export default createRandomGameStep({
-  id: "mats",
+  id: ScytheStepId.MATS,
   dependencies: [playersMetaStep, productsMetaStep, factionsStep],
 
   isType: (x: unknown): x is number => typeof x === "number",

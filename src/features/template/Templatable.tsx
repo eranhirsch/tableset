@@ -50,7 +50,7 @@ export interface Templatable<T = unknown, C = unknown> extends WithDependencies 
   InstanceCards?(props: {
     value: T;
     dependencies: readonly unknown[];
-  }): JSX.Element;
+  }): JSX.Element | null;
 }
 
 export const isTemplatable = (x: GameStepBase): x is Templatable =>
