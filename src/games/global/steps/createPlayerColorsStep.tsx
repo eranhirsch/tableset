@@ -14,6 +14,7 @@ import {
 import { useAppSelector } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
 import { Dict, invariant, Random, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { playersSelectors } from "features/players/playersSlice";
@@ -21,9 +22,11 @@ import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
+  InstanceCardsProps,
   RandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
+import { ProductId } from "model/Game";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
@@ -41,18 +44,18 @@ type TemplateConfig = Record<PlayerId, GamePiecesColor>;
 // doesn't HAVE to be, so don't merge the two type definitions.
 type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
 
-interface Options<ProductId> {
-  productsMetaStep: VariableGameStep<readonly ProductId[]>;
+interface Options<Pid extends ProductId> {
+  productsMetaStep: VariableGameStep<readonly Pid[]>;
   availableColors(
     playerIds: readonly PlayerId[],
-    products: readonly ProductId[]
+    products: readonly Pid[]
   ): readonly GamePiecesColor[];
 }
 
-const createPlayerColorsStep = <ProductId,>({
+const createPlayerColorsStep = <Pid extends ProductId>({
   productsMetaStep,
   availableColors,
-}: Options<ProductId>): RandomGameStep<PlayerColors, TemplateConfig> =>
+}: Options<Pid>): RandomGameStep<PlayerColors, TemplateConfig> =>
   createRandomGameStep({
     id: "colors",
 
@@ -135,6 +138,8 @@ const createPlayerColorsStep = <ProductId,>({
       />
     ),
     ConfigPanelTLDR,
+
+    InstanceCards,
   });
 export default createPlayerColorsStep;
 
@@ -510,14 +515,14 @@ function InstanceVariableComponent({
   );
 }
 
-function InstanceManualComponent<ProductId>({
+function InstanceManualComponent<Pid extends ProductId>({
   availableColors,
   productsMetaStep,
 }: {
-  productsMetaStep: VariableGameStep<readonly ProductId[]>;
+  productsMetaStep: VariableGameStep<readonly Pid[]>;
   availableColors(
     playerIds: readonly PlayerId[],
-    products: readonly ProductId[]
+    products: readonly Pid[]
   ): readonly GamePiecesColor[];
 }): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
@@ -554,6 +559,25 @@ function InstanceManualComponent<ProductId>({
         </>
       )}
     </BlockWithFootnotes>
+  );
+}
+
+function InstanceCards<Pid extends ProductId>({
+  value: colors,
+  dependencies: [_playerIds, _productIds],
+}: InstanceCardsProps<
+  PlayerColors,
+  readonly PlayerId[],
+  readonly Pid[]
+>): JSX.Element {
+  return (
+    <>
+      {Vec.map_with_key(colors, (playerId, color) => (
+        <InstanceCard key={playerId} title="Color" playerId={playerId}>
+          <Chip color={color} label={colorName[color]} />
+        </InstanceCard>
+      ))}
+    </>
   );
 }
 
