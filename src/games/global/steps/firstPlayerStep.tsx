@@ -1,5 +1,6 @@
 import { Avatar, Badge, Stack, Typography } from "@mui/material";
 import { Random, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { templateValue } from "features/template/templateSlice";
@@ -9,6 +10,7 @@ import { PlayerId } from "../../../model/Player";
 import {
   ConfigPanelProps,
   createRandomGameStep,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import playersMetaStep from "./playersMetaStep";
@@ -43,6 +45,8 @@ export default createRandomGameStep({
 
   ConfigPanel,
   ConfigPanelTLDR,
+
+  InstanceCards,
 });
 
 function ConfigPanel({
@@ -96,5 +100,23 @@ function ConfigPanelTLDR({
     <>Random</>
   ) : (
     <PlayerShortName playerId={playerId} />
+  );
+}
+
+function InstanceCards({
+  value: playerId,
+  dependencies: [_playerIds],
+}: InstanceCardsProps<PlayerId, readonly PlayerId[]>): JSX.Element {
+  return (
+    <InstanceCard title="First" playerId={playerId}>
+      <Badge
+        color="primary"
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        overlap="circular"
+        badgeContent="1"
+      >
+        <PlayerAvatar playerId={playerId} inline />
+      </Badge>
+    </InstanceCard>
   );
 }
