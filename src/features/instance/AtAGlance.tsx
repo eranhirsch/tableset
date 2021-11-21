@@ -25,10 +25,7 @@ export function AtAGlance(): JSX.Element {
 
   return (
     <section>
-      <Typography component="header" variant="h5">
-        At a Glance
-      </Typography>
-      <Grid container spacing={1}>
+      <Grid container columnSpacing={2} rowSpacing={3} marginY={3}>
         {Vec.map(components, ([step, value]) => (
           <InstanceCards
             key={step.id}

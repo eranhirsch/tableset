@@ -43,7 +43,7 @@ export function VariantSummary(): JSX.Element | null {
   }
 
   return (
-    <Stack component="section" direction="column" paddingY={3}>
+    <Stack component="section" direction="column" paddingY={2}>
       <Box component="section" display="flex" gap={1} flexWrap="wrap">
         <Typography component="header" variant="overline">
           Variants:
