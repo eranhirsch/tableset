@@ -406,7 +406,9 @@ function InstanceCards({
   return (
     <InstanceCard title="Map">
       <Typography variant="subtitle1" color="primary">
-        <strong>{MAPS[mapId].name}</strong>
+        <strong>
+          <RomanTitle>{MAPS[mapId].name}</RomanTitle>
+        </strong>
       </Typography>
     </InstanceCard>
   );
