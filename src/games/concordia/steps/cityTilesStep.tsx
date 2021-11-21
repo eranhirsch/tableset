@@ -6,6 +6,7 @@ import {
 } from "features/instance/useInstanceValue";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
+import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import React, { useMemo } from "react";
 import {
   createRandomGameStep,
@@ -48,6 +49,10 @@ export default createRandomGameStep({
     ),
 
   ...NoConfigPanel,
+
+  InstanceCards: (props) => (
+    <IndexHashInstanceCard title="City Tiles" {...props} />
+  ),
 });
 
 function InstanceVariableComponent({

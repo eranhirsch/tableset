@@ -5,6 +5,7 @@ import {
 } from "features/instance/useInstanceValue";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
+import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { isIndexType } from "games/global/coercers/isIndexType";
 import { useMemo } from "react";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
@@ -38,6 +39,8 @@ export default createRandomGameStep({
     ),
 
   ...NoConfigPanel,
+
+  InstanceCards: (props) => <IndexHashInstanceCard title="Market" {...props} />,
 });
 
 function InstanceVariableComponent({

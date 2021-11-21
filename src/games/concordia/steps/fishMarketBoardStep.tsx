@@ -1,9 +1,11 @@
 import { Grid, Typography } from "@mui/material";
 import { Random } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
+  InstanceCardsProps,
 } from "games/core/steps/createRandomGameStep";
 import { PercentSlider } from "games/core/ux/PercentSlider";
 import fishMarketVariant from "./fishMarketVariant";
@@ -41,6 +43,8 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
   InstanceVariableComponent,
   InstanceManualComponent,
+
+  InstanceCards,
 });
 
 function ConfigPanel({
@@ -113,6 +117,19 @@ function InstanceManualComponent(): JSX.Element {
     <Typography variant="body1">
       Pick a side of the fish market to play on and put it near the main board.
     </Typography>
+  );
+}
+
+function InstanceCards({
+  value: boardId,
+  dependencies: [isFishMarket],
+}: InstanceCardsProps<FishBoardType, boolean>): JSX.Element {
+  return (
+    <InstanceCard title="Board Side" subheader="Fish">
+      <Typography variant="h6" color="primary">
+        <strong>{label(boardId)}</strong>
+      </Typography>
+    </InstanceCard>
   );
 }
 

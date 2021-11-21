@@ -1,5 +1,6 @@
 import { Button, Chip, Grid, styled, Typography } from "@mui/material";
 import { C, Dict, MathUtils, nullthrows, Random, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/global";
@@ -8,6 +9,7 @@ import React, { useCallback, useMemo } from "react";
 import {
   ConfigPanelProps,
   createRandomGameStep,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
@@ -93,6 +95,8 @@ export default createRandomGameStep({
 
   ConfigPanel,
   ConfigPanelTLDR,
+
+  InstanceCards,
 });
 
 function ConfigPanel({
@@ -388,6 +392,23 @@ function InstanceManualComponent() {
         </Typography>
       )}
     </BlockWithFootnotes>
+  );
+}
+
+function InstanceCards({
+  value: mapId,
+  dependencies: [_productIds, _playerIds],
+}: InstanceCardsProps<
+  MapId,
+  readonly ConcordiaProductId[],
+  readonly PlayerId[]
+>): JSX.Element {
+  return (
+    <InstanceCard title="Map">
+      <Typography variant="subtitle1" color="primary">
+        <strong>{MAPS[mapId].name}</strong>
+      </Typography>
+    </InstanceCard>
   );
 }
 
