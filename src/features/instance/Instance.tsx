@@ -1,83 +1,22 @@
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import TuneIcon from "@mui/icons-material/Tune";
-import {
-  Button,
-  Step,
-  StepButton,
-  StepContent,
-  Stepper,
-  Typography
-} from "@mui/material";
+import { Box, Fab } from "@mui/material";
 import { TSPage } from "app/ux/Chrome";
-import { Dict, Vec } from "common";
+import { Dict, ReactUtils } from "common";
 import { useGameHomeToolbarButton } from "features/game/useGameHomeToolbarButton";
-import { useFeaturesContext } from "features/useFeaturesContext";
-import { RandomGameStep } from "games/core/steps/createRandomGameStep";
-import { DerivedGameStep } from "model/DerivedGameStep";
-import React, { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { StepId } from "../../model/Game";
-import { gameSelector, gameStepSelector } from "../game/gameSlice";
+import { gameSelector } from "../game/gameSlice";
 import { AtAGlance } from "./AtAGlance";
-import {
-  fullInstanceSelector,
-  instanceSelectors,
-  SetupStep,
-} from "./instanceSlice";
-import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
+import { fullInstanceSelector } from "./instanceSlice";
+import { TABLE_OF_CONTENTS_PATH } from "./MobileSetup";
 import { VariantSummary } from "./VariantSummary";
 
-function InstanceItemContent({
-  stepId,
-}: {
-  stepId: StepId;
-}): JSX.Element | null {
-  const gameStep = useAppSelector(gameStepSelector(stepId)) as
-    | RandomGameStep
-    | DerivedGameStep;
-  const instance = useAppSelector(instanceSelectors.selectEntities);
-  const context = useFeaturesContext();
-  const { InstanceManualComponent } = gameStep;
-  if ("InstanceDerivedComponent" in gameStep) {
-    return (
-      <gameStep.InstanceDerivedComponent
-        context={{
-          ...context,
-          instance:
-            // redux dictionaries are really weird because they support ID types
-            // which aren't used, and have undefined as part of the value.
-            // We cast here to work around it...
-            Vec.values(instance as Record<StepId, SetupStep>),
-        }}
-      />
-    );
-  }
-  const instanceStep = instance[stepId];
-  if (instanceStep != null) {
-    return <gameStep.InstanceVariableComponent value={instanceStep.value} />;
-  }
-  if (InstanceManualComponent != null) {
-    if (typeof InstanceManualComponent === "string") {
-      // We allow simple strings as components too, in those cases we just
-      // insert them into a basic component instead
-      return <Typography variant="body1">{InstanceManualComponent}</Typography>;
-    }
-    return <InstanceManualComponent />;
-  }
-  // TODO: Kill this, make InstanceManualComponent non nullable
-  return <div>Manual Section</div>;
-}
 export function Instance(): JSX.Element | null {
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const homeButton = useGameHomeToolbarButton();
 
   const game = useAppSelector(gameSelector);
-
-  const [completedSteps, setCompletedSteps] = useState<readonly StepId[]>([]);
-
-  const activeSteps = useInstanceActiveSteps();
 
   // Just for logging, dump the full instance, normalized
   const fullInstance = useAppSelector(fullInstanceSelector);
@@ -85,128 +24,30 @@ export function Instance(): JSX.Element | null {
     console.log("INSTANCE", Dict.sort_by_key(fullInstance));
   }, [fullInstance]);
 
-  const groups = useMemo(
-    () =>
-      activeSteps
-        .reduce(
-          (groups, step) => {
-            if (
-              !(
-                "InstanceDerivedComponent" in step ||
-                "InstanceVariableComponent" in step
-              )
-            ) {
-              // Trivial steps dont have any special component rendering defined,
-              // they will ALWAYS render exactly the same, so we group them to
-              // make it easier to skip them
-              groups[groups.length - 1].push(step.id);
-              return groups;
-            }
-            // We need to create a new group for each non-manual step and
-            // push an additional group after the step so that the next
-            // iterations' doesn't add anything to this group.
-            return groups.concat([[step.id], []]);
-          },
-          [[]] as StepId[][]
-        )
-        .filter((group) => group.length > 0),
-    [activeSteps]
-  );
-  const activeStepId = location.hash.substring(1) as StepId;
-  const activeStepIdx = activeSteps.findIndex(
-    (step) => step.id === activeStepId
-  );
-  const expandedGroupIdx = useMemo(
-    () => groups.findIndex((group) => group.includes(activeStepId)),
-    [activeStepId, groups]
-  );
-  const setActiveStepId = (stepId: StepId | undefined) =>
-    navigate(stepId != null ? `#${stepId}` : "#");
   return (
     <TSPage
       title={`Table for ${game.name}`}
       buttons={[homeButton, [<TuneIcon />, "/template"]]}
     >
-      <VariantSummary />
-      <AtAGlance />
-      <Stepper nonLinear orientation="vertical" activeStep={activeStepIdx}>
-        {groups.map((group, groupIdx) => {
-          const correctedIdx = Vec.take(groups, groupIdx).reduce(
-            (sum, group) => sum + group.length,
-            0
-          );
-          if (groupIdx !== expandedGroupIdx && group.length > 1) {
-            return (
-              <Step
-                key={`multi_${groupIdx}`}
-                index={correctedIdx}
-                completed={group.every((stepId) =>
-                  completedSteps.includes(stepId)
-                )}
-              >
-                <StepButton
-                  icon={"\u00B7\u00B7\u00B7"}
-                  onClick={() => setActiveStepId(group[0])}
-                >
-                  <Typography variant="caption">
-                    {React.Children.toArray(
-                      Vec.map(Vec.take(group, 2), (stepId, index) => (
-                        <>
-                          {index > 0 && ", "}
-                          <StepLabel stepId={stepId} />
-                        </>
-                      ))
-                    )}
-                    {group.length > 2 && `, and ${group.length - 2} more...`}
-                  </Typography>
-                </StepButton>
-              </Step>
-            );
-          }
-          return group.map((stepId, idx) => (
-            <Step
-              key={stepId}
-              id={stepId}
-              index={correctedIdx + idx}
-              completed={completedSteps.includes(stepId)}
-            >
-              <StepButton
-                onClick={
-                  correctedIdx + idx !== activeStepIdx
-                    ? () => setActiveStepId(stepId)
-                    : undefined
-                }
-              >
-                <StepLabel stepId={stepId} />
-              </StepButton>
-              <StepContent>
-                <InstanceItemContent stepId={stepId} />
-                <Button
-                  sx={{ marginBlockStart: 10 }}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setCompletedSteps((steps) =>
-                      steps.includes(stepId) ? steps : [...steps, stepId]
-                    );
-                    const nextStepId = activeSteps.find(
-                      (x) => !completedSteps.includes(x.id) && x.id !== stepId
-                    )?.id;
-                    setActiveStepId(nextStepId);
-                  }}
-                >
-                  Done
-                </Button>
-              </StepContent>
-            </Step>
-          ));
-        })}
-      </Stepper>
+      <Box
+        sx={{
+          maxHeight: "100%",
+          paddingBottom: 10,
+          ...ReactUtils.SX_SCROLL_WITHOUT_SCROLLBARS,
+        }}
+      >
+        <VariantSummary />
+        <AtAGlance />
+      </Box>
+      <Fab
+        component={Link}
+        to={`/instance/${TABLE_OF_CONTENTS_PATH}`}
+        sx={{ position: "absolute", bottom: 16, right: 16, zIndex: 999 }}
+        color="primary"
+        aria-label="go"
+      >
+        <PlayArrowIcon />
+      </Fab>
     </TSPage>
   );
-}
-
-function StepLabel({ stepId }: { stepId: StepId }): JSX.Element {
-  const gameStep = useAppSelector(gameStepSelector(stepId));
-  return <>{gameStep.label}</>;
 }

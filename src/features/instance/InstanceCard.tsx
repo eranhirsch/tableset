@@ -8,14 +8,16 @@ export function InstanceCard({
   title,
   subheader,
   playerId,
+  onClick,
   children,
 }: React.PropsWithChildren<{
   title: string;
   subheader?: string;
   playerId?: PlayerId;
+  onClick(): void;
 }>): JSX.Element {
   return (
-    <Grid item component="article" xs={4}>
+    <Grid item component="article" xs={4} onClick={onClick}>
       <Card
         elevation={1}
         sx={{

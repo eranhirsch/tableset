@@ -245,6 +245,7 @@ function InstancePatricians({
 function InstanceCards({
   value: index,
   dependencies: [_isForum, _isForumAuction, playerIds, _isFish],
+  onClick,
 }: InstanceCardsProps<
   number,
   boolean,
@@ -259,7 +260,12 @@ function InstanceCards({
   return (
     <>
       {Vec.map(tiles, (tile) => (
-        <InstanceCard key={tile} title="Auction" subheader="Forum">
+        <InstanceCard
+          key={tile}
+          title="Auction"
+          subheader="Forum"
+          onClick={onClick}
+        >
           <Typography variant="body1" color="primary">
             <strong>
               <RomanTitle>{tile}</RomanTitle>

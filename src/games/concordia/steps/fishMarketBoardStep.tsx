@@ -122,10 +122,11 @@ function InstanceManualComponent(): JSX.Element {
 
 function InstanceCards({
   value: boardId,
-  dependencies: [isFishMarket],
+  dependencies: [_isFishMarket],
+  onClick,
 }: InstanceCardsProps<FishBoardType, boolean>): JSX.Element {
   return (
-    <InstanceCard title="Board Side" subheader="Fish">
+    <InstanceCard title="Board Side" subheader="Fish" onClick={onClick}>
       <Typography variant="h6" color="primary">
         <strong>{label(boardId)}</strong>
       </Typography>

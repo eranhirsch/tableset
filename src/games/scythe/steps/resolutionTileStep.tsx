@@ -91,13 +91,14 @@ function InstanceManualComponent(): JSX.Element {
 function InstanceCards({
   value: itemId,
   dependencies: [_productIds, _isResolution],
+  onClick,
 }: InstanceCardsProps<
   number,
   readonly ScytheProductId[],
   boolean
 >): JSX.Element {
   return (
-    <InstanceCard title="Resolution">
+    <InstanceCard title="Resolution" onClick={onClick}>
       <Typography variant="subtitle1" color="primary">
         <strong>{RESOLUTION_TILES[itemId]}</strong>
         <br />({itemId + 1})

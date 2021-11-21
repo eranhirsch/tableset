@@ -50,6 +50,7 @@ export interface Templatable<T = unknown, C = unknown> extends WithDependencies 
   InstanceCards?(props: {
     value: T;
     dependencies: readonly unknown[];
+    onClick(): void;
   }): JSX.Element | null;
 }
 

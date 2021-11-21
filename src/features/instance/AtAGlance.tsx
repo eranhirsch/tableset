@@ -4,6 +4,7 @@ import { Vec } from "common";
 import { gameStepsSelectorByType } from "features/game/gameSlice";
 import { isTemplatable, Templatable } from "features/template/Templatable";
 import { VariableGameStep } from "model/VariableGameStep";
+import { useNavigate } from "react-router-dom";
 import { InstanceCard } from "./InstanceCard";
 import { instanceValuesSelector } from "./instanceSlice";
 import {
@@ -12,6 +13,8 @@ import {
 } from "./useInstanceValue";
 
 export function AtAGlance(): JSX.Element {
+  const navigate = useNavigate();
+
   const templatableSteps = useAppSelector(
     gameStepsSelectorByType(isTemplatable)
   );
@@ -31,6 +34,7 @@ export function AtAGlance(): JSX.Element {
             key={step.id}
             // TODO: Fix the typing here
             step={step as unknown as VariableGameStep & Templatable}
+            onClick={() => navigate(`/instance/${step.id}`)}
           />
         ))}
       </Grid>
@@ -40,8 +44,10 @@ export function AtAGlance(): JSX.Element {
 
 function InstanceCards({
   step,
+  onClick,
 }: {
   step: VariableGameStep & Templatable;
+  onClick(): void;
 }): JSX.Element {
   const value = useRequiredInstanceValue(step);
   const depsValues = useOptionalInstanceValues(step.dependencies);
@@ -49,22 +55,29 @@ function InstanceCards({
   const { InstanceCards } = step;
 
   return InstanceCards == null ? (
-    <InDevelopmentMissingInstanceCard title={step.label} value={value} />
+    <InDevelopmentMissingInstanceCard
+      title={step.label}
+      value={value}
+      onClick={onClick}
+    />
   ) : (
-    <InstanceCards value={value} dependencies={depsValues} />
+    <InstanceCards value={value} dependencies={depsValues} onClick={onClick} />
   );
 }
 
 function InDevelopmentMissingInstanceCard({
   title,
   value,
+  onClick,
 }: {
   title: string;
   value: unknown;
+  onClick(): void;
 }): JSX.Element {
   return (
-    <InstanceCard title={title}>
+    <InstanceCard title={title} onClick={onClick}>
       <Typography variant="body2">{JSON.stringify(value)}</Typography>
     </InstanceCard>
   );
 }
+

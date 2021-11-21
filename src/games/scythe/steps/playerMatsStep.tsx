@@ -812,6 +812,7 @@ function InstanceManualComponent(): JSX.Element {
 function InstanceCards({
   value: index,
   dependencies: [playerIds, productIds, factionIds],
+  onClick,
 }: InstanceCardsProps<
   number,
   readonly PlayerId[],
@@ -839,6 +840,7 @@ function InstanceCards({
         <InstanceCard
           key={`${faction?.name.abbreviated}_${mat?.abbreviated}`}
           title={faction != null ? "Faction Combo" : "Mat"}
+          onClick={onClick}
         >
           <Chip
             variant={faction != null ? "filled" : "outlined"}

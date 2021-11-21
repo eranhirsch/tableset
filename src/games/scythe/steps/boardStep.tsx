@@ -136,9 +136,10 @@ function InstanceManualComponent(): JSX.Element {
 function InstanceCards({
   value,
   dependencies: [_isModular],
+  onClick,
 }: InstanceCardsProps<BoardId, boolean>): JSX.Element {
   return (
-    <InstanceCard title="Board Side" subheader="Modular">
+    <InstanceCard title="Board Side" subheader="Modular" onClick={onClick}>
       <Typography variant="h6" color="primary">
         <strong>{label(value)}</strong>
       </Typography>

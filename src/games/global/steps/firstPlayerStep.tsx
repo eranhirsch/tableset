@@ -106,9 +106,10 @@ function ConfigPanelTLDR({
 function InstanceCards({
   value: playerId,
   dependencies: [_playerIds],
+  onClick,
 }: InstanceCardsProps<PlayerId, readonly PlayerId[]>): JSX.Element {
   return (
-    <InstanceCard title="First" playerId={playerId}>
+    <InstanceCard title="First" playerId={playerId} onClick={onClick}>
       <Badge
         color="primary"
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}

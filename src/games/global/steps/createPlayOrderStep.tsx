@@ -608,6 +608,7 @@ function ConfigPanelTLDR({
 function InstanceCards({
   value: order,
   dependencies: [playerIds, _isTeams, _teams],
+  onClick,
 }: InstanceCardsProps<
   readonly PlayerId[],
   readonly PlayerId[],
@@ -616,7 +617,7 @@ function InstanceCards({
 >): JSX.Element {
   const pivot = playerIds![0];
   return (
-    <InstanceCard title="Seating" playerId={pivot}>
+    <InstanceCard title="Seating" playerId={pivot} onClick={onClick}>
       <Stack direction="column" alignItems="center" spacing={0.5}>
         <Box display="flex" gap={0.5}>
           <PlayerAvatar playerId={pivot} size={24} />

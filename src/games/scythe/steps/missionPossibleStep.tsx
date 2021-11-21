@@ -108,6 +108,7 @@ function InstanceManualComponent(): JSX.Element {
 function InstanceCards({
   value: index,
   dependencies: [productIds, _isResolution, _resolutionIndex],
+  onClick,
 }: InstanceCardsProps<
   number,
   readonly ScytheProductId[],
@@ -126,6 +127,7 @@ function InstanceCards({
           key={cardIdStr}
           title={`Objective ${index === 0 ? "I" : "II"}`}
           subheader="Resolution"
+          onClick={onClick}
         >
           <Typography variant="body2" color="primary">
             <strong>{cardText}</strong> ({Number.parseInt(cardIdStr) + 1})

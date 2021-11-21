@@ -398,13 +398,14 @@ function InstanceManualComponent() {
 function InstanceCards({
   value: mapId,
   dependencies: [_productIds, _playerIds],
+  onClick,
 }: InstanceCardsProps<
   MapId,
   readonly ConcordiaProductId[],
   readonly PlayerId[]
 >): JSX.Element {
   return (
-    <InstanceCard title="Map">
+    <InstanceCard title="Map" onClick={onClick}>
       <Typography variant="subtitle1" color="primary">
         <strong>
           <RomanTitle>{MAPS[mapId].name}</RomanTitle>

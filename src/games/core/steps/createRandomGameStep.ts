@@ -88,6 +88,7 @@ export type InstanceCardsProps<
     D8 | undefined,
     D9 | undefined
   ];
+  onClick(): void;
 }>;
 
 type Options<

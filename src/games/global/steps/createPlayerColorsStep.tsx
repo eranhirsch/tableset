@@ -565,6 +565,7 @@ function InstanceManualComponent<Pid extends ProductId>({
 function InstanceCards<Pid extends ProductId>({
   value: colors,
   dependencies: [_playerIds, _productIds],
+  onClick,
 }: InstanceCardsProps<
   PlayerColors,
   readonly PlayerId[],
@@ -573,7 +574,12 @@ function InstanceCards<Pid extends ProductId>({
   return (
     <>
       {Vec.map_with_key(colors, (playerId, color) => (
-        <InstanceCard key={playerId} title="Color" playerId={playerId}>
+        <InstanceCard
+          key={playerId}
+          title="Color"
+          playerId={playerId}
+          onClick={onClick}
+        >
           <Chip color={color} label={colorName[color]} />
         </InstanceCard>
       ))}

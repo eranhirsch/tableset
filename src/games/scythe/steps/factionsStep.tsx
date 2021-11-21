@@ -354,6 +354,7 @@ function InstanceManualComponent(): JSX.Element {
 function InstanceCards({
   value: factionIds,
   dependencies: [_playerIds, _productIds, _isModular],
+  onClick,
 }: InstanceCardsProps<
   readonly FactionId[],
   readonly PlayerId[],
@@ -378,7 +379,7 @@ function InstanceCards({
         Dict.from_keys(factionIds, (fid) => Factions[fid]),
         ($$) =>
           Vec.map_with_key($$, (fid, { color, name: { short } }) => (
-            <InstanceCard key={fid} title="Faction">
+            <InstanceCard key={fid} title="Faction" onClick={onClick}>
               <Chip label={short} color={color} />
             </InstanceCard>
           ))

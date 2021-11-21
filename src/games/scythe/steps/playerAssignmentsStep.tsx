@@ -624,7 +624,8 @@ function InstanceManualComponent(): JSX.Element {
 
 function InstanceCards({
   value: order,
-  dependencies: [playerIds, productIds, factionIds, playerMatsIdx],
+  dependencies: [_playerIds, productIds, factionIds, playerMatsIdx],
+  onClick,
 }: InstanceCardsProps<
   readonly PlayerId[],
   readonly PlayerId[],
@@ -650,6 +651,7 @@ function InstanceCards({
                 : "Faction"
               : "Mat"
           }
+          onClick={onClick}
         >
           <Chip
             variant={faction != null ? "filled" : "outlined"}

@@ -442,11 +442,17 @@ function InstanceManualComponent({
 function InstanceCards({
   value: teams,
   dependencies: [_playerIds, _isEnabled],
+  onClick,
 }: InstanceCardsProps<Teams, readonly PlayerId[], boolean>): JSX.Element {
   return (
     <>
       {Vec.map(teams, ([head, ...rest], index) => (
-        <InstanceCard key={`team_${head}`} title="Team" playerId={head}>
+        <InstanceCard
+          key={`team_${head}`}
+          title="Team"
+          playerId={head}
+          onClick={onClick}
+        >
           <AvatarGroup>
             <PlayerAvatar playerId={head} />
             {Vec.map(rest, (playerId) => (

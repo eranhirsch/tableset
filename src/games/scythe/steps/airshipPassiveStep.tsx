@@ -79,13 +79,14 @@ function InstanceManualComponent(): JSX.Element {
 function InstanceCards({
   value: itemId,
   dependencies: [_productIds, _isAirships],
+  onClick,
 }: InstanceCardsProps<
   number,
   readonly ScytheProductId[],
   boolean
 >): JSX.Element {
   return (
-    <InstanceCard title="Passive" subheader="Airship">
+    <InstanceCard title="Passive" subheader="Airship" onClick={onClick}>
       <Typography variant="subtitle1" color="primary">
         <strong>{Airships.tiles[itemId]}</strong>
         <br />({itemId + 1})

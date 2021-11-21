@@ -120,9 +120,10 @@ function InstanceManualComponent(): JSX.Element {
 function InstanceCards({
   value: itemId,
   dependencies: [_productIds],
+  onClick,
 }: InstanceCardsProps<TileKey, readonly ScytheProductId[]>): JSX.Element {
   return (
-    <InstanceCard title="Structure Bonus">
+    <InstanceCard title="Structure Bonus" onClick={onClick}>
       <Typography variant="subtitle2" color="primary">
         <strong>{BONUS_TILES[itemId]}</strong>
       </Typography>
