@@ -656,10 +656,14 @@ function InstanceCards({
             color={faction != null ? faction.color : "primary"}
             label={
               faction != null ? (
-                <>
-                  <em>{mat!.abbreviated}</em>{" "}
-                  <strong>{faction.name.abbreviated}</strong>
-                </>
+                mat != null ? (
+                  <>
+                    <em>{mat.abbreviated}</em>{" "}
+                    <strong>{faction.name.abbreviated}</strong>
+                  </>
+                ) : (
+                  faction.name.short
+                )
               ) : (
                 mat!.name
               )

@@ -194,7 +194,10 @@ function FactionSelector({
   mode: "always" | "never" | "random";
   onClick(): void;
 }): JSX.Element {
-  const { name, color } = Factions[factionId];
+  const {
+    name: { full },
+    color,
+  } = Factions[factionId];
   return (
     <Chip
       sx={{
@@ -213,11 +216,11 @@ function FactionSelector({
       variant={mode === "never" ? "outlined" : "filled"}
       label={
         mode === "always" ? (
-          <strong>{name}</strong>
+          <strong>{full}</strong>
         ) : mode === "never" ? (
-          <em>{name}</em>
+          <em>{full}</em>
         ) : (
-          name
+          full
         )
       }
       onClick={onClick}
@@ -294,7 +297,9 @@ function InstanceVariableComponent({
         {React.Children.toArray(
           Vec.map_with_key(
             Shape.select_keys(Factions, factionIds),
-            (_, { name, color }) => <Chip color={color} label={name} />
+            (_, { name: { full }, color }) => (
+              <Chip color={color} label={full} />
+            )
           )
         )}
       </Stack>
@@ -358,7 +363,10 @@ function InstanceCards({
   const willRenderPlayerMatsCards = useHasDownstreamInstanceValue(
     ScytheStepId.MATS
   );
-  if (willRenderPlayerMatsCards) {
+  const willRenderAssignments = useHasDownstreamInstanceValue(
+    ScytheStepId.FACTION_ASSIGNMENTS
+  );
+  if (willRenderPlayerMatsCards || willRenderAssignments) {
     // We render the factions information as part of the player mats step so we
     // can drop these cards.
     return null;

@@ -1,5 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import { Random } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { templateValue } from "features/template/templateSlice";
 import {
@@ -137,9 +138,11 @@ function InstanceCards({
   dependencies: [_isModular],
 }: InstanceCardsProps<BoardId, boolean>): JSX.Element {
   return (
-    <Typography variant="h6" color="primary">
-      <strong>{label(value)}</strong>
-    </Typography>
+    <InstanceCard title="Modular: Board Side">
+      <Typography variant="h6" color="primary">
+        <strong>{label(value)}</strong>
+      </Typography>
+    </InstanceCard>
   );
 }
 
