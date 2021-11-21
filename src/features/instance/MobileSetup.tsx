@@ -39,20 +39,23 @@ export function TableOfContents(): JSX.Element {
   const activeSteps = useInstanceActiveSteps();
   return (
     <TSPage>
-      <Typography variant="h4" paddingY={3} color="primary">
-        Overview
-      </Typography>
-      <List dense>
-        {Vec.map(activeSteps, (step, index) => (
-          <ListItem disableGutters>
-            <ListItemButton onClick={() => navigate(`/instance/${step.id}`)}>
-              <ListItemText>
-                {index + 1}. {step.label}
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      <Box display="flex" flexDirection="column" flexGrow={1} height="100%">
+        <CloseButton />
+        <Typography variant="h4" paddingY={3} color="primary">
+          Overview
+        </Typography>
+        <List dense>
+          {Vec.map(activeSteps, (step, index) => (
+            <ListItem disableGutters>
+              <ListItemButton onClick={() => navigate(`/instance/${step.id}`)}>
+                <ListItemText>
+                  {index + 1}. {step.label}
+                </ListItemText>
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
     </TSPage>
   );
 }
@@ -70,12 +73,7 @@ function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
   return (
     <TSPage>
       <Box display="flex" flexDirection="column" flexGrow={1} height="100%">
-        <IconButton
-          sx={{ justifyContent: "right" }}
-          onClick={() => navigate(`/instance`)}
-        >
-          <CloseIcon />
-        </IconButton>
+        <CloseButton />
         <Typography
           marginTop={10}
           variant="h4"
@@ -159,4 +157,16 @@ function InstanceItemContent({
   }
   // TODO: Kill this, make InstanceManualComponent non nullable
   return <div>Manual Section</div>;
+}
+
+function CloseButton(): JSX.Element {
+  const navigate = useNavigate();
+  return (
+    <IconButton
+      sx={{ justifyContent: "right" }}
+      onClick={() => navigate(`/instance`)}
+    >
+      <CloseIcon />
+    </IconButton>
+  );
 }
