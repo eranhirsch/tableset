@@ -34,7 +34,7 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
   InstanceCards: (props) => (
-    <IndexHashInstanceCard title="Modular: Map Tiles" {...props} />
+    <IndexHashInstanceCard title="Map Tiles" subheader="Modular" {...props} />
   ),
 });
 

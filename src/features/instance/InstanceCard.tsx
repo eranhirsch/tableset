@@ -6,10 +6,12 @@ const AVATAR_SIZE = 28;
 
 export function InstanceCard({
   title,
+  subheader,
   playerId,
   children,
 }: React.PropsWithChildren<{
   title: string;
+  subheader?: string;
   playerId?: PlayerId;
 }>): JSX.Element {
   return (
@@ -27,6 +29,7 @@ export function InstanceCard({
         <CardHeader
           component="header"
           title={title}
+          subheader={subheader}
           avatar={
             playerId != null ? (
               <PlayerAvatar

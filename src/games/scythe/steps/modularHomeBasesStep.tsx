@@ -35,7 +35,7 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
   InstanceCards: (props) => (
-    <IndexHashInstanceCard title="Modular: Home Bases" {...props} />
+    <IndexHashInstanceCard title="Bases" subheader="Modular" {...props} />
   ),
 });
 

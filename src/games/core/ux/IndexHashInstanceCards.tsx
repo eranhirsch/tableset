@@ -7,8 +7,9 @@ const SEPARATOR = "-";
 
 export function IndexHashInstanceCard({
   title,
+  subheader,
   value: index,
-}: { title: string } & InstanceCardsProps<
+}: { title: string; subheader?: string } & InstanceCardsProps<
   number,
   any,
   any,
@@ -22,7 +23,7 @@ export function IndexHashInstanceCard({
   any
 >): JSX.Element {
   return (
-    <InstanceCard title={title}>
+    <InstanceCard title={title} subheader={subheader}>
       <Typography variant="h6" color="primary">
         <strong>
           <pre>{Num.encode_base32(index, SEPARATOR)}</pre>

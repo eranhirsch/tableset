@@ -138,7 +138,7 @@ function InstanceCards({
   dependencies: [_isModular],
 }: InstanceCardsProps<BoardId, boolean>): JSX.Element {
   return (
-    <InstanceCard title="Modular: Board Side">
+    <InstanceCard title="Board Side" subheader="Modular">
       <Typography variant="h6" color="primary">
         <strong>{label(value)}</strong>
       </Typography>
