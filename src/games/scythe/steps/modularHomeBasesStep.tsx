@@ -8,7 +8,7 @@ import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
-import { IndexHashInstanceCardContents } from "games/core/ux/IndexHashInstanceCardContents";
+import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { isIndexType } from "games/global/coercers/isIndexType";
 import { useMemo } from "react";
 import { Factions } from "../utils/Factions";
@@ -34,7 +34,9 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCardContents: IndexHashInstanceCardContents,
+  InstanceCards: (props) => (
+    <IndexHashInstanceCard title="Modular: Home Bases" {...props} />
+  ),
 });
 
 function InstanceVariableComponent({

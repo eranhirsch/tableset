@@ -155,7 +155,7 @@ export function createVariant({
     ConfigPanel,
     ConfigPanelTLDR,
 
-    InstanceCardContents: () =>
+    InstanceCards: () =>
       invariant_violation(
         `Variant ${baseStep.id} should not be displayed as a card!`
       ),

@@ -62,7 +62,7 @@ export type ConfigPanelProps<
   ): void;
 }>;
 
-export type InstanceCardContentsProps<
+export type InstanceCardsProps<
   T,
   D0 = never,
   D1 = never,
@@ -200,20 +200,8 @@ type Options<
       props: ConfigPanelProps<C, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
     ): JSX.Element;
     ConfigPanelTLDR(props: { config: C }): JSX.Element;
-    InstanceCardContents?(
-      props: InstanceCardContentsProps<
-        T,
-        D1,
-        D2,
-        D3,
-        D4,
-        D5,
-        D6,
-        D7,
-        D8,
-        D9,
-        D10
-      >
+    InstanceCards?(
+      props: InstanceCardsProps<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
     ): JSX.Element;
     disabledTLDROverride?: string;
     isVariant?: true;
@@ -254,7 +242,7 @@ interface OptionsInternal<T, C>
       newConfig: Readonly<C> | ((currentConfig: Readonly<C>) => Readonly<C>)
     ): void;
   }): JSX.Element;
-  InstanceCardContents?(props: {
+  InstanceCards?(props: {
     value: T;
     dependencies: readonly unknown[];
   }): JSX.Element;
@@ -283,7 +271,7 @@ export function createRandomGameStep<T, C>({
   dependencies,
   disabledTLDROverride,
   initialConfig,
-  InstanceCardContents,
+  InstanceCards,
   InstanceVariableComponent,
   isTemplatable,
   isType,
@@ -422,7 +410,7 @@ export function createRandomGameStep<T, C>({
     ConfigPanel,
     ConfigPanelTLDR,
 
-    InstanceCardContents,
+    InstanceCards,
 
     disabledTLDROverride,
   };

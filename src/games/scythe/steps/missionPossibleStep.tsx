@@ -3,7 +3,7 @@ import { $, $nullthrows, Dict, MathUtils, Random, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
-  InstanceCardContentsProps,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
@@ -46,7 +46,7 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCardContents,
+  InstanceCards,
 });
 
 function InstanceVariableComponent({
@@ -103,10 +103,10 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function InstanceCardContents({
+function InstanceCards({
   value: index,
   dependencies: [productIds, _isResolution, _resolutionIndex],
-}: InstanceCardContentsProps<
+}: InstanceCardsProps<
   number,
   readonly ScytheProductId[],
   boolean,

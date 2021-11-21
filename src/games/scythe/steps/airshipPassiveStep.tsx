@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
+import { InstanceCard } from "features/instance/InstanceCard";
 import {
-  InstanceCardContentsProps,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -25,7 +26,7 @@ export default createTrivialSingleItemSelector({
   labelForId: (tileId) => Airships.tiles[tileId],
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCardContents,
+  InstanceCards,
 });
 
 function InstanceVariableComponent({
@@ -75,18 +76,20 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function InstanceCardContents({
+function InstanceCards({
   value: itemId,
   dependencies: [_productIds, _isAirships],
-}: InstanceCardContentsProps<
+}: InstanceCardsProps<
   number,
   readonly ScytheProductId[],
   boolean
 >): JSX.Element {
   return (
-    <Typography variant="subtitle1" color="primary">
-      <strong>{Airships.tiles[itemId]}</strong>
-      <br />({itemId + 1})
-    </Typography>
+    <InstanceCard title="Airship: Passive">
+      <Typography variant="subtitle1" color="primary">
+        <strong>{Airships.tiles[itemId]}</strong>
+        <br />({itemId + 1})
+      </Typography>
+    </InstanceCard>
   );
 }

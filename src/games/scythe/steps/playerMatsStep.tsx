@@ -18,21 +18,22 @@ import {
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { C, Dict, Random, Shape, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import {
   templateValue,
-  UnchangedTemplateValue
+  UnchangedTemplateValue,
 } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
-  InstanceCardContentsProps,
-  VariableStepInstanceComponentProps
+  InstanceCardsProps,
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -99,7 +100,7 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCardContents,
+  InstanceCards,
 });
 
 function resolve(
@@ -806,10 +807,10 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function InstanceCardContents({
+function InstanceCards({
   value: index,
   dependencies: [playerIds, productIds, factionIds],
-}: InstanceCardContentsProps<
+}: InstanceCardsProps<
   number,
   readonly PlayerId[],
   readonly ScytheProductId[],
@@ -824,13 +825,21 @@ function InstanceCardContents({
   return (
     <>
       {Vec.map(pairs, ([faction, mat]) => (
-        <Chip
-          key={mat!.abbreviated}
-          size="small"
-          variant={faction != null ? "filled" : "outlined"}
-          color={faction != null ? faction.color : undefined}
-          label={mat!.abbreviated}
-        />
+        <InstanceCard
+          key={`${faction?.name.abbreviated}_${mat?.abbreviated}`}
+          title="Mat and Faction"
+        >
+          <Chip
+            variant={faction != null ? "filled" : "outlined"}
+            color={faction != null ? faction.color : undefined}
+            label={
+              <>
+                <em>{mat!.abbreviated}</em>
+                {faction != null && ` ${faction.name.abbreviated}`}
+              </>
+            }
+          />
+        </InstanceCard>
       ))}
     </>
   );

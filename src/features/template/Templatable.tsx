@@ -19,8 +19,7 @@ type Template = Readonly<
   ReturnType<typeof templateSelectors["selectEntities"]>
 >;
 
-export interface Templatable<T = unknown, C = unknown>
-  extends WithDependencies {
+export interface Templatable<T = unknown, C = unknown> extends WithDependencies {
   isVariant?: true;
   resolve(
     config: C,
@@ -48,7 +47,7 @@ export interface Templatable<T = unknown, C = unknown>
   ConfigPanelTLDR(props: { config: Readonly<C> }): JSX.Element;
   disabledTLDROverride?: string;
 
-  InstanceCardContents?(props: {
+  InstanceCards?(props: {
     value: T;
     dependencies: readonly unknown[];
   }): JSX.Element;

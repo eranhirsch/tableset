@@ -1,9 +1,10 @@
-import { Card, CardContent, CardHeader, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Vec } from "common";
 import { gameStepsSelectorByType } from "features/game/gameSlice";
 import { isTemplatable, Templatable } from "features/template/Templatable";
 import { VariableGameStep } from "model/VariableGameStep";
+import { InstanceCard } from "./InstanceCard";
 import { instanceValuesSelector } from "./instanceSlice";
 import {
   useOptionalInstanceValues,
@@ -29,21 +30,18 @@ export function AtAGlance(): JSX.Element {
       </Typography>
       <Grid container spacing={1}>
         {Vec.map(components, ([step, value]) => (
-          <Grid item component="article" key={step.id} xs={4}>
-            <InstanceCard title={step.label}>
-              <InstanceCardContents
-                // TODO: Fix the typing here
-                step={step as unknown as VariableGameStep & Templatable}
-              />
-            </InstanceCard>
-          </Grid>
+          <InstanceCards
+            key={step.id}
+            // TODO: Fix the typing here
+            step={step as unknown as VariableGameStep & Templatable}
+          />
         ))}
       </Grid>
     </section>
   );
 }
 
-function InstanceCardContents({
+function InstanceCards({
   step,
 }: {
   step: VariableGameStep & Templatable;
@@ -51,56 +49,25 @@ function InstanceCardContents({
   const value = useRequiredInstanceValue(step);
   const depsValues = useOptionalInstanceValues(step.dependencies);
 
-  const { InstanceCardContents } = step;
+  const { InstanceCards } = step;
 
-  return InstanceCardContents == null ? (
-    <Typography variant="body2">{JSON.stringify(value)}</Typography>
+  return InstanceCards == null ? (
+    <InDevelopmentMissingInstanceCard title={step.label} value={value} />
   ) : (
-    <InstanceCardContents value={value} dependencies={depsValues} />
+    <InstanceCards value={value} dependencies={depsValues} />
   );
 }
 
-function InstanceCard({
+function InDevelopmentMissingInstanceCard({
   title,
-  children,
-}: React.PropsWithChildren<{ title: string }>): JSX.Element {
+  value,
+}: {
+  title: string;
+  value: unknown;
+}): JSX.Element {
   return (
-    <Card
-      elevation={1}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 3,
-        aspectRatio: "2.5 / 3.5",
-        padding: 1,
-      }}
-    >
-      <CardHeader
-        component="header"
-        title={title}
-        titleTypographyProps={{
-          fontSize: "small",
-        }}
-        sx={{
-          padding: 0,
-          flex: "0 0 25%",
-          alignItems: "flex-start",
-        }}
-      />
-      <CardContent
-        sx={{
-          padding: 0,
-          ":last-child": { paddingBottom: 0 },
-          flex: "0 0 75%",
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-        }}
-      >
-        {children}
-      </CardContent>
-    </Card>
+    <InstanceCard title={title}>
+      <Typography variant="body2">{JSON.stringify(value)}</Typography>
+    </InstanceCard>
   );
 }

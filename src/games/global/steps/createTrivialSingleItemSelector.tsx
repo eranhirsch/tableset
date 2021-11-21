@@ -12,7 +12,7 @@ import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
-  InstanceCardContentsProps,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
@@ -51,8 +51,8 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
     props: VariableStepInstanceComponentProps<ItemId>
   ): JSX.Element;
   InstanceManualComponent(): JSX.Element;
-  InstanceCardContents?(
-    props: InstanceCardContentsProps<ItemId, readonly Pid[], boolean>
+  InstanceCards?(
+    props: InstanceCardsProps<ItemId, readonly Pid[], boolean>
   ): JSX.Element;
 }
 

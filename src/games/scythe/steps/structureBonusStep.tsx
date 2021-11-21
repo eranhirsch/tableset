@@ -1,8 +1,9 @@
 import { Typography } from "@mui/material";
 import { Shape, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
-  InstanceCardContentsProps,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -65,7 +66,7 @@ export default createTrivialSingleItemSelector({
   labelForId: (tileId) => BONUS_TILES[tileId],
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCardContents,
+  InstanceCards,
 });
 
 function InstanceVariableComponent({
@@ -116,17 +117,16 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function InstanceCardContents({
+function InstanceCards({
   value: itemId,
   dependencies: [_productIds],
-}: InstanceCardContentsProps<
-  TileKey,
-  readonly ScytheProductId[]
->): JSX.Element {
+}: InstanceCardsProps<TileKey, readonly ScytheProductId[]>): JSX.Element {
   return (
-    <Typography variant="subtitle2" color="primary">
-      <strong>{BONUS_TILES[itemId]}</strong>
-    </Typography>
+    <InstanceCard title="Structure Bonus">
+      <Typography variant="subtitle2" color="primary">
+        <strong>{BONUS_TILES[itemId]}</strong>
+      </Typography>
+    </InstanceCard>
   );
 }
 

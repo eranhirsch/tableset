@@ -1,7 +1,8 @@
 import { Box, Typography } from "@mui/material";
 import { Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import {
-  InstanceCardContentsProps,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -44,7 +45,7 @@ export default createTrivialSingleItemSelector({
 
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCardContents,
+  InstanceCards,
 });
 
 function InstanceVariableComponent({
@@ -87,18 +88,20 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function InstanceCardContents({
+function InstanceCards({
   value: itemId,
   dependencies: [_productIds, _isResolution],
-}: InstanceCardContentsProps<
+}: InstanceCardsProps<
   number,
   readonly ScytheProductId[],
   boolean
 >): JSX.Element {
   return (
-    <Typography variant="subtitle1" color="primary">
-      <strong>{RESOLUTION_TILES[itemId]}</strong>
-      <br />({itemId + 1})
-    </Typography>
+    <InstanceCard title="Resolution">
+      <Typography variant="subtitle1" color="primary">
+        <strong>{RESOLUTION_TILES[itemId]}</strong>
+        <br />({itemId + 1})
+      </Typography>
+    </InstanceCard>
   );
 }

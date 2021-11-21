@@ -16,20 +16,25 @@ export type FactionId =
   | "togawa";
 /* spell-checker: enable */
 
-export interface Faction {
-  name: string;
+interface FactionName {
   abbreviated: string;
+  short: string;
+  full: string;
+}
+
+export interface Faction {
+  name: FactionName;
   color: GamePiecesColor;
   power: number;
   combatCards: number;
   order: number;
   startingWorkersLocations: [HexType, HexType];
 }
+
 const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   /* spell-checker: disable */
   albion: {
-    name: "Clan Albion",
-    abbreviated: "Al",
+    name: { abbreviated: "Al", short: "Albion", full: "Clan Albion" },
     color: "green",
     power: 3,
     combatCards: 0,
@@ -37,8 +42,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     startingWorkersLocations: ["mountain", "farm"],
   },
   crimea: {
-    name: "Crimean Khanate",
-    abbreviated: "Crim",
+    name: { abbreviated: "Crim", short: "Crimea", full: "Crimean Khanate" },
     color: "yellow",
     power: 5,
     combatCards: 0,
@@ -46,8 +50,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     startingWorkersLocations: ["farm", "village"],
   },
   fenris: {
-    name: "Fenris",
-    abbreviated: "Fen",
+    name: { abbreviated: "Fen", short: "Fenris", full: "Fenris" },
     color: "orange",
     power: 4,
     combatCards: 2,
@@ -57,8 +60,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     startingWorkersLocations: ["factory", "factory"],
   },
   nordic: {
-    name: "Nordic Kingdoms",
-    abbreviated: "Nord",
+    name: { abbreviated: "Nord", short: "Nordic", full: "Nordic Kingdoms" },
     color: "blue",
     power: 4,
     combatCards: 1,
@@ -66,8 +68,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     startingWorkersLocations: ["forest", "tundra"],
   },
   polania: {
-    name: "Republic of Polania",
-    abbreviated: "Pol",
+    name: { abbreviated: "Pol", short: "Polania", full: "Republic of Polania" },
     color: "white",
     power: 2,
     combatCards: 3,
@@ -75,8 +76,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     startingWorkersLocations: ["forest", "farm"],
   },
   rusviet: {
-    name: "Rusviet Union",
-    abbreviated: "Rus",
+    name: { abbreviated: "Rus", short: "Rusviet", full: "Rusviet Union" },
     color: "red",
     power: 3,
     combatCards: 2,
@@ -84,8 +84,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     startingWorkersLocations: ["village", "mountain"],
   },
   saxony: {
-    name: "Saxony Empire",
-    abbreviated: "Sax",
+    name: { abbreviated: "Sax", short: "Saxony", full: "Saxony Empire" },
     color: "black",
     power: 1,
     combatCards: 4,
@@ -93,8 +92,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     startingWorkersLocations: ["mountain", "tundra"],
   },
   tesla: {
-    name: "Tesla",
-    abbreviated: "Tes",
+    name: { abbreviated: "Tes", short: "Tesla", full: "Tesla" },
     color: "cyan",
     power: 1,
     combatCards: 1,
@@ -104,8 +102,7 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     startingWorkersLocations: ["factory", "factory"],
   },
   togawa: {
-    name: "Togawa Shogunate",
-    abbreviated: "Tog",
+    name: { abbreviated: "Tog", short: "Togawa", full: "Togawa Shogunate" },
     color: "purple",
     power: 0,
     combatCards: 2,

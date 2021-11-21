@@ -5,7 +5,7 @@ import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
-  InstanceCardContentsProps,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
@@ -36,7 +36,7 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCardContents,
+  InstanceCards,
 });
 
 function ConfigPanel({
@@ -132,10 +132,10 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function InstanceCardContents({
+function InstanceCards({
   value,
   dependencies: [_isModular],
-}: InstanceCardContentsProps<BoardId, boolean>): JSX.Element {
+}: InstanceCardsProps<BoardId, boolean>): JSX.Element {
   return (
     <Typography variant="h6" color="primary">
       <strong>{label(value)}</strong>

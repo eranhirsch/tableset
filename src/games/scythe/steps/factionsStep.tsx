@@ -3,13 +3,14 @@ import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { $, Dict, invariant, Random, Shape, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
-  InstanceCardContentsProps,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
@@ -113,7 +114,7 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCardContents,
+  InstanceCards,
 });
 
 function ConfigPanel({
@@ -239,7 +240,7 @@ function ConfigPanelTLDR({
       {Vec.concat(
         Vec.map_with_key(
           Shape.select_keys(Factions, always),
-          (fid, { abbreviated, color }) => (
+          (fid, { name: { abbreviated }, color }) => (
             <Chip
               key={fid}
               component="span"
@@ -260,7 +261,10 @@ function ConfigPanelTLDR({
                     (but not{" "}
                     <GrammaticalList finalConjunction="or">
                       {React.Children.toArray(
-                        Vec.map(never, (fid) => `${Factions[fid].abbreviated}.`)
+                        Vec.map(
+                          never,
+                          (fid) => `${Factions[fid].name.abbreviated}.`
+                        )
                       )}
                     </GrammaticalList>
                     )
@@ -338,10 +342,10 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function InstanceCardContents({
+function InstanceCards({
   value: factionIds,
   dependencies: [_playerIds, _productIds, _isModular],
-}: InstanceCardContentsProps<
+}: InstanceCardsProps<
   readonly FactionId[],
   readonly PlayerId[],
   readonly ScytheProductId[],
@@ -352,8 +356,10 @@ function InstanceCardContents({
       {$(
         Dict.from_keys(factionIds, (fid) => Factions[fid]),
         ($$) =>
-          Vec.map_with_key($$, (fid, { color, abbreviated }) => (
-            <Chip key={fid} size="small" label={abbreviated} color={color} />
+          Vec.map_with_key($$, (fid, { color, name: { short } }) => (
+            <InstanceCard key={fid} title="Faction">
+              <Chip label={short} color={color} />
+            </InstanceCard>
           ))
       )}
     </>
