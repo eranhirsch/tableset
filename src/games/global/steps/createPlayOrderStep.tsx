@@ -3,6 +3,7 @@ import {
   Avatar,
   AvatarGroup,
   Badge,
+  Box,
   Checkbox,
   Collapse,
   FormControlLabel,
@@ -11,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { C, invariant, Random, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
@@ -35,6 +37,7 @@ import { PlayerId } from "../../../model/Player";
 import {
   ConfigPanelProps,
   createRandomGameStep,
+  InstanceCardsProps,
   RandomGameStep,
   VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
@@ -118,6 +121,8 @@ const createPlayOrderStep = ({
 
     ConfigPanel,
     ConfigPanelTLDR,
+
+    InstanceCards,
   });
 export default createPlayOrderStep;
 
@@ -597,6 +602,40 @@ function ConfigPanelTLDR({
         ))
       )}
     </>
+  );
+}
+
+function InstanceCards({
+  value: order,
+  dependencies: [playerIds, _isTeams, _teams],
+}: InstanceCardsProps<
+  readonly PlayerId[],
+  readonly PlayerId[],
+  boolean,
+  Teams
+>): JSX.Element {
+  return (
+    <InstanceCard title="Seating">
+      <Stack direction="column" alignItems="center" spacing={0.5}>
+        <Box display="flex" gap={0.5}>
+          <PlayerAvatar playerId={playerIds![0]} size={24} />
+          {Vec.map(
+            Vec.take(order, Math.ceil(order.length / 2) - 1),
+            (playerId) => (
+              <PlayerAvatar key={playerId} playerId={playerId} size={24} />
+            )
+          )}
+        </Box>
+        <Box display="flex" gap={0.5}>
+          {Vec.map(
+            Vec.drop(order, Math.ceil(order.length / 2) - 1),
+            (playerId) => (
+              <PlayerAvatar key={playerId} playerId={playerId} size={24} />
+            )
+          )}
+        </Box>
+      </Stack>
+    </InstanceCard>
   );
 }
 
