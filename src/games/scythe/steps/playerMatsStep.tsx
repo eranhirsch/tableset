@@ -828,7 +828,7 @@ function InstanceCards({
       {Vec.map(pairs, ([faction, mat]) => (
         <InstanceCard
           key={`${faction?.name.abbreviated}_${mat?.abbreviated}`}
-          title="Mat and Faction"
+          title="Faction Combo"
         >
           <Chip
             variant={faction != null ? "filled" : "outlined"}
