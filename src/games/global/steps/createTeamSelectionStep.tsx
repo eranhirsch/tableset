@@ -446,7 +446,7 @@ function InstanceCards({
   return (
     <>
       {Vec.map(teams, ([head, ...rest], index) => (
-        <InstanceCard key={`team_${head}`} title="Team">
+        <InstanceCard key={`team_${head}`} title="Team" playerId={head}>
           <AvatarGroup>
             <PlayerAvatar playerId={head} />
             {Vec.map(rest, (playerId) => (

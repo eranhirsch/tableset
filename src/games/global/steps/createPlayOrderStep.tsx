@@ -614,11 +614,12 @@ function InstanceCards({
   boolean,
   Teams
 >): JSX.Element {
+  const pivot = playerIds![0];
   return (
-    <InstanceCard title="Seating">
+    <InstanceCard title="Seating" playerId={pivot}>
       <Stack direction="column" alignItems="center" spacing={0.5}>
         <Box display="flex" gap={0.5}>
-          <PlayerAvatar playerId={playerIds![0]} size={24} />
+          <PlayerAvatar playerId={pivot} size={24} />
           {Vec.map(
             Vec.take(order, Math.ceil(order.length / 2) - 1),
             (playerId) => (
