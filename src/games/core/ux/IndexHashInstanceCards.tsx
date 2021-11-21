@@ -3,7 +3,7 @@ import { Num } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { InstanceCardsProps } from "../steps/createRandomGameStep";
 
-const SEPARATOR = "-";
+const SEPARATOR = `-`;
 
 export function IndexHashInstanceCard({
   title,
@@ -25,9 +25,7 @@ export function IndexHashInstanceCard({
   return (
     <InstanceCard title={title} subheader={subheader}>
       <Typography variant="h6" color="primary">
-        <strong>
-          <pre>{Num.encode_base32(index, SEPARATOR)}</pre>
-        </strong>
+        <strong>{Num.encode_base32(index, SEPARATOR)}</strong>
       </Typography>
     </InstanceCard>
   );
