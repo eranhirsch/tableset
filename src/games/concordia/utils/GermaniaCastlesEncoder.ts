@@ -8,7 +8,7 @@ import {
   Random,
   Vec,
 } from "common";
-import { CombinationsLazyArray } from "common/standard_library/math/combinationsLazyArray";
+import { CombinationsLazyArrayWithDuplicates } from "common/standard_library/math/combinationsLazyArray";
 import { PermutationsLazyArray } from "common/standard_library/math/permutationsLazyArray";
 import { CityResources } from "./CityResources";
 import { MAPS } from "./MAPS";
@@ -195,7 +195,7 @@ function castleTilesPermutations(
 function leftoverTilesCombinations(
   remaining: readonly Resource[],
   useSalsaTiles: boolean
-): CombinationsLazyArray<Resource> {
+): CombinationsLazyArrayWithDuplicates<Resource> {
   return MathUtils.combinations_lazy_array_with_duplicates(
     remaining,
     NUM_LEFT_OVER +

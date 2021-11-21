@@ -1,5 +1,7 @@
 import { Typography } from "@mui/material";
 import { $, $nullthrows, Dict, MathUtils, Random, Vec } from "common";
+import { CombinationsLazyArray } from "common/standard_library/math/combinationsLazyArray";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
@@ -112,37 +114,49 @@ function InstanceCards({
   boolean,
   number
 >): JSX.Element {
-  const [a, b] = useMemo(
-    () => Vec.values(pairFromIndex(index, productIds!)),
+  const cards = useMemo(
+    () => pairFromIndex(index, productIds!),
     [index, productIds]
   );
 
   return (
     <>
-      <Typography variant="body2" color="primary">
-        {a},
-      </Typography>
-      <Typography variant="body2" color="primary">
-        {b}
-      </Typography>
+      {Vec.map_with_key(cards, (cardIdStr, cardText, index) => (
+        <InstanceCard
+          key={cardIdStr}
+          title={`Objective ${index === 0 ? "I" : "II"}`}
+          subheader="Resolution"
+        >
+          <Typography variant="body2" color="primary">
+            <strong>{cardText}</strong> ({Number.parseInt(cardIdStr) + 1})
+          </Typography>
+        </InstanceCard>
+      ))}
     </>
   );
 }
 
-const pairsArrayForProducts = (productIds: readonly ScytheProductId[]) =>
-  MathUtils.combinations_lazy_array(
+const pairsArrayForProducts = (
+  productIds: readonly ScytheProductId[]
+): CombinationsLazyArray<`${number}`> =>
+  $(
     Objectives.availableForProducts(productIds),
-    2
+    ($$) => Vec.map($$, (cardId) => `${cardId}` as `${number}`),
+    ($$) => MathUtils.combinations_lazy_array($$, 2)
   );
 
 const pairFromIndex = (
   index: number,
   productIds: readonly ScytheProductId[]
-): Readonly<Record<number, string>> =>
+): Readonly<Record<`${number}`, typeof Objectives.cards[number]>> =>
   $(
     pairsArrayForProducts(productIds),
     ($$) => $$.at(index),
     $nullthrows(`Index ${index} is out of range`),
-    ($$) => Dict.from_keys($$, (cardIdx) => Objectives.cards[cardIdx]),
-    Dict.sort_by_key
+    ($$) =>
+      Dict.from_keys(
+        $$,
+        (cardIdx) => Objectives.cards[Number.parseInt(cardIdx)]
+      ),
+    ($$) => Dict.sort_by_key($$)
   );

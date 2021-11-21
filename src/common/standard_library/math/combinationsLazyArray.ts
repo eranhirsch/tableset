@@ -1,18 +1,22 @@
 import { invariant, MathUtils as MU, tuple, Vec } from "common";
 
+export type CombinationsLazyArray<T> = Omit<
+  CombinationsLazyArrayWithDuplicates<T>,
+  "asCanonicalIndex"
+>;
+
 const combinations_lazy_array = <T>(
   pool: readonly T[],
   k: number
-): Omit<CombinationsLazyArray<T>, "asCanonicalIndex"> =>
-  new CombinationsLazyArray(pool, k);
+): CombinationsLazyArray<T> => new CombinationsLazyArrayWithDuplicates(pool, k);
 
 const combinations_lazy_array_with_duplicates = <T>(
   pool: readonly T[],
   k: number
-): CombinationsLazyArray<T> =>
-  new CombinationsLazyArray(pool, k, true /* withDuplicates */);
+): CombinationsLazyArrayWithDuplicates<T> =>
+  new CombinationsLazyArrayWithDuplicates(pool, k, true /* withDuplicates */);
 
-export class CombinationsLazyArray<T> {
+export class CombinationsLazyArrayWithDuplicates<T> {
   private readonly pool: readonly T[];
 
   constructor(
