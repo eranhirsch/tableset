@@ -21,6 +21,7 @@ import { C, Dict, Random, Shape, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
+  useHasDownstreamInstanceValue,
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
@@ -816,28 +817,41 @@ function InstanceCards({
   readonly PlayerId[],
   readonly ScytheProductId[],
   readonly FactionId[]
->): JSX.Element {
+>): JSX.Element | null {
+  const willRenderPlayerAssignments = useHasDownstreamInstanceValue(
+    ScytheStepId.FACTION_ASSIGNMENTS
+  );
+
   const pairs = useMemo(
     () =>
       factionPlayerMatPairs(playerIds!.length, index, factionIds, productIds!),
     [factionIds, index, playerIds, productIds]
   );
 
+  if (willRenderPlayerAssignments) {
+    // We render the mats information as part of the player assignments step
+    return null;
+  }
+
   return (
     <>
       {Vec.map(pairs, ([faction, mat]) => (
         <InstanceCard
           key={`${faction?.name.abbreviated}_${mat?.abbreviated}`}
-          title="Faction Combo"
+          title={faction != null ? "Faction Combo" : "Mat"}
         >
           <Chip
             variant={faction != null ? "filled" : "outlined"}
-            color={faction != null ? faction.color : undefined}
+            color={faction != null ? faction.color : "primary"}
             label={
-              <>
-                <em>{mat!.abbreviated}</em>
-                {faction != null && ` ${faction.name.abbreviated}`}
-              </>
+              faction != null ? (
+                <>
+                  <em>{mat!.abbreviated}</em>{" "}
+                  <strong>{faction.name.abbreviated}</strong>
+                </>
+              ) : (
+                mat!.name
+              )
             }
           />
         </InstanceCard>

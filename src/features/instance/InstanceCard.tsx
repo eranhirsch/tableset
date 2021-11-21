@@ -1,9 +1,17 @@
-import { Card, CardContent, CardHeader, Grid } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, Grid } from "@mui/material";
+import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "model/Player";
+
+const AVATAR_SIZE = 28;
 
 export function InstanceCard({
   title,
+  playerId,
   children,
-}: React.PropsWithChildren<{ title: string }>): JSX.Element {
+}: React.PropsWithChildren<{
+  title: string;
+  playerId?: PlayerId;
+}>): JSX.Element {
   return (
     <Grid item component="article" xs={4}>
       <Card
@@ -11,20 +19,34 @@ export function InstanceCard({
         sx={{
           display: "flex",
           flexDirection: "column",
-          borderRadius: 3,
+          borderRadius: 2,
           aspectRatio: "2.5 / 3.5",
-          padding: 1,
+          padding: 0.5,
         }}
       >
         <CardHeader
           component="header"
           title={title}
+          avatar={
+            playerId != null ? (
+              <PlayerAvatar
+                sx={{ margin: 0 }}
+                playerId={playerId}
+                size={AVATAR_SIZE}
+              />
+            ) : (
+              <Box display="block" width={AVATAR_SIZE} />
+            )
+          }
           titleTypographyProps={{
             fontSize: "small",
+            lineHeight: `${AVATAR_SIZE / 2}px`,
           }}
           sx={{
             padding: 0,
+            "> .MuiCardHeader-avatar": { marginRight: 0 },
             flex: "0 0 25%",
+            flexDirection: "row-reverse",
             alignItems: "flex-start",
           }}
         />

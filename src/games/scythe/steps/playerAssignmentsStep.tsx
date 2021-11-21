@@ -14,16 +14,18 @@ import {
   Stack
 } from "@mui/material";
 import { C, Dict, Random, tuple, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -49,6 +51,7 @@ import factionsStep from "./factionsStep";
 import modularBoardVariant from "./modularBoardVariant";
 import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
+import { ScytheStepId } from "./ScytheStepId";
 
 type PlayerPreference = { playerId: PlayerId } & (
   | { factionId: FactionId }
@@ -57,7 +60,7 @@ type PlayerPreference = { playerId: PlayerId } & (
 type TemplateConfig = readonly Readonly<PlayerPreference>[];
 
 export default createRandomGameStep({
-  id: "playerAssignments",
+  id: ScytheStepId.FACTION_ASSIGNMENTS,
   dependencies: [
     playersMetaStep,
     productsMetaStep,
@@ -137,6 +140,8 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceManualComponent,
+
+  InstanceCards,
 });
 
 function ConfigPanel({
@@ -614,5 +619,54 @@ function InstanceManualComponent(): JSX.Element {
         )}
       </Stack>
     </Stack>
+  );
+}
+
+function InstanceCards({
+  value: order,
+  dependencies: [playerIds, productIds, factionIds, playerMatsIdx],
+}: InstanceCardsProps<
+  readonly PlayerId[],
+  readonly PlayerId[],
+  readonly ScytheProductId[],
+  readonly FactionId[],
+  number
+>): JSX.Element {
+  const assignments = useMemo(
+    () => playerAssignments(order, playerMatsIdx, factionIds, productIds!),
+    [factionIds, order, playerMatsIdx, productIds]
+  );
+
+  return (
+    <>
+      {Vec.map_with_key(assignments, (playerId, [faction, mat]) => (
+        <InstanceCard
+          key={playerId}
+          playerId={playerId}
+          title={
+            faction != null
+              ? mat != null
+                ? "Faction Combo"
+                : "Faction"
+              : "Mat"
+          }
+        >
+          <Chip
+            variant={faction != null ? "filled" : "outlined"}
+            color={faction != null ? faction.color : "primary"}
+            label={
+              faction != null ? (
+                <>
+                  <em>{mat!.abbreviated}</em>{" "}
+                  <strong>{faction.name.abbreviated}</strong>
+                </>
+              ) : (
+                mat!.name
+              )
+            }
+          />
+        </InstanceCard>
+      ))}
+    </>
   );
 }
