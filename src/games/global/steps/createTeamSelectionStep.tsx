@@ -10,12 +10,14 @@ import {
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { C, invariant, Random, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { playersSelectors } from "features/players/playersSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
+  InstanceCardsProps,
   RandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
@@ -83,7 +85,9 @@ export default function createTeamSelectionStep({
     skip: (_, [players, isEnabled]) =>
       !isEnabled || players!.length % teamSize !== 0,
 
-    ConfigPanel: (props) => <ConfigPanel {...props} teamSize={teamSize} />,
+    ConfigPanel: (
+      props: ConfigPanelProps<TemplateConfig, readonly PlayerId[], boolean>
+    ) => <ConfigPanel {...props} teamSize={teamSize} />,
     ConfigPanelTLDR: (props) => (
       <ConfigPanelTLDR {...props} teamSize={teamSize} />
     ),
@@ -92,6 +96,8 @@ export default function createTeamSelectionStep({
     InstanceManualComponent: () => (
       <InstanceManualComponent teamSize={teamSize} />
     ),
+
+    InstanceCards,
   });
   return {
     ...step,
@@ -430,6 +436,26 @@ function InstanceManualComponent({
       Players split into <em>({playersCount / teamSize})</em> teams consisting
       of <em>exactly</em> <strong>{teamSize}</strong> players each.
     </Typography>
+  );
+}
+
+function InstanceCards({
+  value: teams,
+  dependencies: [_playerIds, _isEnabled],
+}: InstanceCardsProps<Teams, readonly PlayerId[], boolean>): JSX.Element {
+  return (
+    <>
+      {Vec.map(teams, ([head, ...rest], index) => (
+        <InstanceCard key={`team_${head}`} title="Team">
+          <AvatarGroup>
+            <PlayerAvatar playerId={head} />
+            {Vec.map(rest, (playerId) => (
+              <PlayerAvatar playerId={playerId} />
+            ))}
+          </AvatarGroup>
+        </InstanceCard>
+      ))}
+    </>
   );
 }
 
