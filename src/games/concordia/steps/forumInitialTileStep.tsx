@@ -1,12 +1,14 @@
-import { Grid, Paper } from "@mui/material";
+import { Grid, Paper, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { playersSelectors } from "features/players/playersSlice";
 import {
   createRandomGameStep,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
@@ -47,6 +49,8 @@ export default createRandomGameStep({
   InstanceManualComponent,
 
   ...NoConfigPanel,
+
+  InstanceCards,
 });
 
 function InstanceVariableComponent({
@@ -130,23 +134,6 @@ function AuctionMode({
         <BlockWithFootnotes
           footnote={
             <>
-              e.g. if they bid 4 points, they would put their score marker on{" "}
-              <em>96</em>
-            </>
-          }
-        >
-          {(Footnote) => (
-            <>
-              That player also moves his score marker <em>backwards</em> on the
-              score track as many points as they have bid
-              <Footnote />.
-            </>
-          )}
-        </BlockWithFootnotes>
-      ) : (
-        <BlockWithFootnotes
-          footnote={
-            <>
               e.g. if the player bid 4 points and scored 107 points at the end
               of the game, their final score would be 103
             </>
@@ -157,6 +144,23 @@ function AuctionMode({
               Take note of how many points that player bid; at the end of the
               game don't forget to check the notes and subtract points from the
               final total scores
+              <Footnote />.
+            </>
+          )}
+        </BlockWithFootnotes>
+      ) : (
+        <BlockWithFootnotes
+          footnote={
+            <>
+              e.g. if they bid 4 points, they would put their score marker on{" "}
+              <em>96</em>
+            </>
+          }
+        >
+          {(Footnote) => (
+            <>
+              That player also moves his score marker <em>backwards</em> on the
+              score track as many points as they have bid
               <Footnote />.
             </>
           )}
@@ -234,6 +238,35 @@ function InstancePatricians({
         {patricians.length % 3 === 1 && <Grid item xs={4} />}
       </Grid>
       <IndexHashCaption idx={forumIndex} />
+    </>
+  );
+}
+
+function InstanceCards({
+  value: index,
+  dependencies: [_isForum, _isForumAuction, playerIds, _isFish],
+}: InstanceCardsProps<
+  number,
+  boolean,
+  boolean,
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
+  const tiles = useMemo(
+    () => ForumTiles.decode(index, playerIds!.length),
+    [index, playerIds]
+  );
+  return (
+    <>
+      {Vec.map(tiles, (tile) => (
+        <InstanceCard key={tile} title="Auction" subheader="Forum">
+          <Typography variant="body1" color="primary">
+            <strong>
+              <RomanTitle>{tile}</RomanTitle>
+            </strong>
+          </Typography>
+        </InstanceCard>
+      ))}
     </>
   );
 }
