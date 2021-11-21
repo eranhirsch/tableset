@@ -58,6 +58,9 @@ const createPlayerColorsStep = <ProductId,>({
 
     dependencies: [playersMetaStep, productsMetaStep],
 
+    // Not a perfect coercer, but it's alright for now...
+    isType: (x: unknown): x is PlayerColors => typeof x === "object",
+
     InstanceVariableComponent,
     InstanceManualComponent: () =>
       InstanceManualComponent({ productsMetaStep, availableColors }),

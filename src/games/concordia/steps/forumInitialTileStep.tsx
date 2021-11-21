@@ -14,6 +14,7 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { firstPlayerStep, fullPlayOrder, playersMetaStep } from "games/global";
+import { isIndexType } from "games/global/coercers/isIndexType";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ForumTiles } from "../utils/ForumTiles";
@@ -27,6 +28,9 @@ import playOrderStep from "./playOrderStep";
 export default createRandomGameStep({
   id: "forumInitial",
   labelOverride: "Forum Starting Tile",
+
+  isType: isIndexType,
+
   dependencies: [
     forumVariantStep,
     forumExpertAuctionVariant,

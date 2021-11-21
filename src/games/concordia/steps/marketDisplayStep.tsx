@@ -5,6 +5,7 @@ import {
 } from "features/instance/useInstanceValue";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
+import { isIndexType } from "games/global/coercers/isIndexType";
 import { useMemo } from "react";
 import { InstanceStepLink } from "../../../features/instance/InstanceStepLink";
 import {
@@ -22,6 +23,8 @@ import venusScoringVariant from "./venusScoringVariant";
 export default createRandomGameStep({
   id: "marketDisplay",
   labelOverride: "Initial Cards in Market",
+
+  isType: isIndexType,
 
   dependencies: [venusScoringVariant, teamPlayVariant],
 

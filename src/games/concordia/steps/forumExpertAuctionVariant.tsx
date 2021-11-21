@@ -15,6 +15,9 @@ export default createRandomGameStep({
   labelOverride: "Forum Expert Auction",
   isVariant: true,
   dependencies: [forumVariantStep],
+
+  isType: (x: unknown): x is boolean => typeof x === "boolean",
+
   isTemplatable: (forum) => forum.canResolveTo(true),
   initialConfig: () => ({ percent: 100 }),
   resolve: (config, isForum) =>

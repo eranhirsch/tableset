@@ -8,11 +8,16 @@ import {
 import { PercentSlider } from "games/core/ux/PercentSlider";
 import fishMarketVariant from "./fishMarketVariant";
 
+type FishBoardType = "river" | "mountain";
+
 type TemplateConfig = { percentRiver: number };
 
 export default createRandomGameStep({
   id: "fishMarketBoard",
   dependencies: [fishMarketVariant],
+
+  isType: (x: unknown): x is FishBoardType => x === "river" || x === "mountain",
+
   isTemplatable: (fishMarket) => fishMarket.canResolveTo(true),
   initialConfig: () => ({ percentRiver: 50 }),
   resolve: (config, withFish) =>
@@ -93,7 +98,7 @@ function ConfigPanelTLDR({
 function InstanceVariableComponent({
   value,
 }: {
-  value: "river" | "mountain";
+  value: FishBoardType;
 }): JSX.Element {
   return (
     <Typography variant="body1">
@@ -111,7 +116,7 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-function label(boardId: "river" | "mountain"): string {
+function label(boardId: FishBoardType): string {
   switch (boardId) {
     case "river":
       return "River";
