@@ -4,14 +4,15 @@ import { Box, Fab } from "@mui/material";
 import { TSPage } from "app/ux/Chrome";
 import { Dict, ReactUtils } from "common";
 import { useGameHomeToolbarButton } from "features/game/useGameHomeToolbarButton";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { gameSelector } from "../game/gameSlice";
 import { AtAGlance } from "./AtAGlance";
 import { fullInstanceSelector } from "./instanceSlice";
-import { TABLE_OF_CONTENTS_PATH } from "./MobileSetup";
+import { TABLE_OF_CONTENTS_PATH } from "./TableOfContents";
 import { VariantSummary } from "./VariantSummary";
+
 
 export function Instance(): JSX.Element | null {
   const homeButton = useGameHomeToolbarButton();

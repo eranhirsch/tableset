@@ -2,11 +2,11 @@ import { Collection } from "features/collection/Collection";
 import { GameHomeWrapper } from "features/game/GameHome";
 import { Games } from "features/game/Games";
 import { Instance } from "features/instance/Instance";
+import { PagedStep } from "features/instance/PagedStep";
 import {
-  PagedStep,
   TableOfContents,
   TABLE_OF_CONTENTS_PATH,
-} from "features/instance/MobileSetup";
+} from "features/instance/TableOfContents";
 import { Players } from "features/players/Players";
 import { Template } from "features/template/Template";
 import { BrowserRouter, Route, Routes } from "react-router-dom";

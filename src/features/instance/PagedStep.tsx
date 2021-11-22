@@ -1,16 +1,5 @@
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
-import CloseIcon from "@mui/icons-material/Close";
-import {
-  Box,
-  Button,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  MobileStepper,
-  Typography,
-} from "@mui/material";
+import { Box, Button, MobileStepper, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { TSPage } from "app/ux/Chrome";
 import { invariant_violation, Vec } from "common";
@@ -20,10 +9,9 @@ import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
 import { StepId } from "model/Game";
 import { useNavigate, useParams } from "react-router-dom";
+import { CloseButton } from "./CloseButton";
 import { instanceSelectors, SetupStep } from "./instanceSlice";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
-
-export const TABLE_OF_CONTENTS_PATH = "ToC";
 
 export function PagedStep(): JSX.Element {
   const { stepId } = useParams();
@@ -32,32 +20,6 @@ export function PagedStep(): JSX.Element {
   }
 
   return <PagedStepInternal stepId={stepId as StepId} />;
-}
-
-export function TableOfContents(): JSX.Element {
-  const navigate = useNavigate();
-  const activeSteps = useInstanceActiveSteps();
-  return (
-    <TSPage>
-      <Box display="flex" flexDirection="column" flexGrow={1} height="100%">
-        <CloseButton />
-        <Typography variant="h4" paddingY={3} color="primary">
-          Overview
-        </Typography>
-        <List dense>
-          {Vec.map(activeSteps, (step, index) => (
-            <ListItem disableGutters>
-              <ListItemButton onClick={() => navigate(`/instance/${step.id}`)}>
-                <ListItemText>
-                  {index + 1}. {step.label}
-                </ListItemText>
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-    </TSPage>
-  );
 }
 
 function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
@@ -157,16 +119,4 @@ function InstanceItemContent({
   }
   // TODO: Kill this, make InstanceManualComponent non nullable
   return <div>Manual Section</div>;
-}
-
-function CloseButton(): JSX.Element {
-  const navigate = useNavigate();
-  return (
-    <IconButton
-      sx={{ justifyContent: "right" }}
-      onClick={() => navigate(`/instance`)}
-    >
-      <CloseIcon />
-    </IconButton>
-  );
 }
