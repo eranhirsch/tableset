@@ -1,5 +1,5 @@
 import { AvatarGroup, Chip, Typography } from "@mui/material";
-import { Dict, Shape, Vec } from "common";
+import { $, Dict, Shape, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createDerivedGameStep,
@@ -12,7 +12,10 @@ import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { Combos } from "../utils/Combos";
 import { FactionId, Factions } from "../utils/Factions";
+import { HomeBases } from "../utils/HomeBases";
 import factionsStep from "./factionsStep";
+import modularBoardVariant from "./modularBoardVariant";
+import modularHomeBasesStep from "./modularHomeBasesStep";
 import playerAssignmentsStep from "./playerAssignmentsStep";
 import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
@@ -24,17 +27,28 @@ export default createDerivedGameStep({
     factionsStep,
     playerMatsStep,
     playerAssignmentsStep,
+    modularBoardVariant,
+    modularHomeBasesStep,
   ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [productIds, factionIds, playerMatsIdx, order],
+  dependencies: [
+    productIds,
+    factionIds,
+    playerMatsIdx,
+    order,
+    isModular,
+    modularBasesIndex,
+  ],
 }: DerivedStepInstanceComponentProps<
   readonly ScytheProductId[],
   readonly FactionId[],
   number,
-  readonly PlayerId[]
+  readonly PlayerId[],
+  boolean,
+  number
 >): JSX.Element {
   const assignments = useMemo(
     () =>
@@ -49,6 +63,27 @@ function InstanceDerivedComponent({
     [factionIds, order, playerMatsIdx, productIds]
   );
 
+  const homeBases = useMemo(
+    () =>
+      isModular
+        ? modularBasesIndex == null
+          ? null
+          : $(
+              modularBasesIndex,
+              HomeBases.decode,
+              ($$) =>
+                Vec.filter($$, (fid): fid is FactionId => fid !== "empty"),
+              ($$) => Shape.from_keys($$, (fid) => Factions[fid])
+            )
+        : $(
+            productIds!,
+            Factions.availableForProducts,
+            ($$) => Shape.select_keys(Factions, $$),
+            ($$) => Dict.sort_by($$, ({ order }) => order)
+          ),
+    [isModular, modularBasesIndex, productIds]
+  );
+
   const header = (
     <>
       Sit players around the table with each player near their faction's
@@ -57,21 +92,23 @@ function InstanceDerivedComponent({
   );
 
   if (factionIds == null) {
+    if (homeBases == null) {
+      return (
+        <Typography variant="body1">
+          {header} and maintaining the order of the factions on the board.
+        </Typography>
+      );
+    }
+
     return (
       <BlockWithFootnotes
         footnote={
           <>
             The order is{" "}
             <GrammaticalList>
-              {Vec.map_with_key(
-                Dict.sort_by(
-                  Shape.select_keys(
-                    Factions,
-                    Factions.availableForProducts(productIds!)
-                  ),
-                  ({ order }) => order
-                ),
-                (_, { color, name: { short } }) => (
+              {Vec.map(
+                Vec.filter_nulls(Vec.values(homeBases)),
+                ({ color, name: { short } }) => (
                   <Chip size="small" color={color} label={short} />
                 )
               )}
