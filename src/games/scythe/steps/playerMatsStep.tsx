@@ -23,18 +23,18 @@ import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useHasDownstreamInstanceValue,
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { playersSelectors } from "features/players/playersSlice";
 import {
   templateValue,
-  UnchangedTemplateValue,
+  UnchangedTemplateValue
 } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -45,8 +45,8 @@ import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
 import { ScytheProductId } from "../ScytheProductId";
+import { Combos } from "../utils/Combos";
 import { FactionId, Factions } from "../utils/Factions";
-import { factionPlayerMatPairs } from "../utils/playerAssignments";
 import { MatId, PlayerMats } from "../utils/PlayerMats";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
@@ -694,8 +694,7 @@ function InstanceVariableComponent({
   const factionIds = useOptionalInstanceValue(factionsStep);
 
   const pairs = useMemo(
-    () =>
-      factionPlayerMatPairs(playerIds.length, matsIdx, factionIds, productIds),
+    () => Combos.objects(playerIds.length, matsIdx, factionIds, productIds),
     [factionIds, matsIdx, playerIds.length, productIds]
   );
 
@@ -825,7 +824,7 @@ function InstanceCards({
 
   const pairs = useMemo(
     () =>
-      factionPlayerMatPairs(playerIds!.length, index, factionIds, productIds!),
+      Combos.objects(playerIds!.length, index, factionIds, productIds!),
     [factionIds, index, playerIds, productIds]
   );
 

@@ -39,12 +39,8 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { ScytheProductId } from "../ScytheProductId";
+import { Combos } from "../utils/Combos";
 import { Faction, FactionId, Factions } from "../utils/Factions";
-import {
-  factionPlayerMatIdPairs,
-  factionPlayerMatPairs,
-  playerAssignments,
-} from "../utils/playerAssignments";
 import { Mat, MatId, PlayerMats } from "../utils/PlayerMats";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
@@ -79,7 +75,7 @@ export default createRandomGameStep({
       return null;
     }
 
-    const pairs = factionPlayerMatIdPairs(
+    const pairs = Combos.ids(
       playerIds!.length,
       matsHash,
       factionIds,
@@ -475,7 +471,8 @@ function InstanceVariableComponent({
   const playerMatsIdx = useOptionalInstanceValue(playerMatsStep);
 
   const assignments = useMemo(
-    () => playerAssignments(order, playerMatsIdx, factionIds, productIds),
+    () =>
+      Combos.objectsWithPlayers(order, playerMatsIdx, factionIds, productIds),
     [factionIds, order, playerMatsIdx, productIds]
   );
 
@@ -559,12 +556,7 @@ function InstanceManualComponent(): JSX.Element {
     () =>
       matsHash == null && factionIds == null
         ? null
-        : factionPlayerMatPairs(
-            playerIds.length,
-            matsHash,
-            factionIds,
-            productIds
-          ),
+        : Combos.objects(playerIds.length, matsHash, factionIds, productIds),
     [factionIds, matsHash, playerIds.length, productIds]
   );
 
@@ -636,7 +628,8 @@ function InstanceCards({
   number
 >): JSX.Element {
   const assignments = useMemo(
-    () => playerAssignments(order, playerMatsIdx, factionIds, productIds!),
+    () =>
+      Combos.objectsWithPlayers(order, playerMatsIdx, factionIds, productIds!),
     [factionIds, order, playerMatsIdx, productIds]
   );
 

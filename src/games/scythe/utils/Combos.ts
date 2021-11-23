@@ -4,7 +4,7 @@ import { ScytheProductId } from "../ScytheProductId";
 import { Faction, FactionId, Factions } from "./Factions";
 import { Mat, MatId, PlayerMats } from "./PlayerMats";
 
-export const playerAssignments = (
+const objectsWithPlayers = (
   order: readonly PlayerId[],
   playerMatsIdx: number | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
@@ -16,7 +16,7 @@ export const playerAssignments = (
   >
 > =>
   Dict.map(
-    playerAssignmentIds(order, playerMatsIdx, factionIds, productIds),
+    idsWithPlayerIds(order, playerMatsIdx, factionIds, productIds),
     ([factionId, matId]) =>
       tuple(
         factionId != null ? Factions[factionId] : null,
@@ -24,7 +24,7 @@ export const playerAssignments = (
       )
   );
 
-export const playerAssignmentIds = (
+const idsWithPlayerIds = (
   order: readonly PlayerId[],
   playerMatsIdx: number | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
@@ -34,10 +34,10 @@ export const playerAssignmentIds = (
 > =>
   Dict.associate(
     order,
-    factionPlayerMatIdPairs(order.length, playerMatsIdx, factionIds, productIds)
+    ids(order.length, playerMatsIdx, factionIds, productIds)
   );
 
-export const factionPlayerMatPairs = (
+const objects = (
   playersCount: number,
   playerMatsIdx: number | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
@@ -47,12 +47,7 @@ export const factionPlayerMatPairs = (
   mat: Readonly<Mat> | null
 ])[] =>
   Vec.map(
-    factionPlayerMatIdPairs(
-      playersCount,
-      playerMatsIdx,
-      factionIds,
-      productIds
-    ),
+    ids(playersCount, playerMatsIdx, factionIds, productIds),
     ([fid, mid]) =>
       tuple(
         fid != null ? Factions[fid] : null,
@@ -60,7 +55,7 @@ export const factionPlayerMatPairs = (
       )
   );
 
-export function factionPlayerMatIdPairs(
+function ids(
   playersCount: number,
   playerMatsIdx: number | null | undefined,
   factionIds: readonly FactionId[] | null | undefined,
@@ -99,3 +94,9 @@ export function factionPlayerMatIdPairs(
   );
 }
 
+export const Combos = {
+  objectsWithPlayers,
+  idsWithPlayerIds,
+  objects,
+  ids,
+} as const;

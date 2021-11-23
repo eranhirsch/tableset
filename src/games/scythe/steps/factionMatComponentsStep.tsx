@@ -10,9 +10,9 @@ import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
+import { Combos } from "../utils/Combos";
 import { FactionId, Factions } from "../utils/Factions";
 import { HomeBases } from "../utils/HomeBases";
-import { playerAssignmentIds } from "../utils/playerAssignments";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
 import modularBoardVariant from "./modularBoardVariant";
@@ -162,7 +162,7 @@ function FactionSpecific({
     () =>
       order == null || factionIds == null
         ? null
-        : playerAssignmentIds(
+        : Combos.idsWithPlayerIds(
             order,
             null /* playerMatsHash */,
             factionIds,

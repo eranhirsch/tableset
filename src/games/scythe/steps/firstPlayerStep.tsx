@@ -11,8 +11,8 @@ import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
+import { Combos } from "../utils/Combos";
 import { FactionId } from "../utils/Factions";
-import { playerAssignments } from "../utils/playerAssignments";
 import { PlayerMats } from "../utils/PlayerMats";
 import factionsStep from "./factionsStep";
 import playerAssignmentsStep from "./playerAssignmentsStep";
@@ -44,16 +44,21 @@ function InstanceDerivedComponent({
     () =>
       order == null
         ? null
-        : playerAssignments(order, playerMatsIdx, factionIds, productIds!),
+        : Combos.objectsWithPlayers(
+            order,
+            playerMatsIdx,
+            factionIds,
+            productIds!
+          ),
     [factionIds, order, playerMatsIdx, productIds]
   );
 
   const matIds = useMemo(
     () =>
-    playerMatsIdx == null
+      playerMatsIdx == null
         ? null
         : PlayerMats.decode(
-          playerMatsIdx,
+            playerMatsIdx,
             playerIds!.length,
             factionIds != null,
             productIds!

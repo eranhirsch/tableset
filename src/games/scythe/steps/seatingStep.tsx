@@ -10,8 +10,8 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
+import { Combos } from "../utils/Combos";
 import { FactionId, Factions } from "../utils/Factions";
-import { playerAssignments } from "../utils/playerAssignments";
 import factionsStep from "./factionsStep";
 import playerAssignmentsStep from "./playerAssignmentsStep";
 import playerMatsStep from "./playerMatsStep";
@@ -40,7 +40,12 @@ function InstanceDerivedComponent({
     () =>
       order == null
         ? null
-        : playerAssignments(order, playerMatsIdx, factionIds, productIds!),
+        : Combos.objectsWithPlayers(
+            order,
+            playerMatsIdx,
+            factionIds,
+            productIds!
+          ),
     [factionIds, order, playerMatsIdx, productIds]
   );
 
