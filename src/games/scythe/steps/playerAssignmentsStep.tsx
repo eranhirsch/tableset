@@ -469,6 +469,7 @@ function InstanceVariableComponent({
   const productIds = useRequiredInstanceValue(productsMetaStep);
   const factionIds = useOptionalInstanceValue(factionsStep);
   const playerMatsIdx = useOptionalInstanceValue(playerMatsStep);
+  const isModular = useRequiredInstanceValue(modularBoardVariant);
 
   const assignments = useMemo(
     () =>
@@ -488,7 +489,9 @@ function InstanceVariableComponent({
         {(Footnote) => (
           <>
             Players take their assigned{" "}
-            {factionIds == null ? (
+            {isModular ? (
+              <>player mat</>
+            ) : factionIds == null ? (
               <>
                 player mat and the faction paired with that mat
                 <Footnote />
@@ -505,7 +508,7 @@ function InstanceVariableComponent({
           </>
         )}
       </BlockWithFootnotes>
-      <Stack direction="column" spacing={1}>
+      <Stack direction="column" spacing={1} marginTop={1}>
         {Vec.map_with_key(assignments, (playerId, [faction, mat]) => (
           <PlayerAssignment
             key={`${playerId}_assignment`}
