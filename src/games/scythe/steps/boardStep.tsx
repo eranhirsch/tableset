@@ -139,7 +139,7 @@ function InstanceCards({
   onClick,
 }: InstanceCardsProps<BoardId, boolean>): JSX.Element {
   return (
-    <InstanceCard title="Board Side" subheader="Modular" onClick={onClick}>
+    <InstanceCard title="Side" subheader="Modular" onClick={onClick}>
       <Typography variant="h6" color="primary">
         <strong>{label(value)}</strong>
       </Typography>
