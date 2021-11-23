@@ -1,9 +1,7 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import HighlightOffTwoToneIcon from "@mui/icons-material/HighlightOffTwoTone";
-import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import {
-  Box,
   Button,
   Chip,
   Collapse,
@@ -14,27 +12,25 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Typography
+  Typography,
 } from "@mui/material";
-import { useAppSelector } from "app/hooks";
 import { C, Dict, Random, Shape, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useHasDownstreamInstanceValue,
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
-import { playersSelectors } from "features/players/playersSlice";
 import {
   templateValue,
-  UnchangedTemplateValue
+  UnchangedTemplateValue,
 } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -42,6 +38,10 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { playersMetaStep } from "games/global";
+import {
+  AlwaysNeverMultiChipSelector,
+  AlwaysNeverMultiLabel,
+} from "games/global/ux/AlwaysNeverMultiChipSelector";
 import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
 import { ScytheProductId } from "../ScytheProductId";
@@ -70,8 +70,6 @@ type TemplateConfig = {
   never: readonly MatId[];
   banned?: Readonly<BannedCombos>;
 };
-
-type Mode = "always" | "never" | "random";
 
 class MatConstraintsError extends Error {
   constructor(
@@ -363,20 +361,28 @@ function ConfigPanel({
     [productIds]
   );
 
+  const playersCount = players.onlyResolvableValue()!.length;
+
   return (
     <Stack direction="column" spacing={2}>
-      <MatsSelector
-        config={config}
-        productIds={productIds}
-        onClick={(matId) =>
-          onChange((current) =>
-            switchModes(
-              current,
-              matId,
-              currentMode(current, matId),
-              nextMode(current, matId, players, available.length)
-            )
-          )
+      <AlwaysNeverMultiChipSelector
+        itemIds={available}
+        getLabel={(mid) => PlayerMats[mid].name}
+        limits={{ min: playersCount, max: playersCount }}
+        value={config}
+        onChange={(changedFunc) =>
+          onChange(({ banned, ...alwaysNever }) => {
+            const newAlwaysNever = changedFunc(alwaysNever);
+            return banned == null
+              ? newAlwaysNever
+              : {
+                  ...newAlwaysNever,
+                  banned: newAlwaysNever.never.reduce(
+                    removeFromBannedCombos,
+                    banned
+                  ),
+                };
+          })
         }
       />
       {config.banned != null && (
@@ -421,37 +427,6 @@ function toggleBannedState(
         ? Vec.filter(bannedForFaction, (mid) => mid !== matId)
         : Vec.sort(Vec.concat(bannedForFaction, matId)),
   });
-}
-
-function MatsSelector({
-  config,
-  productIds,
-  onClick,
-}: {
-  config: Readonly<TemplateConfig>;
-  productIds: readonly ScytheProductId[];
-  onClick(matId: MatId): void;
-}): JSX.Element {
-  const available = useMemo(
-    () =>
-      Vec.sort_by(
-        PlayerMats.availableForProducts(productIds),
-        (mid) => PlayerMats[mid].rank
-      ),
-    [productIds]
-  );
-  return (
-    <Box display="flex" flexWrap="wrap" justifyContent="center" gap={1}>
-      {Vec.map(available, (matId) => (
-        <MatChip
-          key={matId}
-          matId={matId}
-          mode={currentMode(config, matId)}
-          onClick={() => onClick(matId)}
-        />
-      ))}
-    </Box>
-  );
 }
 
 function BannedCombosSelector({
@@ -590,99 +565,21 @@ function BannedComboFactionButton({
   );
 }
 
-function MatChip({
-  matId,
-  mode,
-  onClick,
-}: {
-  matId: MatId;
-  mode: "always" | "never" | "random";
-  onClick(): void;
-}): JSX.Element {
-  const { name } = PlayerMats[matId];
-  return (
-    <Chip
-      sx={{
-        opacity: mode === "never" ? 0.75 : 1.0,
-        paddingX:
-          mode === "random" ? "13px" : mode === "always" ? undefined : "3px",
-      }}
-      icon={
-        mode === "always" ? (
-          <CheckCircleIcon fontSize="small" />
-        ) : mode === "never" ? (
-          <NotInterestedRoundedIcon fontSize="small" />
-        ) : undefined
-      }
-      color={mode === "always" ? "primary" : undefined}
-      variant={mode === "never" ? "outlined" : "filled"}
-      label={
-        mode === "always" ? (
-          <strong>{name}</strong>
-        ) : mode === "never" ? (
-          <em>{name}</em>
-        ) : (
-          name
-        )
-      }
-      onClick={onClick}
-    />
-  );
-}
-
 function ConfigPanelTLDR({
   config: { always, never },
 }: {
   config: Readonly<TemplateConfig>;
 }): JSX.Element {
-  const playersCount = useAppSelector(playersSelectors.selectTotal);
-
   if (Vec.is_empty(always) && Vec.is_empty(never)) {
     // Just for consistency with other templatables
     return <>Random</>;
   }
 
-  const unassignedCount = playersCount - always.length;
-
   return (
-    <GrammaticalList>
-      {Vec.concat(
-        Vec.map_with_key(
-          Shape.select_keys(PlayerMats, always),
-          (mid, { abbreviated }) => (
-            <Chip
-              key={mid}
-              size="small"
-              variant="outlined"
-              label={`${abbreviated}.`}
-            />
-          )
-        ),
-        unassignedCount > 0
-          ? [
-              <>
-                {unassignedCount} random mat
-                {unassignedCount > 1 && "s"}
-                {!Vec.is_empty(never) && (
-                  <>
-                    {" "}
-                    (but not{" "}
-                    <GrammaticalList finalConjunction="or">
-                      {React.Children.toArray(
-                        Vec.map(
-                          never,
-                          (mid) => `${PlayerMats[mid].abbreviated}.`
-                        )
-                      )}
-                    </GrammaticalList>
-                    )
-                  </>
-                )}
-              </>,
-            ]
-          : []
-      )}
-    </GrammaticalList>
+    <AlwaysNeverMultiLabel
+      value={{ always, never }}
+      getLabel={(mid) => PlayerMats[mid].abbreviated}
+    />
   );
 }
 
@@ -823,8 +720,7 @@ function InstanceCards({
   );
 
   const pairs = useMemo(
-    () =>
-      Combos.objects(playerIds!.length, index, factionIds, productIds!),
+    () => Combos.objects(playerIds!.length, index, factionIds, productIds!),
     [factionIds, index, playerIds, productIds]
   );
 
@@ -859,107 +755,6 @@ function InstanceCards({
       ))}
     </>
   );
-}
-
-const currentMode = (
-  { always, never }: Readonly<TemplateConfig>,
-  matId: MatId
-): Mode =>
-  always.includes(matId)
-    ? "always"
-    : never.includes(matId)
-    ? "never"
-    : "random";
-
-function nextMode(
-  config: Readonly<TemplateConfig>,
-  matId: MatId,
-  players: Query<readonly PlayerId[]>,
-  numMats: number
-): Mode {
-  const alwaysEnabled = players.willContainNumElements({
-    min: config.always.length + 1,
-  });
-  const neverEnabled = players.willContainNumElements({
-    max: numMats - config.never.length - 1,
-  });
-
-  switch (currentMode(config, matId)) {
-    case "always":
-      return neverEnabled ? "never" : "random";
-    case "never":
-      return "random";
-    case "random":
-      return alwaysEnabled ? "always" : neverEnabled ? "never" : "random";
-  }
-}
-
-function switchModes(
-  config: Readonly<TemplateConfig>,
-  matId: MatId,
-  currentMode: Mode,
-  nextMode: Mode
-): Readonly<TemplateConfig> {
-  switch (currentMode) {
-    case "always":
-      switch (nextMode) {
-        case "always":
-          return config;
-        case "never":
-          return {
-            always: Vec.filter(config.always, (mid) => mid !== matId),
-            never: Vec.sort(Vec.concat(config.never, matId)),
-            banned:
-              config.banned == null
-                ? undefined
-                : removeFromBannedCombos(config.banned, matId),
-          };
-        case "random":
-          return {
-            ...config,
-            always: Vec.filter(config.always, (mid) => mid !== matId),
-          };
-      }
-      break;
-
-    case "never":
-      switch (nextMode) {
-        case "always":
-          return {
-            ...config,
-            always: Vec.sort(Vec.concat(config.always, matId)),
-            never: Vec.filter(config.never, (mid) => mid !== matId),
-          };
-        case "never":
-          return config;
-        case "random":
-          return {
-            ...config,
-            never: Vec.filter(config.never, (mid) => mid !== matId),
-          };
-      }
-      break;
-
-    case "random":
-      switch (nextMode) {
-        case "always":
-          return {
-            ...config,
-            always: Vec.sort(Vec.concat(config.always, matId)),
-          };
-        case "never":
-          return {
-            ...config,
-            never: Vec.sort(Vec.concat(config.never, matId)),
-            banned:
-              config.banned == null
-                ? undefined
-                : removeFromBannedCombos(config.banned, matId),
-          };
-        case "random":
-          return config;
-      }
-  }
 }
 
 const removeFromBannedCombos = (
