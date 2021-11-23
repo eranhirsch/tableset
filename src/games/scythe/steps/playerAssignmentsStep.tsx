@@ -75,25 +75,50 @@ export default createRandomGameStep({
       return null;
     }
 
-    const pairs = Combos.ids(
+    const combos = Combos.ids(
       playerIds!.length,
       matsHash,
       factionIds,
       productIds!
     );
 
-    const byPreferences = pairs.reduce((ongoing, [factionId, matId]) => {
-      const relevantPreferences = Vec.filter(
-        config,
-        ({ playerId }) => !ongoing.includes(playerId)
-      );
-      const fulfilledPreference = relevantPreferences.find(
-        (preference) =>
-          ("factionId" in preference && preference.factionId === factionId) ||
-          ("matId" in preference && preference.matId === matId)
-      );
-      return Vec.concat(ongoing, fulfilledPreference?.playerId);
-    }, [] as readonly (PlayerId | undefined)[]);
+    // We scan the preferences in order, as the first one has the highest
+    // priority
+    const byPreferences = config.reduce(
+      (assigned, { playerId, ...preference }) => {
+        if (assigned.includes(playerId)) {
+          // Skip players who have already been assigned a combo by a previous
+          // preference.
+          return assigned;
+        }
+
+        // We look for a combo that this preference matches
+        const matchingComboIdx = combos.findIndex(
+          ([factionId, matId], index) =>
+            // It's not already assigned to a different player because of a
+            // previous preference...
+            assigned[index] == null &&
+            // ...And that either it's faction or mat match the preference.
+            ("factionId" in preference
+              ? factionId === preference.factionId
+              : matId === preference.matId)
+        );
+
+        if (matchingComboIdx === -1) {
+          // If nothing matches we just skip to the next preference
+          return assigned;
+        }
+
+        // If we have a match we assign the player to that combo by adding their
+        // playerId to the array in the position that is relevant to this combo
+        return Vec.concat(
+          Vec.take(assigned, matchingComboIdx),
+          playerId,
+          Vec.drop(assigned, matchingComboIdx + 1)
+        );
+      },
+      Vec.fill(combos.length, null as PlayerId | null)
+    );
 
     const remaining = [...Random.shuffle(Vec.diff(playerIds!, byPreferences))];
 
