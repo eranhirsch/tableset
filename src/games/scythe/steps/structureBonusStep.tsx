@@ -67,6 +67,12 @@ export default createTrivialSingleItemSelector({
   InstanceVariableComponent,
   InstanceManualComponent,
   InstanceCards,
+
+  instanceAvroType: {
+    type: "enum",
+    name: "TileKey",
+    symbols: [...Vec.keys(BONUS_TILES)],
+  },
 });
 
 function InstanceVariableComponent({

@@ -1,3 +1,4 @@
+import avro from "avsc";
 import { Dict, nullthrows, type_invariant, Vec } from "common";
 import { SetupStep } from "features/instance/instanceSlice";
 import { Templatable } from "features/template/Templatable";
@@ -206,6 +207,9 @@ type Options<
     ): JSX.Element | null;
     disabledTLDROverride?: string;
     isVariant?: true;
+
+    // This MUST define T in terms of an avro type
+    instanceAvroType?: avro.schema.DefinedType;
   };
 
 interface OptionsInternal<T, C>
@@ -282,6 +286,7 @@ export function createRandomGameStep<T, C>({
   resolve,
   skip,
   willContain,
+  instanceAvroType,
   ...baseOptions
 }: OptionsInternal<T, C>): Readonly<RandomGameStep<T, C>> {
   const baseStep = createGameStep(baseOptions);
@@ -414,6 +419,8 @@ export function createRandomGameStep<T, C>({
     InstanceCards,
 
     disabledTLDROverride,
+
+    instanceAvroType,
   };
 
   return variableStep;

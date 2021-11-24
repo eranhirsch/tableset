@@ -19,7 +19,8 @@ type Template = Readonly<
   ReturnType<typeof templateSelectors["selectEntities"]>
 >;
 
-export interface Templatable<T = unknown, C = unknown> extends WithDependencies {
+export interface Templatable<T = unknown, C = unknown>
+  extends WithDependencies {
   isVariant?: true;
   resolve(
     config: C,

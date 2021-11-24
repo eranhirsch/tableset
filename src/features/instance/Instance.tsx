@@ -23,7 +23,10 @@ export function Instance(): JSX.Element | null {
   const fullInstance = useAppSelector(fullInstanceSelector);
   useEffect(() => {
     console.log("INSTANCE", Dict.sort_by_key(fullInstance));
-  }, [fullInstance]);
+    const buffer = game.instanceAvroType.toBuffer(fullInstance);
+    console.log(buffer);
+    console.log(game.instanceAvroType.fromBuffer(buffer));
+  }, [fullInstance, game.instanceAvroType]);
 
   return (
     <TSPage

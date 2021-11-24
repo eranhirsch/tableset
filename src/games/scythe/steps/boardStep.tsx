@@ -16,7 +16,8 @@ import productsMetaStep from "./productsMetaStep";
 
 type TemplateConfig = { percentFarms: number };
 
-export type BoardId = "farms" | "noFarms";
+const BOARD_IDS = ["farms", "noFarms"] as const;
+export type BoardId = typeof BOARD_IDS[number];
 
 export default createRandomGameStep({
   id: "map",
@@ -38,6 +39,12 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
   InstanceCards,
+
+  instanceAvroType: {
+    type: "enum",
+    name: "BoardId",
+    symbols: [...BOARD_IDS],
+  },
 });
 
 function ConfigPanel({

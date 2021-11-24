@@ -6,6 +6,7 @@ import {
   MenuItem,
   Select
 } from "@mui/material";
+import avro from "avsc";
 import { $, C, Num, Random, Shape, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { templateValue } from "features/template/templateSlice";
@@ -54,6 +55,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
   InstanceCards?(
     props: InstanceCardsProps<ItemId, readonly Pid[], boolean>
   ): JSX.Element;
+  instanceAvroType: avro.schema.DefinedType;
 }
 
 const createTrivialSingleItemSelector = <

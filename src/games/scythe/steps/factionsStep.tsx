@@ -116,6 +116,11 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
   InstanceCards,
+
+  instanceAvroType: {
+    type: "array",
+    items: { type: "enum", name: "FactionId", symbols: [...Factions.ALL_IDS] },
+  },
 });
 
 function ConfigPanel({

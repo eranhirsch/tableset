@@ -46,6 +46,8 @@ export default createTrivialSingleItemSelector({
   InstanceVariableComponent,
   InstanceManualComponent,
   InstanceCards,
+
+  instanceAvroType: "int",
 });
 
 function InstanceVariableComponent({

@@ -3,18 +3,20 @@ import { GamePiecesColor } from "model/GamePiecesColor";
 import { ScytheProductId } from "../ScytheProductId";
 import { HexType } from "./HexType";
 
-export type FactionId =
+const ALL_FACTION_IDS = [
   /* spell-checker: disable */
-  | "albion"
-  | "crimea"
-  | "fenris"
-  | "nordic"
-  | "polania"
-  | "rusviet"
-  | "saxony"
-  | "tesla"
-  | "togawa";
-/* spell-checker: enable */
+  "albion",
+  "crimea",
+  "fenris",
+  "nordic",
+  "polania",
+  "rusviet",
+  "saxony",
+  "tesla",
+  "togawa",
+  /* spell-checker: enable */
+] as const;
+export type FactionId = typeof ALL_FACTION_IDS[number];
 
 interface FactionName {
   abbreviated: string;
@@ -122,6 +124,7 @@ const FACTIONS_IN_PRODUCTS: Readonly<
 
 export const Factions = {
   ...FACTIONS,
+  ALL_IDS: ALL_FACTION_IDS,
   availableForProducts: (products: readonly ScytheProductId[]) =>
     Vec.flatten(Vec.values(Dict.select_keys(FACTIONS_IN_PRODUCTS, products))),
 } as const;

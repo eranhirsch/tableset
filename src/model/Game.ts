@@ -1,4 +1,5 @@
-import { Dict } from "common";
+import avro from "avsc";
+import { $, Dict, Vec } from "common";
 import { GameId } from "games/core/GAMES";
 import { GameStepBase } from "./GameStepBase";
 import { Product } from "./Product";
@@ -25,6 +26,8 @@ export interface Game<
   productsMetaStep: VariableGameStep<readonly Pid[]>;
   steps: Readonly<Record<Sid, GameStepBase>>;
   products: Readonly<Record<Pid, Product>>;
+
+  instanceAvroType: avro.Type;
 }
 
 export const createGame = <
@@ -36,10 +39,38 @@ export const createGame = <
   products,
   productsMetaStep,
   steps,
-}: Readonly<GameOptions<Pid>>): Game<Sid, Pid> => ({
-  id,
-  name,
-  products,
-  productsMetaStep,
-  steps: Dict.from_values(steps, ({ id }) => id),
-});
+}: Readonly<GameOptions<Pid>>): Game<Sid, Pid> =>
+  $(
+    steps,
+    ($$) => Dict.from_values($$, ({ id }) => id),
+    ($$) => ({
+      id,
+      name,
+      products,
+      productsMetaStep,
+      steps: $$,
+      instanceAvroType: buildTypeFromSteps(id, $$),
+    })
+  );
+
+const buildTypeFromSteps = (
+  gameId: GameId,
+  steps: Readonly<Record<StepId, GameStepBase>>
+): avro.Type =>
+  $(
+    steps,
+    Dict.sort_by_key,
+    ($$) => Dict.maybe_map($$, ({ instanceAvroType }) => instanceAvroType),
+    ($$) =>
+      Vec.map_with_key($$, (stepId, instanceAvroType) => ({
+        name: stepId,
+        type: ["null", instanceAvroType],
+        default: null,
+      })),
+    ($$) =>
+      avro.Type.forSchema({
+        type: "record",
+        name: `${gameId}Instance`,
+        fields: [...$$],
+      })
+  );

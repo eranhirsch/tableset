@@ -161,6 +161,8 @@ export function createVariant({
       ),
 
     disabledTLDROverride: "Never",
+
+    instanceAvroType: "boolean",
   };
 }
 
