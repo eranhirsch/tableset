@@ -24,7 +24,6 @@ export function Instance(): JSX.Element | null {
   useEffect(() => {
     console.log("INSTANCE", Dict.sort_by_key(fullInstance));
     const buffer = game.instanceAvroType.toBuffer(fullInstance);
-    console.log(buffer);
     console.log(game.instanceAvroType.fromBuffer(buffer));
   }, [fullInstance, game.instanceAvroType]);
 

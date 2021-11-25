@@ -94,7 +94,7 @@ export type InstanceCardsProps<
 
 type Options<
   T,
-  C,
+  C extends object,
   D1 = never,
   D2 = never,
   D3 = never,
@@ -182,18 +182,20 @@ type Options<
       query9: Query<D9>,
       query10: Query<D10>
     ): T | undefined;
-    initialConfig(
-      query1: Query<D1>,
-      query2: Query<D2>,
-      query3: Query<D3>,
-      query4: Query<D4>,
-      query5: Query<D5>,
-      query6: Query<D6>,
-      query7: Query<D7>,
-      query8: Query<D8>,
-      query9: Query<D9>,
-      query10: Query<D10>
-    ): C;
+    initialConfig:
+      | C
+      | ((
+          query1: Query<D1>,
+          query2: Query<D2>,
+          query3: Query<D3>,
+          query4: Query<D4>,
+          query5: Query<D5>,
+          query6: Query<D6>,
+          query7: Query<D7>,
+          query8: Query<D8>,
+          query9: Query<D9>,
+          query10: Query<D10>
+        ) => C);
     skip?(
       value: T | null,
       dependencies: DepsTuple<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
@@ -212,7 +214,7 @@ type Options<
     instanceAvroType?: avro.schema.DefinedType;
   };
 
-interface OptionsInternal<T, C>
+interface OptionsInternal<T, C extends object>
   extends Options<
     T,
     C,
@@ -230,7 +232,7 @@ interface OptionsInternal<T, C>
   isTemplatable(...queries: Query[]): boolean;
   resolve(config: C, ...dependencies: (unknown | null)[]): T | null;
   refresh(current: C, ...dependencies: Query[]): C;
-  initialConfig(...queries: Query[]): C;
+  initialConfig: C | ((...queries: Query[]) => C);
   canResolveTo?(value: T, config: unknown | null, ...queries: Query[]): boolean;
   willContain?(
     element: ArrayElement<T>,
@@ -255,7 +257,7 @@ interface OptionsInternal<T, C>
 
 export function createRandomGameStep<
   T,
-  C,
+  C extends object,
   D1 = never,
   D2 = never,
   D3 = never,
@@ -269,7 +271,7 @@ export function createRandomGameStep<
 >(
   options: Options<T, C, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
 ): Readonly<RandomGameStep<T, C>>;
-export function createRandomGameStep<T, C>({
+export function createRandomGameStep<T, C extends Object>({
   canResolveTo,
   ConfigPanel,
   ConfigPanelTLDR,
@@ -365,12 +367,15 @@ export function createRandomGameStep<T, C>({
         )
       ),
 
-    initialConfig: (template, context) =>
-      initialConfig(
-        ...Vec.map(dependencies, (dependency) =>
-          dependency.query(template, context)
-        )
-      ),
+    initialConfig:
+      typeof initialConfig == "function"
+        ? (template, context) =>
+            initialConfig(
+              ...Vec.map(dependencies, (dependency) =>
+                dependency.query(template, context)
+              )
+            )
+        : initialConfig,
 
     resolve: (config, upstreamInstance, context) =>
       resolve(

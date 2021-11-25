@@ -61,8 +61,12 @@ export const templateSlice = createSlice({
           GAMES[state.gameId!].steps[id],
           isTemplatable
         );
-        const config = templatable.initialConfig(state.entities, context);
-        templateAdapter.addOne(state, { id, config });
+        
+        let { initialConfig } = templatable;
+        if (typeof initialConfig === "function") {
+          initialConfig = initialConfig(state.entities, context);
+        }
+        templateAdapter.addOne(state, { id, config: initialConfig });
         markDownstreamElementsStale(templatable, state);
       },
     },

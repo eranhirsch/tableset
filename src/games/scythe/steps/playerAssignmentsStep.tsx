@@ -28,6 +28,7 @@ import {
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
+import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
@@ -70,91 +71,9 @@ export default createRandomGameStep({
   isTemplatable: (_players, _products, factions, playerMats) =>
     factions.willResolve() || playerMats.willResolve(),
 
-  resolve(config, playerIds, productIds, factionIds, matsHash) {
-    if (matsHash == null && factionIds == null) {
-      return null;
-    }
-
-    const combos = Combos.ids(
-      playerIds!.length,
-      matsHash,
-      factionIds,
-      productIds!
-    );
-
-    // We scan the preferences in order, as the first one has the highest
-    // priority
-    const byPreferences = config.reduce(
-      (assigned, { playerId, ...preference }) => {
-        if (assigned.includes(playerId)) {
-          // Skip players who have already been assigned a combo by a previous
-          // preference.
-          return assigned;
-        }
-
-        // We look for a combo that this preference matches
-        const matchingComboIdx = combos.findIndex(
-          ([factionId, matId], index) =>
-            // It's not already assigned to a different player because of a
-            // previous preference...
-            assigned[index] == null &&
-            // ...And that either it's faction or mat match the preference.
-            ("factionId" in preference
-              ? factionId === preference.factionId
-              : matId === preference.matId)
-        );
-
-        if (matchingComboIdx === -1) {
-          // If nothing matches we just skip to the next preference
-          return assigned;
-        }
-
-        // If we have a match we assign the player to that combo by adding their
-        // playerId to the array in the position that is relevant to this combo
-        return Vec.concat(
-          Vec.take(assigned, matchingComboIdx),
-          playerId,
-          Vec.drop(assigned, matchingComboIdx + 1)
-        );
-      },
-      Vec.fill(combos.length, null as PlayerId | null)
-    );
-
-    const remaining = [...Random.shuffle(Vec.diff(playerIds!, byPreferences))];
-
-    return Vec.map(byPreferences, (playerId) => playerId ?? remaining.pop());
-  },
-
-  initialConfig: (): Readonly<TemplateConfig> => [],
-
-  refresh(
-    config: Readonly<TemplateConfig>,
-    players,
-    products,
-    factions,
-    playerMats
-  ) {
-    const playerIds = players.onlyResolvableValue()!;
-
-    const productIds = products.onlyResolvableValue()!;
-    const availableFactions = factions.willResolve()
-      ? Factions.availableForProducts(productIds)
-      : [];
-    const availableMats = playerMats.willResolve()
-      ? PlayerMats.availableForProducts(productIds)
-      : [];
-
-    const refreshed = Vec.filter(
-      config,
-      ({ playerId, ...pref }) =>
-        playerIds.includes(playerId) &&
-        (("factionId" in pref && availableFactions.includes(pref.factionId)) ||
-          ("matId" in pref && availableMats.includes(pref.matId)))
-    );
-    return refreshed.length < config.length
-      ? refreshed
-      : templateValue("unchanged");
-  },
+  initialConfig: [],
+  resolve,
+  refresh,
 
   ConfigPanel,
   ConfigPanelTLDR,
@@ -164,6 +83,96 @@ export default createRandomGameStep({
 
   InstanceCards,
 });
+
+function resolve(
+  config: Readonly<TemplateConfig>,
+  playerIds: readonly PlayerId[] | null,
+  productIds: readonly ScytheProductId[] | null,
+  factionIds: readonly FactionId[] | null,
+  matsHash: number
+): readonly PlayerId[] | null {
+  if (matsHash == null && factionIds == null) {
+    return null;
+  }
+
+  const combos = Combos.ids(
+    playerIds!.length,
+    matsHash,
+    factionIds,
+    productIds!
+  );
+
+  // We scan the preferences in order, as the first one has the highest
+  // priority
+  const byPreferences = config.reduce(
+    (assigned, { playerId, ...preference }) => {
+      if (assigned.includes(playerId)) {
+        // Skip players who have already been assigned a combo by a previous
+        // preference.
+        return assigned;
+      }
+
+      // We look for a combo that this preference matches
+      const matchingComboIdx = combos.findIndex(
+        ([factionId, matId], index) =>
+          // It's not already assigned to a different player because of a
+          // previous preference...
+          assigned[index] == null &&
+          // ...And that either it's faction or mat match the preference.
+          ("factionId" in preference
+            ? factionId === preference.factionId
+            : matId === preference.matId)
+      );
+
+      if (matchingComboIdx === -1) {
+        // If nothing matches we just skip to the next preference
+        return assigned;
+      }
+
+      // If we have a match we assign the player to that combo by adding their
+      // playerId to the array in the position that is relevant to this combo
+      return Vec.concat(
+        Vec.take(assigned, matchingComboIdx),
+        playerId,
+        Vec.drop(assigned, matchingComboIdx + 1)
+      );
+    },
+    Vec.fill(combos.length, null as PlayerId | null)
+  );
+
+  const remaining = [...Random.shuffle(Vec.diff(playerIds!, byPreferences))];
+
+  return Vec.map(byPreferences, (playerId) => playerId ?? remaining.pop()!);
+}
+
+function refresh(
+  config: Readonly<TemplateConfig>,
+  players: Query<readonly PlayerId[]>,
+  products: Query<readonly ScytheProductId[]>,
+  factions: Query<readonly FactionId[]>,
+  playerMats: Query<number>
+) {
+  const playerIds = players.onlyResolvableValue()!;
+
+  const productIds = products.onlyResolvableValue()!;
+  const availableFactions = factions.willResolve()
+    ? Factions.availableForProducts(productIds)
+    : [];
+  const availableMats = playerMats.willResolve()
+    ? PlayerMats.availableForProducts(productIds)
+    : [];
+
+  const refreshed = Vec.filter(
+    config,
+    ({ playerId, ...pref }) =>
+      playerIds.includes(playerId) &&
+      (("factionId" in pref && availableFactions.includes(pref.factionId)) ||
+        ("matId" in pref && availableMats.includes(pref.matId)))
+  );
+  return refreshed.length < config.length
+    ? refreshed
+    : templateValue("unchanged");
+}
 
 function ConfigPanel({
   config,

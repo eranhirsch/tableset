@@ -19,7 +19,7 @@ type Template = Readonly<
   ReturnType<typeof templateSelectors["selectEntities"]>
 >;
 
-export interface Templatable<T = unknown, C = unknown>
+export interface Templatable<T = unknown, C extends object | unknown = unknown>
   extends WithDependencies {
   isVariant?: true;
   resolve(
@@ -27,10 +27,9 @@ export interface Templatable<T = unknown, C = unknown>
     upstreamInstance: Readonly<Record<StepId, SetupStep>>,
     context: ContextBase
   ): T | null;
-  initialConfig(
-    template: Template,
-    context: Readonly<ContextBase>
-  ): Readonly<C>;
+  initialConfig:
+    | Readonly<C>
+    | ((template: Template, context: Readonly<ContextBase>) => Readonly<C>);
   refreshTemplateConfig(
     config: Readonly<C>,
     template: Template,
