@@ -9,7 +9,7 @@ export const InstanceUrlUtils = {
     $(
       encoded,
       base64Url.decode,
-      game.instanceAvroType.fromBuffer,
+      ($$) => game.instanceAvroType.fromBuffer($$),
       Dict.filter_nulls
     ),
 } as const;
