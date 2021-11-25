@@ -3,14 +3,13 @@ import { CircularProgress, Fab } from "@mui/material";
 import { $, base64Url } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { GAMES } from "games/core/GAMES";
-import { StepId } from "model/Game";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
+import { resolveTemplate } from "./resolveTemplate";
 import {
   templateIsStaleSelector,
   wholeTemplateSelector,
 } from "./templateSlice";
-import { templateSteps } from "./templateSteps";
 
 export function TemplateFab(): JSX.Element {
   const navigate = useNavigate();
@@ -27,20 +26,7 @@ export function TemplateFab(): JSX.Element {
       color="primary"
       onClick={() =>
         $(
-          templateSteps({ gameId, entities }),
-          ($$) =>
-            $$.reduce(
-              (ongoing, [{ id, resolve }, { config }]) =>
-                $(resolve(config, ongoing, context), ($$) =>
-                  $$ == null
-                    ? ongoing
-                    : {
-                        ...ongoing,
-                        [id]: $$,
-                      }
-                ),
-              {} as Readonly<Record<StepId, unknown>>
-            ),
+          resolveTemplate(gameId!, entities, context),
           ($$) => GAMES[gameId!].instanceAvroType.toBuffer($$),
           ($$) => base64Url.encode($$),
           ($$) => navigate(`/${gameId}/${$$}`)
