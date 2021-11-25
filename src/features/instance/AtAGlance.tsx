@@ -1,26 +1,54 @@
 import { Grid, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { Vec } from "common";
+import { $, Dict, Vec } from "common";
 import { gameStepsSelectorByType } from "features/game/gameSlice";
 import { isTemplatable, Templatable } from "features/template/Templatable";
 import { VariableGameStep } from "model/VariableGameStep";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { InstanceCard } from "./InstanceCard";
 import { instanceValuesSelector } from "./instanceSlice";
+import { useGameFromParam } from "./useGameFromParam";
+import { useInstanceFromParam } from "./useInstanceFromParam";
 import {
   useOptionalInstanceValues,
   useRequiredInstanceValue,
 } from "./useInstanceValue";
 
 export function AtAGlance(): JSX.Element {
-  const navigate = useNavigate();
-
   const templatableSteps = useAppSelector(
     gameStepsSelectorByType(isTemplatable)
   );
   const instancedSteps = useAppSelector(
     instanceValuesSelector(templatableSteps)
   );
+
+  return <AtAGlanceInternal instancedSteps={instancedSteps} />;
+}
+
+export function AtAGlanceFromParam(): JSX.Element {
+  const game = useGameFromParam()!;
+  const instance = useInstanceFromParam()!;
+  const instancedSteps = useMemo(
+    () =>
+      $(
+        game.steps,
+        ($$) => Dict.filter($$, isTemplatable),
+        ($$) => Dict.inner_join($$, instance),
+        Vec.values
+      ),
+    [game.steps, instance]
+  );
+  return <AtAGlanceInternal instancedSteps={instancedSteps} />;
+}
+
+function AtAGlanceInternal({
+  instancedSteps,
+}: {
+  instancedSteps: readonly [step: Templatable, value: unknown][];
+}): JSX.Element {
+  const navigate = useNavigate();
+
   const components = Vec.filter(
     instancedSteps,
     ([{ isVariant }]) => !isVariant

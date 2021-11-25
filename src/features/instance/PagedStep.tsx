@@ -2,15 +2,15 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { Box, Button, MobileStepper, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { TSPage } from "app/ux/Chrome";
-import { invariant_violation, Vec } from "common";
+import { $, invariant_violation, Vec } from "common";
 import { gameStepSelector } from "features/game/gameSlice";
-import { useFeaturesContext } from "features/useFeaturesContext";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
 import { StepId } from "model/Game";
-import { useNavigate, useParams } from "react-router-dom";
+import { useCallback } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CloseButton } from "./CloseButton";
-import { instanceSelectors, SetupStep } from "./instanceSlice";
+import { InstanceItemContent } from "./InstanceItemContent";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
 
 export function PagedStep(): JSX.Element {
@@ -23,7 +23,8 @@ export function PagedStep(): JSX.Element {
 }
 
 function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
-  const navigate = useNavigate();
+  const navigateStep = useNavigateStep();
+
   const step = useAppSelector(gameStepSelector(stepId)) as
     | RandomGameStep
     | DerivedGameStep;
@@ -56,9 +57,7 @@ function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
           nextButton={
             <Button
               size="small"
-              onClick={() =>
-                navigate(`/instance/${activeSteps[activeStep + 1].id}`)
-              }
+              onClick={() => navigateStep(activeSteps[activeStep + 1].id)}
               disabled={activeStep === activeSteps.length - 1}
             >
               Next
@@ -68,9 +67,7 @@ function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
           backButton={
             <Button
               size="small"
-              onClick={() =>
-                navigate(`/instance/${activeSteps[activeStep - 1].id}`)
-              }
+              onClick={() => navigateStep(activeSteps[activeStep - 1].id)}
               disabled={activeStep === 0}
             >
               <KeyboardArrowLeft />
@@ -83,40 +80,22 @@ function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
   );
 }
 
-function InstanceItemContent({
-  gameStep,
-}: {
-  gameStep: RandomGameStep | DerivedGameStep;
-}): JSX.Element | null {
-  const instance = useAppSelector(instanceSelectors.selectEntities);
-  const context = useFeaturesContext();
-  const { InstanceManualComponent } = gameStep;
-  if ("InstanceDerivedComponent" in gameStep) {
-    return (
-      <gameStep.InstanceDerivedComponent
-        context={{
-          ...context,
-          instance:
-            // redux dictionaries are really weird because they support ID types
-            // which aren't used, and have undefined as part of the value.
-            // We cast here to work around it...
-            Vec.values(instance as Record<StepId, SetupStep>),
-        }}
-      />
-    );
-  }
-  const instanceStep = instance[gameStep.id];
-  if (instanceStep != null) {
-    return <gameStep.InstanceVariableComponent value={instanceStep.value} />;
-  }
-  if (InstanceManualComponent != null) {
-    if (typeof InstanceManualComponent === "string") {
-      // We allow simple strings as components too, in those cases we just
-      // insert them into a basic component instead
-      return <Typography variant="body1">{InstanceManualComponent}</Typography>;
-    }
-    return <InstanceManualComponent />;
-  }
-  // TODO: Kill this, make InstanceManualComponent non nullable
-  return <div>Manual Section</div>;
+function useNavigateStep(): (stepId: StepId) => void {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  return useCallback(
+    (stepId: StepId) =>
+      $(
+        location.pathname,
+        ($$) => $$.split("/"),
+        // Drop the current step
+        ($$) => Vec.take($$, $$.length - 1),
+        ($$) => Vec.concat($$, stepId),
+        ($$) => $$.join("/"),
+        ($$) => navigate($$)
+      ),
+    [location.pathname, navigate]
+  );
 }
+

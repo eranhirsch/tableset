@@ -3,6 +3,7 @@ import { GameHomeWrapper } from "features/game/GameHome";
 import { Games } from "features/game/Games";
 import { Instance } from "features/instance/Instance";
 import { PagedStep } from "features/instance/PagedStep";
+import { ParamBasedInstance } from "features/instance/ParamBasedInstance";
 import {
   TableOfContents,
   TABLE_OF_CONTENTS_PATH,
@@ -18,7 +19,17 @@ export function SiteMap(): JSX.Element {
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Games />} />
-          <Route path=":gameId" element={<GameHomeWrapper />} />
+          <Route path=":gameId">
+            <Route index element={<GameHomeWrapper />} />
+            <Route path=":encodedInstance">
+              <Route index element={<ParamBasedInstance />} />
+              <Route
+                path={TABLE_OF_CONTENTS_PATH}
+                element={<TableOfContents />}
+              />
+              <Route path=":stepId" element={<PagedStep />} />
+            </Route>
+          </Route>
           <Route path="players" element={<Players />} />
           <Route path="template" element={<Template />} />
           <Route path="instance">

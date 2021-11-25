@@ -3,15 +3,15 @@ import { Box, Chip, Collapse, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Dict, Vec } from "common";
 import { gameStepsSelector } from "features/game/gameSlice";
-import { isTemplatable } from "features/template/Templatable";
+import { isTemplatable, Templatable } from "features/template/Templatable";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { StepId } from "model/Game";
 import { useMemo, useRef, useState } from "react";
 import { instanceIntersectIdsSelector } from "./instanceSlice";
+import { useGameFromParam } from "./useGameFromParam";
+import { useInstanceFromParam } from "./useInstanceFromParam";
 
 export function VariantSummary(): JSX.Element | null {
-  const [expandedStepId, setExpandedStepId] = useState<StepId>();
-
   const allSteps = useAppSelector(gameStepsSelector);
 
   const variants = useMemo(
@@ -23,6 +23,53 @@ export function VariantSummary(): JSX.Element | null {
     [allSteps]
   );
 
+  const instanceValues = useAppSelector(
+    instanceIntersectIdsSelector(Vec.keys(variants))
+  );
+
+  return (
+    <VariantSummaryInternal
+      variants={variants}
+      instanceValues={instanceValues}
+    />
+  );
+}
+
+export function VariantSummaryFromParams(): JSX.Element | null {
+  const game = useGameFromParam()!;
+  const instance = useInstanceFromParam()!;
+
+  const variants = useMemo(
+    () =>
+      Dict.filter(
+        Dict.filter(game.steps, isTemplatable),
+        ({ isVariant }) => isVariant ?? false
+      ),
+    [game.steps]
+  );
+
+  const instanceValues = useMemo(
+    () => Vec.keys(Dict.inner_join(variants, instance)),
+    [instance, variants]
+  );
+
+  return (
+    <VariantSummaryInternal
+      variants={variants}
+      instanceValues={instanceValues}
+    />
+  );
+}
+
+function VariantSummaryInternal({
+  variants,
+  instanceValues,
+}: {
+  variants: Readonly<Required<Record<string, Templatable<unknown, unknown>>>>;
+  instanceValues: readonly StepId[];
+}): JSX.Element | null {
+  const [expandedStepId, setExpandedStepId] = useState<StepId>();
+
   const expandedElement = useRef<React.ReactNode>();
   if (expandedStepId != null) {
     // TODO: We need to pull this method into the templatable interface so that
@@ -32,10 +79,6 @@ export function VariantSummary(): JSX.Element | null {
     ] as RandomGameStep;
     expandedElement.current = <InstanceVariableComponent value={true} />;
   }
-
-  const instanceValues = useAppSelector(
-    instanceIntersectIdsSelector(Vec.keys(variants))
-  );
 
   if (Dict.is_empty(variants)) {
     // No variants to show
