@@ -1,8 +1,7 @@
-import { nullthrows, ReactUtils, Vec } from "common";
+import { nullthrows, Vec } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { StepId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
-import { instanceSelectors } from "./instanceSlice";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 
 export function useRequiredInstanceValue<T>(step: VariableGameStep<T>): T {
@@ -30,16 +29,8 @@ export function useOptionalInstanceValue<T>(
 }
 
 export function useHasDownstreamInstanceValue(stepId: StepId): boolean {
-  const instanceEntry = ReactUtils.useAppEntityIdSelectorNullable(
-    instanceSelectors,
-    stepId
-  );
-  const paramInstance = useInstanceFromParam();
-
-  return (
-    (paramInstance != null && paramInstance[stepId] != null) ||
-    instanceEntry != null
-  );
+  const instance = useInstanceFromParam();
+  return instance[stepId] != null;
 }
 
 export function useOptionalInstanceValues(

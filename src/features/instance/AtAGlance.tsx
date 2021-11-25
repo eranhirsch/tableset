@@ -12,8 +12,8 @@ import {
 } from "./useInstanceValue";
 
 export function AtAGlance(): JSX.Element {
-  const game = useGameFromParam()!;
-  const instance = useInstanceFromParam()!;
+  const game = useGameFromParam();
+  const instance = useInstanceFromParam();
   const instancedSteps = useMemo(
     () =>
       $(

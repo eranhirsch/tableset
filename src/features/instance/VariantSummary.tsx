@@ -9,8 +9,8 @@ import { useGameFromParam } from "./useGameFromParam";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 
 export function VariantSummary(): JSX.Element | null {
-  const game = useGameFromParam()!;
-  const instance = useInstanceFromParam()!;
+  const game = useGameFromParam();
+  const instance = useInstanceFromParam();
 
   const variants = useMemo(
     () =>
