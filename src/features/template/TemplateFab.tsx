@@ -1,6 +1,7 @@
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { CircularProgress, Fab } from "@mui/material";
-import { $, base64Url } from "common";
+import { $ } from "common";
+import { InstanceUrlUtils } from "features/instance/InstanceUrlUtils";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { GAMES } from "games/core/GAMES";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,13 @@ export function TemplateFab(): JSX.Element {
 
   const isStale = useAppSelector(templateIsStaleSelector);
 
+  const game = $(
+    gameId,
+    $.nullthrows(`Missing game Id!`),
+    ($$) => GAMES[$$],
+    $.nullthrows(`Unknown game id ${gameId}`)
+  );
+
   return (
     <Fab
       disabled={isStale}
@@ -27,8 +35,7 @@ export function TemplateFab(): JSX.Element {
       onClick={() =>
         $(
           resolveTemplate(gameId!, entities, context),
-          ($$) => GAMES[gameId!].instanceAvroType.toBuffer($$),
-          ($$) => base64Url.encode($$),
+          ($$) => InstanceUrlUtils.encode(game, $$),
           ($$) => navigate(`/${gameId}/${$$}`)
         )
       }

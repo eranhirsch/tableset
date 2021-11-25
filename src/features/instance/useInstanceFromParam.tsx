@@ -1,7 +1,8 @@
-import { $, base64Url, Dict } from "common";
+import { $ } from "common";
 import { StepId } from "model/Game";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { InstanceUrlUtils } from "./InstanceUrlUtils";
 import { useGameFromParam } from "./useGameFromParam";
 
 export function useInstanceFromParam(): Readonly<Record<StepId, unknown>> {
@@ -13,9 +14,7 @@ export function useInstanceFromParam(): Readonly<Record<StepId, unknown>> {
       $(
         encodedInstance,
         $.nullthrows(`Missing 'encodedInstance' path param`),
-        ($$) => base64Url.decode($$),
-        ($$) => game.instanceAvroType.fromBuffer($$),
-        Dict.filter_nulls
+        ($$) => InstanceUrlUtils.decode(game, $$)
       ),
     [game, encodedInstance]
   );
