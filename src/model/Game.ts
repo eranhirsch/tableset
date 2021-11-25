@@ -70,7 +70,8 @@ const buildTypeFromSteps = (
     ($$) =>
       avro.Type.forSchema({
         type: "record",
-        name: `${gameId}Instance`,
+        name: `instance`,
+        namespace: gameId,
         fields: [...$$],
       })
   );
