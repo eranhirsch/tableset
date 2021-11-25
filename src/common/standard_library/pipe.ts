@@ -1,25 +1,25 @@
-import { invariant, nullthrows } from "common";
+import { coerce, invariant, nullthrows } from "common";
 
-export function $<A, B>(funcOrValueA: (() => A) | A, funcB: (a: A) => B): B;
-export function $<A, B, C>(
+function pipe<A, B>(funcOrValueA: (() => A) | A, funcB: (a: A) => B): B;
+function pipe<A, B, C>(
   funcOrValueA: (() => A) | A,
   funcB: (a: A) => B,
   funcC: (b: B) => C
 ): C;
-export function $<A, B, C, D>(
+function pipe<A, B, C, D>(
   funcOrValueA: (() => A) | A,
   funcB: (a: A) => B,
   funcC: (b: B) => C,
   funcD: (c: C) => D
 ): D;
-export function $<A, B, C, D, E>(
+function pipe<A, B, C, D, E>(
   funcOrValueA: (() => A) | A,
   funcB: (a: A) => B,
   funcC: (b: B) => C,
   funcD: (c: C) => D,
   funcE: (d: D) => E
 ): E;
-export function $<A, B, C, D, E, F>(
+function pipe<A, B, C, D, E, F>(
   funcOrValueA: (() => A) | A,
   funcB: (a: A) => B,
   funcC: (b: B) => C,
@@ -27,7 +27,7 @@ export function $<A, B, C, D, E, F>(
   funcE: (d: D) => E,
   funcF: (e: E) => F
 ): F;
-export function $<A, B, C, D, E, F, G>(
+function pipe<A, B, C, D, E, F, G>(
   funcOrValueA: (() => A) | A,
   funcB: (a: A) => B,
   funcC: (b: B) => C,
@@ -36,7 +36,7 @@ export function $<A, B, C, D, E, F, G>(
   funcF: (e: E) => F,
   funcG: (f: F) => G
 ): G;
-export function $<A, B, C, D, E, F, G, H>(
+function pipe<A, B, C, D, E, F, G, H>(
   funcOrValueA: (() => A) | A,
   funcB: (a: A) => B,
   funcC: (b: B) => C,
@@ -46,7 +46,7 @@ export function $<A, B, C, D, E, F, G, H>(
   funcG: (f: F) => G,
   funcH: (g: G) => H
 ): H;
-export function $<A, B, C, D, E, F, G, H, I>(
+function pipe<A, B, C, D, E, F, G, H, I>(
   funcOrValueA: (() => A) | A,
   funcB: (a: A) => B,
   funcC: (b: B) => C,
@@ -57,7 +57,7 @@ export function $<A, B, C, D, E, F, G, H, I>(
   funcH: (g: G) => H,
   funcI: (h: H) => I
 ): I;
-export function $<A, B, C, D, E, F, G, H, I, J>(
+function pipe<A, B, C, D, E, F, G, H, I, J>(
   funcOrValueA: (() => A) | A,
   funcB: (a: A) => B,
   funcC: (b: B) => C,
@@ -69,7 +69,7 @@ export function $<A, B, C, D, E, F, G, H, I, J>(
   funcI: (h: H) => I,
   funcJ: (i: I) => J
 ): J;
-export function $<
+function pipe<
   A,
   B,
   C = never,
@@ -92,7 +92,7 @@ export function $<
   funcI?: (h: H) => I,
   funcJ?: (i: I) => J
 ): any;
-export function $<
+function pipe<
   A,
   B,
   C = never,
@@ -116,7 +116,7 @@ export function $<
   funcJ?: (i: I) => J
 ): any;
 
-export function $<
+function pipe<
   A,
   B,
   C = never,
@@ -176,24 +176,37 @@ export function $<
   return funcJ(i);
 }
 
-export const $log =
-  <T>(...args: unknown[]): ((x: T) => T) =>
-  (x) => {
-    console.log(...args, x);
-    return x;
-  };
+const utilities = {
+  log:
+    <T>(...args: unknown[]): ((x: T) => T) =>
+    (x) => {
+      console.log(...args, x);
+      return x;
+    },
 
-export const $nullthrows =
-  <T>(msg?: string): ((x: T | null | undefined) => T) =>
-  (x) =>
-    nullthrows(x, msg);
+  nullthrows:
+    <T>(msg?: string): ((x: T) => NonNullable<T>) =>
+    (x) =>
+      nullthrows(x, msg),
 
-export const $invariant =
-  <T>(
-    predicate: (x: T) => boolean,
-    msg?: string | ((x: T) => string)
-  ): ((x: T) => T) =>
-  (x) => {
-    invariant(predicate(x), typeof msg === "function" ? msg(x) : msg);
-    return x;
-  };
+  invariant:
+    <T>(
+      predicate: (x: T) => boolean,
+      msg?: string | ((x: T) => string)
+    ): ((x: T) => T) =>
+    (x) => {
+      invariant(predicate(x), typeof msg === "function" ? msg(x) : msg);
+      return x;
+    },
+
+  coerce:
+    <T>(
+      typePredicate: (x: any) => x is T,
+      msg?: string | ((x: unknown) => string)
+    ): ((x: unknown) => T) =>
+    (x) =>
+      coerce(x, typePredicate, typeof msg === "function" ? msg(x) : msg),
+} as const;
+
+const pipeModule = Object.assign(pipe, utilities);
+export { pipeModule as $, pipeModule as default };

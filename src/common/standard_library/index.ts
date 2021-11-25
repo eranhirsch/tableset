@@ -15,7 +15,7 @@ export * from "./c";
 export * from "./dict";
 export * from "./math";
 export * from "./num";
-export * from "./pipe";
+export { $ } from "./pipe";
 export * from "./random";
 export * from "./shape";
 export * from "./str";

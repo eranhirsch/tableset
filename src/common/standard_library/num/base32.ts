@@ -1,4 +1,4 @@
-import { $, $invariant, $log } from "common";
+import { $ } from "common";
 
 /**
  * These characters are too similar in most fonts, making it hard to tell what
@@ -35,7 +35,7 @@ const decode_base32 = (x: string): number =>
     // TODO: We only clean the separator we added ourselves, we need to make
     // this regex catch ANYTHING that isn't legal.
     x.replace(new RegExp("-", "g"), ""),
-    $invariant(
+    $.invariant(
       ($$) => $$.length < MAX_SAFE_INTEGER_ENCODED.length,
       `Encoded string ${x} might overflow a regular number`
     ),
@@ -44,8 +44,7 @@ const decode_base32 = (x: string): number =>
         (out, [to, from]) => out.replace(new RegExp(from, "g"), to),
         $$
       ),
-    ($$) => Number.parseInt($$, 32),
-    $log()
+    ($$) => Number.parseInt($$, 32)
   );
 
 function split(encoded: string): readonly string[] {

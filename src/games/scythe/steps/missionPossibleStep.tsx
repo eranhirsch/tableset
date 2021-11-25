@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { $, $nullthrows, Dict, MathUtils, Random, Vec } from "common";
+import { $, Dict, MathUtils, Random, Vec } from "common";
 import { CombinationsLazyArray } from "common/standard_library/math/combinationsLazyArray";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
@@ -156,7 +156,7 @@ const pairFromIndex = (
   $(
     pairsArrayForProducts(productIds),
     ($$) => $$.at(index),
-    $nullthrows(`Index ${index} is out of range`),
+    $.nullthrows(`Index ${index} is out of range`),
     ($$) =>
       Dict.from_keys(
         $$,

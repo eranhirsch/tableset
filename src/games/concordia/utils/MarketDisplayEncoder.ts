@@ -1,4 +1,4 @@
-import { $, $nullthrows, MathUtils, Random, Vec } from "common";
+import { $, MathUtils, Random, Vec } from "common";
 
 export const MARKET_DECK_I = {
   base: [
@@ -35,7 +35,7 @@ export default {
       MARKET_DECK_I[venusScoring ? "venus" : "base"],
       ($$) => MathUtils.permutations_lazy_array($$),
       ($$) => $$.at(index),
-      $nullthrows(),
+      $.nullthrows(),
       ($$) => Vec.take($$, 7)
     ),
 } as const;

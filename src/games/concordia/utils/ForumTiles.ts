@@ -1,4 +1,4 @@
-import { $, $nullthrows, MathUtils, Random } from "common";
+import { $, MathUtils, Random } from "common";
 
 export const FORUM_TILES = {
   citizen: {
@@ -60,6 +60,6 @@ export const ForumTiles = {
       FORUM_TILES.patrician.tiles,
       ($$) => MathUtils.combinations_lazy_array($$, playerCount + 1),
       ($$) => $$.at(index),
-      $nullthrows(`Bad forum index ${index}`)
+      $.nullthrows(`Bad forum index ${index}`)
     ),
 } as const;

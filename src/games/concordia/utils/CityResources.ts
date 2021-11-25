@@ -1,14 +1,4 @@
-import {
-  $,
-  $invariant,
-  $nullthrows,
-  Dict,
-  invariant,
-  MathUtils,
-  Random,
-  tuple,
-  Vec,
-} from "common";
+import { $, Dict, invariant, MathUtils, Random, tuple, Vec } from "common";
 import { PermutationsLazyArray } from "common/standard_library/math/permutationsLazyArray";
 import { MapId, MAPS, ZoneId } from "./MAPS";
 import { Resource, RESOURCE_COST } from "./resource";
@@ -83,7 +73,7 @@ export const CityResources = {
           Vec.values,
           ($$) => Vec.filter($$, (resource) => resource !== "salt"),
           ($$) => MathUtils.max_by($$, (resource) => RESOURCE_COST[resource]),
-          $nullthrows(
+          $.nullthrows(
             `Empty city resources encountered for ${mapId} and ${index}`
           )
         )
@@ -165,7 +155,7 @@ const decodeHash = (
         $(
           remainder % perms.length,
           ($$) => perms.at($$),
-          $nullthrows(
+          $.nullthrows(
             `Index ${index} caused and out-of-bounds error for permutations ${perms}`
           ),
           ($$) => Vec.concat([$$], zoneResources),
@@ -173,7 +163,7 @@ const decodeHash = (
         ),
       [[], index] as [readonly (readonly Resource[])[], number]
     ),
-    $invariant(
+    $.invariant(
       ($$) => $$[1] === 0,
       ($$) => `Error decoding hash, remainder was not 0: ${$$[1]}`
     ),
