@@ -1,4 +1,4 @@
-import { $, $nullthrows, MathUtils, Random, Vec } from "common";
+import { $, MathUtils, Random, Vec } from "common";
 import { FactionId, Factions } from "./Factions";
 
 type HomeBaseId = FactionId | "empty";
@@ -16,7 +16,7 @@ export const HomeBases = {
       availableHomeBases,
       ($$) => MathUtils.permutations_lazy_array($$),
       ($$) => $$.at(idx),
-      $nullthrows(`Hash ${idx} could not be converted to a permutation`)
+      $.nullthrows(`Hash ${idx} could not be converted to a permutation`)
     ),
 } as const;
 

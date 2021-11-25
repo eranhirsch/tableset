@@ -1,5 +1,5 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import { Dict, tuple, type_invariant, Vec } from "common";
+import { coerce, Dict, tuple, Vec } from "common";
 import { GameId, GAMES } from "games/core/GAMES";
 import { StepId } from "model/Game";
 import { isTemplatable, Templatable } from "./Templatable";
@@ -36,7 +36,7 @@ export function templateSteps({
         // We `type_invariant` here instead of using a TS compile-time cast just
         // to be extra safe. All steps in the template should be `Templatable`, so
         // nothing here should throw
-        type_invariant(
+        coerce(
           step,
           isTemplatable,
           `Step ${step.id} is present in the template but is not Templatable!`

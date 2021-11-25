@@ -1,5 +1,5 @@
 import { Slider } from "@mui/material";
-import { type_invariant } from "common";
+import { coerce } from "common";
 
 export function PercentSlider({
   percent,
@@ -25,7 +25,7 @@ export function PercentSlider({
       marks={[{ value: 50, label: "" }]}
       onChange={(_, newValue) =>
         newValue !== percent && (!preventZero || newValue !== 0)
-          ? onChange(type_invariant(newValue, isNumber))
+          ? onChange(coerce(newValue, isNumber))
           : undefined
       }
     />

@@ -1,8 +1,10 @@
-import { invariant_violation } from "./invariant_violation";
+import { invariant } from "./invariant";
 
-export function nullthrows<T>(x: T | null | undefined, msg?: string): T {
-  if (x == null) {
-    invariant_violation(msg ?? `Unexpected null encountered`);
-  }
+function assertIsDefined<T>(x: T, msg?: string): asserts x is NonNullable<T> {
+  invariant(x != null, msg ?? `Unexpected null encountered`);
+}
+
+export function nullthrows<T>(x: T, msg?: string): NonNullable<T> {
+  assertIsDefined(x, msg);
   return x;
 }

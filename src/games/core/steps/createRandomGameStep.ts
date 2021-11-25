@@ -1,5 +1,5 @@
 import avro from "avsc";
-import { Dict, nullthrows, type_invariant, Vec } from "common";
+import { coerce, Dict, nullthrows, Vec } from "common";
 import { SetupStep } from "features/instance/instanceSlice";
 import { Templatable } from "features/template/Templatable";
 import { TemplateElement } from "features/template/templateSlice";
@@ -305,7 +305,7 @@ export function createRandomGameStep<T, C extends Object>({
     coerceInstanceEntry: (entry) =>
       entry == null
         ? null
-        : type_invariant(
+        : coerce(
             entry.value,
             nullthrows(
               isType,

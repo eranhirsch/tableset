@@ -5,7 +5,7 @@ import {
   PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
-import { Dict, nullthrows, type_invariant, Vec } from "common";
+import { coerce, Dict, nullthrows, Vec } from "common";
 import { collectionActions } from "features/collection/collectionSlice";
 import { playersActions } from "features/players/playersSlice";
 import { GameId, GAMES } from "games/core/GAMES";
@@ -57,11 +57,11 @@ export const templateSlice = createSlice({
           meta: { context },
         }: PayloadAction<StepId, string, { context: ContextBase }>
       ) {
-        const templatable = type_invariant(
+        const templatable = coerce(
           GAMES[state.gameId!].steps[id],
           isTemplatable
         );
-        
+
         let { initialConfig } = templatable;
         if (typeof initialConfig === "function") {
           initialConfig = initialConfig(state.entities, context);
@@ -205,7 +205,7 @@ function markDownstreamElementsStale(
   state: RootState["template"]
 ): void {
   filterDownstreamSteps(
-    type_invariant(step, isVariableGameStep),
+    coerce(step, isVariableGameStep),
     state
   ).forEach((element) => (element.isStale = true));
 }

@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { Dict, invariant_violation, Random, type_invariant, Vec } from "common";
+import { coerce, Dict, invariant_violation, Random, Vec } from "common";
 import { templateValue } from "features/template/templateSlice";
 import { PercentSlider } from "../ux/PercentSlider";
 import { createGameStep } from "./createGameStep";
@@ -118,7 +118,7 @@ export function createVariant({
     coerceInstanceEntry: (entry) =>
       entry == null
         ? false
-        : type_invariant(
+        : coerce(
             entry.value,
             isBoolean,
             `Found unexpected value type ${typeof entry.value}: ${JSON.stringify(
