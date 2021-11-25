@@ -70,8 +70,10 @@ const buildTypeFromSteps = (
     ($$) =>
       avro.Type.forSchema({
         type: "record",
-        name: `instance`,
+        name: "instance",
         namespace: gameId,
+        // We spread the array we built because it is a readonly array and the
+        // avro framework only accepts mutable arrays (although it shouldn't!)
         fields: [...$$],
       })
   );
