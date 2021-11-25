@@ -14,11 +14,7 @@ export function useInstanceActiveSteps(): readonly GameStepBase[] {
   const featuresContext = useFeaturesContext();
 
   const instanceContext = useMemo(
-    () =>
-      Object.freeze({
-        ...featuresContext,
-        instance: Vec.map_with_key(instance, (id, value) => ({ id, value })),
-      }),
+    () => Object.freeze({ ...featuresContext, instance }),
     [featuresContext, instance]
   );
 

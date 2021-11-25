@@ -1,4 +1,3 @@
-import { SetupStep } from "features/instance/instanceSlice";
 import {
   InstanceContext,
   TemplateContext,
@@ -17,7 +16,7 @@ export interface VariableGameStep<T = unknown>
   ): T | null;
   hasValue(context: TemplateContext | InstanceContext): boolean;
   extractInstanceValue(
-    upstreamInstance: Readonly<Record<StepId, SetupStep>>,
+    upstreamInstance: Readonly<Record<StepId, unknown>>,
     context: ContextBase
   ): T | null;
 }

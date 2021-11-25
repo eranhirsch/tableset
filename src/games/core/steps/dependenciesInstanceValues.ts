@@ -1,4 +1,4 @@
-import { Dict, nullthrows, tuple } from "common";
+import { nullthrows, tuple } from "common";
 import { VariableGameStep } from "model/VariableGameStep";
 import { InstanceContext } from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
@@ -56,8 +56,5 @@ export function maybeFulfillDependency<T>(
     return null;
   }
 
-  return nullthrows(extractInstanceValue)(
-    Dict.from_values(instance, ({ id }) => id),
-    context
-  );
+  return nullthrows(extractInstanceValue)(instance, context);
 }

@@ -1,5 +1,4 @@
 import { Typography } from "@mui/material";
-import { Vec } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
@@ -16,16 +15,7 @@ export function InstanceItemContent({
   const { InstanceManualComponent } = gameStep;
   if ("InstanceDerivedComponent" in gameStep) {
     return (
-      <gameStep.InstanceDerivedComponent
-        context={{
-          ...context,
-          instance:
-            // redux dictionaries are really weird because they support ID types
-            // which aren't used, and have undefined as part of the value.
-            // We cast here to work around it...
-            Vec.map_with_key(instance, (id, value) => ({ id, value })),
-        }}
-      />
+      <gameStep.InstanceDerivedComponent context={{ ...context, instance }} />
     );
   }
   const value = instance[gameStep.id];

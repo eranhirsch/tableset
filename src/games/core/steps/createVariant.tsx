@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { coerce, Dict, invariant_violation, Random, Vec } from "common";
+import { coerce, invariant_violation, Random, Vec } from "common";
 import { templateValue } from "features/template/templateSlice";
 import { PercentSlider } from "../ux/PercentSlider";
 import { createGameStep } from "./createGameStep";
@@ -100,10 +100,7 @@ export function createVariant({
     InstanceVariableComponent,
 
     skip: ({ instance, ...context }) =>
-      !extractInstanceValue(
-        Dict.from_values(instance, ({ id }) => id),
-        context
-      ),
+      !extractInstanceValue(instance, context),
 
     canBeTemplated: (template, context) =>
       isTemplatable(

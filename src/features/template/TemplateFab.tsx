@@ -1,7 +1,6 @@
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { CircularProgress, Fab } from "@mui/material";
-import { $, base64Url, Dict } from "common";
-import { SetupStep } from "features/instance/instanceSlice";
+import { $, base64Url } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { GAMES } from "games/core/GAMES";
 import { StepId } from "model/Game";
@@ -37,15 +36,11 @@ export function TemplateFab(): JSX.Element {
                     ? ongoing
                     : {
                         ...ongoing,
-                        [id]: { id, value: $$ },
+                        [id]: $$,
                       }
                 ),
-              {} as Readonly<Record<StepId, SetupStep>>
+              {} as Readonly<Record<StepId, unknown>>
             ),
-          // TODO: The infra currently expects `SetupStep` in the resolve method,
-          // but we can simply move to a simpler model with just the value. When we
-          // do that we can drop this redundant mapper.
-          ($$) => Dict.map($$, ({ value }) => value),
           ($$) => GAMES[gameId!].instanceAvroType.toBuffer($$),
           ($$) => base64Url.encode($$),
           ($$) => navigate(`/${gameId}/${$$}`)

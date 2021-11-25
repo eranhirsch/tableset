@@ -6,9 +6,11 @@ import {
   MenuItem,
   Select
 } from "@mui/material";
+import { useAppSelector } from "app/hooks";
 import avro from "avsc";
 import { $, C, Num, Random, Shape, Vec } from "common";
-import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
+import { allProductIdsSelector } from "features/collection/collectionSlice";
+import { gameSelector } from "features/game/gameSlice";
 import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
@@ -285,7 +287,10 @@ function ConfigPanelTLDR<
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   productsMetaStep: VariableGameStep<readonly Pid[]>;
 }): JSX.Element {
-  const productIds = useRequiredInstanceValue(productsMetaStep);
+  const game = useAppSelector(gameSelector);
+  const productIds = useAppSelector(
+    allProductIdsSelector(game)
+  ) as readonly Pid[];
 
   const allowed = useMemo(
     () => Vec.diff(availableForProducts(productIds), never),

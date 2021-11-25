@@ -1,6 +1,5 @@
 import avro from "avsc";
-import { coerce, Dict, nullthrows, Vec } from "common";
-import { SetupStep } from "features/instance/instanceSlice";
+import { coerce, nullthrows, Vec } from "common";
 import { Templatable } from "features/template/Templatable";
 import { TemplateElement } from "features/template/templateSlice";
 import { StepId } from "model/Game";
@@ -22,7 +21,7 @@ export interface TemplateContext extends ContextBase {
 }
 
 export interface InstanceContext extends ContextBase {
-  instance: readonly SetupStep[];
+  instance: Readonly<Record<StepId, unknown>>;
 }
 
 export interface RandomGameStep<T = unknown, C = unknown>
@@ -295,7 +294,7 @@ export function createRandomGameStep<T, C extends Object>({
 
   const extractInstanceValue: VariableGameStep<T>["extractInstanceValue"] = (
     instance
-  ) => (instance[baseStep.id]?.value as T) ?? null;
+  ) => instance[baseStep.id] as T | null;
 
   const variableStep: RandomGameStep<T, C> = {
     ...baseStep,
@@ -323,10 +322,7 @@ export function createRandomGameStep<T, C extends Object>({
     skip: ({ instance, ...context }) =>
       skip != null
         ? skip(
-            extractInstanceValue(
-              Dict.from_values(instance, ({ id }) => id),
-              context
-            ),
+            extractInstanceValue(instance, context),
             dependencies != null
               ? dependenciesInstanceValues(
                   { instance, ...context },
@@ -350,7 +346,7 @@ export function createRandomGameStep<T, C extends Object>({
     hasValue: (context: TemplateContext | InstanceContext) =>
       "template" in context
         ? context.template[baseStep.id] != null
-        : context.instance.some(({ id }) => id === baseStep.id),
+        : context.instance[baseStep.id] != null,
 
     canBeTemplated: (template, context) =>
       isTemplatable(

@@ -1,4 +1,3 @@
-import { SetupStep } from "features/instance/instanceSlice";
 import { Query } from "games/core/steps/Query";
 import { ContextBase } from "model/ContextBase";
 import { StepId } from "model/Game";
@@ -24,7 +23,7 @@ export interface Templatable<T = unknown, C extends object | unknown = unknown>
   isVariant?: true;
   resolve(
     config: C,
-    upstreamInstance: Readonly<Record<StepId, SetupStep>>,
+    upstreamInstance: Readonly<Record<StepId, unknown>>,
     context: ContextBase
   ): T | null;
   initialConfig:
