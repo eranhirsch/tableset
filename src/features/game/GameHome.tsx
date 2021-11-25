@@ -5,11 +5,10 @@ import { TSPage } from "app/ux/Chrome";
 import { Megaphone } from "app/ux/Megaphone";
 import { $, base64Url, invariant_violation, ReactUtils, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
-import { hasGameInstanceSelector } from "features/instance/instanceSlice";
 import { hasActivePlayersSelector } from "features/players/playersSlice";
 import {
   hasGameTemplateSelector,
-  templateActions
+  templateActions,
 } from "features/template/templateSlice";
 import { GameId, GAMES, isGameId } from "games/core/GAMES";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -37,7 +36,6 @@ function GameHome({ gameId }: { gameId: GameId }): JSX.Element {
   const products = useAppSelector(allProductIdsSelector(game));
   const hasActivePlayers = useAppSelector(hasActivePlayersSelector);
   const hasTemplate = useAppSelector(hasGameTemplateSelector(game));
-  const hasInstance = useAppSelector(hasGameInstanceSelector(game));
 
   return (
     <TSPage
@@ -75,13 +73,6 @@ function GameHome({ gameId }: { gameId: GameId }): JSX.Element {
         </ListItem>
       </List>
       <List subheader={<ListSubheader>Tables</ListSubheader>}>
-        {hasInstance && (
-          <ListItem disableGutters>
-            <ListItemButton component={Link} to="/instance">
-              Last
-            </ListItemButton>
-          </ListItem>
-        )}
         <ListItem disableGutters>
           <ListItemButton
             onClick={() =>
