@@ -15,7 +15,7 @@ const useAppEntityIdSelectorNullable = <T, S>(
   id: EntityId
 ): T | undefined => useSelector((state: S) => selectors.selectById(state, id));
 
-export const ReactUtils = {
+export const ReduxToolkit = {
   useAppEntityIdSelectorEnforce,
   useAppEntityIdSelectorNullable,
 } as const;

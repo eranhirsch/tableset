@@ -1,9 +1,11 @@
 import { ReactUtils as flatten } from "./flattenChildren";
-import { ReactUtils as utilsHooks } from "./hooks";
+import { ReduxToolkit } from "./redux-toolkit";
+import { Router } from "./router";
 import { default as SX_SCROLL_WITHOUT_SCROLLBARS } from "./SX_SCROLL_WITHOUT_SCROLLBARS";
 
 export const ReactUtils = {
-  ...utilsHooks,
   ...flatten,
+  ...ReduxToolkit,
+  ...Router,
   SX_SCROLL_WITHOUT_SCROLLBARS,
 } as const;
