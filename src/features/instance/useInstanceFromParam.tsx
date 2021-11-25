@@ -1,4 +1,4 @@
-import { $, Dict } from "common";
+import { $, base64Url, Dict } from "common";
 import { StepId } from "model/Game";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -18,7 +18,7 @@ export function useInstanceFromParam(): Readonly<
         : $(
             encodedInstance,
             $.nullthrows(`Missing 'encodedInstance' path param`),
-            ($$) => Buffer.from($$, "base64"),
+            ($$) => base64Url.decode($$),
             ($$) => game.instanceAvroType.fromBuffer($$),
             Dict.filter_nulls
           ),

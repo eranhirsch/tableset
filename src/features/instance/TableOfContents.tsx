@@ -7,15 +7,15 @@ import {
   Typography,
 } from "@mui/material";
 import { TSPage } from "app/ux/Chrome";
-import { Vec } from "common";
-import { useNavigate } from "react-router-dom";
+import { ReactUtils, Vec } from "common";
 import { CloseButton } from "./CloseButton";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
 
 export const TABLE_OF_CONTENTS_PATH = "ToC";
 
 export function TableOfContents(): JSX.Element {
-  const navigate = useNavigate();
+  const navigateToSibling = ReactUtils.useNavigateToSibling();
+
   const activeSteps = useInstanceActiveSteps();
   return (
     <TSPage>
@@ -27,7 +27,7 @@ export function TableOfContents(): JSX.Element {
         <List dense>
           {Vec.map(activeSteps, (step, index) => (
             <ListItem disableGutters>
-              <ListItemButton onClick={() => navigate(`/instance/${step.id}`)}>
+              <ListItemButton onClick={() => navigateToSibling(step.id)}>
                 <ListItemText>
                   {index + 1}. {step.label}
                 </ListItemText>

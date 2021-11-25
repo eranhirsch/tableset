@@ -1,7 +1,6 @@
 import { Collection } from "features/collection/Collection";
 import { GameHomeWrapper } from "features/game/GameHome";
 import { Games } from "features/game/Games";
-import { Instance } from "features/instance/Instance";
 import { PagedStep } from "features/instance/PagedStep";
 import { ParamBasedInstance } from "features/instance/ParamBasedInstance";
 import {
@@ -21,25 +20,18 @@ export function SiteMap(): JSX.Element {
           <Route index element={<Games />} />
           <Route path=":gameId">
             <Route index element={<GameHomeWrapper />} />
-            <Route path=":encodedInstance">
+            <Route path=":encodedInstance" caseSensitive>
               <Route index element={<ParamBasedInstance />} />
               <Route
                 path={TABLE_OF_CONTENTS_PATH}
                 element={<TableOfContents />}
+                caseSensitive
               />
-              <Route path=":stepId" element={<PagedStep />} />
+              <Route path=":stepId" element={<PagedStep />} caseSensitive />
             </Route>
           </Route>
           <Route path="players" element={<Players />} />
           <Route path="template" element={<Template />} />
-          <Route path="instance">
-            <Route index element={<Instance />} />
-            <Route
-              path={TABLE_OF_CONTENTS_PATH}
-              element={<TableOfContents />}
-            />
-            <Route path=":stepId" element={<PagedStep />} />
-          </Route>
           <Route path="collection" element={<Collection />} />
         </Route>
       </Routes>

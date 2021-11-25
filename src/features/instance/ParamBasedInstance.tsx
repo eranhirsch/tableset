@@ -6,7 +6,7 @@ import { TSPage } from "app/ux/Chrome";
 import { nullthrows, ReactUtils } from "common";
 import { GameId, GAMES } from "games/core/GAMES";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { AtAGlance } from "./AtAGlance";
+import { AtAGlanceFromParam } from "./AtAGlance";
 import { TABLE_OF_CONTENTS_PATH } from "./TableOfContents";
 import { VariantSummaryFromParams } from "./VariantSummary";
 
@@ -32,7 +32,7 @@ export function ParamBasedInstance(): JSX.Element {
         }}
       >
         <VariantSummaryFromParams />
-        <AtAGlance />
+        <AtAGlanceFromParam />
       </Box>
       <Fab
         component={Link}
