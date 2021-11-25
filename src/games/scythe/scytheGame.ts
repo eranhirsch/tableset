@@ -138,9 +138,9 @@ export const scytheGame = createGame({
   productsMetaStep,
 
   steps: [
-    airshipVariant, // Templatable
-    resolutionVariant, // Templatable
-    modularBoardVariant, // Templatable
+    airshipVariant, // Variant
+    resolutionVariant, // Variant
+    modularBoardVariant, // Variant
 
     boardStep, // Templatable
     modularTilesStep, // Templatable
