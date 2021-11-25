@@ -1,12 +1,8 @@
 import { Typography } from "@mui/material";
-import { useAppSelector } from "app/hooks";
-import { Dict, Vec } from "common";
+import { Vec } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
-import { StepId } from "model/Game";
-import { useMemo } from "react";
-import { instanceSelectors, SetupStep } from "./instanceSlice";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 
 export function InstanceItemContent({
@@ -14,19 +10,7 @@ export function InstanceItemContent({
 }: {
   gameStep: RandomGameStep | DerivedGameStep;
 }): JSX.Element | null {
-  const instanceFromParam = useInstanceFromParam();
-  const instanceFromParamDict = useMemo(
-    () =>
-      instanceFromParam == null
-        ? null
-        : Dict.map_with_key(instanceFromParam, (id, value) => ({ id, value })),
-    [instanceFromParam]
-  );
-
-  let instance = useAppSelector(instanceSelectors.selectEntities);
-  if (instanceFromParamDict != null) {
-    instance = instanceFromParamDict;
-  }
+  const instance = useInstanceFromParam();
 
   const context = useFeaturesContext();
   const { InstanceManualComponent } = gameStep;
@@ -39,14 +23,14 @@ export function InstanceItemContent({
             // redux dictionaries are really weird because they support ID types
             // which aren't used, and have undefined as part of the value.
             // We cast here to work around it...
-            Vec.values(instance as Record<StepId, SetupStep>),
+            Vec.map_with_key(instance, (id, value) => ({ id, value })),
         }}
       />
     );
   }
-  const instanceStep = instance[gameStep.id];
-  if (instanceStep != null) {
-    return <gameStep.InstanceVariableComponent value={instanceStep.value} />;
+  const value = instance[gameStep.id];
+  if (value != null) {
+    return <gameStep.InstanceVariableComponent value={value} />;
   }
   if (InstanceManualComponent != null) {
     if (typeof InstanceManualComponent === "string") {

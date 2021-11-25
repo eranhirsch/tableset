@@ -3,16 +3,13 @@ import { List, ListItem, ListItemButton, ListSubheader } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { TSPage } from "app/ux/Chrome";
 import { Megaphone } from "app/ux/Megaphone";
-import { invariant_violation, Vec } from "common";
+import { $, base64Url, invariant_violation, ReactUtils, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
-import {
-  hasGameInstanceSelector,
-  instanceActions,
-} from "features/instance/instanceSlice";
+import { hasGameInstanceSelector } from "features/instance/instanceSlice";
 import { hasActivePlayersSelector } from "features/players/playersSlice";
 import {
   hasGameTemplateSelector,
-  templateActions,
+  templateActions
 } from "features/template/templateSlice";
 import { GameId, GAMES, isGameId } from "games/core/GAMES";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -33,6 +30,7 @@ export function GameHomeWrapper(): JSX.Element {
 function GameHome({ gameId }: { gameId: GameId }): JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const navigateToChild = ReactUtils.useNavigateToChild();
 
   const game = GAMES[gameId]!;
 
@@ -86,10 +84,14 @@ function GameHome({ gameId }: { gameId: GameId }): JSX.Element {
         )}
         <ListItem disableGutters>
           <ListItemButton
-            onClick={() => {
-              dispatch(instanceActions.reset(game));
-              navigate("/instance");
-            }}
+            onClick={() =>
+              $(
+                // Compute the buffer for an empty instance
+                game.instanceAvroType.toBuffer({}),
+                ($$) => base64Url.encode($$),
+                ($$) => navigateToChild($$)
+              )
+            }
           >
             Manual
           </ListItemButton>
