@@ -44,7 +44,7 @@ export default createRandomGameStep({
       : forum.canResolveTo(false) || config == null || config.percent < 100,
 
   skip: (value) => value == null,
-  disabledTLDROverride: "Never",
+  instanceAvroType: "boolean",
 });
 
 function ConfigPanel({

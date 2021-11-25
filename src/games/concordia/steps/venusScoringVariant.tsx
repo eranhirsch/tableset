@@ -35,11 +35,12 @@ export default createRandomGameStep<
   skip: (value) => value == null,
   ConfigPanel,
   ConfigPanelTLDR,
-  disabledTLDROverride: "Never",
   canResolveTo: (value, config) =>
     value
       ? config != null && config.percent > 0
       : config == null || config.percent < 100,
+
+  instanceAvroType: "boolean",
 });
 
 function ConfigPanel({

@@ -47,6 +47,8 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
 
   InstanceCards,
+
+  instanceAvroType: "string",
 });
 
 function ConfigPanel({

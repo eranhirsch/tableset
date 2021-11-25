@@ -157,8 +157,6 @@ export function createVariant({
         `Variant ${baseStep.id} should not be displayed as a card!`
       ),
 
-    disabledTLDROverride: "Never",
-
     instanceAvroType: "boolean",
   };
 }

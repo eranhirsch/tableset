@@ -44,8 +44,6 @@ export interface Templatable<T = unknown, C extends object | unknown = unknown>
     ): void;
   }): JSX.Element;
   ConfigPanelTLDR(props: { config: Readonly<C> }): JSX.Element;
-  disabledTLDROverride?: string;
-
   InstanceCards?(props: {
     value: T;
     dependencies: readonly unknown[];

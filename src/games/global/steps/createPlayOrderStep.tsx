@@ -123,6 +123,8 @@ const createPlayOrderStep = ({
     ConfigPanelTLDR,
 
     InstanceCards,
+
+    instanceAvroType: { type: "array", items: "string" },
   });
 export default createPlayOrderStep;
 

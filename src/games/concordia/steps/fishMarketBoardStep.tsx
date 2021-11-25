@@ -10,7 +10,8 @@ import {
 import { PercentSlider } from "games/core/ux/PercentSlider";
 import fishMarketVariant from "./fishMarketVariant";
 
-type FishBoardType = "river" | "mountain";
+const FISH_BOARD_TYPES = ["river", "mountain"] as const;
+type FishBoardType = typeof FISH_BOARD_TYPES[number];
 
 type TemplateConfig = { percentRiver: number };
 
@@ -45,6 +46,12 @@ export default createRandomGameStep({
   InstanceManualComponent,
 
   InstanceCards,
+
+  instanceAvroType: {
+    type: "enum",
+    name: "FishBoardType",
+    symbols: [...FISH_BOARD_TYPES],
+  },
 });
 
 function ConfigPanel({

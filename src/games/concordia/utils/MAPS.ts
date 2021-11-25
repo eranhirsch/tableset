@@ -1,22 +1,24 @@
 import { Dict, Vec } from "common";
 import { ConcordiaProductId } from "../ConcordiaProductId";
 
-export type MapId =
-  | "aegyptus"
-  | "balearica"
-  | "britannia"
-  | "byzantium"
-  | "corsica"
-  | "creta"
-  | "cyprus"
-  | "gallia"
-  | "germania"
-  | "hellas"
-  | "hispania"
-  | "imperium"
-  | "ionium"
-  | "ioniumSmall"
-  | "italia";
+export const MAP_IDS = [
+  "aegyptus",
+  "balearica",
+  "britannia",
+  "byzantium",
+  "corsica",
+  "creta",
+  "cyprus",
+  "gallia",
+  "germania",
+  "hellas",
+  "hispania",
+  "imperium",
+  "ionium",
+  "ioniumSmall",
+  "italia",
+] as const;
+export type MapId = typeof MAP_IDS[number];
 
 export type ZoneId = "A" | "B" | "C" | "D";
 

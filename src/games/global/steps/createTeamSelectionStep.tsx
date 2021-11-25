@@ -98,7 +98,13 @@ export default function createTeamSelectionStep({
     ),
 
     InstanceCards,
+
+    instanceAvroType: {
+      type: "array",
+      items: { type: "array", items: "string" },
+    },
   });
+
   return {
     ...step,
     query: (template, context) => ({

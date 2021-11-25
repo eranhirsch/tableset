@@ -51,6 +51,8 @@ export default createRandomGameStep({
   ...NoConfigPanel,
 
   InstanceCards,
+
+  instanceAvroType: "int",
 });
 
 function InstanceVariableComponent({

@@ -41,6 +41,8 @@ export default createRandomGameStep({
   ...NoConfigPanel,
 
   InstanceCards: (props) => <IndexHashInstanceCard title="Market" {...props} />,
+
+  instanceAvroType: "int",
 });
 
 function InstanceVariableComponent({

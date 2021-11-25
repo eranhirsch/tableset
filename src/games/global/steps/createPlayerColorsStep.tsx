@@ -27,7 +27,7 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { ProductId } from "model/Game";
-import { GamePiecesColor } from "model/GamePiecesColor";
+import { GamePiecesColor, GAME_PIECES_COLORS } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
@@ -140,6 +140,15 @@ const createPlayerColorsStep = <Pid extends ProductId>({
     ConfigPanelTLDR,
 
     InstanceCards,
+
+    instanceAvroType: {
+      type: "map",
+      values: {
+        type: "enum",
+        name: "GamePiecesColor",
+        symbols: [...GAME_PIECES_COLORS],
+      },
+    },
   });
 export default createPlayerColorsStep;
 

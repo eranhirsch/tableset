@@ -15,7 +15,13 @@ import {
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { ConcordiaProductId } from "../ConcordiaProductId";
-import { MapId, MAPS, mapsForProducts, productsWithMaps } from "../utils/MAPS";
+import {
+  MapId,
+  MAPS,
+  mapsForProducts,
+  MAP_IDS,
+  productsWithMaps,
+} from "../utils/MAPS";
 import RomanTitle from "../ux/RomanTitle";
 import productsMetaStep from "./productsMetaStep";
 
@@ -97,6 +103,8 @@ export default createRandomGameStep({
   ConfigPanelTLDR,
 
   InstanceCards,
+
+  instanceAvroType: { type: "enum", name: "MapId", symbols: [...MAP_IDS] },
 });
 
 function ConfigPanel({

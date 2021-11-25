@@ -53,6 +53,8 @@ export default createRandomGameStep({
   InstanceCards: (props) => (
     <IndexHashInstanceCard title="City Tiles" {...props} />
   ),
+
+  instanceAvroType: "long",
 });
 
 function InstanceVariableComponent({

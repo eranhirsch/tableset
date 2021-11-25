@@ -206,11 +206,10 @@ type Options<
     InstanceCards?(
       props: InstanceCardsProps<T, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>
     ): JSX.Element | null;
-    disabledTLDROverride?: string;
     isVariant?: true;
 
     // This MUST define T in terms of an avro type
-    instanceAvroType?: avro.schema.DefinedType;
+    instanceAvroType: avro.schema.DefinedType;
   };
 
 interface OptionsInternal<T, C extends object>
@@ -275,7 +274,6 @@ export function createRandomGameStep<T, C extends Object>({
   ConfigPanel,
   ConfigPanelTLDR,
   dependencies,
-  disabledTLDROverride,
   initialConfig,
   InstanceCards,
   InstanceVariableComponent,
@@ -418,8 +416,6 @@ export function createRandomGameStep<T, C extends Object>({
     ConfigPanelTLDR,
 
     InstanceCards,
-
-    disabledTLDROverride,
 
     instanceAvroType,
   };

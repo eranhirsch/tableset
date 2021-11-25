@@ -5,15 +5,16 @@
  * Note that you can add multiple variations of the same color, these are just
  * symbols for the colors, the names are defined separately.
  */
-export type GamePiecesColor =
-  | "black"
-  | "blue"
-  | "cyan"
-  | "green"
-  | "orange"
-  | "pink"
-  | "purple"
-  | "red"
-  | "white"
-  | "yellow";
-
+export const GAME_PIECES_COLORS = [
+  "black",
+  "blue",
+  "cyan",
+  "green",
+  "orange",
+  "pink",
+  "purple",
+  "red",
+  "white",
+  "yellow",
+] as const;
+export type GamePiecesColor = typeof GAME_PIECES_COLORS[number];

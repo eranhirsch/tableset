@@ -16,7 +16,6 @@ import { StepConfigPanelWrapper } from "./StepConfigPanelWrapper";
 import { Templatable } from "./Templatable";
 import {
   templateActions,
-  TemplateElement,
   templateElementSelectorNullable,
 } from "./templateSlice";
 
@@ -76,7 +75,7 @@ export function TemplateItem({
           secondaryTypographyProps={{ sx: { marginInlineEnd: 5 } }}
           secondary={
             element == null ? undefined : (
-              <ItemLabel templatable={templatable} element={element} />
+              <templatable.ConfigPanelTLDR config={element.config} />
             )
           }
         >
@@ -104,17 +103,3 @@ export function TemplateItem({
   );
 }
 
-const ItemLabel = React.memo(
-  ({
-    templatable: { ConfigPanelTLDR, disabledTLDROverride },
-    element,
-  }: {
-    templatable: Templatable;
-    element: TemplateElement | undefined;
-  }): JSX.Element | null =>
-    element == null ? (
-      <>{disabledTLDROverride ?? "Disabled"}</>
-    ) : (
-      <ConfigPanelTLDR config={element.config} />
-    )
-);
