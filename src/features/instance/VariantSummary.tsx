@@ -1,41 +1,14 @@
 import CheckIcon from "@mui/icons-material/Check";
 import { Box, Chip, Collapse, Stack, Typography } from "@mui/material";
-import { useAppSelector } from "app/hooks";
 import { Dict, Vec } from "common";
-import { gameStepsSelector } from "features/game/gameSlice";
-import { isTemplatable, Templatable } from "features/template/Templatable";
+import { isTemplatable } from "features/template/Templatable";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { StepId } from "model/Game";
 import { useMemo, useRef, useState } from "react";
-import { instanceIntersectIdsSelector } from "./instanceSlice";
 import { useGameFromParam } from "./useGameFromParam";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 
 export function VariantSummary(): JSX.Element | null {
-  const allSteps = useAppSelector(gameStepsSelector);
-
-  const variants = useMemo(
-    () =>
-      Dict.filter(
-        Dict.filter(allSteps, isTemplatable),
-        ({ isVariant }) => isVariant ?? false
-      ),
-    [allSteps]
-  );
-
-  const instanceValues = useAppSelector(
-    instanceIntersectIdsSelector(Vec.keys(variants))
-  );
-
-  return (
-    <VariantSummaryInternal
-      variants={variants}
-      instanceValues={instanceValues}
-    />
-  );
-}
-
-export function VariantSummaryFromParams(): JSX.Element | null {
   const game = useGameFromParam()!;
   const instance = useInstanceFromParam()!;
 
@@ -53,21 +26,6 @@ export function VariantSummaryFromParams(): JSX.Element | null {
     [instance, variants]
   );
 
-  return (
-    <VariantSummaryInternal
-      variants={variants}
-      instanceValues={instanceValues}
-    />
-  );
-}
-
-function VariantSummaryInternal({
-  variants,
-  instanceValues,
-}: {
-  variants: Readonly<Required<Record<string, Templatable<unknown, unknown>>>>;
-  instanceValues: readonly StepId[];
-}): JSX.Element | null {
   const [expandedStepId, setExpandedStepId] = useState<StepId>();
 
   const expandedElement = useRef<React.ReactNode>();

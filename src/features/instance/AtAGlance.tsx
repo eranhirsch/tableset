@@ -1,31 +1,17 @@
 import { Grid, Typography } from "@mui/material";
-import { useAppSelector } from "app/hooks";
 import { $, Dict, ReactUtils, Vec } from "common";
-import { gameStepsSelectorByType } from "features/game/gameSlice";
 import { isTemplatable, Templatable } from "features/template/Templatable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
 import { InstanceCard } from "./InstanceCard";
-import { instanceValuesSelector } from "./instanceSlice";
 import { useGameFromParam } from "./useGameFromParam";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 import {
   useOptionalInstanceValues,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "./useInstanceValue";
 
 export function AtAGlance(): JSX.Element {
-  const templatableSteps = useAppSelector(
-    gameStepsSelectorByType(isTemplatable)
-  );
-  const instancedSteps = useAppSelector(
-    instanceValuesSelector(templatableSteps)
-  );
-
-  return <AtAGlanceInternal instancedSteps={instancedSteps} />;
-}
-
-export function AtAGlanceFromParam(): JSX.Element {
   const game = useGameFromParam()!;
   const instance = useInstanceFromParam()!;
   const instancedSteps = useMemo(
@@ -38,14 +24,7 @@ export function AtAGlanceFromParam(): JSX.Element {
       ),
     [game.steps, instance]
   );
-  return <AtAGlanceInternal instancedSteps={instancedSteps} />;
-}
 
-function AtAGlanceInternal({
-  instancedSteps,
-}: {
-  instancedSteps: readonly [step: Templatable, value: unknown][];
-}): JSX.Element {
   const navigateToChild = ReactUtils.useNavigateToChild();
 
   const components = Vec.filter(
@@ -107,4 +86,3 @@ function InDevelopmentMissingInstanceCard({
     </InstanceCard>
   );
 }
-

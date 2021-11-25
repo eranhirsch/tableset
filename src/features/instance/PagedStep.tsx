@@ -2,13 +2,12 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { Box, Button, MobileStepper, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { TSPage } from "app/ux/Chrome";
-import { $, invariant_violation, Vec } from "common";
+import { invariant_violation, ReactUtils } from "common";
 import { gameStepSelector } from "features/game/gameSlice";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { DerivedGameStep } from "model/DerivedGameStep";
 import { StepId } from "model/Game";
-import { useCallback } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { CloseButton } from "./CloseButton";
 import { InstanceItemContent } from "./InstanceItemContent";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
@@ -23,7 +22,7 @@ export function PagedStep(): JSX.Element {
 }
 
 function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
-  const navigateStep = useNavigateStep();
+  const navigateToSibling = ReactUtils.useNavigateToSibling();
 
   const step = useAppSelector(gameStepSelector(stepId)) as
     | RandomGameStep
@@ -57,7 +56,7 @@ function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
           nextButton={
             <Button
               size="small"
-              onClick={() => navigateStep(activeSteps[activeStep + 1].id)}
+              onClick={() => navigateToSibling(activeSteps[activeStep + 1].id)}
               disabled={activeStep === activeSteps.length - 1}
             >
               Next
@@ -67,7 +66,7 @@ function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
           backButton={
             <Button
               size="small"
-              onClick={() => navigateStep(activeSteps[activeStep - 1].id)}
+              onClick={() => navigateToSibling(activeSteps[activeStep - 1].id)}
               disabled={activeStep === 0}
             >
               <KeyboardArrowLeft />
@@ -77,25 +76,6 @@ function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
         />
       </Box>
     </TSPage>
-  );
-}
-
-function useNavigateStep(): (stepId: StepId) => void {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  return useCallback(
-    (stepId: StepId) =>
-      $(
-        location.pathname,
-        ($$) => $$.split("/"),
-        // Drop the current step
-        ($$) => Vec.take($$, $$.length - 1),
-        ($$) => Vec.concat($$, stepId),
-        ($$) => $$.join("/"),
-        ($$) => navigate($$)
-      ),
-    [location.pathname, navigate]
   );
 }
 

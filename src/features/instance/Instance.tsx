@@ -1,36 +1,28 @@
+import HomeIcon from "@mui/icons-material/Home";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import TuneIcon from "@mui/icons-material/Tune";
 import { Box, Fab } from "@mui/material";
 import { TSPage } from "app/ux/Chrome";
-import { Dict, ReactUtils } from "common";
-import { useGameHomeToolbarButton } from "features/game/useGameHomeToolbarButton";
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
-import { gameSelector } from "../game/gameSlice";
+import { nullthrows, ReactUtils } from "common";
+import { GameId, GAMES } from "games/core/GAMES";
+import { useParams } from "react-router-dom";
 import { AtAGlance } from "./AtAGlance";
-import { fullInstanceSelector } from "./instanceSlice";
 import { TABLE_OF_CONTENTS_PATH } from "./TableOfContents";
 import { VariantSummary } from "./VariantSummary";
 
+export function Instance(): JSX.Element {
+  const navigateToChild = ReactUtils.useNavigateToChild();
+  const { gameId } = useParams();
 
-export function Instance(): JSX.Element | null {
-  const homeButton = useGameHomeToolbarButton();
-
-  const game = useAppSelector(gameSelector);
-
-  // Just for logging, dump the full instance, normalized
-  const fullInstance = useAppSelector(fullInstanceSelector);
-  useEffect(() => {
-    console.log("INSTANCE", Dict.sort_by_key(fullInstance));
-    const buffer = game.instanceAvroType.toBuffer(fullInstance);
-    console.log(game.instanceAvroType.fromBuffer(buffer));
-  }, [fullInstance, game.instanceAvroType]);
+  const game = nullthrows(GAMES[nullthrows(gameId) as GameId]);
 
   return (
     <TSPage
       title={`Table for ${game.name}`}
-      buttons={[homeButton, [<TuneIcon />, "/template"]]}
+      buttons={[
+        [<HomeIcon />, `/${gameId}`],
+        [<TuneIcon />, "/template"],
+      ]}
     >
       <Box
         sx={{
@@ -43,11 +35,9 @@ export function Instance(): JSX.Element | null {
         <AtAGlance />
       </Box>
       <Fab
-        component={Link}
-        to={`/instance/${TABLE_OF_CONTENTS_PATH}`}
         sx={{ position: "absolute", bottom: 16, right: 16, zIndex: 999 }}
         color="primary"
-        aria-label="go"
+        onClick={() => navigateToChild(TABLE_OF_CONTENTS_PATH)}
       >
         <PlayArrowIcon />
       </Fab>
