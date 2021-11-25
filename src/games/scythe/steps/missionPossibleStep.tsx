@@ -49,6 +49,8 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
   InstanceCards,
+
+  instanceAvroType: "int",
 });
 
 function InstanceVariableComponent({

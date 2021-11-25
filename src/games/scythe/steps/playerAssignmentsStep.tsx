@@ -82,6 +82,8 @@ export default createRandomGameStep({
   InstanceManualComponent,
 
   InstanceCards,
+
+  instanceAvroType: { type: "array", items: "string" },
 });
 
 function resolve(

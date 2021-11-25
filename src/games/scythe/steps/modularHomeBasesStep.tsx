@@ -37,6 +37,8 @@ export default createRandomGameStep({
   InstanceCards: (props) => (
     <IndexHashInstanceCard title="Bases" subheader="Modular" {...props} />
   ),
+
+  instanceAvroType: "long",
 });
 
 function InstanceVariableComponent({

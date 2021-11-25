@@ -36,6 +36,8 @@ export default createRandomGameStep({
   InstanceCards: (props) => (
     <IndexHashInstanceCard title="Map Tiles" subheader="Modular" {...props} />
   ),
+
+  instanceAvroType: "int",
 });
 
 function InstanceVariableComponent({
