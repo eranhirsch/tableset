@@ -103,7 +103,9 @@ function InstanceCards({
     <InstanceCard title="Resolution" onClick={onClick}>
       <Typography variant="subtitle1" color="primary">
         <strong>{RESOLUTION_TILES[itemId]}</strong>
-        <br />({itemId + 1})
+      </Typography>
+      <Typography variant="caption" color="primary">
+        ({itemId + 1})
       </Typography>
     </InstanceCard>
   );

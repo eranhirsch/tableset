@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Stack, Typography, useTheme } from "@mui/material";
 import { InstanceCard } from "features/instance/InstanceCard";
 import {
   InstanceCardsProps,
@@ -87,12 +87,22 @@ function InstanceCards({
   readonly ScytheProductId[],
   boolean
 >): JSX.Element {
+  const theme = useTheme();
+  const label = Airships.tiles[itemId];
   return (
     <InstanceCard title="Aggressive" subheader="Airship" onClick={onClick}>
-      <Typography variant="subtitle1" color="primary">
-        <strong>{Airships.tiles[itemId]}</strong>
-        <br />({itemId + 1})
-      </Typography>
+      <Stack>
+        <Typography
+          variant="subtitle2"
+          sx={{ color: theme.palette.red.main }}
+          fontSize={label.length > 15 ? "xx-small" : undefined}
+        >
+          <strong>{label.toLocaleUpperCase()}</strong>
+        </Typography>
+        <Typography variant="caption" sx={{ color: theme.palette.red.main }}>
+          ({itemId + 1})
+        </Typography>
+      </Stack>
     </InstanceCard>
   );
 }

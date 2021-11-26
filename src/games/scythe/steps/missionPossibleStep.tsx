@@ -132,7 +132,10 @@ function InstanceCards({
           onClick={onClick}
         >
           <Typography variant="body2" color="primary">
-            <strong>{cardText}</strong> ({Number.parseInt(cardIdStr) + 1})
+            <strong>{cardText}</strong>
+          </Typography>
+          <Typography variant="caption" color="primary">
+            ({Number.parseInt(cardIdStr) + 1})
           </Typography>
         </InstanceCard>
       ))}
