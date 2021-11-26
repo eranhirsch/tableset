@@ -1,14 +1,7 @@
-import {
-  Box,
-  Checkbox,
-  Divider,
-  FormControl,
-  MenuItem,
-  Select
-} from "@mui/material";
+import { Box, Chip } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import avro from "avsc";
-import { $, C, Num, Random, Shape, Vec } from "common";
+import { Dict, Random, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import { gameSelector } from "features/game/gameSlice";
 import { templateValue } from "features/template/templateSlice";
@@ -20,21 +13,12 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
 import { ProductId, StepId } from "model/Game";
+import { GamePiecesColor } from "model/GamePiecesColor";
 import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
-import UAParser from "ua-parser-js";
+import { AlwaysNeverMultiChipSelector } from "../ux/AlwaysNeverMultiChipSelector";
+import { SingleItemSelect } from "../ux/SingleItemSelect";
 import alwaysOnMetaStep from "./alwaysOnMetaStep";
-
-interface SpecialItem {
-  label: string;
-  itemizer<ItemId extends string | number>(
-    available: readonly ItemId[]
-  ): readonly ItemId[];
-}
-const SPECIAL_ITEMS = {
-  __all: { label: "Select All", itemizer: (_) => [] } as SpecialItem,
-  __none: { label: "Clear", itemizer: (available) => available } as SpecialItem,
-} as const;
 
 type TemplateConfig<ItemId extends string | number> = {
   never: readonly ItemId[];
@@ -45,6 +29,8 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
   variantStep?: VariableGameStep<boolean>;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
+  variant?: "select" | "chips";
+  color?: GamePiecesColor;
 
   // Required fields for createRandomGameStep
   id: StepId;
@@ -68,6 +54,8 @@ const createTrivialSingleItemSelector = <
   labelForId,
   productsMetaStep,
   variantStep,
+  variant,
+  color,
   ...randomGameStepOptions
 }: Options<ItemId, Pid>) =>
   createRandomGameStep({
@@ -101,6 +89,8 @@ const createTrivialSingleItemSelector = <
     ) => (
       <ConfigPanel
         {...props}
+        variant={variant}
+        color={color}
         availableForProducts={availableForProducts}
         labelForId={labelForId}
       />
@@ -108,6 +98,7 @@ const createTrivialSingleItemSelector = <
     ConfigPanelTLDR: (props) => (
       <ConfigPanelTLDR
         {...props}
+        color={color}
         availableForProducts={availableForProducts}
         labelForId={labelForId}
       />
@@ -123,152 +114,58 @@ export default createTrivialSingleItemSelector;
 function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   config: { never },
   queries: [products],
+  variant = "chips",
+  color,
   onChange,
   availableForProducts,
   labelForId,
 }: ConfigPanelProps<TemplateConfig<ItemId>, readonly Pid[], boolean> & {
+  variant?: "select" | "chips";
+  color?: GamePiecesColor;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
 }): JSX.Element {
   const available = useMemo(
-    () =>
-      Vec.sort_by(availableForProducts(products.onlyResolvableValue()!), (id) =>
-        labelForId(id)
-      ),
-    [availableForProducts, labelForId, products]
+    () => availableForProducts(products.onlyResolvableValue()!),
+    [availableForProducts, products]
   );
-
-  const isError = never.length === available.length;
-
-  const isMobile = useMemo(
-    () => UAParser().device.type === UAParser.DEVICE.MOBILE,
-    []
+  const items = useMemo(
+    () => Dict.from_keys(available, (itemId) => !never.includes(itemId)),
+    [available, never]
   );
 
   return (
     <Box width="100%">
-      <FormControl fullWidth color={isError ? "error" : undefined}>
-        {isMobile ? (
-          <MobileSelect
-            all={available}
-            unselected={never}
-            labelForId={labelForId}
-            onChange={(unselected) =>
-              onChange({ never: Vec.sort_by(unselected, labelForId) })
-            }
-          />
-        ) : (
-          <RichSelect
-            all={available}
-            unselected={never}
-            labelForId={labelForId}
-            onChange={(unselected) =>
-              onChange({ never: Vec.sort_by(unselected, labelForId) })
-            }
-          />
-        )}
-      </FormControl>
+      {variant === "chips" ? (
+        <AlwaysNeverMultiChipSelector
+          itemIds={available}
+          getLabel={labelForId}
+          getColor={color != null ? () => color : undefined}
+          limits={{
+            min: 1,
+            // Using max: 0 will effectively disable the "always" mode
+            max: 0,
+          }}
+          value={{ never, always: [] }}
+          onChange={(changedFunc) =>
+            onChange(({ never }) => ({
+              never: changedFunc({
+                never,
+                always: [],
+              }).never,
+            }))
+          }
+        />
+      ) : (
+        <SingleItemSelect
+          items={items}
+          labelForId={labelForId}
+          onChange={(unselected) =>
+            onChange({ never: Vec.sort_by(unselected, labelForId) })
+          }
+        />
+      )}
     </Box>
-  );
-}
-
-function MobileSelect<ItemId extends string | number>({
-  all,
-  unselected,
-  onChange,
-  labelForId,
-}: {
-  all: readonly ItemId[];
-  unselected: readonly ItemId[];
-  onChange(unselected: readonly ItemId[]): void;
-  labelForId(itemId: ItemId): string;
-}): JSX.Element {
-  const selected: readonly (ItemId | keyof typeof SPECIAL_ITEMS)[] = useMemo(
-    () => Vec.diff(all, unselected),
-    [all, unselected]
-  );
-
-  return (
-    <select
-      multiple
-      value={selected as readonly string[]}
-      onChange={(event) =>
-        $(
-          [...event.target.options],
-          ($$) =>
-            Vec.maybe_map($$, ({ value, selected }) =>
-              selected ? Num.int(value) ?? value : undefined
-            ),
-          ($$) => Vec.diff(all, $$),
-          onChange
-        )
-      }
-    >
-      {Vec.map(all, (itemId) => (
-        <option key={itemId} value={itemId}>
-          {labelForId(itemId)}
-        </option>
-      ))}
-    </select>
-  );
-}
-
-function RichSelect<ItemId extends string | number>({
-  all,
-  unselected,
-  labelForId,
-  onChange,
-}: {
-  all: readonly ItemId[];
-  unselected: readonly ItemId[];
-  labelForId(itemId: ItemId): string;
-  onChange(unselected: readonly ItemId[]): void;
-}): JSX.Element {
-  const selected: readonly (ItemId | keyof typeof SPECIAL_ITEMS)[] = useMemo(
-    () => Vec.diff(all, unselected),
-    [all, unselected]
-  );
-
-  return (
-    <Select
-      multiple
-      displayEmpty
-      value={selected}
-      renderValue={() =>
-        `${unselected.length === all.length ? "Error: " : ""}${
-          all.length - unselected.length
-        } Selected`
-      }
-      onChange={({ target: { value } }) => {
-        if (typeof value !== "string") {
-          const special = C.only(
-            Vec.values(
-              Shape.filter_with_keys(SPECIAL_ITEMS, (itemId) =>
-                value.includes(itemId)
-              )
-            )
-          );
-          onChange(special?.itemizer(all) ?? Vec.diff(all, value));
-        }
-      }}
-    >
-      {Vec.map_with_key(SPECIAL_ITEMS, (itemId, { label, itemizer }) => (
-        <MenuItem
-          key={itemId}
-          value={itemId}
-          disabled={Vec.equal(itemizer(all), unselected)}
-        >
-          <em>{label}</em>
-        </MenuItem>
-      ))}
-      <Divider />
-      {Vec.map(all, (key) => (
-        <MenuItem key={key} value={key}>
-          <Checkbox checked={!unselected.includes(key)} />
-          {labelForId(key)}
-        </MenuItem>
-      ))}
-    </Select>
   );
 }
 
@@ -277,10 +174,12 @@ function ConfigPanelTLDR<
   Pid extends ProductId
 >({
   config: { never },
+  color,
   labelForId,
   availableForProducts,
 }: {
   config: Readonly<TemplateConfig<ItemId>>;
+  color?: GamePiecesColor;
   labelForId(itemId: ItemId): string;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
 }): JSX.Element {
@@ -301,9 +200,13 @@ function ConfigPanelTLDR<
   if (allowed.length <= never.length) {
     return (
       <AbbreviatedList finalConjunction="or">
-        {Vec.map(allowed, (itemId) => (
-          <em>{labelForId(itemId)}</em>
-        ))}
+        {Vec.map(allowed, (itemId) =>
+          color != null ? (
+            <Chip size="small" color={color} label={labelForId(itemId)} />
+          ) : (
+            <em>{labelForId(itemId)}</em>
+          )
+        )}
       </AbbreviatedList>
     );
   }
@@ -312,9 +215,13 @@ function ConfigPanelTLDR<
     <>
       Without{" "}
       <AbbreviatedList finalConjunction="or">
-        {Vec.map(never, (itemId) => (
-          <em>{labelForId(itemId)}</em>
-        ))}
+        {Vec.map(never, (itemId) =>
+          color != null ? (
+            <Chip size="small" color={color} label={labelForId(itemId)} />
+          ) : (
+            <em>{labelForId(itemId)}</em>
+          )
+        )}
       </AbbreviatedList>
     </>
   );

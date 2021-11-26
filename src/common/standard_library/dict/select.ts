@@ -35,17 +35,17 @@ const drop = <T extends DictLike>(dict: Readonly<T>, n: number): Readonly<T> =>
  * way.
  * @see `Dict.filter_async()` to use an async predicate.
  */
-function filter<T extends DictLike, S extends ValueOf<T>>(
+function filter<T extends DictLike, S extends T[keyof T]>(
   dict: Readonly<T>,
-  typePredicate: (value: ValueOf<T>) => value is S
+  typePredicate: (value: T[keyof T]) => value is S
 ): Readonly<RemappedDict<T, S>>;
 function filter<T extends DictLike>(
   dict: Readonly<T>,
-  predicate: (value: ValueOf<T>) => boolean
+  predicate: (value: T[keyof T]) => boolean
 ): Readonly<T>;
 function filter<T extends DictLike>(
   dict: Readonly<T>,
-  predicate: (value: ValueOf<T>) => boolean = Boolean
+  predicate: (value: T[keyof T]) => boolean = Boolean
 ): Readonly<T> {
   return filter_with_keys(dict, (_, value) => predicate(value));
 }

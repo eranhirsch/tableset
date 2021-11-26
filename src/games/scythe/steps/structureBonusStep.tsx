@@ -68,6 +68,8 @@ export default createTrivialSingleItemSelector({
   InstanceManualComponent,
   InstanceCards,
 
+  variant: "select",
+
   instanceAvroType: {
     type: "enum",
     name: "TileKey",

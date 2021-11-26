@@ -12,7 +12,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Typography,
+  Typography
 } from "@mui/material";
 import { C, Dict, Random, Shape, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
@@ -20,17 +20,17 @@ import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useHasDownstreamInstanceValue,
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import {
   templateValue,
-  UnchangedTemplateValue,
+  UnchangedTemplateValue
 } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -40,7 +40,7 @@ import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { playersMetaStep } from "games/global";
 import {
   AlwaysNeverMultiChipSelector,
-  AlwaysNeverMultiLabel,
+  AlwaysNeverMultiLabel
 } from "games/global/ux/AlwaysNeverMultiChipSelector";
 import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
@@ -311,7 +311,7 @@ function refreshBanned(
 
   if (
     !Dict.is_empty(
-      Dict.filter(
+      Shape.filter(
         refreshedBanned,
         (bannedMats) => bannedMats.length === availableMats.length
       )
@@ -327,7 +327,7 @@ function refreshBanned(
     Dict.size(refreshedBanned) === relevantFactions.length &&
     availableMats.some((mid) =>
       Dict.is_empty(
-        Dict.filter(refreshedBanned, (bannedMats) => !bannedMats.includes(mid))
+        Shape.filter(refreshedBanned, (bannedMats) => !bannedMats.includes(mid))
       )
     )
   ) {

@@ -58,7 +58,8 @@ export const playersSelectors: typeof allPlayersSelectors = Object.freeze({
   ]),
   selectEntities: createSelector(
     allPlayersSelectors.selectEntities,
-    (entities) => Dict.filter(entities, ({ isActive }) => isActive)
+    (entities) =>
+      Dict.filter(Dict.filter_nulls(entities), ({ isActive }) => isActive)
   ),
   selectAll: createSelector(allPlayersSelectors.selectAll, (players) => [
     ...Vec.filter(players, ({ isActive }) => isActive),
