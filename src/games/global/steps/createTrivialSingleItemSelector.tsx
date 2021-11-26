@@ -108,7 +108,6 @@ const createTrivialSingleItemSelector = <
     ConfigPanelTLDR: (props) => (
       <ConfigPanelTLDR
         {...props}
-        productsMetaStep={productsMetaStep}
         availableForProducts={availableForProducts}
         labelForId={labelForId}
       />
@@ -280,12 +279,10 @@ function ConfigPanelTLDR<
   config: { never },
   labelForId,
   availableForProducts,
-  productsMetaStep,
 }: {
   config: Readonly<TemplateConfig<ItemId>>;
   labelForId(itemId: ItemId): string;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
-  productsMetaStep: VariableGameStep<readonly Pid[]>;
 }): JSX.Element {
   const game = useAppSelector(gameSelector);
   const productIds = useAppSelector(
