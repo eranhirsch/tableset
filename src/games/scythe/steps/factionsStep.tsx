@@ -1,10 +1,12 @@
 import { Chip, Stack, Typography } from "@mui/material";
+import { useAppSelector } from "app/hooks";
 import { $, Dict, invariant, Random, Shape, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import {
   useHasDownstreamInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
+import { playersSelectors } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
@@ -165,16 +167,13 @@ function ConfigPanelTLDR({
 }: {
   config: Readonly<TemplateConfig>;
 }): JSX.Element {
-  if (Vec.is_empty(always) && Vec.is_empty(never)) {
-    // Just for consistency with other templatables
-    return <>Random</>;
-  }
-
+  const playersCount = useAppSelector(playersSelectors.selectTotal);
   return (
     <AlwaysNeverMultiLabel
       value={{ always, never }}
       getLabel={(fid) => Factions[fid].name.abbreviated}
       getColor={(fid) => Factions[fid].color}
+      limits={{ min: playersCount, max: playersCount }}
     />
   );
 }

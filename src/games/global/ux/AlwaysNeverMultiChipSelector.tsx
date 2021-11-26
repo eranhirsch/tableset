@@ -191,11 +191,17 @@ export function AlwaysNeverMultiLabel<T>({
   value: { always, never },
   getColor,
   getLabel,
+  limits: { min, max },
 }: {
   value: AlwaysNeverDefinition<T>;
   getColor?(itemId: T): GamePiecesColor;
   getLabel(itemId: T): string;
+  limits: Limits;
 }): JSX.Element {
+  if (Vec.is_empty(never) && Vec.is_empty(always)) {
+    return <>Random</>;
+  }
+
   if (Vec.is_empty(always)) {
     return (
       <>
@@ -212,6 +218,22 @@ export function AlwaysNeverMultiLabel<T>({
           ))}
         </GrammaticalList>
       </>
+    );
+  }
+
+  if (always.length === max) {
+    return (
+      <GrammaticalList>
+        {Vec.map(always, (itemId) => (
+          <Chip
+            key={`${itemId}`}
+            component="span"
+            color={getColor?.(itemId)}
+            size="small"
+            label={getLabel(itemId)}
+          />
+        ))}
+      </GrammaticalList>
     );
   }
 

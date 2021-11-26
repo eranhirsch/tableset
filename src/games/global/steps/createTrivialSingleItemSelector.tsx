@@ -1,7 +1,7 @@
 import { Box, Chip } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import avro from "avsc";
-import { Dict, Random, Vec } from "common";
+import { C, Dict, Random, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import { gameSelector } from "features/game/gameSlice";
 import { templateValue } from "features/template/templateSlice";
@@ -16,11 +16,15 @@ import { ProductId, StepId } from "model/Game";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
-import { AlwaysNeverMultiChipSelector } from "../ux/AlwaysNeverMultiChipSelector";
+import {
+  AlwaysNeverMultiChipSelector,
+  AlwaysNeverMultiLabel,
+} from "../ux/AlwaysNeverMultiChipSelector";
 import { SingleItemSelect } from "../ux/SingleItemSelect";
 import alwaysOnMetaStep from "./alwaysOnMetaStep";
 
 type TemplateConfig<ItemId extends string | number> = {
+  always: readonly ItemId[];
   never: readonly ItemId[];
 };
 
@@ -54,7 +58,7 @@ const createTrivialSingleItemSelector = <
   labelForId,
   productsMetaStep,
   enabler: variantStep,
-  variant,
+  variant = "chips",
   color,
   ...randomGameStepOptions
 }: Options<ItemId, Pid>) =>
@@ -67,18 +71,25 @@ const createTrivialSingleItemSelector = <
       isOn.canResolveTo(true) &&
       !Vec.is_empty(availableForProducts(products.onlyResolvableValue()!)),
 
-    initialConfig: (): Readonly<TemplateConfig<ItemId>> => ({ never: [] }),
+    initialConfig: { always: [], never: [] },
 
-    resolve: ({ never }, products, isOn) =>
+    resolve: ({ always, never }, products, isOn) =>
       isOn
-        ? Random.sample(Vec.diff(availableForProducts(products!), never), 1)
+        ? Vec.is_empty(always)
+          ? Random.sample(Vec.diff(availableForProducts(products!), never), 1)
+          : C.onlyx(always)
         : null,
 
-    refresh({ never }, products) {
+    refresh({ always, never }, products) {
       const available = availableForProducts(products.onlyResolvableValue()!);
-      return Vec.contained_in(never, available)
+      const allValidNever = Vec.contained_in(never, available);
+      const allValidAlways = Vec.contained_in(always, available);
+      return allValidNever && allValidAlways
         ? templateValue("unchanged")
-        : { never: Vec.intersect(never, available) };
+        : {
+            always: allValidAlways ? always : Vec.intersect(always, available),
+            never: allValidNever ? never : Vec.intersect(never, available),
+          };
     },
 
     skip: (_, [productIds, isOn]) =>
@@ -98,6 +109,7 @@ const createTrivialSingleItemSelector = <
     ConfigPanelTLDR: (props) => (
       <ConfigPanelTLDR
         {...props}
+        variant={variant}
         color={color}
         availableForProducts={availableForProducts}
         labelForId={labelForId}
@@ -112,15 +124,15 @@ const createTrivialSingleItemSelector = <
 export default createTrivialSingleItemSelector;
 
 function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
-  config: { never },
+  config: { always, never },
   queries: [products],
-  variant = "chips",
+  variant,
   color,
   onChange,
   availableForProducts,
   labelForId,
 }: ConfigPanelProps<TemplateConfig<ItemId>, readonly Pid[], boolean> & {
-  variant?: "select" | "chips";
+  variant: "select" | "chips";
   color?: GamePiecesColor;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
@@ -143,17 +155,11 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
           getColor={color != null ? () => color : undefined}
           limits={{
             min: 1,
-            // Using max: 0 will effectively disable the "always" mode
-            max: 0,
+            max: 1,
           }}
-          value={{ never, always: [] }}
+          value={{ always, never }}
           onChange={(changedFunc) =>
-            onChange(({ never }) => ({
-              never: changedFunc({
-                never,
-                always: [],
-              }).never,
-            }))
+            onChange((current) => changedFunc(current))
           }
         />
       ) : (
@@ -161,7 +167,10 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
           items={items}
           labelForId={labelForId}
           onChange={(unselected) =>
-            onChange({ never: Vec.sort_by(unselected, labelForId) })
+            onChange(({ always }) => ({
+              always,
+              never: Vec.sort_by(unselected, labelForId),
+            }))
           }
         />
       )}
@@ -173,13 +182,15 @@ function ConfigPanelTLDR<
   ItemId extends string | number,
   Pid extends ProductId
 >({
-  config: { never },
+  config: { always, never },
   color,
+  variant,
   labelForId,
   availableForProducts,
 }: {
   config: Readonly<TemplateConfig<ItemId>>;
   color?: GamePiecesColor;
+  variant: "select" | "chips";
   labelForId(itemId: ItemId): string;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
 }): JSX.Element {
@@ -192,6 +203,17 @@ function ConfigPanelTLDR<
     () => Vec.diff(availableForProducts(productIds), never),
     [availableForProducts, never, productIds]
   );
+
+  if (variant === "chips") {
+    return (
+      <AlwaysNeverMultiLabel
+        value={{ always, never }}
+        getLabel={labelForId}
+        getColor={color != null ? () => color : undefined}
+        limits={{ min: 1, max: 1 }}
+      />
+    );
+  }
 
   if (Vec.is_empty(never)) {
     return <>Random</>;

@@ -14,23 +14,25 @@ import {
   TableRow,
   Typography
 } from "@mui/material";
+import { useAppSelector } from "app/hooks";
 import { C, Dict, Random, Shape, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useHasDownstreamInstanceValue,
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
+import { playersSelectors } from "features/players/playersSlice";
 import {
   templateValue,
-  UnchangedTemplateValue
+  UnchangedTemplateValue,
 } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -40,7 +42,7 @@ import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { playersMetaStep } from "games/global";
 import {
   AlwaysNeverMultiChipSelector,
-  AlwaysNeverMultiLabel
+  AlwaysNeverMultiLabel,
 } from "games/global/ux/AlwaysNeverMultiChipSelector";
 import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
@@ -572,15 +574,12 @@ function ConfigPanelTLDR({
 }: {
   config: Readonly<TemplateConfig>;
 }): JSX.Element {
-  if (Vec.is_empty(always) && Vec.is_empty(never)) {
-    // Just for consistency with other templatables
-    return <>Random</>;
-  }
-
+  const playersCount = useAppSelector(playersSelectors.selectTotal);
   return (
     <AlwaysNeverMultiLabel
       value={{ always, never }}
       getLabel={(mid) => PlayerMats[mid].abbreviated}
+      limits={{ min: playersCount, max: playersCount }}
     />
   );
 }
