@@ -34,7 +34,7 @@ export default createTrivialSingleItemSelector({
 
   productsMetaStep,
 
-  variantStep: resolutionVariant,
+  enabler: resolutionVariant,
 
   availableForProducts: (productIds) =>
     productIds.includes("windGambit")

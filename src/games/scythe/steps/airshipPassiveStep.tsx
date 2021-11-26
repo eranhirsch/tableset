@@ -21,7 +21,7 @@ export default createTrivialSingleItemSelector({
     typeof x === "number" && Airships.passive.includes(x),
 
   productsMetaStep,
-  variantStep: airshipVariant,
+  enabler: airshipVariant,
   availableForProducts: () => Airships.passive,
   labelForId: (tileId) => Airships.tiles[tileId],
   InstanceVariableComponent,

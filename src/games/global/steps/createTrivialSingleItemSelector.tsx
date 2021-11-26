@@ -26,7 +26,7 @@ type TemplateConfig<ItemId extends string | number> = {
 
 interface Options<ItemId extends string | number, Pid extends ProductId> {
   productsMetaStep: VariableGameStep<readonly Pid[]>;
-  variantStep?: VariableGameStep<boolean>;
+  enabler?: VariableGameStep<boolean>;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
   variant?: "select" | "chips";
@@ -53,7 +53,7 @@ const createTrivialSingleItemSelector = <
   availableForProducts,
   labelForId,
   productsMetaStep,
-  variantStep,
+  enabler: variantStep,
   variant,
   color,
   ...randomGameStepOptions
