@@ -8,7 +8,6 @@ import { VariableGameStep } from "model/VariableGameStep";
 const alwaysOnMetaStep: VariableGameStep<boolean> = {
   id: "__alwaysOn",
   label: "<ALWAYS_ON>",
-  coerceInstanceEntry: () => true,
   hasValue: () => true,
   extractInstanceValue: () => true,
   query: () => buildQuery("__alwaysOn", { canResolveTo: (value) => value }),

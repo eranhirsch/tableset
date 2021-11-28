@@ -11,8 +11,6 @@ const ID = "__neverResolves";
 const neverResolves: Readonly<VariableGameStep<any>> = {
   id: ID,
   label: "<NEVER_RESOLVES>",
-  coerceInstanceEntry: () =>
-    invariant_violation(`'coerceInstanceEntry' called on ${ID}`),
   hasValue: () => false,
   extractInstanceValue: () =>
     invariant_violation(`'extractInstanceValue' called on ${ID}`),

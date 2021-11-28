@@ -11,7 +11,6 @@ export const createProductsMetaStep = <Pid extends ProductId>(): Readonly<
   hasValue: () => true,
 
   extractInstanceValue: (_, { productIds }) => productIds as readonly Pid[],
-  coerceInstanceEntry: (_, { productIds }) => productIds as readonly Pid[],
 
   query: (_, { productIds: currentProductIds }) =>
     buildQuery("__product", {

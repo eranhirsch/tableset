@@ -1,4 +1,3 @@
-import { invariant_violation } from "common";
 import { buildQuery } from "games/core/steps/Query";
 import { VariableGameStep } from "model/VariableGameStep";
 
@@ -12,7 +11,6 @@ function createNegateMetaStep(
   return {
     id: `__${step.id}_negated`,
     label: `<${step.label}:NEGATED>`,
-    coerceInstanceEntry: () => invariant_violation(`unimplemented`),
     hasValue: () => true,
     extractInstanceValue: ({ [step.id]: stepInstanceValue }) =>
       stepInstanceValue === true ? null : true,

@@ -8,7 +8,6 @@ const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = {
 
   hasValue: () => true,
 
-  coerceInstanceEntry: (_, { playerIds }) => playerIds,
   extractInstanceValue: (_, { playerIds }) => playerIds,
 
   query: (_, { playerIds }) =>

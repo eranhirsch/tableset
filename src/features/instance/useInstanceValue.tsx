@@ -25,7 +25,7 @@ export function useOptionalInstanceValue<T>(
   }
 
   // This is needed for the meta steps (players, products)
-  return step.coerceInstanceEntry(undefined, context);
+  return step.extractInstanceValue(instance, context);
 }
 
 export function useHasDownstreamInstanceValue(stepId: StepId): boolean {
@@ -45,6 +45,6 @@ export function useOptionalInstanceValues(
         // type-checked by avro when decoding the param
         instance[step.id]
       : // This is needed for meta-steps like players and products
-        step.coerceInstanceEntry(undefined, context)
+        step.extractInstanceValue(instance, context)
   );
 }

@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { coerce, invariant_violation, Random, Vec } from "common";
+import { invariant_violation, Random, Vec } from "common";
 import { templateValue } from "features/template/templateSlice";
 import { PercentSlider } from "../ux/PercentSlider";
 import { createGameStep } from "./createGameStep";
@@ -112,16 +112,6 @@ export function createVariant({
     // could only be disabled via `canBeTemplated`
     refreshTemplateConfig: () => templateValue("unchanged"),
     initialConfig: () => ({ percent: 100 }),
-    coerceInstanceEntry: (entry) =>
-      entry == null
-        ? false
-        : coerce(
-            entry.value,
-            isBoolean,
-            `Found unexpected value type ${typeof entry.value}: ${JSON.stringify(
-              entry.value
-            )} for variant ID ${id}`
-          ),
 
     hasValue: (_: TemplateContext | InstanceContext) => true,
 
@@ -195,5 +185,3 @@ function ConfigPanelTLDR({
 }): JSX.Element {
   return percent === 100 ? <>Always</> : <>{percent}% chance</>;
 }
-
-const isBoolean = (x: unknown): x is boolean => typeof x === "boolean";

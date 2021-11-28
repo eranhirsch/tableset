@@ -58,9 +58,6 @@ export default function createTeamVariant<ProductId = never>({
     extractInstanceValue: (upstreamInstance, context) =>
       baseTeamPlayVariant.extractInstanceValue(upstreamInstance, context) ??
       (enabledAt.includes(context.playerIds.length) ? true : null),
-    coerceInstanceEntry: (instanceElement, context) =>
-      baseTeamPlayVariant.coerceInstanceEntry(instanceElement, context) ??
-      (enabledAt.includes(context.playerIds.length) ? true : null),
 
     query: (template, context) => {
       const baseQuery = baseTeamPlayVariant.query(template, context);

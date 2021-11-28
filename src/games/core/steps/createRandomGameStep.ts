@@ -1,5 +1,5 @@
 import avro from "avsc";
-import { coerce, nullthrows, Vec } from "common";
+import { Vec } from "common";
 import { Templatable } from "features/template/Templatable";
 import { TemplateElement } from "features/template/templateSlice";
 import { StepId } from "model/Game";
@@ -309,20 +309,6 @@ export function createRandomGameStep<T, C extends Object>({
     ...baseStep,
 
     isVariant,
-
-    coerceInstanceEntry: (entry) =>
-      entry == null
-        ? null
-        : coerce(
-            entry.value,
-            nullthrows(
-              isType,
-              `No type coercer defined for step ${baseStep.id}`
-            ),
-            `Value ${JSON.stringify(
-              entry.value
-            )} failed to validate type for step ${baseStep.id}`
-          ),
 
     dependencies,
     extractInstanceValue,
