@@ -161,6 +161,15 @@ function sample<T>(
 ): readonly [T, T, T, T, T, T, T, T, T, T];
 function sample<T>(arr: readonly T[], sampleSize: number): readonly T[];
 function sample<T>(arr: readonly T[], sampleSize: number): readonly T[] {
+  invariant(
+    sampleSize >= 0,
+    `Trying to extract a negative sample size ${sampleSize}!`
+  );
+
+  if (sampleSize === 0) {
+    return [];
+  }
+  
   if (sampleSize >= arr.length) {
     // Trivial solution
     return arr;
