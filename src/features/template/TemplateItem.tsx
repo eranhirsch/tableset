@@ -72,7 +72,7 @@ export function TemplateItem({
             textAlign: element == null ? "center" : undefined,
             color: element == null ? "gray" : undefined,
           }}
-          secondaryTypographyProps={{ sx: { marginInlineEnd: 5 } }}
+          // secondaryTypographyProps={{ sx: { marginInlineEnd: 5 } }}
           secondary={
             element == null ? undefined : (
               <templatable.ConfigPanelTLDR config={element.config} />
