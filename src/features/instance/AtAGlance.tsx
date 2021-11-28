@@ -14,6 +14,9 @@ import {
 export function AtAGlance(): JSX.Element {
   const game = useGameFromParam();
   const instance = useInstanceFromParam();
+
+  console.log("INSTANCE", instance);
+
   const instancedSteps = useMemo(
     () =>
       $(
