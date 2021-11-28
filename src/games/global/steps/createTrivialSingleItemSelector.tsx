@@ -4,6 +4,7 @@ import avro from "avsc";
 import { $, Dict, Random, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import { gameSelector } from "features/game/gameSlice";
+import { playersSelectors } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
@@ -37,7 +38,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
   variant?: "select" | "chips";
-  color?: GamePiecesColor;
+  color?: GamePiecesColor | ((itemId: ItemId) => GamePiecesColor);
   isItemType(x: unknown): x is ItemId;
   itemAvroType: avro.schema.DefinedType;
 
@@ -48,14 +49,14 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
     props: VariableStepInstanceComponentProps<readonly ItemId[]>
   ): JSX.Element;
   InstanceManualComponent(): JSX.Element;
-  InstanceCards?(
+  InstanceCards(
     props: InstanceCardsProps<
       readonly ItemId[],
       readonly PlayerId[],
       readonly Pid[],
       boolean
     >
-  ): JSX.Element;
+  ): JSX.Element | null;
 }
 
 const createTrivialSingleItemSelector = <
@@ -97,7 +98,9 @@ const createTrivialSingleItemSelector = <
       refresh(
         current,
         availableForProducts(products.onlyResolvableValue()!),
-        typeof count === "number" ? count : count(players.count())
+        typeof count === "number"
+          ? count
+          : count(players.onlyResolvableValue()!.length)
       ),
 
     skip: (_value, [_productIds, isOn]) => !isOn,
@@ -114,6 +117,7 @@ const createTrivialSingleItemSelector = <
         {...props}
         variant={variant}
         color={color}
+        count={count}
         availableForProducts={availableForProducts}
         labelForId={labelForId}
       />
@@ -123,6 +127,7 @@ const createTrivialSingleItemSelector = <
         {...props}
         variant={variant}
         color={color}
+        count={count}
         availableForProducts={availableForProducts}
         labelForId={labelForId}
       />
@@ -132,7 +137,9 @@ const createTrivialSingleItemSelector = <
       willContain(
         value,
         config,
-        typeof count === "number" ? count : count(playerIds.count())
+        typeof count === "number"
+          ? count
+          : count(playerIds.onlyResolvableValue()!.length)
       ),
 
     instanceAvroType: { type: "array", items: itemAvroType },
@@ -244,9 +251,10 @@ function willContain<ItemId extends string | number>(
 
 function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   config: { always, never },
-  queries: [_players, products],
+  queries: [players, products],
   variant,
   color,
+  count,
   onChange,
   availableForProducts,
   labelForId,
@@ -257,7 +265,8 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   boolean
 > & {
   variant: "select" | "chips";
-  color?: GamePiecesColor;
+  color?: GamePiecesColor | ((itemId: ItemId) => GamePiecesColor);
+  count: number | ((playersCount: number) => number);
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
 }): JSX.Element {
@@ -270,17 +279,28 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
     [available, never]
   );
 
+  const limits = useMemo(() => {
+    const actualCount =
+      typeof count === "number"
+        ? count
+        : count(players.onlyResolvableValue()!.length);
+    return { min: actualCount, max: actualCount };
+  }, [count, players]);
+
   return (
     <Box width="100%">
       {variant === "chips" ? (
         <AlwaysNeverMultiChipSelector
           itemIds={available}
           getLabel={labelForId}
-          getColor={color != null ? () => color : undefined}
-          limits={{
-            min: 1,
-            max: 1,
-          }}
+          getColor={
+            color != null
+              ? typeof color === "function"
+                ? color
+                : () => color
+              : undefined
+          }
+          limits={limits}
           value={{ always, never }}
           onChange={(changedFunc) =>
             onChange((current) => changedFunc(current))
@@ -308,12 +328,14 @@ function ConfigPanelTLDR<
 >({
   config: { always, never },
   color,
+  count,
   variant,
   labelForId,
   availableForProducts,
 }: {
   config: Readonly<TemplateConfig<ItemId>>;
-  color?: GamePiecesColor;
+  color?: GamePiecesColor | ((itemId: ItemId) => GamePiecesColor);
+  count: number | ((playerCount: number) => number);
   variant: "select" | "chips";
   labelForId(itemId: ItemId): string;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
@@ -322,19 +344,31 @@ function ConfigPanelTLDR<
   const productIds = useAppSelector(
     allProductIdsSelector(game)
   ) as readonly Pid[];
+  const playerCount = useAppSelector(playersSelectors.selectTotal);
 
   const allowed = useMemo(
     () => Vec.diff(availableForProducts(productIds), never),
     [availableForProducts, never, productIds]
   );
 
+  const limits = useMemo(() => {
+    const actualCount = typeof count === "number" ? count : count(playerCount);
+    return { min: actualCount, max: actualCount };
+  }, [count, playerCount]);
+
   if (variant === "chips") {
     return (
       <AlwaysNeverMultiLabel
         value={{ always, never }}
         getLabel={labelForId}
-        getColor={color != null ? () => color : undefined}
-        limits={{ min: 1, max: 1 }}
+        getColor={
+          color != null
+            ? typeof color === "function"
+              ? color
+              : () => color
+            : undefined
+        }
+        limits={limits}
       />
     );
   }
@@ -348,7 +382,11 @@ function ConfigPanelTLDR<
       <AbbreviatedList finalConjunction="or">
         {Vec.map(allowed, (itemId) =>
           color != null ? (
-            <Chip size="small" color={color} label={labelForId(itemId)} />
+            <Chip
+              size="small"
+              color={typeof color === "function" ? color(itemId) : color}
+              label={labelForId(itemId)}
+            />
           ) : (
             <em>{labelForId(itemId)}</em>
           )
@@ -363,7 +401,11 @@ function ConfigPanelTLDR<
       <AbbreviatedList finalConjunction="or">
         {Vec.map(never, (itemId) =>
           color != null ? (
-            <Chip size="small" color={color} label={labelForId(itemId)} />
+            <Chip
+              size="small"
+              color={typeof color === "function" ? color(itemId) : color}
+              label={labelForId(itemId)}
+            />
           ) : (
             <em>{labelForId(itemId)}</em>
           )

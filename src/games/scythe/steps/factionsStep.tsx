@@ -1,27 +1,19 @@
 import { Chip, Stack, Typography } from "@mui/material";
-import { useAppSelector } from "app/hooks";
-import { $, Dict, invariant, Random, Shape, Vec } from "common";
+import { $, Dict, Shape, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import {
   useHasDownstreamInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
-import { playersSelectors } from "features/players/playersSlice";
-import { templateValue } from "features/template/templateSlice";
 import {
-  ConfigPanelProps,
-  createRandomGameStep,
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { playersMetaStep } from "games/global";
-import {
-  AlwaysNeverMultiChipSelector,
-  AlwaysNeverMultiLabel,
-} from "games/global/ux/AlwaysNeverMultiChipSelector";
+import { createTrivialSingleItemSelector, playersMetaStep } from "games/global";
+import createNegateMetaStep from "games/global/steps/createNegateMetaStep";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
@@ -31,152 +23,31 @@ import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
 import { ScytheStepId } from "./ScytheStepId";
 
-type TemplateConfig = {
-  always: readonly FactionId[];
-  never: readonly FactionId[];
-};
-
-export default createRandomGameStep({
+export default createTrivialSingleItemSelector({
   id: "factions",
-  dependencies: [playersMetaStep, productsMetaStep, modularBoardVariant],
+  enabler: createNegateMetaStep(modularBoardVariant),
 
-  isType: (x: unknown): x is readonly FactionId[] =>
-    Array.isArray(x) && x.every((fid) => Factions[fid as FactionId] != null),
+  availableForProducts: Factions.availableForProducts,
 
-  isTemplatable: (_players, _products, modularBoardVariant) =>
-    modularBoardVariant.canResolveTo(false),
+  productsMetaStep,
 
-  initialConfig: (): Readonly<TemplateConfig> => ({ always: [], never: [] }),
+  count: (playersCount) => playersCount,
 
-  resolve(config, players, products, isModular) {
-    if (isModular) {
-      return null;
-    }
+  isItemType: (x: unknown): x is FactionId => Factions[x as FactionId] != null,
 
-    const available = Factions.availableForProducts(products!);
-
-    const randomPool = Vec.diff(
-      Vec.diff(available, config.never),
-      config.always
-    );
-    const randomCount = players!.length - config.always.length;
-    const random = Random.sample(randomPool, randomCount);
-    invariant(
-      random.length === randomCount,
-      `Mismatch in number of random elements chosen: ${JSON.stringify(
-        random
-      )}, expected: ${randomCount}`
-    );
-    return Vec.sort(Vec.concat(config.always, random));
-  },
-
-  willContain: (factionId, config) =>
-    config != null &&
-    (config.always.includes(factionId)
-      ? true
-      : config.never.includes(factionId)
-      ? false
-      : undefined),
-
-  refresh({ always, never }, players, products) {
-    const available = Factions.availableForProducts(
-      products.onlyResolvableValue()!
-    );
-
-    if (!Vec.is_empty(Vec.diff(always, available))) {
-      // If always has values which are now unavailable, we can't fix the config
-      // because we don't know how to fill the gap created by the missing
-      // faction trivially (do we just remove it? do we replace it? etc...)
-      templateValue("unfixable");
-    }
-
-    if (!players.willContainNumElements({ min: always.length })) {
-      // There are more values in the always array then there are players, we
-      // can't use the array and there's no trivial way to fix it either (what
-      // faction do you remove?)
-      templateValue("unfixable");
-    }
-
-    if (Vec.contained_in(never, available)) {
-      // At this point the 'always' array is valid, so if the never array
-      // doesn't require any fixing too, we don't need to touch the config.
-      templateValue("unchanged");
-    }
-
-    // The only case we need to fix is when the 'never' array contains elements
-    // which aren't available anymore; for normalization, we want to remove them
-    // from the 'never' array too
-    return { always, never: Vec.intersect(never, available) };
-  },
-
-  skip: (value, [_players, _products, isModular]) =>
-    value == null && isModular!,
-
-  ConfigPanel,
-  ConfigPanelTLDR,
+  labelForId: (fid) => Factions[fid].name.full,
+  color: (fid) => Factions[fid].color,
 
   InstanceVariableComponent,
   InstanceManualComponent,
   InstanceCards,
 
-  instanceAvroType: {
-    type: "array",
-    items: { type: "enum", name: "FactionId", symbols: [...Factions.ALL_IDS] },
+  itemAvroType: {
+    type: "enum",
+    name: "FactionId",
+    symbols: [...Factions.ALL_IDS],
   },
 });
-
-function ConfigPanel({
-  config,
-  queries: [players, products, isModular],
-  onChange,
-}: ConfigPanelProps<
-  TemplateConfig,
-  readonly PlayerId[],
-  readonly ScytheProductId[],
-  boolean
->): JSX.Element {
-  const available = useMemo(
-    () =>
-      Vec.sort(Factions.availableForProducts(products.onlyResolvableValue()!)),
-    [products]
-  );
-
-  const playersCount = players.onlyResolvableValue()!.length;
-
-  return (
-    <Stack spacing={1} alignItems="center">
-      <AlwaysNeverMultiChipSelector
-        itemIds={available}
-        getLabel={(fid) => Factions[fid].name.full}
-        getColor={(fid) => Factions[fid].color}
-        value={config}
-        onChange={onChange}
-        limits={{ min: playersCount, max: playersCount }}
-      />
-      {isModular.canResolveTo(true) && (
-        <Typography color="error" variant="caption">
-          Ignored when <em>{modularBoardVariant.label}</em> is enabled.
-        </Typography>
-      )}
-    </Stack>
-  );
-}
-
-function ConfigPanelTLDR({
-  config: { always, never },
-}: {
-  config: Readonly<TemplateConfig>;
-}): JSX.Element {
-  const playersCount = useAppSelector(playersSelectors.selectTotal);
-  return (
-    <AlwaysNeverMultiLabel
-      value={{ always, never }}
-      getLabel={(fid) => Factions[fid].name.abbreviated}
-      getColor={(fid) => Factions[fid].color}
-      limits={{ min: playersCount, max: playersCount }}
-    />
-  );
-}
 
 function InstanceVariableComponent({
   value: factionIds,
@@ -246,7 +117,6 @@ function InstanceManualComponent(): JSX.Element {
 
 function InstanceCards({
   value: factionIds,
-  dependencies: [_playerIds, _productIds, _isModular],
   onClick,
 }: InstanceCardsProps<
   readonly FactionId[],
