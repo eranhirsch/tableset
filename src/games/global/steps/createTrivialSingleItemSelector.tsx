@@ -37,6 +37,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
   count?: number | ((playerCount: number) => number);
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
+  labelForIdTLDR?(itemId: ItemId): string;
   variant?: "select" | "chips";
   color?: GamePiecesColor | ((itemId: ItemId) => GamePiecesColor);
   isItemType(x: unknown): x is ItemId;
@@ -70,6 +71,7 @@ const createTrivialSingleItemSelector = <
   isItemType,
   itemAvroType,
   labelForId,
+  labelForIdTLDR,
   productsMetaStep,
   variant = "chips",
   ...randomGameStepOptions
@@ -129,7 +131,7 @@ const createTrivialSingleItemSelector = <
         color={color}
         count={count}
         availableForProducts={availableForProducts}
-        labelForId={labelForId}
+        labelForId={labelForIdTLDR ?? labelForId}
       />
     ),
 
