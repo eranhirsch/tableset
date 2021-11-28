@@ -8,6 +8,7 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createTrivialSingleItemSelector } from "games/global";
+import { PlayerId } from "model/Player";
 import { ScytheProductId } from "../ScytheProductId";
 import { Airships } from "../utils/Airships";
 import airshipVariant from "./airshipVariant";
@@ -80,10 +81,10 @@ function InstanceManualComponent(): JSX.Element {
 
 function InstanceCards({
   value: [itemId],
-  dependencies: [_productIds, _isAirships],
   onClick,
 }: InstanceCardsProps<
   readonly number[],
+  readonly PlayerId[],
   readonly ScytheProductId[],
   boolean
 >): JSX.Element {

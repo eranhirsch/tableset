@@ -166,7 +166,17 @@ type Options<
     ): boolean;
     willContain?(
       element: ArrayElement<T>,
-      config: C | null
+      config: C | null,
+      query1: Query<D1>,
+      query2: Query<D2>,
+      query3: Query<D3>,
+      query4: Query<D4>,
+      query5: Query<D5>,
+      query6: Query<D6>,
+      query7: Query<D7>,
+      query8: Query<D8>,
+      query9: Query<D9>,
+      query10: Query<D10>
     ): boolean | undefined;
     onlyResolvableValue?(
       config: C | null,
@@ -234,7 +244,8 @@ interface OptionsInternal<T, C extends object>
   canResolveTo?(value: T, config: unknown | null, ...queries: Query[]): boolean;
   willContain?(
     element: ArrayElement<T>,
-    config: unknown | null
+    config: unknown | null,
+    ...queries: Query[]
   ): boolean | undefined;
   onlyResolvableValue?(
     config: unknown | null,
@@ -407,7 +418,14 @@ export function createRandomGameStep<T, C extends Object>({
         willContain:
           willContain == null
             ? undefined
-            : (element) => willContain(element, template[baseStep.id]?.config),
+            : (element) =>
+                willContain(
+                  element,
+                  template[baseStep.id]?.config,
+                  ...Vec.map(dependencies, (dependency) =>
+                    dependency.query(template, context)
+                  )
+                ),
 
         willResolve: () => template[baseStep.id] != null,
       }),
