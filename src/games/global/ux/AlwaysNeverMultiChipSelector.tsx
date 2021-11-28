@@ -208,15 +208,19 @@ export function AlwaysNeverMultiLabel<T>({
         Without{" "}
         <GrammaticalList finalConjunction="or">
           {Vec.concat(
-            Vec.map(Random.sample(never, 2), (itemId) => (
-              <Chip
-                key={`${itemId}`}
-                component="span"
-                color={getColor?.(itemId)}
-                size="small"
-                label={getLabel(itemId)}
-              />
-            )),
+            Vec.map(Random.sample(never, 2), (itemId) =>
+              getColor == null ? (
+                <em>{getLabel(itemId)}</em>
+              ) : (
+                <Chip
+                  key={`${itemId}`}
+                  component="span"
+                  color={getColor(itemId)}
+                  size="small"
+                  label={getLabel(itemId)}
+                />
+              )
+            ),
             never.length >= 3
               ? [
                   <em>
@@ -233,15 +237,19 @@ export function AlwaysNeverMultiLabel<T>({
   if (always.length === max) {
     return (
       <GrammaticalList>
-        {Vec.map(always, (itemId) => (
-          <Chip
-            key={`${itemId}`}
-            component="span"
-            color={getColor?.(itemId)}
-            size="small"
-            label={getLabel(itemId)}
-          />
-        ))}
+        {Vec.map(always, (itemId) =>
+          getColor == null ? (
+            <em>{getLabel(itemId)}</em>
+          ) : (
+            <Chip
+              key={`${itemId}`}
+              component="span"
+              color={getColor(itemId)}
+              size="small"
+              label={getLabel(itemId)}
+            />
+          )
+        )}
       </GrammaticalList>
     );
   }
