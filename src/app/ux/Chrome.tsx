@@ -12,7 +12,7 @@ import { Link, Outlet } from "react-router-dom";
 import { FeaturesNav } from "./FeaturesNav";
 import { OverflowMenu } from "./OverflowMenu";
 
-export type ToolbarButton = [icon: JSX.Element, url: string];
+export type ToolbarButton = [icon: JSX.Element, target: string | (() => void)];
 
 export function Chrome(): JSX.Element {
   return (
@@ -45,11 +45,17 @@ export function TSPage({
               {title}
             </Typography>
             {React.Children.toArray(
-              Vec.map(buttons, ([icon, url]) => (
-                <IconButton component={Link} color="inherit" to={url}>
-                  {icon}
-                </IconButton>
-              ))
+              Vec.map(buttons, ([icon, target]) =>
+                typeof target === "string" ? (
+                  <IconButton component={Link} color="inherit" to={target}>
+                    {icon}
+                  </IconButton>
+                ) : (
+                  <IconButton color="inherit" onClick={target}>
+                    {icon}
+                  </IconButton>
+                )
+              )
             )}
             <OverflowMenu />
           </Toolbar>
