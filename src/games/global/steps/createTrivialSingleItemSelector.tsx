@@ -1,7 +1,7 @@
 import { Box, Chip } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import avro from "avsc";
-import { C, Dict, Random, Vec } from "common";
+import { $, Dict, Random, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import { gameSelector } from "features/game/gameSlice";
 import { templateValue } from "features/template/templateSlice";
@@ -31,23 +31,24 @@ type TemplateConfig<ItemId extends string | number> = {
 interface Options<ItemId extends string | number, Pid extends ProductId> {
   productsMetaStep: VariableGameStep<readonly Pid[]>;
   enabler?: VariableGameStep<boolean>;
+  count?: number;
   availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
   labelForId(itemId: ItemId): string;
   variant?: "select" | "chips";
   color?: GamePiecesColor;
+  isItemType(x: unknown): x is ItemId;
+  itemAvroType: avro.schema.DefinedType;
 
   // Required fields for createRandomGameStep
   id: StepId;
-  isType(x: unknown): x is ItemId;
   labelOverride?: string;
   InstanceVariableComponent(
-    props: VariableStepInstanceComponentProps<ItemId>
+    props: VariableStepInstanceComponentProps<readonly ItemId[]>
   ): JSX.Element;
   InstanceManualComponent(): JSX.Element;
   InstanceCards?(
-    props: InstanceCardsProps<ItemId, readonly Pid[], boolean>
+    props: InstanceCardsProps<readonly ItemId[], readonly Pid[], boolean>
   ): JSX.Element;
-  instanceAvroType: avro.schema.DefinedType;
 }
 
 const createTrivialSingleItemSelector = <
@@ -55,29 +56,46 @@ const createTrivialSingleItemSelector = <
   Pid extends ProductId
 >({
   availableForProducts,
+  color,
+  count = 1,
+  enabler,
+  isItemType,
+  itemAvroType,
   labelForId,
   productsMetaStep,
-  enabler: variantStep,
   variant = "chips",
-  color,
   ...randomGameStepOptions
 }: Options<ItemId, Pid>) =>
   createRandomGameStep({
     ...randomGameStepOptions,
 
-    dependencies: [productsMetaStep, variantStep ?? alwaysOnMetaStep],
+    dependencies: [productsMetaStep, enabler ?? alwaysOnMetaStep],
 
     isTemplatable: (products, isOn) =>
       isOn.canResolveTo(true) &&
       !Vec.is_empty(availableForProducts(products.onlyResolvableValue()!)),
 
+    isType: (x: unknown): x is readonly ItemId[] =>
+      Array.isArray(x) && x.every(isItemType),
+
     initialConfig: { always: [], never: [] },
 
     resolve: ({ always, never }, products, isOn) =>
       isOn
-        ? Vec.is_empty(always)
-          ? Random.sample(Vec.diff(availableForProducts(products!), never), 1)
-          : C.onlyx(always)
+        ? // TODO: We return the actual array of items here, but we should be
+          // able to return a hash of the combination, we need to extend the
+          // query interface a bit to make that possible
+          $(
+            always.length === count
+              ? always
+              : $(
+                  availableForProducts(products!),
+                  ($$) => Vec.diff($$, never),
+                  ($$) => Random.sample($$, count - always.length),
+                  ($$) => Vec.concat(always, $$)
+                ),
+            Vec.sort
+          )
         : null,
 
     refresh({ always, never }, products) {
@@ -92,8 +110,7 @@ const createTrivialSingleItemSelector = <
           };
     },
 
-    skip: (_, [productIds, isOn]) =>
-      !isOn || Vec.is_empty(availableForProducts(productIds!)),
+    skip: (_value, [_productIds, isOn]) => !isOn,
 
     ConfigPanel: (
       props: ConfigPanelProps<TemplateConfig<ItemId>, readonly Pid[], boolean>
@@ -116,12 +133,42 @@ const createTrivialSingleItemSelector = <
       />
     ),
 
-    canResolveTo: (value, config, productIds) =>
-      config != null &&
-      !config.never.includes(value) &&
-      availableForProducts(productIds.onlyResolvableValue()!).includes(value),
+    willContain: (value, config) => willContain(value, config, count),
+
+    instanceAvroType: { type: "array", items: itemAvroType },
   });
 export default createTrivialSingleItemSelector;
+
+function willContain<ItemId extends string | number>(
+  value: ItemId,
+  config: Readonly<TemplateConfig<ItemId>> | null,
+  count: number
+): boolean | undefined {
+  if (config == null) {
+    // No config, won't resolve at all
+    // TODO: Maybe we shouldn't even run canResolveTo when configs are null?
+    return false;
+  }
+
+  if (config.never.includes(value)) {
+    // Trivial
+    return false;
+  }
+
+  if (config.always.includes(value)) {
+    // Trivial
+    return true;
+  }
+
+  if (config.always.length >= count) {
+    // We won't have any randomness in the results, if the value isn't
+    // already in `always`, it won't come up randomly
+    return false;
+  }
+
+  // Is the value possible under the current products?
+  return undefined;
+}
 
 function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   config: { always, never },

@@ -33,16 +33,20 @@ export default createRandomGameStep({
 
   isTemplatable: (_, isResolution, resolutionTile) =>
     isResolution.canResolveTo(true) &&
-    resolutionTile.canResolveTo(MISSION_POSSIBLE_ID),
+    // This isn't a trivial boolean comparison, we accept either `true` or
+    // `undefined` here (which is a falsy value)
+    resolutionTile.willContain(MISSION_POSSIBLE_ID) !== false,
 
   resolve: (_config, productIds, isResolution, resolutionTile) =>
-    isResolution && resolutionTile === MISSION_POSSIBLE_ID
+    isResolution && resolutionTile?.includes(MISSION_POSSIBLE_ID)
       ? Random.index(pairsArrayForProducts(productIds!))
       : null,
 
   skip: (_value, [_productIds, isResolution, resolutionTile]) =>
-    !isResolution ||
-    (resolutionTile != null && resolutionTile !== MISSION_POSSIBLE_ID),
+    !(
+      isResolution &&
+      (resolutionTile == null || resolutionTile.includes(MISSION_POSSIBLE_ID))
+    ),
 
   ...NoConfigPanel,
 
@@ -115,7 +119,7 @@ function InstanceCards({
   number,
   readonly ScytheProductId[],
   boolean,
-  number
+  readonly number[]
 >): JSX.Element {
   const cards = useMemo(
     () => pairFromIndex(index, productIds!),

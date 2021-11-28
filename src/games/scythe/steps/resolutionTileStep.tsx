@@ -29,7 +29,7 @@ export const MISSION_POSSIBLE_ID = RESOLUTION_TILES.indexOf(MISSION_POSSIBLE);
 export default createTrivialSingleItemSelector({
   id: "resolution",
 
-  isType: (x: unknown): x is number =>
+  isItemType: (x: unknown): x is number =>
     typeof x === "number" && x < RESOLUTION_TILES.length,
 
   productsMetaStep,
@@ -47,12 +47,12 @@ export default createTrivialSingleItemSelector({
   InstanceManualComponent,
   InstanceCards,
 
-  instanceAvroType: "int",
+  itemAvroType: "int",
 });
 
 function InstanceVariableComponent({
-  value: index,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
+  value: [index],
+}: VariableStepInstanceComponentProps<readonly number[]>): JSX.Element {
   return (
     <Box>
       Place the{" "}
@@ -91,11 +91,11 @@ function InstanceManualComponent(): JSX.Element {
 }
 
 function InstanceCards({
-  value: itemId,
+  value: [itemId],
   dependencies: [_productIds, _isResolution],
   onClick,
 }: InstanceCardsProps<
-  number,
+  readonly number[],
   readonly ScytheProductId[],
   boolean
 >): JSX.Element {

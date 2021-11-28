@@ -17,7 +17,7 @@ export default createTrivialSingleItemSelector({
   id: "airshipAggressive",
   labelOverride: "Airship: Aggressive",
 
-  isType: (x: unknown): x is number =>
+  isItemType: (x: unknown): x is number =>
     typeof x === "number" && Airships.aggressive.includes(x),
 
   productsMetaStep,
@@ -28,12 +28,12 @@ export default createTrivialSingleItemSelector({
   InstanceManualComponent,
   InstanceCards,
   color: "red",
-  instanceAvroType: "int",
+  itemAvroType: "int",
 });
 
 function InstanceVariableComponent({
-  value: tileId,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
+  value: [tileId],
+}: VariableStepInstanceComponentProps<readonly number[]>): JSX.Element {
   return (
     <Typography variant="body1">
       Find the{" "}
@@ -79,11 +79,11 @@ function InstanceManualComponent(): JSX.Element {
 }
 
 function InstanceCards({
-  value: itemId,
+  value: [itemId],
   dependencies: [_productIds, _isAirships],
   onClick,
 }: InstanceCardsProps<
-  number,
+  readonly number[],
   readonly ScytheProductId[],
   boolean
 >): JSX.Element {

@@ -22,7 +22,8 @@ export default createDerivedGameStep({
   ],
   skip: ([_products, isResolution, resolutionTile, missionPossibleHash]) =>
     isResolution! &&
-    resolutionTile === MISSION_POSSIBLE_ID &&
+    resolutionTile != null &&
+    resolutionTile.includes(MISSION_POSSIBLE_ID) &&
     missionPossibleHash == null,
   InstanceDerivedComponent,
 });
@@ -32,10 +33,11 @@ function InstanceDerivedComponent({
 }: DerivedStepInstanceComponentProps<
   readonly ScytheProductId[],
   boolean,
-  number,
+  readonly number[],
   number
 >): JSX.Element {
-  const isMissionPossible = isResolutions && resolution === MISSION_POSSIBLE_ID;
+  const isMissionPossible =
+    isResolutions && resolution?.includes(MISSION_POSSIBLE_ID);
   return (
     <HeaderAndSteps synopsis="Prepare the objectives deck:">
       <BlockWithFootnotes

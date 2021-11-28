@@ -58,7 +58,7 @@ const TILES_IN_PRODUCTS: Readonly<
 export default createTrivialSingleItemSelector({
   id: "structureBonus",
 
-  isType: (x: unknown): x is TileKey =>
+  isItemType: (x: unknown): x is TileKey =>
     typeof x === "string" && BONUS_TILES[x as TileKey] != null,
 
   productsMetaStep,
@@ -70,7 +70,7 @@ export default createTrivialSingleItemSelector({
 
   variant: "select",
 
-  instanceAvroType: {
+  itemAvroType: {
     type: "enum",
     name: "TileKey",
     symbols: [...Vec.keys(BONUS_TILES)],
@@ -78,13 +78,13 @@ export default createTrivialSingleItemSelector({
 });
 
 function InstanceVariableComponent({
-  value,
-}: VariableStepInstanceComponentProps<TileKey>): JSX.Element {
+  value: [tileKey],
+}: VariableStepInstanceComponentProps<readonly TileKey[]>): JSX.Element {
   return (
     <BlockWithFootnotes footnote={<>Near the bottom left corner.</>}>
       {(Footnote) => (
         <>
-          Place the <ChosenElement>{BONUS_TILES[value]}</ChosenElement>{" "}
+          Place the <ChosenElement>{BONUS_TILES[tileKey]}</ChosenElement>{" "}
           <em>Structure Bonus</em> tile on it's designated spot on the board
           <Footnote />.
         </>
@@ -126,10 +126,13 @@ function InstanceManualComponent(): JSX.Element {
 }
 
 function InstanceCards({
-  value: itemId,
+  value: [itemId],
   dependencies: [_productIds],
   onClick,
-}: InstanceCardsProps<TileKey, readonly ScytheProductId[]>): JSX.Element {
+}: InstanceCardsProps<
+  readonly TileKey[],
+  readonly ScytheProductId[]
+>): JSX.Element {
   return (
     <InstanceCard title="Structure Bonus" onClick={onClick}>
       <Typography variant="subtitle2" color="primary">
