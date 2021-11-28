@@ -1,7 +1,7 @@
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip } from "@mui/material";
-import { Vec } from "common";
+import { Random, Vec } from "common";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import React from "react";
@@ -206,16 +206,25 @@ export function AlwaysNeverMultiLabel<T>({
     return (
       <>
         Without{" "}
-        <GrammaticalList>
-          {Vec.map(never, (itemId) => (
-            <Chip
-              key={`${itemId}`}
-              component="span"
-              color={getColor?.(itemId)}
-              size="small"
-              label={getLabel(itemId)}
-            />
-          ))}
+        <GrammaticalList finalConjunction="or">
+          {Vec.concat(
+            Vec.map(Random.sample(never, 2), (itemId) => (
+              <Chip
+                key={`${itemId}`}
+                component="span"
+                color={getColor?.(itemId)}
+                size="small"
+                label={getLabel(itemId)}
+              />
+            )),
+            never.length >= 3
+              ? [
+                  <em>
+                    {never.length - 2} other item{never.length > 3 && "s"}
+                  </em>,
+                ]
+              : []
+          )}
         </GrammaticalList>
       </>
     );
