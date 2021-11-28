@@ -249,7 +249,7 @@ function ConfigPanel({
     () =>
       onChange((current) =>
         normalize(
-          Vec.concat(current, [[Random.sample(remainingPlayerIds, 1)]]),
+          Vec.concat(current, [Random.sample(remainingPlayerIds, 1)]),
           players.onlyResolvableValue()!
         )
       ),

@@ -32,8 +32,7 @@ export default createRandomGameStep({
       // Solo games don't need a first player
       min: 2,
     }),
-  resolve: ({ playerId }, playerIds) =>
-    playerId ?? Random.sample(playerIds!, 1),
+  resolve: ({ playerId }, playerIds) => playerId ?? Random.sample_1(playerIds!),
   onlyResolvableValue: (config) => config?.playerId,
   initialConfig: (): TemplateConfig => ({}),
   refresh: ({ playerId }, players) =>

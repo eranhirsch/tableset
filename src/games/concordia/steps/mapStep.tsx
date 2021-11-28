@@ -66,7 +66,7 @@ export default createRandomGameStep({
   isTemplatable: (products) => products.willContainAny(productsWithMaps()),
 
   resolve: (config, products, players) =>
-    Random.sample(relevantMapsForConfig(config, products!, players!), 1),
+    Random.sample_1(relevantMapsForConfig(config, products!, players!)),
 
   onlyResolvableValue: (config, products, players) =>
     config != null

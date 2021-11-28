@@ -122,68 +122,72 @@ function shuffle<T>(arr: readonly T[]): readonly T[] {
  *
  * @see https://docs.hhvm.com/hsl/reference/function/HH.Lib.Vec.sample/
  */
- function sample<Tv>(arr: readonly Tv[], sampleSize: 1): Tv;
- function sample<Tv>(arr: readonly Tv[], sampleSize: 2): readonly [Tv, Tv];
- function sample<Tv>(arr: readonly Tv[], sampleSize: 3): readonly [Tv, Tv, Tv];
- function sample<Tv>(
-   arr: readonly Tv[],
-   sampleSize: 4
- ): readonly [Tv, Tv, Tv, Tv];
- function sample<Tv>(
-   arr: readonly Tv[],
-   sampleSize: 5
- ): readonly [Tv, Tv, Tv, Tv, Tv];
- function sample<Tv>(
-   arr: readonly Tv[],
-   sampleSize: 6
- ): readonly [Tv, Tv, Tv, Tv, Tv, Tv];
- function sample<Tv>(
-   arr: readonly Tv[],
-   sampleSize: 7
- ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv];
- function sample<Tv>(
-   arr: readonly Tv[],
-   sampleSize: 8
- ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
- function sample<Tv>(
-   arr: readonly Tv[],
-   sampleSize: 9
- ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
- function sample<Tv>(
-   arr: readonly Tv[],
-   sampleSize: 10
- ): readonly [Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv, Tv];
- function sample<Tv>(arr: readonly Tv[], sampleSize: number): readonly Tv[];
- function sample<Tv>(
-   arr: readonly Tv[],
-   sampleSize: number
- ): Tv | readonly Tv[] {
-   if (sampleSize === 1) {
-     return arr[index(arr)];
-   }
-
+function sample<T>(arr: readonly [T, ...T[]], sampleSize: 1): readonly [T];
+function sample<T>(
+  arr: readonly [T, T, ...T[]],
+  sampleSize: 2
+): readonly [T, T];
+function sample<T>(
+  arr: readonly [T, T, T, ...T[]],
+  sampleSize: 3
+): readonly [T, T, T];
+function sample<T>(
+  arr: readonly [T, T, T, T, ...T[]],
+  sampleSize: 4
+): readonly [T, T, T, T];
+function sample<T>(
+  arr: readonly [T, T, T, T, T, ...T[]],
+  sampleSize: 5
+): readonly [T, T, T, T, T];
+function sample<T>(
+  arr: readonly [T, T, T, T, T, T, ...T[]],
+  sampleSize: 6
+): readonly [T, T, T, T, T, T];
+function sample<T>(
+  arr: readonly [T, T, T, T, T, T, T, ...T[]],
+  sampleSize: 7
+): readonly [T, T, T, T, T, T, T];
+function sample<T>(
+  arr: readonly [T, T, T, T, T, T, T, T, ...T[]],
+  sampleSize: 8
+): readonly [T, T, T, T, T, T, T, T];
+function sample<T>(
+  arr: readonly [T, T, T, T, T, T, T, T, T, ...T[]],
+  sampleSize: 9
+): readonly [T, T, T, T, T, T, T, T, T];
+function sample<T>(
+  arr: readonly [T, T, T, T, T, T, T, T, T, T, ...T[]],
+  sampleSize: 10
+): readonly [T, T, T, T, T, T, T, T, T, T];
+function sample<T>(arr: readonly T[], sampleSize: number): readonly T[];
+function sample<T>(arr: readonly T[], sampleSize: number): readonly T[] {
   if (sampleSize >= arr.length) {
     // Trivial solution
     return arr;
   }
- 
-   // To optimize the selection we can toggle between an include and exclude
-   // logic for the sample; when sampleSize is small we will pick a set of
-   // random indices and use them to pick elements from the input array, and
-   // when sampleSize is big we will pick which indices to skip when rebuilding
-   // the array.
- 
-   // We use a set so that we can ignore duplicates
-   const selectedIndices: Set<number> = new Set();
-   while (selectedIndices.size < Math.min(sampleSize, arr.length - sampleSize)) {
-     selectedIndices.add(index(arr));
-   }
- 
-   return sampleSize <= arr.length - sampleSize
-     ? Vec.map(Vec.sort([...selectedIndices]), (index) => arr[index])
-     : Vec.filter(arr, (_, index) => !selectedIndices.has(index));
- }
 
+  // To optimize the selection we can toggle between an include and exclude
+  // logic for the sample; when sampleSize is small we will pick a set of
+  // random indices and use them to pick elements from the input array, and
+  // when sampleSize is big we will pick which indices to skip when rebuilding
+  // the array.
+
+  // We use a set so that we can ignore duplicates
+  const selectedIndices: Set<number> = new Set();
+  while (selectedIndices.size < Math.min(sampleSize, arr.length - sampleSize)) {
+    selectedIndices.add(index(arr));
+  }
+
+  return sampleSize <= arr.length - sampleSize
+    ? Vec.map(Vec.sort([...selectedIndices]), (index) => arr[index])
+    : Vec.filter(arr, (_, index) => !selectedIndices.has(index));
+}
+
+function sample_1<T>(arr: readonly [T, ...T[]]): T;
+function sample_1<T>(arr: readonly T[]): T | null;
+function sample_1<T>(arr: readonly T[]): T | null {
+  return sample(arr, 1)[0];
+}
 
 /**
  * @returns a new mapper-obj with the key value pairs of the given input
@@ -201,6 +205,7 @@ export const Random = {
   index,
   int,
   sample,
+  sample_1,
   shuffle_dict,
   shuffle,
   string,

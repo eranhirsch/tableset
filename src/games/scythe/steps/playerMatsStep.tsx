@@ -209,7 +209,7 @@ function randomMat(
   }
 
   // Pick a candidates faction and add it to the ongoing arr for the reducer
-  return Random.sample(actualCandidates, 1);
+  return Random.sample_1(actualCandidates)!;
 }
 
 function refresh(

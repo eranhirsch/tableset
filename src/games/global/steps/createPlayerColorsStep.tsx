@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { colorName } from "app/ux/themeWithGameColors";
-import { Dict, invariant, Random, Vec } from "common";
+import { Dict, invariant, nullthrows, Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerShortName } from "features/players/PlayerShortName";
@@ -217,9 +217,12 @@ function ConfigPanel({
           // When adding a new row we pick a random player and color so that the
           // new row is already valid in our format, otherwise we would need to
           // support empty cases for color and player in our selectors.
-          [Random.sample(remainingPlayerIds, 1)]: Random.sample(
-            remainingColors,
-            1
+          [nullthrows(
+            Random.sample_1(remainingPlayerIds),
+            `Trying to create a new fixed color entry when players are depleted`
+          )]: nullthrows(
+            Random.sample_1(remainingColors),
+            `Trying to create a new fixed color entry when colors are depleted`
           ),
         } as Readonly<TemplateConfig>),
         // And sort the output so that it remains normalized
