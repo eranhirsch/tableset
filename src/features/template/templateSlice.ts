@@ -5,7 +5,7 @@ import {
   PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
-import { coerce, Dict, nullthrows, Vec } from "common";
+import { $, coerce, Dict, nullthrows, Vec } from "common";
 import { collectionActions } from "features/collection/collectionSlice";
 import { playersActions } from "features/players/playersSlice";
 import { GameId, GAMES } from "games/core/GAMES";
@@ -204,22 +204,20 @@ function markDownstreamElementsStale(
   step: GameStepBase,
   state: RootState["template"]
 ): void {
-  filterDownstreamSteps(
-    coerce(step, isVariableGameStep),
-    state
-  ).forEach((element) => (element.isStale = true));
+  filterDownstreamSteps(coerce(step, isVariableGameStep), state).forEach(
+    (element) => (element.isStale = true)
+  );
 }
 
 const filterDownstreamSteps = (
   step: VariableGameStep,
   state: RootState["template"]
 ): readonly TemplateElement[] =>
-  Vec.map(
-    Vec.filter(templateSteps(state), ([{ dependencies }]) =>
-      // We look for the changed element in the dependencies for the step.
-      dependencies.includes(step)
-    ),
-    ([_, element]) => element
+  $(
+    state,
+    templateSteps,
+    ($$) => Vec.filter($$, ([{ dependencies }]) => dependencies.includes(step)),
+    ($$) => Vec.map($$, ([_, element]) => element)
   );
 
 function removeUntemplatableStep(
