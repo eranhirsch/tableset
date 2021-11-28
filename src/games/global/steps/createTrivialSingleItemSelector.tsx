@@ -172,6 +172,7 @@ function resolve<ItemId extends string | number, Pid extends ProductId>(
       ? always
       : $(
           availableForProducts(productIds!),
+          ($$) => Vec.diff($$, always),
           ($$) => Vec.diff($$, never),
           ($$) => Random.sample($$, actualCount - always.length),
           ($$) => Vec.concat(always, $$)
