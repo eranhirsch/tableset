@@ -16,7 +16,7 @@ function createNegateMetaStep(
       stepInstanceValue === true ? null : true,
     query: (...args) =>
       buildQuery(`__${step.id}_negated`, {
-        canResolveTo: (value) => !step.query(...args).canResolveTo(value),
+        canResolveTo: (value) => step.query(...args).canResolveTo(!value),
       }),
   };
 }
