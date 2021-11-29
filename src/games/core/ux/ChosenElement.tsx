@@ -1,11 +1,22 @@
-import { Typography } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
+import { GamePiecesColor } from "model/GamePiecesColor";
 
 export function ChosenElement({
   children,
   extraInfo,
-}: React.PropsWithChildren<{ extraInfo?: string }>): JSX.Element {
+  color,
+}: React.PropsWithChildren<{
+  extraInfo?: string;
+  color?: GamePiecesColor;
+}>): JSX.Element {
+  const theme = useTheme();
+
   return (
-    <Typography component="span" color="primary">
+    <Typography
+      component="span"
+      color="primary"
+      sx={{ color: color != null ? theme.palette[color].main : undefined }}
+    >
       <strong>{children}</strong>
       {extraInfo != null && (
         <>

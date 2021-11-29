@@ -8,6 +8,7 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createItemSelectorStep } from "games/global";
 import { PlayerId } from "model/Player";
@@ -44,25 +45,35 @@ export default airshipPassiveStep;
 export const airshipPassiveAssignmentStep =
   airshipPassiveStep.createAssignmentStep({
     enabler: advancedAirshipVariant,
-    categoryName: "Aggressive Airship Ability",
+    categoryName: "Passive Airship Ability",
     InstanceCards: AssignmentInstanceCards,
   });
 
 function InstanceVariableComponent({
-  value: [tileId],
+  value: tileIds,
 }: VariableStepInstanceComponentProps<readonly number[]>): JSX.Element {
   return (
     <Typography variant="body1">
       Find the{" "}
-      <ChosenElement extraInfo={`(${tileId + 1})`}>
-        {Airships.tiles[tileId]}
-      </ChosenElement>{" "}
-      <em>passive airship tile</em> and place it near the{" "}
-      <em>encounters deck</em>.
+      <GrammaticalList>
+        {Vec.map(tileIds, (tileId) => (
+          <ChosenElement color="green" extraInfo={`(${tileId + 1})`}>
+            {Airships.tiles[tileId].toLocaleUpperCase()}
+          </ChosenElement>
+        ))}
+      </GrammaticalList>{" "}
+      <em>passive airship tile{tileIds.length > 1 && "s"}</em>
+      {tileIds.length === 1 && (
+        <>
+          {" "}
+          and place them them near the <em>encounters deck</em>
+        </>
+      )}
+      .
     </Typography>
   );
 }
-
+  
 function InstanceManualComponent(): JSX.Element {
   return (
     <HeaderAndSteps
