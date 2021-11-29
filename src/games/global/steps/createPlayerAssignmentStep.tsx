@@ -94,11 +94,15 @@ function createPlayerAssignmentStep<
       enabler ?? alwaysOnMetaStep,
       itemsStep,
     ],
+
     isTemplatable: (_players, _products, enabler, itemsStep) =>
       enabler.canResolveTo(true) && itemsStep.willResolve(),
+
     initialConfig: [] as TemplateConfig<ItemId>,
     resolve,
     refresh,
+
+    skip: (_, [_playerIds, _productIds, isOn, _itemIds]) => !isOn,
 
     ConfigPanel: (
       props: ConfigPanelProps<
