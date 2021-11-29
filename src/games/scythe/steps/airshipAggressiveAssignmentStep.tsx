@@ -9,4 +9,5 @@ export default createPlayerAssignmentStep({
   productsMetaStep,
   labelForItem: (airshipIdx) => Airships.tiles[airshipIdx],
   categoryName: "Aggressive Airship Ability",
+  getColor: () => "red",
 });

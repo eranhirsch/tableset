@@ -19,14 +19,14 @@ import {
 import { Query } from "games/core/steps/Query";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
 import { ProductId, StepId } from "model/Game";
-import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
+import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import {
   AlwaysNeverMultiChipSelector,
   AlwaysNeverMultiLabel,
-  Limits
+  Limits,
 } from "../ux/AlwaysNeverMultiChipSelector";
 import { SingleItemSelect } from "../ux/SingleItemSelect";
 import alwaysOnMetaStep from "./alwaysOnMetaStep";
@@ -40,16 +40,6 @@ type TemplateConfig<ItemId extends string | number> = {
 
 type CountFunction = (playerCount: number) => number;
 const DEFAULT_COUNT_FUNCTION: CountFunction = () => 1;
-
-type ColorFunction<ItemId extends string | number> = (
-  itemId: ItemId
-) => GamePiecesColor;
-
-type ProductsFunction<ItemId extends string | number, Pid extends ProductId> = (
-  productIds: readonly Pid[]
-) => readonly ItemId[];
-
-type LabelFunction<ItemId extends string | number> = (itemId: ItemId) => string;
 
 type Variant = "select" | "chips";
 const DEFAULT_VARIANT: Variant = "chips";

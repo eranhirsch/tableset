@@ -11,7 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   ListSubheader,
-  Stack,
+  Stack
 } from "@mui/material";
 import { $, Dict, Random, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
@@ -21,11 +21,12 @@ import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ProductId } from "model/Game";
+import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useState } from "react";
@@ -33,16 +34,21 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
+import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import playersMetaStep from "./playersMetaStep";
 
 interface Options<ItemId extends string | number, Pid extends ProductId> {
+  // Required
   itemsStep: VariableGameStep<readonly ItemId[]>;
-  labelForItem(itemId: ItemId): string;
-  availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
+  labelForItem: LabelFunction<ItemId>;
+  availableForProducts: ProductsFunction<ItemId, Pid>;
   categoryName: string;
   productsMetaStep: VariableGameStep<readonly Pid[]>;
+
+  // Optional
+  getColor?: ColorFunction<ItemId>;
 }
 
 interface PlayerPreference<ItemId extends string | number> {
@@ -61,6 +67,7 @@ function createPlayerAssignmentStep<
   availableForProducts,
   categoryName,
   productsMetaStep,
+  getColor,
   labelForItem,
 }: Options<ItemId, Pid>): VariableGameStep<readonly PlayerId[]> {
   return createRandomGameStep({
@@ -82,6 +89,7 @@ function createPlayerAssignmentStep<
       <ConfigPanel
         {...props}
         labelForItem={labelForItem}
+        getColor={getColor}
         availableForProducts={availableForProducts}
       />
     ),
@@ -180,14 +188,16 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   onChange,
   labelForItem,
   availableForProducts,
+  getColor,
 }: ConfigPanelProps<
   TemplateConfig<ItemId>,
   readonly PlayerId[],
   readonly Pid[],
   readonly ItemId[]
 > & {
-  labelForItem(itemId: ItemId): string;
-  availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
+  labelForItem: LabelFunction<ItemId>;
+  availableForProducts: ProductsFunction<ItemId, Pid>;
+  getColor?: ColorFunction<ItemId>;
 }): JSX.Element {
   const onDragEnd = useCallback(
     ({ reason, destination, source }: DropResult) => {
@@ -237,6 +247,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
                     playerId={playerId}
                     itemId={itemId}
                     label={labelForItem(itemId)}
+                    color={getColor?.(itemId)}
                     index={index}
                     withDivider={index < config.length - 1}
                     withDrag={config.length >= 2}
@@ -263,6 +274,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
         labelForItem={labelForItem}
         playerIds={players.onlyResolvableValue()!}
         currentPreferences={config}
+        getColor={getColor}
         onNewPreference={(preference) =>
           onChange((current) => Vec.concat(current, preference))
         }
@@ -274,6 +286,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
 function PreferenceListItem<ItemId extends string | number>({
   itemId,
   label,
+  color,
   playerId,
   index,
   withDrag,
@@ -282,6 +295,7 @@ function PreferenceListItem<ItemId extends string | number>({
 }: {
   itemId: ItemId;
   label: string;
+  color?: GamePiecesColor;
   playerId: PlayerId;
   index: number;
   withDrag: boolean;
@@ -314,7 +328,7 @@ function PreferenceListItem<ItemId extends string | number>({
             <PlayerAvatar playerId={playerId} inline />
           </ListItemAvatar>
           <ListItemText
-            primary={<Chip size="small" variant="outlined" label={label} />}
+            primary={<Chip color={color} size="small" label={label} />}
           />
         </ListItem>
       )}
@@ -328,12 +342,14 @@ function NewPreferencePanel<ItemId extends string | number>({
   onNewPreference,
   items,
   labelForItem,
+  getColor,
 }: {
   playerIds: readonly PlayerId[];
   currentPreferences: Readonly<TemplateConfig<ItemId>>;
   onNewPreference(preference: PlayerPreference<ItemId>): void;
   items: readonly ItemId[];
-  labelForItem(itemId: ItemId): string;
+  labelForItem: LabelFunction<ItemId>;
+  getColor?: ColorFunction<ItemId>;
 }): JSX.Element {
   const [showNewButton, setShowNewButton] = useState(true);
   const [selectedPlayerId, setSelectedPlayerId] = useState<PlayerId>();
@@ -362,6 +378,7 @@ function NewPreferencePanel<ItemId extends string | number>({
             key={`assignmentItemOption_${selectedPlayerId}_${itemId}`}
             size="small"
             label={labelForItem(itemId)}
+            color={getColor != null ? getColor(itemId) : undefined}
             onClick={() => {
               onNewPreference({ playerId: selectedPlayerId, itemId });
               setShowNewButton(true);
@@ -417,10 +434,12 @@ function InstanceVariableComponent<ItemId extends string | number>({
   itemsStep,
   categoryName,
   labelForItem,
+  getColor,
 }: VariableStepInstanceComponentProps<readonly PlayerId[]> & {
   itemsStep: VariableGameStep<readonly ItemId[]>;
   categoryName: string;
-  labelForItem(itemId: ItemId): string;
+  labelForItem: LabelFunction<ItemId>;
+  getColor?: ColorFunction<ItemId>;
 }): JSX.Element {
   const itemIds = useRequiredInstanceValue(itemsStep);
 
@@ -439,7 +458,10 @@ function InstanceVariableComponent<ItemId extends string | number>({
           Vec.map(order, (playerId, index) => (
             <>
               <PlayerAvatar playerId={playerId} inline />:{" "}
-              <Chip label={labelForItem(itemIds[index])} />
+              <Chip
+                color={getColor != null ? getColor(itemIds[index]) : undefined}
+                label={labelForItem(itemIds[index])}
+              />
             </>
           ))
         )}
