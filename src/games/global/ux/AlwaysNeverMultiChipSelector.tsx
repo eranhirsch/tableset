@@ -232,7 +232,7 @@ export function AlwaysNeverMultiLabel<T>({
     );
   }
 
-  if (always.length === max) {
+  if (always.length === max && max === min) {
     return (
       <GrammaticalList>
         {Vec.map(always, (itemId) =>
