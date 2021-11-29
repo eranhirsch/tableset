@@ -73,7 +73,7 @@ export function TemplateItem({
             color: element == null ? "gray" : undefined,
           }}
           secondaryTypographyProps={
-            selected ? { sx: { marginInlineEnd: 3 } } : undefined
+            selected ? { sx: { marginInlineEnd: 4 } } : undefined
           }
           secondary={
             element == null ? undefined : (

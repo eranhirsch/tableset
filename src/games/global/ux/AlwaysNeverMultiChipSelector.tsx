@@ -1,4 +1,5 @@
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip } from "@mui/material";
 import { Random, Vec } from "common";
@@ -72,9 +73,12 @@ function AlwaysNeverChip({
   return (
     <Chip
       sx={{
-        opacity: mode === "never" ? 0.75 : 1.0,
-        marginX:
-          mode === "random" ? "14px" : mode === "never" ? "4px" : undefined,
+        opacity: mode === "never" ? 0.5 : 1.0,
+        textDecoration: mode === "never" ? "line-through" : undefined,
+        // Chips seem to be a pixel short when using the filled variant vs the
+        // outlined one, with the same content, this causes tiny glitches in the
+        // UI
+        paddingX: mode !== "never" ? "0.5px" : undefined,
       }}
       color={color}
       icon={
@@ -82,18 +86,12 @@ function AlwaysNeverChip({
           <CheckCircleIcon fontSize="small" />
         ) : mode === "never" ? (
           <NotInterestedRoundedIcon fontSize="small" />
-        ) : undefined
-      }
-      variant={mode === "never" ? "outlined" : "filled"}
-      label={
-        mode === "always" ? (
-          <strong>{label}</strong>
-        ) : mode === "never" ? (
-          <em>{label}</em>
         ) : (
-          label
+          <HelpOutlineIcon fontSize="small" />
         )
       }
+      variant={mode === "never" ? "outlined" : "filled"}
+      label={label}
       onClick={onClick}
     />
   );
