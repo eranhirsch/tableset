@@ -45,6 +45,7 @@ export const airshipAggressiveAssignmentStep =
   airshipAggressiveStep.createAssignmentStep({
     enabler: advancedAirshipVariant,
     categoryName: "Aggressive Airship Ability",
+    InstanceCards: AssignmentInstanceCards,
   });
 
 function InstanceVariableComponent({
@@ -103,8 +104,6 @@ function InstanceCards({
   readonly ScytheProductId[],
   boolean
 >): JSX.Element | null {
-  const theme = useTheme();
-
   const hasAssignments = useHasDownstreamInstanceValue(
     airshipAggressiveAssignmentStep.id
   );
@@ -115,31 +114,71 @@ function InstanceCards({
   return (
     <>
       {Vec.map(itemIds, (itemId) => (
-        <InstanceCard
-          key={`airship_aggressive_${itemId}`}
-          title="Aggressive"
-          subheader="Airship"
+        <AirshipCard
+          key={`airshipAggressive_${itemId}`}
+          itemId={itemId}
           onClick={onClick}
-        >
-          <Stack>
-            <Typography
-              variant="subtitle2"
-              sx={{ color: theme.palette.red.main }}
-              fontSize={
-                Airships.tiles[itemId].length > 15 ? "xx-small" : undefined
-              }
-            >
-              <strong>{Airships.tiles[itemId].toLocaleUpperCase()}</strong>
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: theme.palette.red.main }}
-            >
-              ({itemId + 1})
-            </Typography>
-          </Stack>
-        </InstanceCard>
+        />
       ))}
     </>
+  );
+}
+
+function AssignmentInstanceCards({
+  value: order,
+  dependencies: [_playerIds, _productIds, _isEnabled, itemIds],
+  onClick,
+}: InstanceCardsProps<
+  readonly PlayerId[],
+  readonly PlayerId[],
+  readonly ScytheProductId[],
+  boolean,
+  readonly number[]
+>): JSX.Element {
+  return (
+    <>
+      {Vec.map(Vec.zip(order, itemIds!), ([playerId, itemId]) => (
+        <AirshipCard
+          key={`airshipAggressive_${playerId}_${itemId}`}
+          itemId={itemId}
+          playerId={playerId}
+          onClick={onClick}
+        />
+      ))}
+    </>
+  );
+}
+
+function AirshipCard({
+  itemId,
+  playerId,
+  onClick,
+}: {
+  onClick(): void;
+  itemId: number;
+  playerId?: PlayerId;
+}): JSX.Element {
+  const theme = useTheme();
+
+  return (
+    <InstanceCard
+      title="Aggressive"
+      subheader="Airship"
+      playerId={playerId}
+      onClick={onClick}
+    >
+      <Stack>
+        <Typography
+          variant="subtitle2"
+          sx={{ color: theme.palette.red.main }}
+          fontSize={Airships.tiles[itemId].length > 15 ? "xx-small" : undefined}
+        >
+          <strong>{Airships.tiles[itemId].toLocaleUpperCase()}</strong>
+        </Typography>
+        <Typography variant="caption" sx={{ color: theme.palette.red.main }}>
+          ({itemId + 1})
+        </Typography>
+      </Stack>
+    </InstanceCard>
   );
 }

@@ -21,7 +21,8 @@ import { templateValue } from "features/template/templateSlice";
 import {
   ConfigPanelProps,
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  InstanceCardsProps,
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -34,7 +35,7 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult
+  DropResult,
 } from "react-beautiful-dnd";
 import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import alwaysOnMetaStep from "./alwaysOnMetaStep";
@@ -51,6 +52,17 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
   // Optional
   enabler?: VariableGameStep<boolean>;
   getColor?: ColorFunction<ItemId>;
+
+  // Optional from RandomGameStep
+  InstanceCards?(
+    props: InstanceCardsProps<
+      readonly PlayerId[],
+      readonly PlayerId[],
+      readonly Pid[],
+      boolean,
+      readonly ItemId[]
+    >
+  ): JSX.Element | null;
 }
 
 interface PlayerPreference<ItemId extends string | number> {
@@ -72,6 +84,7 @@ function createPlayerAssignmentStep<
   itemsStep,
   labelForId,
   productsMetaStep,
+  ...otherOptions
 }: Options<ItemId, Pid>): VariableGameStep<readonly PlayerId[]> {
   return createRandomGameStep({
     id: `${itemsStep.id}Assignments`,
@@ -115,6 +128,8 @@ function createPlayerAssignmentStep<
     ),
 
     instanceAvroType: { type: "array", items: "string" },
+
+    ...otherOptions,
   });
 }
 export default createPlayerAssignmentStep;

@@ -45,6 +45,7 @@ export const airshipPassiveAssignmentStep =
   airshipPassiveStep.createAssignmentStep({
     enabler: advancedAirshipVariant,
     categoryName: "Aggressive Airship Ability",
+    InstanceCards: AssignmentInstanceCards,
   });
 
 function InstanceVariableComponent({
@@ -103,8 +104,6 @@ function InstanceCards({
   readonly ScytheProductId[],
   boolean
 >): JSX.Element | null {
-  const theme = useTheme();
-
   const hasAssignments = useHasDownstreamInstanceValue(
     airshipPassiveAssignmentStep.id
   );
@@ -115,28 +114,70 @@ function InstanceCards({
   return (
     <>
       {Vec.map(itemIds, (itemId) => (
-        <InstanceCard
-          key={`airship_passive_${itemId}`}
-          title="Passive"
-          subheader="Airship"
+        <AirshipCard
+          key={`airshipPassive_${itemId}`}
+          itemId={itemId}
           onClick={onClick}
-        >
-          <Stack>
-            <Typography
-              variant="subtitle2"
-              sx={{ color: theme.palette.green.main }}
-            >
-              <strong>{Airships.tiles[itemId].toLocaleUpperCase()}</strong>
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: theme.palette.green.main }}
-            >
-              ({itemId + 1})
-            </Typography>
-          </Stack>
-        </InstanceCard>
+        />
       ))}
     </>
+  );
+}
+
+function AssignmentInstanceCards({
+  value: order,
+  dependencies: [_playerIds, _productIds, _isEnabled, itemIds],
+  onClick,
+}: InstanceCardsProps<
+  readonly PlayerId[],
+  readonly PlayerId[],
+  readonly ScytheProductId[],
+  boolean,
+  readonly number[]
+>): JSX.Element {
+  return (
+    <>
+      {Vec.map(Vec.zip(order, itemIds!), ([playerId, itemId]) => (
+        <AirshipCard
+          key={`airshipPassive_${playerId}_${itemId}`}
+          itemId={itemId}
+          playerId={playerId}
+          onClick={onClick}
+        />
+      ))}
+    </>
+  );
+}
+
+function AirshipCard({
+  itemId,
+  playerId,
+  onClick,
+}: {
+  itemId: number;
+  playerId?: PlayerId;
+  onClick(): void;
+}): JSX.Element {
+  const theme = useTheme();
+
+  return (
+    <InstanceCard
+      title="Passive"
+      subheader="Airship"
+      onClick={onClick}
+      playerId={playerId}
+    >
+      <Stack>
+        <Typography
+          variant="subtitle2"
+          sx={{ color: theme.palette.green.main }}
+        >
+          <strong>{Airships.tiles[itemId].toLocaleUpperCase()}</strong>
+        </Typography>
+        <Typography variant="caption" sx={{ color: theme.palette.green.main }}>
+          ({itemId + 1})
+        </Typography>
+      </Stack>
+    </InstanceCard>
   );
 }
