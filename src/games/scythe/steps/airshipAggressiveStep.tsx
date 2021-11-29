@@ -1,4 +1,5 @@
 import { Stack, Typography, useTheme } from "@mui/material";
+import { Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import {
   InstanceCardsProps,
@@ -86,7 +87,7 @@ function InstanceManualComponent(): JSX.Element {
 }
 
 function InstanceCards({
-  value: [itemId],
+  value: itemIds,
   onClick,
 }: InstanceCardsProps<
   readonly number[],
@@ -95,21 +96,34 @@ function InstanceCards({
   boolean
 >): JSX.Element {
   const theme = useTheme();
-  const label = Airships.tiles[itemId];
   return (
-    <InstanceCard title="Aggressive" subheader="Airship" onClick={onClick}>
-      <Stack>
-        <Typography
-          variant="subtitle2"
-          sx={{ color: theme.palette.red.main }}
-          fontSize={label.length > 15 ? "xx-small" : undefined}
+    <>
+      {Vec.map(itemIds, (itemId) => (
+        <InstanceCard
+          key={`airship_aggressive_${itemId}`}
+          title="Aggressive"
+          subheader="Airship"
+          onClick={onClick}
         >
-          <strong>{label.toLocaleUpperCase()}</strong>
-        </Typography>
-        <Typography variant="caption" sx={{ color: theme.palette.red.main }}>
-          ({itemId + 1})
-        </Typography>
-      </Stack>
-    </InstanceCard>
+          <Stack>
+            <Typography
+              variant="subtitle2"
+              sx={{ color: theme.palette.red.main }}
+              fontSize={
+                Airships.tiles[itemId].length > 15 ? "xx-small" : undefined
+              }
+            >
+              <strong>{Airships.tiles[itemId].toLocaleUpperCase()}</strong>
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: theme.palette.red.main }}
+            >
+              ({itemId + 1})
+            </Typography>
+          </Stack>
+        </InstanceCard>
+      ))}
+    </>
   );
 }

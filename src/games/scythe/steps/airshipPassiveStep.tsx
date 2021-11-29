@@ -1,4 +1,5 @@
 import { Stack, Typography, useTheme } from "@mui/material";
+import { Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import {
   InstanceCardsProps,
@@ -86,7 +87,7 @@ function InstanceManualComponent(): JSX.Element {
 }
 
 function InstanceCards({
-  value: [itemId],
+  value: itemIds,
   onClick,
 }: InstanceCardsProps<
   readonly number[],
@@ -96,18 +97,30 @@ function InstanceCards({
 >): JSX.Element {
   const theme = useTheme();
   return (
-    <InstanceCard title="Passive" subheader="Airship" onClick={onClick}>
-      <Stack>
-        <Typography
-          variant="subtitle2"
-          sx={{ color: theme.palette.green.main }}
+    <>
+      {Vec.map(itemIds, (itemId) => (
+        <InstanceCard
+          key={`airship_passive_${itemId}`}
+          title="Passive"
+          subheader="Airship"
+          onClick={onClick}
         >
-          <strong>{Airships.tiles[itemId].toLocaleUpperCase()}</strong>
-        </Typography>
-        <Typography variant="caption" sx={{ color: theme.palette.green.main }}>
-          ({itemId + 1})
-        </Typography>
-      </Stack>
-    </InstanceCard>
+          <Stack>
+            <Typography
+              variant="subtitle2"
+              sx={{ color: theme.palette.green.main }}
+            >
+              <strong>{Airships.tiles[itemId].toLocaleUpperCase()}</strong>
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: theme.palette.green.main }}
+            >
+              ({itemId + 1})
+            </Typography>
+          </Stack>
+        </InstanceCard>
+      ))}
+    </>
   );
 }
