@@ -120,7 +120,15 @@ export function createVariant({
 
     hasValue: (_: TemplateContext | InstanceContext) => true,
 
-    resolve: (config) => (Random.coin_flip(config.percent / 100) ? true : null),
+    resolve: (config, instance, context) =>
+      dependencies.every((dependency) =>
+        // We check generally for falsy values (nulls, false, etc...)
+        Boolean(dependency.extractInstanceValue(instance, context))
+      )
+        ? Random.coin_flip(config.percent / 100)
+          ? true
+          : null
+        : null,
 
     query: (template) =>
       buildQuery(baseStep.id, {
