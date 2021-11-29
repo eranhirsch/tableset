@@ -281,18 +281,14 @@ function refresh<ItemId extends string | number>(
     templateValue("unfixable");
   }
 
-  // We can only support the minimum of both counts as the max for always,
-  // otherwise we would need to select amongst them (which would defy `always`);
-  // similarly the min remaining is the max of the two counts, as we need at
-  // least that many items to pick from.
-  const { min: maxAlways, max: minRemaining } = getLimits(
+  const { min: minRemaining, max: maxAlways } = getLimits(
     isAdvancedOn,
     count,
     advancedModeCount,
     playerCount
   );
 
-  if (always.length >= maxAlways) {
+  if (always.length > maxAlways) {
     // There are more items then the actual count, we will need to select
     // amongst them, meaning they won't always be part of the results...
     templateValue("unfixable");
@@ -545,6 +541,10 @@ function getLimits(
       ($$) => !Vec.is_empty($$),
       `Couldn't compute min from ${basicCount} and ${advancedCount}, are they both null?`
     ),
-    ($$) => ({ min: MathUtils.min($$)!, max: MathUtils.max($$)! })
+    // We can only support the minimum of both counts as the max (for `always`),
+    // otherwise we would need to select amongst them (which would defy
+    // `always`); similarly the min (for the remaining) is the max of the two
+    // counts, as we need at least that many items to pick from.
+    ($$) => ({ min: MathUtils.max($$)!, max: MathUtils.min($$)! })
   );
 }
