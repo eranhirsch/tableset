@@ -11,6 +11,7 @@ import { createTrivialItemSelector } from "games/global";
 import { PlayerId } from "model/Player";
 import { ScytheProductId } from "../ScytheProductId";
 import { Airships } from "../utils/Airships";
+import advancedAirshipVariant from "./advancedAirshipVariant";
 import airshipVariant from "./airshipVariant";
 import productsMetaStep from "./productsMetaStep";
 
@@ -30,6 +31,11 @@ export default createTrivialItemSelector({
   InstanceCards,
   getColor: () => "red",
   itemAvroType: "int",
+
+  advancedMode: {
+    enabler: advancedAirshipVariant,
+    count: (playerCount) => playerCount,
+  },
 });
 
 function InstanceVariableComponent({

@@ -102,6 +102,13 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
    */
   variant?: Variant;
 
+  /**
+   * Allow an additional enabler and count that represent an "advanced" mode for
+   * the step (for example, supporting both a global count, and a per-player
+   * count)
+   * @see `enabler`
+   * @see `count`
+   */
   advancedMode?: AdvancedMode;
 
   // Required fields for createRandomGameStep
@@ -111,6 +118,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
       readonly ItemId[],
       readonly PlayerId[],
       readonly Pid[],
+      boolean,
       boolean
     >
   ): JSX.Element | null;
