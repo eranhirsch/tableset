@@ -233,8 +233,7 @@ export default function createItemSelectorStep<
     instanceAvroType: { type: "array", items: itemAvroType },
   });
 
-  return {
-    ...step,
+  const additionalApiMethods: AdditionalApiMethods = {
     createAssignmentStep: (options) =>
       createPlayerAssignmentStep({
         itemsStep: step,
@@ -245,6 +244,12 @@ export default function createItemSelectorStep<
         ...options,
       }),
   };
+
+  // We use assign (and not a regular spread like we usually do to *immutable*
+  // objects because we actually need to MUTATE this object so that it remains
+  // the same as the one we feed into the assignment step via the `itemStep`
+  // option
+  return Object.assign(step, additionalApiMethods);
 }
 
 function resolve<ItemId extends string | number, Pid extends ProductId>(
