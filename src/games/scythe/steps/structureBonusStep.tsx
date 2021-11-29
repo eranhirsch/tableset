@@ -9,7 +9,7 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { createTrivialSingleItemSelector } from "games/global";
+import { createTrivialItemSelector } from "games/global";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import productsMetaStep from "./productsMetaStep";
@@ -55,7 +55,7 @@ const TILES_IN_PRODUCTS: Readonly<
   ],
 };
 
-export default createTrivialSingleItemSelector({
+export default createTrivialItemSelector({
   id: "structureBonus",
 
   isItemType: (x: unknown): x is TileKey =>

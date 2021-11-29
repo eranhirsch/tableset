@@ -8,7 +8,7 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { createTrivialSingleItemSelector } from "games/global";
+import { createTrivialItemSelector } from "games/global";
 import { PlayerId } from "model/Player";
 import { ScytheProductId } from "../ScytheProductId";
 import productsMetaStep from "./productsMetaStep";
@@ -27,7 +27,7 @@ const RESOLUTION_TILES = [
 ] as const;
 export const MISSION_POSSIBLE_ID = RESOLUTION_TILES.indexOf(MISSION_POSSIBLE);
 
-export default createTrivialSingleItemSelector({
+export default createTrivialItemSelector({
   id: "resolution",
 
   isItemType: (x: unknown): x is number =>

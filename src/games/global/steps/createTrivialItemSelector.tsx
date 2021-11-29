@@ -60,7 +60,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
   ): JSX.Element | null;
 }
 
-const createTrivialSingleItemSelector = <
+const createTrivialItemSelector = <
   ItemId extends string | number,
   Pid extends ProductId
 >({
@@ -146,7 +146,7 @@ const createTrivialSingleItemSelector = <
 
     instanceAvroType: { type: "array", items: itemAvroType },
   });
-export default createTrivialSingleItemSelector;
+export default createTrivialItemSelector;
 
 function resolve<ItemId extends string | number, Pid extends ProductId>(
   count: number | ((playerCount: number) => number),
