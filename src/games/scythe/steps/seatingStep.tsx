@@ -140,8 +140,8 @@ function InstanceDerivedComponent({
                   Shape.select_keys(Factions, factionIds),
                   ({ order }) => order
                 ),
-                (_, { color, name }) => (
-                  <Chip size="small" color={color} label={name} />
+                (_, { color, name: { short } }) => (
+                  <Chip size="small" color={color} label={short} />
                 )
               )}
             </GrammaticalList>
