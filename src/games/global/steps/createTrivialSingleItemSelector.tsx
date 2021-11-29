@@ -105,7 +105,7 @@ const createTrivialSingleItemSelector = <
           : count(players.onlyResolvableValue()!.length)
       ),
 
-    skip: (_value, [_productIds, isOn]) => !isOn,
+    skip: (_value, [_playerIds, _productIds, isOn]) => !isOn,
 
     ConfigPanel: (
       props: ConfigPanelProps<
