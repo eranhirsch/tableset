@@ -15,7 +15,10 @@ import {
 } from "@mui/material";
 import { $, Dict, Random, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
-import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { templateValue } from "features/template/templateSlice";
 import {
@@ -129,6 +132,14 @@ function createPlayerAssignmentStep<
         labelForId={labelForId}
         getColor={getColor}
         categoryName={categoryName}
+      />
+    ),
+    InstanceManualComponent: () => (
+      <InstanceManualComponent
+        itemsStep={itemsStep}
+        categoryName={categoryName}
+        labelForId={labelForId}
+        getColor={getColor}
       />
     ),
 
@@ -508,5 +519,62 @@ function InstanceVariableComponent<ItemId extends string | number>({
         )}
       </Stack>
     </>
+  );
+}
+
+function InstanceManualComponent<ItemId extends string | number>({
+  itemsStep,
+  categoryName,
+  labelForId,
+  getColor,
+}: {
+  itemsStep: VariableGameStep<readonly ItemId[]>;
+  categoryName: string;
+  labelForId: LabelFunction<ItemId>;
+  getColor?: ColorFunction<ItemId>;
+}): JSX.Element {
+  const itemIds = useOptionalInstanceValue(itemsStep);
+
+  const generalInstructions = `Randomly assign a ${categoryName} to each player`;
+
+  if (itemIds == null) {
+    return (
+      <BlockWithFootnotes footnote={<InstanceStepLink step={itemsStep} />}>
+        {(Footnote) => (
+          <>
+            {generalInstructions}
+            <Footnote />.
+          </>
+        )}
+      </BlockWithFootnotes>
+    );
+  }
+
+  return (
+    <Stack direction="column" spacing={1} alignItems="center">
+      <BlockWithFootnotes footnote={<InstanceStepLink step={itemsStep} />}>
+        {(Footnote) => (
+          <span>
+            {generalInstructions}
+            <Footnote />:
+          </span>
+        )}
+      </BlockWithFootnotes>
+      <Stack spacing={1} direction="column" textAlign="center">
+        {React.Children.toArray(
+          Vec.map(itemIds, (itemId) =>
+            getColor == null ? (
+              <strong>{labelForId(itemId)}</strong>
+            ) : (
+              <Chip
+                component="span"
+                color={getColor(itemId)}
+                label={labelForId(itemId)}
+              />
+            )
+          )
+        )}
+      </Stack>
+    </Stack>
   );
 }
