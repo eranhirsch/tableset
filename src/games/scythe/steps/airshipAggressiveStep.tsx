@@ -4,7 +4,7 @@ import { InstanceCard } from "features/instance/InstanceCard";
 import { useHasDownstreamInstanceValue } from "features/instance/useInstanceValue";
 import {
   InstanceCardsProps,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
@@ -173,7 +173,7 @@ function AirshipCard({
 
   return (
     <InstanceCard
-      title="Aggressive"
+      title="Aggress."
       subheader="Airship"
       playerId={playerId}
       onClick={onClick}
