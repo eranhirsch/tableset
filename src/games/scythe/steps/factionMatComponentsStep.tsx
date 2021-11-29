@@ -135,6 +135,17 @@ function InstanceDerivedComponent({
           on the side showing the togawa logo.
         </>
       )}
+      {actualFactionIds.includes("fenris") && (
+        <>
+          <FactionSpecific
+            factionId="fenris"
+            order={order}
+            factionIds={factionIds}
+            productIds={productIds!}
+          />
+          : <strong>Influence token chits (cardboard) (16):</strong>.
+        </>
+      )}
       <BlockWithFootnotes footnote={<>These are enlist bonuses.</>}>
         {(Footnote) => (
           <>
