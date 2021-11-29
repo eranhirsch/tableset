@@ -66,7 +66,7 @@ function InstanceVariableComponent({
       {tileIds.length === 1 && (
         <>
           {" "}
-          and place them them near the <em>encounters deck</em>
+          and place it near the <em>encounters deck</em>
         </>
       )}
       .
