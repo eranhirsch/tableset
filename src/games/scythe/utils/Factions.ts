@@ -36,7 +36,7 @@ export interface Faction {
 const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
   /* spell-checker: disable */
   albion: {
-    name: { abbreviated: "Al", short: "Albion", full: "Clan Albion" },
+    name: { abbreviated: "Alb", short: "Albion", full: "Clan Albion" },
     color: "green",
     power: 3,
     combatCards: 0,
