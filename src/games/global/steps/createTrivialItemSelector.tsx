@@ -1,17 +1,22 @@
 import { Box, Chip } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import avro from "avsc";
-import { $, Dict, Random, Vec } from "common";
+import { $, Dict, MathUtils, nullthrows, Random, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import { gameSelector } from "features/game/gameSlice";
 import { playersSelectors } from "features/players/playersSlice";
-import { templateValue } from "features/template/templateSlice";
+import {
+  templateSelectors,
+  templateValue
+} from "features/template/templateSlice";
+import { useFeaturesContext } from "features/useFeaturesContext";
 import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
+import { Query } from "games/core/steps/Query";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
 import { ProductId, StepId } from "model/Game";
 import { GamePiecesColor } from "model/GamePiecesColor";
@@ -21,9 +26,11 @@ import { useMemo } from "react";
 import {
   AlwaysNeverMultiChipSelector,
   AlwaysNeverMultiLabel,
+  Limits
 } from "../ux/AlwaysNeverMultiChipSelector";
 import { SingleItemSelect } from "../ux/SingleItemSelect";
 import alwaysOnMetaStep from "./alwaysOnMetaStep";
+import createNegateMetaStep from "./createNegateMetaStep";
 import playersMetaStep from "./playersMetaStep";
 
 type TemplateConfig<ItemId extends string | number> = {
@@ -46,6 +53,11 @@ type LabelFunction<ItemId extends string | number> = (itemId: ItemId) => string;
 
 type Variant = "select" | "chips";
 const DEFAULT_VARIANT: Variant = "chips";
+
+type AdvancedMode = {
+  enabler: VariableGameStep<boolean>;
+  count: CountFunction;
+};
 
 interface Options<ItemId extends string | number, Pid extends ProductId> {
   // Required
@@ -90,6 +102,8 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
    */
   variant?: Variant;
 
+  advancedMode?: AdvancedMode;
+
   // Required fields for createRandomGameStep
   id: StepId;
   InstanceCards(
@@ -113,10 +127,11 @@ const createTrivialItemSelector = <
   ItemId extends string | number,
   Pid extends ProductId
 >({
+  advancedMode,
   availableForProducts,
-  getColor,
   count = DEFAULT_COUNT_FUNCTION,
   enabler,
+  getColor,
   isItemType,
   itemAvroType,
   labelForId,
@@ -132,9 +147,10 @@ const createTrivialItemSelector = <
       playersMetaStep,
       productsMetaStep,
       enabler ?? alwaysOnMetaStep,
+      advancedMode?.enabler ?? createNegateMetaStep(alwaysOnMetaStep),
     ],
 
-    isTemplatable: (_players, products, isOn) =>
+    isTemplatable: (_players, products, isOn, _isAdvancedOn) =>
       isOn.canResolveTo(true) &&
       !Vec.is_empty(availableForProducts(products.onlyResolvableValue()!)),
 
@@ -143,13 +159,17 @@ const createTrivialItemSelector = <
 
     initialConfig: { always: [], never: [] },
 
-    resolve: (...args) => resolve(count, availableForProducts, ...args),
+    resolve: (...args) =>
+      resolve(count, advancedMode?.count, availableForProducts, ...args),
 
-    refresh: (current, players, products) =>
+    refresh: (current, players, products, _isOn, isAdvancedOn) =>
       refresh(
         current,
         availableForProducts(products.onlyResolvableValue()!),
-        count(players.onlyResolvableValue()!.length)
+        players.onlyResolvableValue()!.length,
+        count,
+        advancedMode?.count,
+        isAdvancedOn
       ),
 
     skip: (_value, [_playerIds, _productIds, isOn]) => !isOn,
@@ -159,6 +179,7 @@ const createTrivialItemSelector = <
         TemplateConfig<ItemId>,
         readonly PlayerId[],
         readonly Pid[],
+        boolean,
         boolean
       >
     ) => (
@@ -167,6 +188,7 @@ const createTrivialItemSelector = <
         variant={variant}
         getColor={getColor}
         count={count}
+        advancedModeCount={advancedMode?.count}
         availableForProducts={availableForProducts}
         labelForId={labelForId}
       />
@@ -179,6 +201,7 @@ const createTrivialItemSelector = <
         count={count}
         availableForProducts={availableForProducts}
         labelForId={labelForIdTLDR ?? labelForId}
+        advancedMode={advancedMode}
       />
     ),
 
@@ -195,11 +218,13 @@ export default createTrivialItemSelector;
 
 function resolve<ItemId extends string | number, Pid extends ProductId>(
   count: CountFunction,
+  advancedModeCount: CountFunction | undefined,
   availableForProducts: ProductsFunction<ItemId, Pid>,
   { always, never }: Readonly<TemplateConfig<ItemId>>,
   playerIds: readonly PlayerId[] | null,
   productIds: readonly Pid[] | null,
   isOn: boolean | null,
+  isAdvancedOn: boolean | null,
   // Just so we can use the spread operator above when sending the params to
   // this method
   ..._: unknown[]
@@ -208,7 +233,14 @@ function resolve<ItemId extends string | number, Pid extends ProductId>(
     return null;
   }
 
-  const actualCount = count(playerIds!.length);
+  const actualCount = (
+    isAdvancedOn
+      ? nullthrows(
+          advancedModeCount,
+          `Advanced mode is on but missing advancedMode count method!`
+        )
+      : count
+  )(playerIds!.length);
 
   // TODO: We return the actual array of items here, but we should be
   // able to return a hash of the combination, we need to extend the
@@ -230,7 +262,10 @@ function resolve<ItemId extends string | number, Pid extends ProductId>(
 function refresh<ItemId extends string | number>(
   { always, never }: Readonly<TemplateConfig<ItemId>>,
   available: readonly ItemId[],
-  count: number
+  playerCount: number,
+  count: CountFunction,
+  advancedModeCount: CountFunction | undefined,
+  isAdvancedOn: Query<boolean>
 ): Readonly<TemplateConfig<ItemId>> {
   if (!Vec.contained_in(always, available)) {
     // If the template has a hard-constraint on a specific item that isn't
@@ -238,7 +273,18 @@ function refresh<ItemId extends string | number>(
     templateValue("unfixable");
   }
 
-  if (always.length >= count) {
+  // We can only support the minimum of both counts as the max for always,
+  // otherwise we would need to select amongst them (which would defy `always`);
+  // similarly the min remaining is the max of the two counts, as we need at
+  // least that many items to pick from.
+  const { min: maxAlways, max: minRemaining } = getLimits(
+    isAdvancedOn,
+    count,
+    advancedModeCount,
+    playerCount
+  );
+
+  if (always.length >= maxAlways) {
     // There are more items then the actual count, we will need to select
     // amongst them, meaning they won't always be part of the results...
     templateValue("unfixable");
@@ -246,17 +292,17 @@ function refresh<ItemId extends string | number>(
 
   if (Vec.contained_in(never, available)) {
     templateValue(
-      available.length - never.length >= count
-        ? // we don't need to remove anything from the never array
-          "unchanged"
-        : // There are too many items in the never array, we won't be able
+      available.length - never.length < minRemaining
+        ? // There are too many items in the never array, we won't be able
           // to fulfil the count constraint.
           "unfixable"
+        : // we don't need to remove anything from the never array
+          "unchanged"
     );
   }
 
   const newNever = Vec.intersect(never, available);
-  if (available.length - newNever.length < count) {
+  if (available.length - newNever.length < minRemaining) {
     // There are too many items in the never array, we won't be able to
     // fulfil the count constraint.
     templateValue("unfixable");
@@ -298,10 +344,11 @@ function willContain<ItemId extends string | number>(
 
 function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   config: { always, never },
-  queries: [players, products],
+  queries: [players, products, _isOn, isAdvancedOn],
   variant,
   getColor,
   count,
+  advancedModeCount,
   onChange,
   availableForProducts,
   labelForId,
@@ -309,11 +356,13 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   TemplateConfig<ItemId>,
   readonly PlayerId[],
   readonly Pid[],
+  boolean,
   boolean
 > & {
   variant: Variant;
   getColor?: ColorFunction<ItemId>;
   count: CountFunction;
+  advancedModeCount?: CountFunction;
   availableForProducts: ProductsFunction<ItemId, Pid>;
   labelForId: LabelFunction<ItemId>;
 }): JSX.Element {
@@ -326,10 +375,16 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
     [available, never]
   );
 
-  const limits = useMemo(() => {
-    const actualCount = count(players.onlyResolvableValue()!.length);
-    return { min: actualCount, max: actualCount };
-  }, [count, players]);
+  const limits = useMemo(
+    () =>
+      getLimits(
+        isAdvancedOn,
+        count,
+        advancedModeCount,
+        players.onlyResolvableValue()!.length
+      ),
+    [advancedModeCount, count, isAdvancedOn, players]
+  );
 
   return (
     <Box width="100%">
@@ -370,6 +425,7 @@ function ConfigPanelTLDR<
   variant,
   labelForId,
   availableForProducts,
+  advancedMode,
 }: {
   config: Readonly<TemplateConfig<ItemId>>;
   getColor?: ColorFunction<ItemId>;
@@ -377,6 +433,7 @@ function ConfigPanelTLDR<
   variant: Variant;
   labelForId: LabelFunction<ItemId>;
   availableForProducts: ProductsFunction<ItemId, Pid>;
+  advancedMode?: AdvancedMode;
 }): JSX.Element {
   const game = useAppSelector(gameSelector);
   const productIds = useAppSelector(
@@ -384,15 +441,20 @@ function ConfigPanelTLDR<
   ) as readonly Pid[];
   const playerCount = useAppSelector(playersSelectors.selectTotal);
 
+  const context = useFeaturesContext();
+  const template = useAppSelector(templateSelectors.selectEntities);
+
+  const isAdvancedOn = advancedMode?.enabler.query(template, context);
+
   const allowed = useMemo(
     () => Vec.diff(availableForProducts(productIds), never),
     [availableForProducts, never, productIds]
   );
 
-  const limits = useMemo(() => {
-    const actualCount = count(playerCount);
-    return { min: actualCount, max: actualCount };
-  }, [count, playerCount]);
+  const limits = useMemo(
+    () => getLimits(isAdvancedOn, count, advancedMode?.count, playerCount),
+    [advancedMode?.count, count, isAdvancedOn, playerCount]
+  );
 
   if (variant === "chips") {
     return (
@@ -444,5 +506,37 @@ function ConfigPanelTLDR<
         )}
       </AbbreviatedList>
     </>
+  );
+}
+
+function getLimits(
+  isAdvancedOn: Query<boolean> | undefined,
+  basicCountFunc: CountFunction,
+  advancedCountFunc: CountFunction | undefined,
+  playerCount: number
+): Limits {
+  if (isAdvancedOn == null) {
+    const basicCount = basicCountFunc(playerCount);
+    return { min: basicCount, max: basicCount };
+  }
+
+  const basicCount = isAdvancedOn.canResolveTo(false)
+    ? basicCountFunc(playerCount)
+    : null;
+  const advancedCount = isAdvancedOn.canResolveTo(true)
+    ? nullthrows(
+        advancedCountFunc,
+        `Missing count method for advanced mode!`
+      )(playerCount)
+    : null;
+
+  return $(
+    [basicCount, advancedCount],
+    Vec.filter_nulls,
+    $.invariant(
+      ($$) => !Vec.is_empty($$),
+      `Couldn't compute min from ${basicCount} and ${advancedCount}, are they both null?`
+    ),
+    ($$) => ({ min: MathUtils.min($$)!, max: MathUtils.max($$)! })
   );
 }

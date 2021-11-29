@@ -12,7 +12,7 @@ type AlwaysNeverDefinition<T> = {
   never: readonly T[];
 };
 
-type Limits = { min: number; max: number };
+export type Limits = { min: number; max: number };
 
 type Mode = "always" | "never" | "random";
 
