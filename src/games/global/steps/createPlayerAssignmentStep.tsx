@@ -123,6 +123,7 @@ function createPlayerAssignmentStep<
         {...props}
         itemsStep={itemsStep}
         labelForId={labelForId}
+        getColor={getColor}
         categoryName={categoryName}
       />
     ),
@@ -488,13 +489,17 @@ function InstanceVariableComponent<ItemId extends string | number>({
       <Stack direction="column" spacing={1} marginTop={1}>
         {React.Children.toArray(
           Vec.map(order, (playerId, index) => (
-            <>
+            <span>
               <PlayerAvatar playerId={playerId} inline />:{" "}
-              <Chip
-                color={getColor != null ? getColor(itemIds[index]) : undefined}
-                label={labelForId(itemIds[index])}
-              />
-            </>
+              {getColor != null ? (
+                <Chip
+                  color={getColor(itemIds[index])}
+                  label={labelForId(itemIds[index])}
+                />
+              ) : (
+                labelForId(itemIds[index])
+              )}
+            </span>
           ))
         )}
       </Stack>
