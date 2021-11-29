@@ -23,6 +23,16 @@ export type TemplateElement<C = unknown> = {
   isStale?: true;
 };
 
+/**
+ * In rare cases we might need to allow access to underlying implementation
+ * details in order to let the algorithm for refresh to work as intended. This
+ * prop, if existing in a step object, would allow us to ignore the wrapper.
+ * IMPORTANT: Only use this rarely and wisely, this isn't good engineering!
+ */
+export interface __WithBackdoorWrappedStep_DO_NOT_USE {
+  __backdoor_wrappedStep: VariableGameStep;
+}
+
 const templateAdapter = createEntityAdapter<TemplateElement>({
   selectId: (step) => step.id,
 });
@@ -216,7 +226,18 @@ const filterDownstreamSteps = (
   $(
     state,
     templateSteps,
-    ($$) => Vec.filter($$, ([{ dependencies }]) => dependencies.includes(step)),
+    ($$) =>
+      Vec.filter(
+        $$,
+        ([{ dependencies }]) =>
+          dependencies.includes(step) ||
+          Vec.maybe_map(
+            dependencies,
+            (dependency) =>
+              (dependency as Partial<__WithBackdoorWrappedStep_DO_NOT_USE>)
+                .__backdoor_wrappedStep
+          ).includes(step)
+      ),
     ($$) => Vec.map($$, ([_, element]) => element)
   );
 
