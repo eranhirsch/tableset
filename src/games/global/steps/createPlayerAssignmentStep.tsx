@@ -37,17 +37,19 @@ import {
   DropResult
 } from "react-beautiful-dnd";
 import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
+import alwaysOnMetaStep from "./alwaysOnMetaStep";
 import playersMetaStep from "./playersMetaStep";
 
 interface Options<ItemId extends string | number, Pid extends ProductId> {
   // Required
   itemsStep: VariableGameStep<readonly ItemId[]>;
-  labelForItem: LabelFunction<ItemId>;
+  labelForId: LabelFunction<ItemId>;
   availableForProducts: ProductsFunction<ItemId, Pid>;
   categoryName: string;
   productsMetaStep: VariableGameStep<readonly Pid[]>;
 
   // Optional
+  enabler?: VariableGameStep<boolean>;
   getColor?: ColorFunction<ItemId>;
 }
 
@@ -63,17 +65,24 @@ function createPlayerAssignmentStep<
   ItemId extends string | number,
   Pid extends ProductId
 >({
-  itemsStep,
   availableForProducts,
   categoryName,
-  productsMetaStep,
+  enabler,
   getColor,
-  labelForItem,
+  itemsStep,
+  labelForId,
+  productsMetaStep,
 }: Options<ItemId, Pid>): VariableGameStep<readonly PlayerId[]> {
   return createRandomGameStep({
     id: `${itemsStep.id}Assignments`,
-    dependencies: [playersMetaStep, productsMetaStep, itemsStep],
-    isTemplatable: (_players, _products, itemsStep) => itemsStep.willResolve(),
+    dependencies: [
+      playersMetaStep,
+      productsMetaStep,
+      enabler ?? alwaysOnMetaStep,
+      itemsStep,
+    ],
+    isTemplatable: (_players, _products, enabler, itemsStep) =>
+      enabler.canResolveTo(true) && itemsStep.willResolve(),
     initialConfig: [] as TemplateConfig<ItemId>,
     resolve,
     refresh,
@@ -83,12 +92,13 @@ function createPlayerAssignmentStep<
         TemplateConfig<ItemId>,
         readonly PlayerId[],
         readonly Pid[],
+        boolean,
         readonly ItemId[]
       >
     ) => (
       <ConfigPanel
         {...props}
-        labelForItem={labelForItem}
+        labelForId={labelForId}
         getColor={getColor}
         availableForProducts={availableForProducts}
       />
@@ -99,7 +109,7 @@ function createPlayerAssignmentStep<
       <InstanceVariableComponent
         {...props}
         itemsStep={itemsStep}
-        labelForItem={labelForItem}
+        labelForId={labelForId}
         categoryName={categoryName}
       />
     ),
@@ -113,8 +123,13 @@ function resolve<ItemId extends string | number, Pid extends ProductId>(
   config: Readonly<TemplateConfig<ItemId>>,
   playerIds: readonly PlayerId[] | null,
   _productIds: readonly Pid[] | null,
+  isEnabled: boolean | null,
   itemIds: readonly ItemId[] | null
 ): readonly PlayerId[] | null {
+  if (!isEnabled) {
+    return null;
+  }
+
   if (itemIds == null) {
     return null;
   }
@@ -164,6 +179,7 @@ function refresh<ItemId extends string | number, Pid extends ProductId>(
   config: Readonly<TemplateConfig<ItemId>>,
   players: Query<readonly PlayerId[]>,
   _products: Query<readonly Pid[]>,
+  _isEnabled: Query<boolean>,
   items: Query<readonly ItemId[]>
 ) {
   const playerIds = players.onlyResolvableValue()!;
@@ -184,18 +200,19 @@ function refresh<ItemId extends string | number, Pid extends ProductId>(
 
 function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   config,
-  queries: [players, products, _selectedItems],
+  queries: [players, products, _isEnabled, _selectedItems],
   onChange,
-  labelForItem,
+  labelForId,
   availableForProducts,
   getColor,
 }: ConfigPanelProps<
   TemplateConfig<ItemId>,
   readonly PlayerId[],
   readonly Pid[],
+  boolean,
   readonly ItemId[]
 > & {
-  labelForItem: LabelFunction<ItemId>;
+  labelForId: LabelFunction<ItemId>;
   availableForProducts: ProductsFunction<ItemId, Pid>;
   getColor?: ColorFunction<ItemId>;
 }): JSX.Element {
@@ -246,7 +263,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
                     key={`${playerId}_${itemId}`}
                     playerId={playerId}
                     itemId={itemId}
-                    label={labelForItem(itemId)}
+                    label={labelForId(itemId)}
                     color={getColor?.(itemId)}
                     index={index}
                     withDivider={index < config.length - 1}
@@ -271,7 +288,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
       )}
       <NewPreferencePanel
         items={availableForProducts(products.onlyResolvableValue()!)}
-        labelForItem={labelForItem}
+        labelForId={labelForId}
         playerIds={players.onlyResolvableValue()!}
         currentPreferences={config}
         getColor={getColor}
@@ -341,14 +358,14 @@ function NewPreferencePanel<ItemId extends string | number>({
   currentPreferences,
   onNewPreference,
   items,
-  labelForItem,
+  labelForId,
   getColor,
 }: {
   playerIds: readonly PlayerId[];
   currentPreferences: Readonly<TemplateConfig<ItemId>>;
   onNewPreference(preference: PlayerPreference<ItemId>): void;
   items: readonly ItemId[];
-  labelForItem: LabelFunction<ItemId>;
+  labelForId: LabelFunction<ItemId>;
   getColor?: ColorFunction<ItemId>;
 }): JSX.Element {
   const [showNewButton, setShowNewButton] = useState(true);
@@ -377,7 +394,7 @@ function NewPreferencePanel<ItemId extends string | number>({
           <Chip
             key={`assignmentItemOption_${selectedPlayerId}_${itemId}`}
             size="small"
-            label={labelForItem(itemId)}
+            label={labelForId(itemId)}
             color={getColor != null ? getColor(itemId) : undefined}
             onClick={() => {
               onNewPreference({ playerId: selectedPlayerId, itemId });
@@ -433,12 +450,12 @@ function InstanceVariableComponent<ItemId extends string | number>({
   value: order,
   itemsStep,
   categoryName,
-  labelForItem,
+  labelForId,
   getColor,
 }: VariableStepInstanceComponentProps<readonly PlayerId[]> & {
   itemsStep: VariableGameStep<readonly ItemId[]>;
   categoryName: string;
-  labelForItem: LabelFunction<ItemId>;
+  labelForId: LabelFunction<ItemId>;
   getColor?: ColorFunction<ItemId>;
 }): JSX.Element {
   const itemIds = useRequiredInstanceValue(itemsStep);
@@ -460,7 +477,7 @@ function InstanceVariableComponent<ItemId extends string | number>({
               <PlayerAvatar playerId={playerId} inline />:{" "}
               <Chip
                 color={getColor != null ? getColor(itemIds[index]) : undefined}
-                label={labelForItem(itemIds[index])}
+                label={labelForId(itemIds[index])}
               />
             </>
           ))

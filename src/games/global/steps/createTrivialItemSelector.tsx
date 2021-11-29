@@ -31,6 +31,7 @@ import {
 import { SingleItemSelect } from "../ux/SingleItemSelect";
 import alwaysOnMetaStep from "./alwaysOnMetaStep";
 import createNegateMetaStep from "./createNegateMetaStep";
+import createPlayerAssignmentStep from "./createPlayerAssignmentStep";
 import playersMetaStep from "./playersMetaStep";
 
 type TemplateConfig<ItemId extends string | number> = {
@@ -121,7 +122,25 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
   labelOverride?: string;
 }
 
-const createTrivialItemSelector = <
+/**
+ * We extract addition API methods to allow re-using the options for this step
+ * when creating a matching assignment step for the items generated here
+ */
+interface AdditionalApiMethods {
+  createAssignmentStep(
+    options: Omit<
+      Parameters<typeof createPlayerAssignmentStep>[0],
+      // These are taken from the items step options
+      | "itemsStep"
+      | "availableForProducts"
+      | "productsMetaStep"
+      | "getColor"
+      | "labelForId"
+    >
+  ): VariableGameStep<readonly PlayerId[]>;
+}
+
+export default function createTrivialItemSelector<
   ItemId extends string | number,
   Pid extends ProductId
 >({
@@ -137,8 +156,9 @@ const createTrivialItemSelector = <
   productsMetaStep,
   variant = DEFAULT_VARIANT,
   ...randomGameStepOptions
-}: Options<ItemId, Pid>) =>
-  createRandomGameStep({
+}: Options<ItemId, Pid>): VariableGameStep<readonly ItemId[]> &
+  AdditionalApiMethods {
+  const step = createRandomGameStep({
     ...randomGameStepOptions,
 
     dependencies: [
@@ -212,7 +232,20 @@ const createTrivialItemSelector = <
 
     instanceAvroType: { type: "array", items: itemAvroType },
   });
-export default createTrivialItemSelector;
+
+  return {
+    ...step,
+    createAssignmentStep: (options) =>
+      createPlayerAssignmentStep({
+        itemsStep: step,
+        availableForProducts,
+        productsMetaStep,
+        getColor,
+        labelForId,
+        ...options,
+      }),
+  };
+}
 
 function resolve<ItemId extends string | number, Pid extends ProductId>(
   count: CountFunction,

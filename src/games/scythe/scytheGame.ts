@@ -1,9 +1,12 @@
 import { createGameStep } from "games/core/steps/createGameStep";
 import { createGame } from "model/Game";
 import advancedAirshipVariant from "./steps/advancedAirshipVariant";
-import airshipAggressiveAssignmentStep from "./steps/airshipAggressiveAssignmentStep";
-import airshipAggressiveStep from "./steps/airshipAggressiveStep";
-import airshipPassiveStep from "./steps/airshipPassiveStep";
+import airshipAggressiveStep, {
+  airshipAggressiveAssignmentStep,
+} from "./steps/airshipAggressiveStep";
+import airshipPassiveStep, {
+  airshipPassiveAssignmentStep,
+} from "./steps/airshipPassiveStep";
 import airshipPlacementStep from "./steps/airshipPlacementStep";
 import airshipVariant from "./steps/airshipVariant";
 import boardStep from "./steps/boardStep";
@@ -172,6 +175,7 @@ export const scytheGame = createGame({
     airshipAggressiveStep, // Templatable
     airshipAggressiveAssignmentStep, // Templatable
     airshipPassiveStep, // Templatable
+    airshipPassiveAssignmentStep, // Templatable
 
     seatingStep,
 

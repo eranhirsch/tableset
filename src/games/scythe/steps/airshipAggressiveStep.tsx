@@ -16,7 +16,7 @@ import advancedAirshipVariant from "./advancedAirshipVariant";
 import airshipVariant from "./airshipVariant";
 import productsMetaStep from "./productsMetaStep";
 
-export default createTrivialItemSelector({
+const airshipAggressiveStep = createTrivialItemSelector({
   id: "airshipAggressive",
   labelOverride: "Airship: Aggressive",
 
@@ -38,6 +38,13 @@ export default createTrivialItemSelector({
     count: (playerCount) => playerCount,
   },
 });
+export default airshipAggressiveStep;
+
+export const airshipAggressiveAssignmentStep =
+  airshipAggressiveStep.createAssignmentStep({
+    enabler: advancedAirshipVariant,
+    categoryName: "Aggressive Airship Ability",
+  });
 
 function InstanceVariableComponent({
   value: [tileId],
