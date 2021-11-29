@@ -4,12 +4,12 @@ import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   InstanceCardsProps,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { createTrivialItemSelector } from "games/global";
+import { createItemSelectorStep } from "games/global";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import productsMetaStep from "./productsMetaStep";
@@ -55,7 +55,7 @@ const TILES_IN_PRODUCTS: Readonly<
   ],
 };
 
-export default createTrivialItemSelector({
+export default createItemSelectorStep({
   id: "structureBonus",
 
   isItemType: (x: unknown): x is TileKey =>

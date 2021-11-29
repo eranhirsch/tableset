@@ -12,7 +12,7 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { createTrivialItemSelector, playersMetaStep } from "games/global";
+import { createItemSelectorStep, playersMetaStep } from "games/global";
 import createNegateMetaStep from "games/global/steps/createNegateMetaStep";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
@@ -23,7 +23,7 @@ import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
 import { ScytheStepId } from "./ScytheStepId";
 
-export default createTrivialItemSelector({
+export default createItemSelectorStep({
   id: "factions",
   enabler: createNegateMetaStep(modularBoardVariant),
 

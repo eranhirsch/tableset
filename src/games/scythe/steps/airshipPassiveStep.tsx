@@ -8,7 +8,7 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { createTrivialItemSelector } from "games/global";
+import { createItemSelectorStep } from "games/global";
 import { PlayerId } from "model/Player";
 import { ScytheProductId } from "../ScytheProductId";
 import { Airships } from "../utils/Airships";
@@ -16,7 +16,7 @@ import advancedAirshipVariant from "./advancedAirshipVariant";
 import airshipVariant from "./airshipVariant";
 import productsMetaStep from "./productsMetaStep";
 
-const airshipPassiveStep = createTrivialItemSelector({
+const airshipPassiveStep = createItemSelectorStep({
   id: "airshipPassive",
   labelOverride: "Airship: Passive",
 

@@ -140,7 +140,7 @@ interface AdditionalApiMethods {
   ): VariableGameStep<readonly PlayerId[]>;
 }
 
-export default function createTrivialItemSelector<
+export default function createItemSelectorStep<
   ItemId extends string | number,
   Pid extends ProductId
 >({
