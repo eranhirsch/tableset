@@ -8,6 +8,7 @@
 export const GAME_PIECES_COLORS = [
   "black",
   "blue",
+  "brown",
   "cyan",
   "green",
   "orange",

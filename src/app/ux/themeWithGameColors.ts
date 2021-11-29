@@ -11,6 +11,7 @@
 import { createTheme, PaletteColor, PaletteColorOptions } from "@mui/material";
 import {
   blue,
+  brown,
   cyan,
   grey,
   lightGreen,
@@ -30,6 +31,7 @@ import { GamePiecesColor } from "model/GamePiecesColor";
 export const colorName: Readonly<Record<GamePiecesColor, string>> = {
   black: "Black",
   blue: "Blue",
+  brown: "Brown",
   cyan: "Cyan",
   green: "Green",
   orange: "Orange",
@@ -72,9 +74,9 @@ const colorDefs: Readonly<Record<GamePiecesColor, Readonly<PaletteColor>>> = {
     contrastText: "#000000",
   },
   pink: {
-    main: pink[500],
-    light: "#ff6090",
-    dark: "#b0003a",
+    main: pink[400],
+    light: "#ff77a9",
+    dark: "#b4004e",
     contrastText: "#000000",
   },
   red: {
@@ -111,6 +113,12 @@ const colorDefs: Readonly<Record<GamePiecesColor, Readonly<PaletteColor>>> = {
     main: purple[800],
     light: "#9c4dcc",
     dark: "#38006b",
+    contrastText: "#ffffff",
+  },
+  brown: {
+    main: brown[600],
+    light: "#9c786c",
+    dark: "#40241a",
     contrastText: "#ffffff",
   },
 };

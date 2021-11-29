@@ -1,6 +1,11 @@
 import { Box, Chip, Stack, Typography } from "@mui/material";
+import { useAppSelector } from "app/hooks";
 import { Vec } from "common";
+import { hasProductSelector } from "features/collection/collectionSlice";
+import { gameSelector } from "features/game/gameSlice";
+import { templateValue } from "features/template/templateSlice";
 import {
+  ConfigPanelProps,
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
@@ -10,10 +15,23 @@ import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { isIndexType } from "games/global/coercers/isIndexType";
+import {
+  AlwaysNeverMultiChipSelector,
+  AlwaysNeverMultiLabel,
+} from "games/global/ux/AlwaysNeverMultiChipSelector";
 import { useMemo } from "react";
+import { ScytheProductId } from "../ScytheProductId";
 import { Factions } from "../utils/Factions";
-import { HomeBases } from "../utils/HomeBases";
+import { HomeBaseId, HomeBases } from "../utils/HomeBases";
 import modularBoardVariant from "./modularBoardVariant";
+import productsMetaStep from "./productsMetaStep";
+
+const NUM_BASES = 8;
+
+interface TemplateConfig {
+  always: readonly HomeBaseId[];
+  never: readonly HomeBaseId[];
+}
 
 export default createRandomGameStep({
   id: "homeBases",
@@ -22,15 +40,32 @@ export default createRandomGameStep({
 
   isType: isIndexType,
 
-  dependencies: [modularBoardVariant],
+  dependencies: [productsMetaStep, modularBoardVariant],
 
-  isTemplatable: (modular) => modular.canResolveTo(true),
+  isTemplatable: (_products, modular) => modular.canResolveTo(true),
 
-  resolve: (_, isModular) => (isModular ? HomeBases.randomIdx() : null),
+  initialConfig: (products): Readonly<TemplateConfig> => ({
+    always: [],
+    never: products.willContain("fenris") ? ["empty"] : [],
+  }),
+
+  resolve: ({ always, never }, productIds, isModular) =>
+    isModular ? HomeBases.randomIdx(always, never, productIds!) : null,
+
+  refresh: ({ always, never }, products, isModular) =>
+    templateValue(
+      products.willContain("fenris") ||
+        (Vec.is_empty(never) &&
+          !always.includes("tesla") &&
+          !always.includes("fenris"))
+        ? "unchanged"
+        : "unfixable"
+    ),
 
   skip: (_, [isModular]) => !isModular,
 
-  ...NoConfigPanel,
+  ConfigPanel,
+  ConfigPanelTLDR,
 
   InstanceVariableComponent,
   InstanceManualComponent,
@@ -40,6 +75,53 @@ export default createRandomGameStep({
 
   instanceAvroType: "int",
 });
+
+function ConfigPanel({
+  config,
+  queries: [products, _isModular],
+  onChange,
+}: ConfigPanelProps<
+  TemplateConfig,
+  readonly ScytheProductId[],
+  boolean
+>): JSX.Element {
+  if (!products.willContain("fenris")) {
+    return <NoConfigPanel.ConfigPanel />;
+  }
+
+  return (
+    <AlwaysNeverMultiChipSelector
+      itemIds={HomeBases.ALL_IDS}
+      getLabel={(fid) => (fid === "empty" ? "Empty" : Factions[fid].name.short)}
+      getColor={(fid) => (fid === "empty" ? "brown" : Factions[fid].color)}
+      limits={{ min: NUM_BASES, max: NUM_BASES }}
+      value={config}
+      onChange={onChange}
+    />
+  );
+}
+
+function ConfigPanelTLDR({
+  config,
+}: {
+  config: Readonly<TemplateConfig>;
+}): JSX.Element {
+  const game = useAppSelector(gameSelector);
+  const hasFenris = useAppSelector(hasProductSelector(game, "fenris"));
+
+  if (!hasFenris) {
+    return <>Random</>;
+  }
+
+  return (
+    <AlwaysNeverMultiLabel
+      value={config}
+      getLabel={(fid) => (fid === "empty" ? "Empty" : Factions[fid].name.short)}
+      getColor={(fid) => (fid === "empty" ? "brown" : Factions[fid].color)}
+      limits={{ min: NUM_BASES, max: NUM_BASES }}
+    />
+  );
+}
 
 function InstanceVariableComponent({
   value: basesIdx,

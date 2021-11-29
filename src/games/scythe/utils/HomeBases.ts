@@ -1,24 +1,55 @@
-import { $, MathUtils, Random, Vec } from "common";
+import { $, MathUtils, nullthrows, Random, Vec } from "common";
+import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "./Factions";
 
-type HomeBaseId = FactionId | "empty";
+export type HomeBaseId = FactionId | "empty";
+
+const ALL_HOME_BASE_IDS = Vec.concat(Factions.ALL_IDS, "empty");
 
 export const HomeBases = {
-  randomIdx: (): number =>
-    $(
-      availableHomeBases,
-      ($$) => MathUtils.permutations_lazy_array($$),
-      ($$) => Random.index($$)
-    ),
+  ALL_IDS: ALL_HOME_BASE_IDS,
 
-  decode: (idx: number): readonly HomeBaseId[] =>
-    $(
+  randomIdx(
+    always: readonly HomeBaseId[],
+    never: readonly HomeBaseId[],
+    productIds: readonly ScytheProductId[]
+  ): number {
+    const selected = $(
+      productIds,
       availableHomeBases,
-      ($$) => MathUtils.permutations_lazy_array($$),
-      ($$) => $$.at(idx),
-      $.nullthrows(`Hash ${idx} could not be converted to a permutation`)
-    ),
+      ($$) => Vec.diff($$, always),
+      ($$) => Vec.diff($$, never),
+      ($$) => Random.sample($$, 8 - always.length),
+      ($$) => Vec.concat(always, $$)
+    );
+
+    const combsArr = MathUtils.combinations_lazy_array(ALL_HOME_BASE_IDS, 8);
+    const combIdx = combsArr.indexOf(selected);
+
+    const permIdx = Random.index(MathUtils.permutations_lazy_array(selected));
+
+    return permIdx * combsArr.length + combIdx;
+  },
+
+  decode(idx: number): readonly HomeBaseId[] {
+    const combsArr = MathUtils.combinations_lazy_array(ALL_HOME_BASE_IDS, 8);
+
+    const combIdx = idx % combsArr.length;
+    const permIdx = Math.floor(idx / combsArr.length);
+
+    const selected = nullthrows(
+      combsArr.at(combIdx),
+      `Combination Idx ${combIdx} out of range`
+    );
+
+    return nullthrows(
+      MathUtils.permutations_lazy_array(selected).at(permIdx),
+      `Permutation Idx ${permIdx} out of range`
+    );
+  },
 } as const;
 
-const availableHomeBases = (): readonly HomeBaseId[] =>
-  Vec.concat(Factions.availableForProducts(["base", "invaders"]), "empty");
+const availableHomeBases = (
+  productIds: readonly ScytheProductId[]
+): readonly HomeBaseId[] =>
+  Vec.concat(Factions.availableForProducts(productIds), "empty");

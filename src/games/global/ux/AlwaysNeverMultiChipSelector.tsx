@@ -6,6 +6,7 @@ import { Random, Vec } from "common";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import React from "react";
+import { ColorFunction, LabelFunction } from "../types";
 
 type AlwaysNeverDefinition<T> = {
   always: readonly T[];
@@ -25,8 +26,8 @@ export function AlwaysNeverMultiChipSelector<T>({
   limits,
 }: {
   itemIds: readonly T[];
-  getLabel(itemId: T): string;
-  getColor?(itemId: T): GamePiecesColor;
+  getLabel: LabelFunction<T>;
+  getColor?: ColorFunction<T>;
   value: Readonly<AlwaysNeverDefinition<T>>;
   onChange(
     changed: (
@@ -192,8 +193,8 @@ export function AlwaysNeverMultiLabel<T>({
   limits: { min, max },
 }: {
   value: AlwaysNeverDefinition<T>;
-  getColor?(itemId: T): GamePiecesColor;
-  getLabel(itemId: T): string;
+  getColor?: ColorFunction<T>;
+  getLabel: LabelFunction<T>;
   limits: Limits;
 }): JSX.Element {
   if (Vec.is_empty(never) && Vec.is_empty(always)) {
