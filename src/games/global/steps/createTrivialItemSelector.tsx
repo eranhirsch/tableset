@@ -59,7 +59,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
   /**
    * Control chip colors in the selector (only relevant for variant='chips')
    */
-  color?: ColorFunction<ItemId>;
+  getColor?: ColorFunction<ItemId>;
 
   /**
    * How many items would be selected from the set
@@ -114,7 +114,7 @@ const createTrivialItemSelector = <
   Pid extends ProductId
 >({
   availableForProducts,
-  color,
+  getColor,
   count = DEFAULT_COUNT_FUNCTION,
   enabler,
   isItemType,
@@ -165,7 +165,7 @@ const createTrivialItemSelector = <
       <ConfigPanel
         {...props}
         variant={variant}
-        color={color}
+        getColor={getColor}
         count={count}
         availableForProducts={availableForProducts}
         labelForId={labelForId}
@@ -175,7 +175,7 @@ const createTrivialItemSelector = <
       <ConfigPanelTLDR
         {...props}
         variant={variant}
-        color={color}
+        getColor={getColor}
         count={count}
         availableForProducts={availableForProducts}
         labelForId={labelForIdTLDR ?? labelForId}
@@ -300,7 +300,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   config: { always, never },
   queries: [players, products],
   variant,
-  color,
+  getColor,
   count,
   onChange,
   availableForProducts,
@@ -312,7 +312,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   boolean
 > & {
   variant: Variant;
-  color?: ColorFunction<ItemId>;
+  getColor?: ColorFunction<ItemId>;
   count: CountFunction;
   availableForProducts: ProductsFunction<ItemId, Pid>;
   labelForId: LabelFunction<ItemId>;
@@ -337,13 +337,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
         <AlwaysNeverMultiChipSelector
           itemIds={available}
           getLabel={labelForId}
-          getColor={
-            color != null
-              ? typeof color === "function"
-                ? color
-                : () => color
-              : undefined
-          }
+          getColor={getColor}
           limits={limits}
           value={{ always, never }}
           onChange={(changedFunc) =>
@@ -371,14 +365,14 @@ function ConfigPanelTLDR<
   Pid extends ProductId
 >({
   config: { always, never },
-  color,
+  getColor,
   count,
   variant,
   labelForId,
   availableForProducts,
 }: {
   config: Readonly<TemplateConfig<ItemId>>;
-  color?: ColorFunction<ItemId>;
+  getColor?: ColorFunction<ItemId>;
   count: CountFunction;
   variant: Variant;
   labelForId: LabelFunction<ItemId>;
@@ -405,13 +399,7 @@ function ConfigPanelTLDR<
       <AlwaysNeverMultiLabel
         value={{ always, never }}
         getLabel={labelForId}
-        getColor={
-          color != null
-            ? typeof color === "function"
-              ? color
-              : () => color
-            : undefined
-        }
+        getColor={getColor}
         limits={limits}
       />
     );
@@ -425,10 +413,10 @@ function ConfigPanelTLDR<
     return (
       <AbbreviatedList finalConjunction="or">
         {Vec.map(allowed, (itemId) =>
-          color != null ? (
+          getColor != null ? (
             <Chip
               size="small"
-              color={color(itemId)}
+              color={getColor(itemId)}
               label={labelForId(itemId)}
             />
           ) : (
@@ -444,10 +432,10 @@ function ConfigPanelTLDR<
       Without{" "}
       <AbbreviatedList finalConjunction="or">
         {Vec.map(never, (itemId) =>
-          color != null ? (
+          getColor != null ? (
             <Chip
               size="small"
-              color={color(itemId)}
+              color={getColor(itemId)}
               label={labelForId(itemId)}
             />
           ) : (

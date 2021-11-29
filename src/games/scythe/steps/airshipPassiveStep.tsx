@@ -28,7 +28,7 @@ export default createTrivialItemSelector({
   InstanceVariableComponent,
   InstanceManualComponent,
   InstanceCards,
-  color: () => "green",
+  getColor: () => "green",
   itemAvroType: "int",
 });
 

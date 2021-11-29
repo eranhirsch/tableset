@@ -36,7 +36,7 @@ export default createTrivialItemSelector({
   isItemType: (x: unknown): x is FactionId => Factions[x as FactionId] != null,
 
   labelForId: (fid) => Factions[fid].name.short,
-  color: (fid) => Factions[fid].color,
+  getColor: (fid) => Factions[fid].color,
 
   InstanceVariableComponent,
   InstanceManualComponent,
