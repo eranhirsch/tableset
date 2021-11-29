@@ -24,8 +24,8 @@ export function useInstanceActiveSteps(): readonly GameStepBase[] {
         Vec.values(steps),
         (step) =>
           !(
-            (isSkippable(step) && step.skip(instanceContext)) ||
-            (isTemplatable(step) && step.isVariant)
+            (isTemplatable(step) && step.isVariant) ||
+            (isSkippable(step) && step.skip(instanceContext))
           )
       ),
     [instanceContext, steps]

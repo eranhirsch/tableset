@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { invariant_violation, Random, Vec } from "common";
+import { coerce, invariant_violation, Random, Vec } from "common";
 import { templateValue } from "features/template/templateSlice";
 import { PercentSlider } from "../ux/PercentSlider";
 import { createGameStep } from "./createGameStep";
@@ -85,10 +85,6 @@ export function createVariant({
     labelOverride: name,
   });
 
-  const extractInstanceValue: VariantGameStep["extractInstanceValue"] = (
-    instance
-  ) => (instance[baseStep.id] != null ? true : null);
-
   return {
     ...baseStep,
 
@@ -96,11 +92,20 @@ export function createVariant({
 
     dependencies,
 
-    extractInstanceValue,
-    InstanceVariableComponent,
+    // Variants are not part of the regular display and don't run this method
+    skip: () =>
+      invariant_violation(
+        `'skip' should never be called on variant: ${baseStep.id}!`
+      ),
 
-    skip: ({ instance, ...context }) =>
-      !extractInstanceValue(instance, context),
+    extractInstanceValue: ({ [baseStep.id]: instanceValue }) =>
+      coerce(
+        instanceValue,
+        (x: unknown): x is boolean | undefined =>
+          x == null || typeof x === "boolean"
+      ) ?? false,
+
+    InstanceVariableComponent,
 
     canBeTemplated: (template, context) =>
       isTemplatable(
