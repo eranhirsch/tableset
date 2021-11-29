@@ -31,25 +31,67 @@ type TemplateConfig<ItemId extends string | number> = {
   never: readonly ItemId[];
 };
 
+type CountFunction = (playerCount: number) => number;
+const DEFAULT_COUNT_FUNCTION: CountFunction = () => 1;
+
+type ColorFunction<ItemId extends string | number> = (
+  itemId: ItemId
+) => GamePiecesColor;
+
+type ProductsFunction<ItemId extends string | number, Pid extends ProductId> = (
+  productIds: readonly Pid[]
+) => readonly ItemId[];
+
+type LabelFunction<ItemId extends string | number> = (itemId: ItemId) => string;
+
+type Variant = "select" | "chips";
+const DEFAULT_VARIANT: Variant = "chips";
+
 interface Options<ItemId extends string | number, Pid extends ProductId> {
+  // Required
   productsMetaStep: VariableGameStep<readonly Pid[]>;
-  enabler?: VariableGameStep<boolean>;
-  count?: number | ((playerCount: number) => number);
-  availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
-  labelForId(itemId: ItemId): string;
-  labelForIdTLDR?(itemId: ItemId): string;
-  variant?: "select" | "chips";
-  color?: GamePiecesColor | ((itemId: ItemId) => GamePiecesColor);
+  availableForProducts: ProductsFunction<ItemId, Pid>;
+  labelForId: LabelFunction<ItemId>;
   isItemType(x: unknown): x is ItemId;
   itemAvroType: avro.schema.DefinedType;
 
+  // Optional
+  /**
+   * Control chip colors in the selector (only relevant for variant='chips')
+   */
+  color?: ColorFunction<ItemId>;
+
+  /**
+   * How many items would be selected from the set
+   * @param playerCount - number of players in the current template
+   * @default 1
+   */
+  count?: CountFunction;
+
+  /**
+   * A boolean step (usually a variant) which enables using this step. When the
+   * step is false this step would be entirely skipped.
+   * @default alwaysTrue
+   */
+  enabler?: VariableGameStep<boolean>;
+
+  /**
+   * Use this method to supply a different label for items when shown in the
+   * TLDR section. Use this if your items are too long.
+   */
+  labelForIdTLDR?: LabelFunction<ItemId>;
+
+  /**
+   * Change the selector UX. `chips` is good for short item labels, and provides
+   * a better ux by allowing both `always` and `never` settings to be defined;
+   * `select` is good for longer labels which can't be trivially shortened, and
+   * doesn't provide `always` settings (just `never`).
+   * @default `chips`
+   */
+  variant?: Variant;
+
   // Required fields for createRandomGameStep
   id: StepId;
-  labelOverride?: string;
-  InstanceVariableComponent(
-    props: VariableStepInstanceComponentProps<readonly ItemId[]>
-  ): JSX.Element;
-  InstanceManualComponent(): JSX.Element;
   InstanceCards(
     props: InstanceCardsProps<
       readonly ItemId[],
@@ -58,6 +100,13 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
       boolean
     >
   ): JSX.Element | null;
+  InstanceManualComponent(): JSX.Element;
+  InstanceVariableComponent(
+    props: VariableStepInstanceComponentProps<readonly ItemId[]>
+  ): JSX.Element;
+
+  // Optional fields for createRandomGameStep
+  labelOverride?: string;
 }
 
 const createTrivialItemSelector = <
@@ -66,14 +115,14 @@ const createTrivialItemSelector = <
 >({
   availableForProducts,
   color,
-  count = 1,
+  count = DEFAULT_COUNT_FUNCTION,
   enabler,
   isItemType,
   itemAvroType,
   labelForId,
   labelForIdTLDR,
   productsMetaStep,
-  variant = "chips",
+  variant = DEFAULT_VARIANT,
   ...randomGameStepOptions
 }: Options<ItemId, Pid>) =>
   createRandomGameStep({
@@ -100,9 +149,7 @@ const createTrivialItemSelector = <
       refresh(
         current,
         availableForProducts(products.onlyResolvableValue()!),
-        typeof count === "number"
-          ? count
-          : count(players.onlyResolvableValue()!.length)
+        count(players.onlyResolvableValue()!.length)
       ),
 
     skip: (_value, [_playerIds, _productIds, isOn]) => !isOn,
@@ -139,9 +186,7 @@ const createTrivialItemSelector = <
       willContain(
         value,
         config,
-        typeof count === "number"
-          ? count
-          : count(playerIds.onlyResolvableValue()!.length)
+        count(playerIds.onlyResolvableValue()!.length)
       ),
 
     instanceAvroType: { type: "array", items: itemAvroType },
@@ -149,8 +194,8 @@ const createTrivialItemSelector = <
 export default createTrivialItemSelector;
 
 function resolve<ItemId extends string | number, Pid extends ProductId>(
-  count: number | ((playerCount: number) => number),
-  availableForProducts: (productIds: readonly Pid[]) => readonly ItemId[],
+  count: CountFunction,
+  availableForProducts: ProductsFunction<ItemId, Pid>,
   { always, never }: Readonly<TemplateConfig<ItemId>>,
   playerIds: readonly PlayerId[] | null,
   productIds: readonly Pid[] | null,
@@ -163,8 +208,7 @@ function resolve<ItemId extends string | number, Pid extends ProductId>(
     return null;
   }
 
-  const actualCount =
-    typeof count === "number" ? count : count(playerIds!.length);
+  const actualCount = count(playerIds!.length);
 
   // TODO: We return the actual array of items here, but we should be
   // able to return a hash of the combination, we need to extend the
@@ -267,11 +311,11 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   readonly Pid[],
   boolean
 > & {
-  variant: "select" | "chips";
-  color?: GamePiecesColor | ((itemId: ItemId) => GamePiecesColor);
-  count: number | ((playersCount: number) => number);
-  availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
-  labelForId(itemId: ItemId): string;
+  variant: Variant;
+  color?: ColorFunction<ItemId>;
+  count: CountFunction;
+  availableForProducts: ProductsFunction<ItemId, Pid>;
+  labelForId: LabelFunction<ItemId>;
 }): JSX.Element {
   const available = useMemo(
     () => availableForProducts(products.onlyResolvableValue()!),
@@ -283,10 +327,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   );
 
   const limits = useMemo(() => {
-    const actualCount =
-      typeof count === "number"
-        ? count
-        : count(players.onlyResolvableValue()!.length);
+    const actualCount = count(players.onlyResolvableValue()!.length);
     return { min: actualCount, max: actualCount };
   }, [count, players]);
 
@@ -337,11 +378,11 @@ function ConfigPanelTLDR<
   availableForProducts,
 }: {
   config: Readonly<TemplateConfig<ItemId>>;
-  color?: GamePiecesColor | ((itemId: ItemId) => GamePiecesColor);
-  count: number | ((playerCount: number) => number);
-  variant: "select" | "chips";
-  labelForId(itemId: ItemId): string;
-  availableForProducts(productIds: readonly Pid[]): readonly ItemId[];
+  color?: ColorFunction<ItemId>;
+  count: CountFunction;
+  variant: Variant;
+  labelForId: LabelFunction<ItemId>;
+  availableForProducts: ProductsFunction<ItemId, Pid>;
 }): JSX.Element {
   const game = useAppSelector(gameSelector);
   const productIds = useAppSelector(
@@ -355,7 +396,7 @@ function ConfigPanelTLDR<
   );
 
   const limits = useMemo(() => {
-    const actualCount = typeof count === "number" ? count : count(playerCount);
+    const actualCount = count(playerCount);
     return { min: actualCount, max: actualCount };
   }, [count, playerCount]);
 
@@ -387,7 +428,7 @@ function ConfigPanelTLDR<
           color != null ? (
             <Chip
               size="small"
-              color={typeof color === "function" ? color(itemId) : color}
+              color={color(itemId)}
               label={labelForId(itemId)}
             />
           ) : (
@@ -406,7 +447,7 @@ function ConfigPanelTLDR<
           color != null ? (
             <Chip
               size="small"
-              color={typeof color === "function" ? color(itemId) : color}
+              color={color(itemId)}
               label={labelForId(itemId)}
             />
           ) : (
