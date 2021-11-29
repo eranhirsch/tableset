@@ -231,7 +231,7 @@ function refresh<ItemId extends string | number, Pid extends ProductId>(
 
 function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   config,
-  queries: [players, products, _isEnabled, _selectedItems],
+  queries: [players, products, _isEnabled, selectedItems],
   onChange,
   labelForId,
   availableForProducts,
@@ -247,6 +247,18 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
   availableForProducts: ProductsFunction<ItemId, Pid>;
   getColor?: ColorFunction<ItemId>;
 }): JSX.Element {
+  const items = useMemo(
+    () =>
+      Vec.filter(
+        availableForProducts(products.onlyResolvableValue()!),
+        // Notice that this isn't a trivial boolean check, we accept both true
+        // AND undefined (which is falsy) here, we only filter out the explicit
+        // false values
+        (itemId) => selectedItems.willContain(itemId) !== false
+      ),
+    [availableForProducts, products, selectedItems]
+  );
+
   const onDragEnd = useCallback(
     ({ reason, destination, source }: DropResult) => {
       if (reason === "CANCEL") {
@@ -318,7 +330,7 @@ function ConfigPanel<ItemId extends string | number, Pid extends ProductId>({
         </DragDropContext>
       )}
       <NewPreferencePanel
-        items={availableForProducts(products.onlyResolvableValue()!)}
+        items={items}
         labelForId={labelForId}
         playerIds={players.onlyResolvableValue()!}
         currentPreferences={config}
