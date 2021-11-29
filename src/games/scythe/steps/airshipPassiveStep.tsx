@@ -1,6 +1,7 @@
 import { Stack, Typography, useTheme } from "@mui/material";
 import { Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
+import { useHasDownstreamInstanceValue } from "features/instance/useInstanceValue";
 import {
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
@@ -101,8 +102,16 @@ function InstanceCards({
   readonly PlayerId[],
   readonly ScytheProductId[],
   boolean
->): JSX.Element {
+>): JSX.Element | null {
   const theme = useTheme();
+
+  const hasAssignments = useHasDownstreamInstanceValue(
+    airshipPassiveAssignmentStep.id
+  );
+  if (hasAssignments) {
+    return null;
+  }
+
   return (
     <>
       {Vec.map(itemIds, (itemId) => (
