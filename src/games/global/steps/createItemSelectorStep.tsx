@@ -26,7 +26,7 @@ import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import {
   AlwaysNeverMultiChipSelector,
   AlwaysNeverMultiLabel,
-  Limits,
+  Limits
 } from "../ux/AlwaysNeverMultiChipSelector";
 import { SingleItemSelect } from "../ux/SingleItemSelect";
 import alwaysOnMetaStep from "./alwaysOnMetaStep";
@@ -158,7 +158,7 @@ export default function createItemSelectorStep<
   ...randomGameStepOptions
 }: Options<ItemId, Pid>): VariableGameStep<readonly ItemId[]> &
   AdditionalApiMethods {
-  const step = createRandomGameStep({
+  const itemsStep = createRandomGameStep({
     ...randomGameStepOptions,
 
     dependencies: [
@@ -236,7 +236,7 @@ export default function createItemSelectorStep<
   const additionalApiMethods: AdditionalApiMethods = {
     createAssignmentStep: (options) =>
       createPlayerAssignmentStep({
-        itemsStep: step,
+        itemsStep,
         availableForProducts,
         productsMetaStep,
         getColor,
@@ -249,7 +249,7 @@ export default function createItemSelectorStep<
   // objects because we actually need to MUTATE this object so that it remains
   // the same as the one we feed into the assignment step via the `itemStep`
   // option
-  return Object.assign(step, additionalApiMethods);
+  return Object.assign(itemsStep, additionalApiMethods);
 }
 
 function resolve<ItemId extends string | number, Pid extends ProductId>(
