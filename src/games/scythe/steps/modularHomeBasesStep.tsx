@@ -1,4 +1,4 @@
-import { Box, Chip, Stack, Typography } from "@mui/material";
+import { Chip, Grid, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { Vec } from "common";
 import { hasProductSelector } from "features/collection/collectionSlice";
@@ -128,33 +128,55 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
   const perm = useMemo(() => HomeBases.decode(basesIdx), [basesIdx]);
 
+  console.log(perm);
+
   return (
     <Stack direction="column" spacing={1}>
       <Typography variant="body1">
         Layout the home bases in the following order, starting from the top, and
         going in clockwise order around the board:
       </Typography>
-      <Box
-        display="flex"
-        flexDirection="row"
-        flexWrap="wrap"
-        justifyContent="center"
-        gap={1}
-      >
-        {Vec.map(perm, (fid) =>
-          fid === "empty" ? (
-            <Chip key={fid} variant="outlined" label="Empty" />
-          ) : (
-            <Chip
-              key={fid}
-              color={Factions[fid].color}
-              label={Factions[fid].name.short}
-            />
-          )
-        )}
-      </Box>
+      <Grid container spacing={1} maxWidth="100%" paddingRight={1}>
+        <Grid item xs={4}>
+          <HomeBaseChip homeBaseId={perm[7]} />
+        </Grid>
+        <Grid item xs={4}>
+          <HomeBaseChip homeBaseId={perm[0]} />
+        </Grid>
+        <Grid item xs={4}>
+          <HomeBaseChip homeBaseId={perm[1]} />
+        </Grid>
+        <Grid item xs={4}>
+          <HomeBaseChip homeBaseId={perm[6]} />
+        </Grid>
+        <Grid item xs={4} />
+        <Grid item xs={4}>
+          <HomeBaseChip homeBaseId={perm[2]} />
+        </Grid>
+        <Grid item xs={4}>
+          <HomeBaseChip homeBaseId={perm[5]} />
+        </Grid>
+        <Grid item xs={4}>
+          <HomeBaseChip homeBaseId={perm[4]} />
+        </Grid>
+        <Grid item xs={4}>
+          <HomeBaseChip homeBaseId={perm[3]} />
+        </Grid>
+      </Grid>
       <IndexHashCaption idx={basesIdx} />
     </Stack>
+  );
+}
+
+function HomeBaseChip({ homeBaseId }: { homeBaseId: HomeBaseId }): JSX.Element {
+  return homeBaseId === "empty" ? (
+    <Chip variant="outlined" label="Empty" sx={{ width: "100%" }} />
+  ) : (
+    <Chip
+      sx={{ width: "100%" }}
+      color={Factions[homeBaseId].color}
+      label={Factions[homeBaseId].name.short}
+    />
   );
 }
 
