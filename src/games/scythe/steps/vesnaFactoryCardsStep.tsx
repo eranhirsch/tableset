@@ -105,13 +105,13 @@ function InstanceVariableComponent({
           />
         ) : (
           <>
-            The player with <FactionChip factionId="vesna" />
+            The player with <FactionChip factionId="vesna" inline />
           </>
         )
       ) : (
         <>
           <em>
-            If playing with <FactionChip factionId="vesna" />
+            If playing with <FactionChip factionId="vesna" inline />
           </em>
           : That player
         </>
