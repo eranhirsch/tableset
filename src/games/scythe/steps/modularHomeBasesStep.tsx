@@ -55,7 +55,7 @@ export default createRandomGameStep({
   refresh: ({ always, never }, products, isModular) =>
     templateValue(
       products.willContain("fenris") ||
-        (Vec.is_empty(never) &&
+        (Vec.contained_in(never, ["tesla", "fenris"]) &&
           !always.includes("tesla") &&
           !always.includes("fenris"))
         ? "unchanged"
