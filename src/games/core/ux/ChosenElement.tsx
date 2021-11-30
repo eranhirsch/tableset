@@ -15,7 +15,7 @@ export function ChosenElement({
     <Typography
       component="span"
       color="primary"
-      sx={{ color: color != null ? theme.palette[color].main : undefined }}
+      sx={color != null ? { color: theme.palette[color].main } : {}}
     >
       <strong>{children}</strong>
       {extraInfo != null && (
