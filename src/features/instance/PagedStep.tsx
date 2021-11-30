@@ -1,5 +1,5 @@
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
-import { Box, Button, MobileStepper, Typography } from "@mui/material";
+import { Box, Button, MobileStepper, Paper, Typography } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { TSPage } from "app/ux/Chrome";
 import { invariant_violation, ReactUtils } from "common";
@@ -35,18 +35,30 @@ function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
   return (
     <TSPage>
       <Box display="flex" flexDirection="column" flexGrow={1} height="100%">
-        <CloseButton />
-        <Typography
-          marginTop={10}
-          variant="h4"
-          component="header"
-          color="primary"
+        <Paper
+          elevation={4}
+          sx={{
+            flexGrow: 1,
+            marginY: 1,
+            padding: 2,
+            borderRadius: 3,
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
-          {step.label}
-        </Typography>
-        <Box flexGrow={1} marginTop={5}>
-          <InstanceItemContent gameStep={step} />
-        </Box>
+          <CloseButton />
+          <Typography
+            marginTop={4}
+            variant="h4"
+            component="header"
+            color="primary"
+          >
+            {step.label}
+          </Typography>
+          <Box marginTop={4}>
+            <InstanceItemContent gameStep={step} />
+          </Box>
+        </Paper>
         <MobileStepper
           sx={{ flexGrow: 0 }}
           variant="text"
