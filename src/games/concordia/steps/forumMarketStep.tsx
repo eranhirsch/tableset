@@ -5,7 +5,7 @@ import forumVariantStep from "./forumVariant";
 export default createDerivedGameStep({
   id: "forumMarket",
   dependencies: [forumVariantStep],
-  skip: ([forum]) => forum == null,
+  skip: ([forum]) => !forum,
   InstanceDerivedComponent,
 });
 

@@ -38,7 +38,7 @@ export default createRandomGameStep({
         : undefined
       : undefined,
 
-  skip: (_, [withFish]) => withFish == null,
+  skip: (_, [withFish]) => !withFish,
   refresh: () => templateValue("unchanged"),
   ConfigPanel,
   ConfigPanelTLDR,

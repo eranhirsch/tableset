@@ -39,7 +39,7 @@ export default createRandomGameStep({
     playersMetaStep,
     fishMarketVariant,
   ],
-  skip: (_, [forum]) => forum == null,
+  skip: (_, [forum]) => !forum,
   isTemplatable: (_, auction) => auction.canResolveTo(true),
   resolve: (_config, _isForum, isAuction, players) =>
     isAuction != null && isAuction
