@@ -32,8 +32,6 @@ export const HomeBases = {
 
     const permIdx = Random.index(MathUtils.permutations_lazy_array(selected));
 
-    console.log(combIdx, permIdx, selected);
-
     return combIdx * Number(MathUtils.factorial(8)) + permIdx;
   },
 
@@ -49,8 +47,6 @@ export const HomeBases = {
       ).at(combIdx),
       `Combination Idx ${combIdx} out of range`
     );
-
-    console.log(combIdx, permIdx, selected);
 
     return nullthrows(
       MathUtils.permutations_lazy_array(selected).at(permIdx),

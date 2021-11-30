@@ -128,8 +128,6 @@ function InstanceVariableComponent({
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
   const perm = useMemo(() => HomeBases.decode(basesIdx), [basesIdx]);
 
-  console.log(perm);
-
   return (
     <Stack direction="column" spacing={1}>
       <Typography variant="body1">
