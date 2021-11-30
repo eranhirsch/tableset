@@ -1,8 +1,8 @@
 import { Typography } from "@mui/material";
-import { invariant, Vec } from "common";
+import { Vec } from "common";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps
+  DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
@@ -57,7 +57,6 @@ function InstanceDerivedComponent({
   }
 
   const emptyPos = homeBases.indexOf("empty");
-  invariant(emptyPos >= 0, `Couldn't find empty home base?`);
 
   return (
     <HeaderAndSteps synopsis={<>{description}:</>}>
@@ -82,7 +81,7 @@ function InstanceDerivedComponent({
         ],
         // We rotate the suggestions based on where the empty cell is so that
         // the suggestions which are more likely to be used show up first.
-        -Math.ceil(emptyPos / 2)
+        emptyPos > 0 ? -Math.ceil(emptyPos / 2) : 0
       )}
     </HeaderAndSteps>
   );
