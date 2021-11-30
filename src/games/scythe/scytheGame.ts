@@ -40,6 +40,7 @@ import seatingStep from "./steps/seatingStep";
 import startingWorkersStep from "./steps/startingWorkersStep";
 import structureBonusStep from "./steps/structureBonusStep";
 import vesnaFactoryCardsStep from "./steps/vesnaFactoryCardsStep";
+import vesnaMechAbilitiesStep from "./steps/vesnaMechAbilitiesStep";
 
 export const scytheGame = createGame({
   id: "scythe",
@@ -183,8 +184,9 @@ export const scytheGame = createGame({
     }),
 
     playerMatComponentsStep,
-    vesnaFactoryCardsStep,
+    vesnaFactoryCardsStep, // Templatable
     factionMatComponentsStep,
+    vesnaMechAbilitiesStep, // Templatable
     createGameStep({
       id: "character",
       InstanceManualComponent:
