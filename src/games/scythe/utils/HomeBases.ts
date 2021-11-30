@@ -1,10 +1,11 @@
 import { $, MathUtils, nullthrows, Random, Vec } from "common";
 import { ScytheProductId } from "../ScytheProductId";
-import { FactionId, Factions } from "./Factions";
+import { Factions } from "./Factions";
 
-export type HomeBaseId = FactionId | "empty";
-
-const ALL_HOME_BASE_IDS = Vec.concat(Factions.ALL_IDS, "empty");
+// IMPORTANT: The order here is important, keep empty first, and make sure that
+// the faction IDs are also sorted by expansion.
+const ALL_HOME_BASE_IDS = ["empty", ...Factions.ALL_IDS] as const;
+export type HomeBaseId = typeof ALL_HOME_BASE_IDS[number];
 
 export const HomeBases = {
   ALL_IDS: ALL_HOME_BASE_IDS,
@@ -23,24 +24,33 @@ export const HomeBases = {
       ($$) => Vec.concat(always, $$)
     );
 
-    const combsArr = MathUtils.combinations_lazy_array(ALL_HOME_BASE_IDS, 8);
-    const combIdx = combsArr.indexOf(selected);
+    const combIdx = MathUtils.combinations_lazy_array(
+      ALL_HOME_BASE_IDS,
+      8,
+      true /* skipSorting */
+    ).indexOf(selected);
 
     const permIdx = Random.index(MathUtils.permutations_lazy_array(selected));
 
-    return permIdx * combsArr.length + combIdx;
+    console.log(combIdx, permIdx, selected);
+
+    return combIdx * Number(MathUtils.factorial(8)) + permIdx;
   },
 
   decode(idx: number): readonly HomeBaseId[] {
-    const combsArr = MathUtils.combinations_lazy_array(ALL_HOME_BASE_IDS, 8);
-
-    const combIdx = idx % combsArr.length;
-    const permIdx = Math.floor(idx / combsArr.length);
+    const permIdx = idx % Number(MathUtils.factorial(8));
+    const combIdx = Math.floor(idx / Number(MathUtils.factorial(8)));
 
     const selected = nullthrows(
-      combsArr.at(combIdx),
+      MathUtils.combinations_lazy_array(
+        ALL_HOME_BASE_IDS,
+        8,
+        true /* skipSorting */
+      ).at(combIdx),
       `Combination Idx ${combIdx} out of range`
     );
+
+    console.log(combIdx, permIdx, selected);
 
     return nullthrows(
       MathUtils.permutations_lazy_array(selected).at(permIdx),

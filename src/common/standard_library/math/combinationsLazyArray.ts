@@ -7,8 +7,15 @@ export type CombinationsLazyArray<T> = Omit<
 
 const combinations_lazy_array = <T>(
   pool: readonly T[],
-  k: number
-): CombinationsLazyArray<T> => new CombinationsLazyArrayWithDuplicates(pool, k);
+  k: number,
+  skipSorting: boolean = false
+): CombinationsLazyArray<T> =>
+  new CombinationsLazyArrayWithDuplicates(
+    pool,
+    k,
+    false /* withDuplicates */,
+    skipSorting
+  );
 
 const combinations_lazy_array_with_duplicates = <T>(
   pool: readonly T[],
@@ -22,10 +29,11 @@ export class CombinationsLazyArrayWithDuplicates<T> {
   constructor(
     pool: readonly T[],
     public readonly k: number,
-    private readonly withDuplicates: boolean = false
+    private readonly withDuplicates: boolean = false,
+    skipSorting: boolean = false
   ) {
     // We normalize the item definition for use in our algorithm
-    this.pool = Vec.sort(pool);
+    this.pool = skipSorting ? pool : Vec.sort(pool);
 
     invariant(
       withDuplicates ||
@@ -152,7 +160,10 @@ export class CombinationsLazyArrayWithDuplicates<T> {
             )
         );
       },
-      [Vec.sort(combination), 0] as [combination: readonly T[], index: number]
+      [Vec.sort_by(combination, (item) => this.pool.indexOf(item)), 0] as [
+        combination: readonly T[],
+        index: number
+      ]
     );
 
     invariant(

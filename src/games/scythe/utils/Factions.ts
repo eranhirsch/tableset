@@ -3,17 +3,27 @@ import { GamePiecesColor } from "model/GamePiecesColor";
 import { ScytheProductId } from "../ScytheProductId";
 import { HexType } from "./HexType";
 
+/**
+ * All faction IDs in the game.
+ * IMPORTANT: DO NOT SORT, We use the order in the `HomeBases` module to make
+ * sure our numbers are consistent.
+ */
 const ALL_FACTION_IDS = [
   /* spell-checker: disable */
-  "albion",
+  // Base
   "crimea",
-  "fenris",
   "nordic",
   "polania",
   "rusviet",
   "saxony",
-  "tesla",
+
+  // invaders
+  "albion",
   "togawa",
+
+  // fenris
+  "fenris",
+  "tesla",
   /* spell-checker: enable */
 ] as const;
 export type FactionId = typeof ALL_FACTION_IDS[number];
