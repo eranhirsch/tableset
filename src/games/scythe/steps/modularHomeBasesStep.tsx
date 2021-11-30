@@ -52,7 +52,7 @@ export default createRandomGameStep({
   resolve: ({ always, never }, productIds, isModular) =>
     isModular ? HomeBases.randomIdx(always, never, productIds!) : null,
 
-  refresh: ({ always, never }, products, isModular) =>
+  refresh: ({ always, never }, products, _isModular) =>
     templateValue(
       products.willContain("fenris") ||
         (Vec.contained_in(never, ["tesla", "fenris"]) &&
@@ -62,7 +62,7 @@ export default createRandomGameStep({
         : "unfixable"
     ),
 
-  skip: (_, [isModular]) => !isModular,
+  skip: (_, [_products, isModular]) => !isModular,
 
   ConfigPanel,
   ConfigPanelTLDR,
