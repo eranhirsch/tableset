@@ -133,8 +133,7 @@ function InstanceVariableComponent({
   return (
     <Stack direction="column" spacing={1}>
       <Typography variant="body1">
-        Layout the home bases in the following order, starting from the top, and
-        going in clockwise order around the board:
+        Layout the home bases in the following order:
       </Typography>
       <Grid container spacing={1} maxWidth="100%" paddingRight={1}>
         <Grid item xs={4}>
