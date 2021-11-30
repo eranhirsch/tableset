@@ -39,6 +39,7 @@ import resourcesPilesStep from "./steps/resourcesPilesStep";
 import seatingStep from "./steps/seatingStep";
 import startingWorkersStep from "./steps/startingWorkersStep";
 import structureBonusStep from "./steps/structureBonusStep";
+import vesnaFactoryCardsStep from "./steps/vesnaFactoryCardsStep";
 
 export const scytheGame = createGame({
   id: "scythe",
@@ -167,11 +168,6 @@ export const scytheGame = createGame({
 
     encounterTokensStep,
 
-    encountersDeckStep,
-    objectivesDeckStep,
-    combatCardsDeckStep,
-    factoryDeckStep,
-
     airshipAggressiveStep, // Templatable
     airshipAggressiveAssignmentStep, // Templatable
     airshipPassiveStep, // Templatable
@@ -187,6 +183,7 @@ export const scytheGame = createGame({
     }),
 
     playerMatComponentsStep,
+    vesnaFactoryCardsStep,
     factionMatComponentsStep,
     createGameStep({
       id: "character",
@@ -199,6 +196,12 @@ export const scytheGame = createGame({
     factionStartingPowerStep,
     factionCombatCardsStep,
     playerMatStartingMoneyStep,
+
+    encountersDeckStep,
+    objectivesDeckStep,
+    combatCardsDeckStep,
+    factoryDeckStep,
+
     playerObjectivesStep,
 
     createGameStep({

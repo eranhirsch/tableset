@@ -21,7 +21,7 @@ import {
 } from "games/global/ux/AlwaysNeverMultiChipSelector";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
-import { Factions } from "../utils/Factions";
+import { FactionId, Factions } from "../utils/Factions";
 import { HomeBaseId, HomeBases } from "../utils/HomeBases";
 import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
@@ -55,8 +55,8 @@ export default createRandomGameStep({
   refresh: ({ always, never }, products, _isModular) =>
     templateValue(
       products.willContain("fenris") ||
-        (Vec.contained_in(never, ["tesla", "fenris"]) &&
-          !always.includes("tesla") &&
+        (Vec.contained_in(never, ["vesna", "fenris"] as readonly FactionId[]) &&
+          !always.includes("vesna") &&
           !always.includes("fenris"))
         ? "unchanged"
         : "unfixable"

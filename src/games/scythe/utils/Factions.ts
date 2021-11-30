@@ -23,7 +23,7 @@ const ALL_FACTION_IDS = [
 
   // fenris
   "fenris",
-  "tesla",
+  "vesna",
   /* spell-checker: enable */
 ] as const;
 export type FactionId = typeof ALL_FACTION_IDS[number];
@@ -103,8 +103,8 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     order: 4,
     startingWorkersLocations: ["mountain", "tundra"],
   },
-  tesla: {
-    name: { abbreviated: "Tes", short: "Tesla", full: "Tesla" },
+  vesna: {
+    name: { abbreviated: "Ves", short: "Vesna", full: "Vesna" },
     color: "cyan",
     power: 1,
     combatCards: 1,
@@ -129,7 +129,7 @@ const FACTIONS_IN_PRODUCTS: Readonly<
 > = {
   base: ["crimea", "nordic", "polania", "rusviet", "saxony"],
   invaders: ["albion", "togawa"],
-  fenris: ["fenris", "tesla"],
+  fenris: ["fenris", "vesna"],
 };
 
 export const Factions = {

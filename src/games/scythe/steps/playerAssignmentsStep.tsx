@@ -574,7 +574,9 @@ function PlayerAssignment({
         <Chip
           color={faction.color}
           label={
-            mat != null ? `${mat.name} ${faction.name.short}` : faction.name
+            mat != null
+              ? `${mat.name} ${faction.name.short}`
+              : faction.name.full
           }
         />
       ) : (
