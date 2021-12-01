@@ -123,7 +123,7 @@ function InstanceDerivedComponent({
         <React.Fragment key={fid}>
           <FactionChip key={fid} factionId={fid} />:{" "}
           <GrammaticalList>
-            {Vec.map(Factions[fid].startingWorkersLocations, (hexType) => (
+            {Vec.map(Factions[fid].startingWorkersLocations!, (hexType) => (
               <em key={`${fid}_${hexType}`}>{HEX_TYPE_LABEL[hexType]}</em>
             ))}
           </GrammaticalList>

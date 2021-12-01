@@ -9,6 +9,7 @@ import airshipPassiveStep, {
 } from "./steps/airshipPassiveStep";
 import airshipPlacementStep from "./steps/airshipPlacementStep";
 import airshipVariant from "./steps/airshipVariant";
+import baselessFactionsStep from "./steps/baselessFactionsStep";
 import boardStep from "./steps/boardStep";
 import combatCardsDeckStep from "./steps/combatCardsDeckStep";
 import encountersDeckStep from "./steps/encountersDeckStep";
@@ -157,6 +158,7 @@ export const scytheGame = createGame({
     structureBonusStep, // Templatable
 
     factionsStep, // Templatable
+    baselessFactionsStep, // Templatable
     playerMatsStep, // Templatable
     playerAssignmentsStep, // Templatable
 

@@ -39,8 +39,8 @@ export interface Faction {
   color: GamePiecesColor;
   power: number;
   combatCards: number;
-  order: number;
-  startingWorkersLocations: [HexType, HexType];
+  order?: number;
+  startingWorkersLocations?: [HexType, HexType];
 }
 
 const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
@@ -66,10 +66,6 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     color: "orange",
     power: 4,
     combatCards: 2,
-    // TODO: this is incorrect, fix this with the setup instructions for fenris and tesla
-    order: 7,
-    // This is obviously wrong and needs to be fixed when fenris is implemented
-    startingWorkersLocations: ["factory", "factory"],
   },
   nordic: {
     name: { abbreviated: "Nord", short: "Nordic", full: "Nordic Kingdoms" },
@@ -108,10 +104,6 @@ const FACTIONS: Readonly<Record<FactionId, Readonly<Faction>>> = {
     color: "cyan",
     power: 1,
     combatCards: 1,
-    // TODO: this is incorrect, fix this with the setup instructions for fenris and tesla
-    order: 7,
-    // TODO: this is obviously incorrect, fix this once we implement tesla
-    startingWorkersLocations: ["factory", "factory"],
   },
   togawa: {
     name: { abbreviated: "Tog", short: "Togawa", full: "Togawa Shogunate" },
