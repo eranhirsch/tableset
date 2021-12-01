@@ -1,14 +1,19 @@
 import { Typography } from "@mui/material";
 import { $, MathUtils, nullthrows, Random, Vec } from "common";
-import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { useMemo } from "react";
 import { FactoryCards } from "../utils/FactoryCards";
@@ -22,7 +27,7 @@ import productsMetaStep from "./productsMetaStep";
 
 export default createRandomGameStep({
   id: "vesnaFactoryCards",
-  labelOverride: "Vesna: Factory Cards",
+  labelOverride: "Vesna: Technopile",
 
   dependencies: [
     productsMetaStep,
@@ -68,11 +73,12 @@ export default createRandomGameStep({
     (homeBasesIdx != null && !HomeBases.decode(homeBasesIdx).includes("vesna")),
 
   InstanceVariableComponent,
+  InstanceManualComponent,
   // We are intentionally not providing instance cards for the results so that
   // if players haven't selected the Vesna faction yet (like in the modular
   // board) they shouldn't have this information available.
   InstanceCards: (props) => (
-    <IndexHashInstanceCard title="Factory" subheader="Vesna" {...props} />
+    <IndexHashInstanceCard title="Technopile" subheader="Vesna" {...props} />
   ),
 
   ...NoConfigPanel,
@@ -126,5 +132,66 @@ function InstanceVariableComponent({
       </GrammaticalList>{" "}
       and puts them next to their player mat.
     </Typography>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const productIds = useRequiredInstanceValue(productsMetaStep);
+  const factionIds = useOptionalInstanceValue(factionsStep);
+  const assignments = useOptionalInstanceValue(playerAssignmentsStep);
+
+  return (
+    <HeaderAndSteps
+      synopsis={
+        <>
+          {factionIds != null ? (
+            assignments != null ? (
+              <PlayerAvatar
+                playerId={assignments[factionIds.indexOf("vesna")]}
+                inline
+              />
+            ) : (
+              <>
+                The player with <FactionChip factionId="vesna" inline />
+              </>
+            )
+          ) : (
+            <>
+              <em>
+                If playing with <FactionChip factionId="vesna" inline />
+              </em>
+              : That player
+            </>
+          )}{" "}
+          sets up the <em>Technophile</em> vesna faction ability:
+        </>
+      }
+    >
+      <BlockWithFootnotes
+        footnote={
+          <>
+            Large cards with a purple back, numbered in sequence (at the upper
+            right corner of the card) starting from 1 to{" "}
+            {
+              FactoryCards[
+                productIds!.includes("promo4") ? "ALL_IDS" : "BASE_IDS"
+              ].length
+            }
+            .
+          </>
+        }
+      >
+        {(Footnote) => (
+          <>
+            Shuffle all factory cards
+            <Footnote />.
+          </>
+        )}
+      </BlockWithFootnotes>
+      <>
+        Draw <strong>3</strong> cards.
+      </>
+      <>Put the cards next to their player mat.</>
+    </HeaderAndSteps>
   );
 }
