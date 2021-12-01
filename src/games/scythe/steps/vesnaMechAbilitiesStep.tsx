@@ -64,6 +64,7 @@ export default createRandomGameStep({
     (homeBasesIdx != null && !HomeBases.decode(homeBasesIdx).includes("vesna")),
 
   InstanceVariableComponent,
+  InstanceManualComponent,
   // We are intentionally not providing instance cards for the results so that
   // if players haven't selected the Vesna faction yet (like in the modular
   // board) they shouldn't have this information available.
@@ -79,9 +80,6 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: mechIdx,
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
-  const factionIds = useOptionalInstanceValue(factionsStep);
-  const assignments = useOptionalInstanceValue(playerAssignmentsStep);
-
   const vesnaAbilities = useMemo(
     () =>
       $(
@@ -94,34 +92,8 @@ function InstanceVariableComponent({
   );
 
   return (
-    <HeaderAndSteps
-      synopsis={
-        <>
-          {factionIds != null ? (
-            assignments != null ? (
-              <PlayerAvatar
-                playerId={assignments[factionIds.indexOf("vesna")]}
-                inline
-              />
-            ) : (
-              <>
-                The player with <FactionChip factionId="vesna" inline />
-              </>
-            )
-          ) : (
-            <>
-              <em>
-                If playing with <FactionChip factionId="vesna" inline />
-              </em>
-              : That player
-            </>
-          )}{" "}
-          choses their mech abilities:
-        </>
-      }
-    >
+    <HeaderAndSteps synopsis={<MechAbilitiesSynopsis />}>
       <>
-        {" "}
         Takes the cyan <em>Vesna Mech Ability</em> tiles:
         <Stack direction="column" paddingLeft={4}>
           {Vec.map(vesnaAbilities, (ability) => (
@@ -136,9 +108,60 @@ function InstanceVariableComponent({
       </>
       <>
         Cover the mech ability spaces on <em>Vesna's</em> faction mat. If you
-        picked more than 2 also cover the printed <em>Riverwalk</em> or{" "}
-        <em>Speed</em> abilities.
+        picked more than 2 also cover the printed <em>Riverwalk</em>,{" "}
+        <em>Speed</em>, or both abilities.
       </>
     </HeaderAndSteps>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  return (
+    <HeaderAndSteps synopsis={<MechAbilitiesSynopsis />}>
+      <>
+        Shuffle the <strong>18</strong> cyan <em>Vesna Mech Ability</em> tiles.
+      </>
+      <>
+        Draw <strong>6</strong> tiles.
+      </>
+      <>
+        Pick <strong>2, 3</strong>, <em>or</em> <strong>4</strong> of these.
+      </>
+      <>
+        Cover the mech ability spaces on <em>Vesna's</em> faction mat. If you
+        picked more than 2 also cover the printed <em>Riverwalk</em>,{" "}
+        <em>Speed</em>, or both abilities.
+      </>
+    </HeaderAndSteps>
+  );
+}
+
+function MechAbilitiesSynopsis(): JSX.Element {
+  const factionIds = useOptionalInstanceValue(factionsStep);
+  const assignments = useOptionalInstanceValue(playerAssignmentsStep);
+
+  return (
+    <>
+      {factionIds != null ? (
+        assignments != null ? (
+          <PlayerAvatar
+            playerId={assignments[factionIds.indexOf("vesna")]}
+            inline
+          />
+        ) : (
+          <>
+            The player with <FactionChip factionId="vesna" inline />
+          </>
+        )
+      ) : (
+        <>
+          <em>
+            If playing with <FactionChip factionId="vesna" inline />
+          </em>
+          : That player
+        </>
+      )}{" "}
+      choses their mech abilities:
+    </>
   );
 }
