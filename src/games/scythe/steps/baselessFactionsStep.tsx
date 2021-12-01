@@ -1,13 +1,14 @@
-import { Chip } from "@mui/material";
+import { Chip, Stack, Typography } from "@mui/material";
 import { $, Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
+import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId, Factions } from "../utils/Factions";
 import factionsStep from "./factionsStep";
@@ -65,7 +66,43 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value,
 }: VariableStepInstanceComponentProps<readonly FactionId[]>): JSX.Element {
-  return <></>;
+  const factionIds = useRequiredInstanceValue(factionsStep);
+
+  const bases = useMemo(
+    () =>
+      $(
+        factionIds,
+        ($$) => Vec.intersect($$, BASELESS_FACTION_IDS),
+        Vec.sort,
+        ($$) => Vec.zip($$, value)
+      ),
+    [factionIds, value]
+  );
+
+  return (
+    <Stack direction="column" spacing={1}>
+      <Typography variant="body1">
+        Place the home base tiles on top of the printed home bases on the board:
+      </Typography>
+      {React.Children.toArray(
+        Vec.map(bases, ([baselessFid, homeBaseFid]) => (
+          <span>
+            <Chip
+              component="span"
+              color={Factions[baselessFid].color}
+              label={Factions[baselessFid].name.full}
+            />{" "}
+            on top of{" "}
+            <Chip
+              component="span"
+              color={Factions[homeBaseFid].color}
+              label={Factions[homeBaseFid].name.short}
+            />
+          </span>
+        ))
+      )}
+    </Stack>
+  );
 }
 
 function InstanceCards({
@@ -88,6 +125,7 @@ function InstanceCards({
       ),
     [factionIds, value]
   );
+
   return (
     <>
       {Vec.map(bases, ([baselessFid, homeBaseFid]) => (
