@@ -32,6 +32,8 @@ export default createRandomGameStep({
 
   refresh: () => templateValue("unchanged"),
 
+  skip: (_, [isEnabled]) => !isEnabled,
+
   ConfigPanel,
   ConfigPanelTLDR,
 
