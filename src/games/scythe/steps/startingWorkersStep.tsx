@@ -1,4 +1,4 @@
-import { $, Dict, Vec } from "common";
+import { $, Shape, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   createDerivedGameStep,
@@ -99,18 +99,6 @@ function InstanceDerivedComponent({
     </BlockWithFootnotes>
   );
 
-  const baseless: Readonly<Partial<Record<FactionId, FactionId>>> = useMemo(
-    () =>
-      isModular || factionIds == null || baselessBases == null
-        ? {}
-        : $(
-            Vec.filter(factionIds, (fid) => Factions[fid].order == null),
-            Vec.sort,
-            ($$) => Dict.associate($$, baselessBases)
-          ),
-    [baselessBases, factionIds, isModular]
-  );
-
   if (isModular) {
     if (boardType == null || tilesIdx == null || homeBasesIdx == null) {
       return manualInstructions;
@@ -139,23 +127,59 @@ function InstanceDerivedComponent({
     return manualInstructions;
   }
 
+  const coveredHomeBases =
+    baselessBases == null
+      ? {}
+      : $(
+          factionIds,
+          ($$) =>
+            Vec.filter(
+              $$,
+              (fid) => Factions[fid].startingWorkersLocations == null
+            ),
+          ($$) => Shape.associate($$, baselessBases)
+        );
+
   return (
     <HeaderAndSteps synopsis={manualInstructions}>
-      {Vec.map(factionIds, (fid) => (
-        <React.Fragment key={fid}>
-          <FactionChip key={fid} factionId={fid} />:{" "}
-          <GrammaticalList>
-            {Vec.map(
-              Factions[fid].startingWorkersLocations ??
-                Factions[baseless[fid]!].startingWorkersLocations!,
-              (hexType) => (
-                <em key={`${fid}_${hexType}`}>{HEX_TYPE_LABEL[hexType]}</em>
-              )
+      {Vec.map_with_key(
+        Shape.select_keys(Factions, factionIds),
+        (fid, { startingWorkersLocations }) => (
+          <React.Fragment key={fid}>
+            <FactionChip key={fid} factionId={fid} />:{" "}
+            {startingWorkersLocations != null ? (
+              <Locations hexes={startingWorkersLocations} />
+            ) : fid in coveredHomeBases ? (
+              <Locations
+                hexes={
+                  Factions[coveredHomeBases[fid]!].startingWorkersLocations!
+                }
+              />
+            ) : (
+              <em>(unknown).</em>
             )}
-          </GrammaticalList>
-        </React.Fragment>
-      ))}
+          </React.Fragment>
+        )
+      )}
     </HeaderAndSteps>
+  );
+}
+
+function Locations({
+  hexes,
+}: {
+  hexes: [HexType, HexType] | undefined;
+}): JSX.Element {
+  if (hexes == null) {
+    return <em></em>;
+  }
+
+  return (
+    <GrammaticalList>
+      {React.Children.toArray(
+        Vec.map(hexes, (hexType) => <em>{HEX_TYPE_LABEL[hexType]}</em>)
+      )}
+    </GrammaticalList>
   );
 }
 
