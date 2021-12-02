@@ -132,6 +132,7 @@ function InstanceManualComponent(): JSX.Element {
         picked more than 2 also cover the printed <em>Riverwalk</em>,{" "}
         <em>Speed</em>, or both abilities.
       </>
+      <>Return unused tiles back to the box.</>
     </HeaderAndSteps>
   );
 }
