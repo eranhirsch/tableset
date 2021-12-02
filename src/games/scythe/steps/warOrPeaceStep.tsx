@@ -15,7 +15,7 @@ import warAndPeaceVariant from "./warAndPeaceVariant";
 type TemplateConfig = { percentWar: number };
 
 const TRACK_IDS = ["war", "peace"] as const;
-type TrackId = typeof TRACK_IDS[number];
+export type TrackId = typeof TRACK_IDS[number];
 
 export default createRandomGameStep({
   id: "warOrPeaceTriumphTrack",
