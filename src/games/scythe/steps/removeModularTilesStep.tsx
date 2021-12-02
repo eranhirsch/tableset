@@ -71,7 +71,7 @@ function InstanceDerivedComponent({
             bases={[homeBases[0], homeBases[1], homeBases[2]]}
           />,
           <TileSuggestion
-            label="bottom left"
+            label="bottom right"
             bases={[homeBases[2], homeBases[3], homeBases[4]]}
           />,
           <TileSuggestion

@@ -28,7 +28,7 @@ export default createRandomGameStep({
   isTemplatable: (modular) => modular.canResolveTo(true),
   initialConfig: () => ({ percentFarms: 50 }),
   resolve: (config, modular) =>
-    modular == null
+    !modular
       ? null
       : Random.coin_flip(config.percentFarms / 100)
       ? "farms"
