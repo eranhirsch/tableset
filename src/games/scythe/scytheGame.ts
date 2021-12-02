@@ -93,7 +93,6 @@ export const scytheGame = createGame({
       name: "Promo Pack #4 - Factory Cards 13-18",
       bggId: 211733,
       year: 2016,
-      isNotImplemented: true,
     },
     promo6: {
       name: "Promo Pack #6 - Encounter Card 37",
