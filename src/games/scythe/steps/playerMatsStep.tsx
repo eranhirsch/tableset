@@ -47,6 +47,7 @@ import {
 import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
 import { ScytheProductId } from "../ScytheProductId";
+import { ScytheStepId } from "../ScytheStepId";
 import { Combos } from "../utils/Combos";
 import { FactionId, Factions } from "../utils/Factions";
 import { MatId, PlayerMats } from "../utils/PlayerMats";
@@ -54,7 +55,6 @@ import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
 import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
-import { ScytheStepId } from "./ScytheStepId";
 
 const MAX_ATTEMPTS = 5;
 

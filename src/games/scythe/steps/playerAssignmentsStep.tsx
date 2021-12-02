@@ -40,6 +40,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { ScytheProductId } from "../ScytheProductId";
+import { ScytheStepId } from "../ScytheStepId";
 import { Combos } from "../utils/Combos";
 import { Faction, FactionId, Factions } from "../utils/Factions";
 import { Mat, MatId, PlayerMats } from "../utils/PlayerMats";
@@ -48,7 +49,6 @@ import factionsStep from "./factionsStep";
 import modularBoardVariant from "./modularBoardVariant";
 import playerMatsStep from "./playerMatsStep";
 import productsMetaStep from "./productsMetaStep";
-import { ScytheStepId } from "./ScytheStepId";
 
 type PlayerPreference = { playerId: PlayerId } & (
   | { factionId: FactionId }

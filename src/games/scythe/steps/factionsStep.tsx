@@ -17,11 +17,11 @@ import createNegateMetaStep from "games/global/steps/createNegateMetaStep";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
+import { ScytheStepId } from "../ScytheStepId";
 import { FactionId, Factions } from "../utils/Factions";
 import { FactionChip } from "../ux/FactionChip";
 import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
-import { ScytheStepId } from "./ScytheStepId";
 
 export default createItemSelectorStep({
   id: "factions",
