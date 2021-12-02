@@ -20,6 +20,7 @@
     "germania",
     "Imperivm",
     "Magnus",
+    "Mechs",
     "meeples",
     "multiset",
     "nullthrows",
@@ -32,6 +33,8 @@
     "sestertii",
     "shortner",
     "solitaria",
+    "Technophile",
+    "Technopile",
     "Templatable",
     "templatables",
     "Tkin",
@@ -40,7 +43,8 @@
     "togawa",
     "Unfixable",
     "Untemplatable",
-    "VENVS"
+    "VENVS",
+    "vesna"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
 }
