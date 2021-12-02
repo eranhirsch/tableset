@@ -42,6 +42,8 @@ import startingWorkersStep from "./steps/startingWorkersStep";
 import structureBonusStep from "./steps/structureBonusStep";
 import vesnaFactoryCardsStep from "./steps/vesnaFactoryCardsStep";
 import vesnaMechAbilitiesStep from "./steps/vesnaMechAbilitiesStep";
+import warAndPeaceVariant from "./steps/warAndPeaceVariant";
+import warOrPeaceStep from "./steps/warOrPeaceStep";
 
 export const scytheGame = createGame({
   id: "scythe",
@@ -150,10 +152,13 @@ export const scytheGame = createGame({
     advancedAirshipVariant, // Variant
     resolutionVariant, // Variant
     modularBoardVariant, // Variant
+    warAndPeaceVariant, // Variant
 
     boardStep, // Templatable
     modularTilesStep, // Templatable
     modularHomeBasesStep, // Templatable
+
+    warOrPeaceStep, // Templatable
 
     structureBonusStep, // Templatable
 
