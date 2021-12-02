@@ -7,8 +7,14 @@ import { Factions } from "./Factions";
 const ALL_HOME_BASE_IDS = ["empty", ...Factions.ALL_IDS] as const;
 export type HomeBaseId = typeof ALL_HOME_BASE_IDS[number];
 
+/**
+ * There are 8 home bases on the modular map.
+ */
+const NUM_HOME_BASES = 8;
+
 export const HomeBases = {
   ALL_IDS: ALL_HOME_BASE_IDS,
+  COUNT: NUM_HOME_BASES,
 
   randomIdx(
     always: readonly HomeBaseId[],
@@ -26,23 +32,23 @@ export const HomeBases = {
 
     const combIdx = MathUtils.combinations_lazy_array(
       ALL_HOME_BASE_IDS,
-      8,
+      NUM_HOME_BASES,
       true /* skipSorting */
     ).indexOf(selected);
 
     const permIdx = Random.index(MathUtils.permutations_lazy_array(selected));
 
-    return combIdx * Number(MathUtils.factorial(8)) + permIdx;
+    return combIdx * Number(MathUtils.factorial(NUM_HOME_BASES)) + permIdx;
   },
 
   decode(idx: number): readonly HomeBaseId[] {
-    const permIdx = idx % Number(MathUtils.factorial(8));
-    const combIdx = Math.floor(idx / Number(MathUtils.factorial(8)));
+    const permIdx = idx % Number(MathUtils.factorial(NUM_HOME_BASES));
+    const combIdx = Math.floor(idx / Number(MathUtils.factorial(NUM_HOME_BASES)));
 
     const selected = nullthrows(
       MathUtils.combinations_lazy_array(
         ALL_HOME_BASE_IDS,
-        8,
+        NUM_HOME_BASES,
         true /* skipSorting */
       ).at(combIdx),
       `Combination Idx ${combIdx} out of range`
