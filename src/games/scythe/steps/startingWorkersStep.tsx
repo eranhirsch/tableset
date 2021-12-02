@@ -1,4 +1,4 @@
-import { Vec } from "common";
+import { $, Dict, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   createDerivedGameStep,
@@ -13,6 +13,7 @@ import { HexType, HEX_TYPE_LABEL } from "../utils/HexType";
 import { HomeBases } from "../utils/HomeBases";
 import { ModularMapTiles } from "../utils/ModularMapTiles";
 import { FactionChip } from "../ux/FactionChip";
+import baselessFactionsStep from "./baselessFactionsStep";
 import boardStep, { BoardId } from "./boardStep";
 import factionMatComponentsStep from "./factionMatComponentsStep";
 import factionsStep from "./factionsStep";
@@ -51,18 +52,27 @@ export default createDerivedGameStep({
     boardStep,
     modularTilesStep,
     modularHomeBasesStep,
+    baselessFactionsStep,
   ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [factionIds, isModular, boardType, tilesIdx, homeBasesIdx],
+  dependencies: [
+    factionIds,
+    isModular,
+    boardType,
+    tilesIdx,
+    homeBasesIdx,
+    baselessBases,
+  ],
 }: DerivedStepInstanceComponentProps<
   readonly FactionId[],
   boolean,
   BoardId,
   number,
-  number
+  number,
+  readonly FactionId[]
 >): JSX.Element {
   const manualInstructions = (
     <BlockWithFootnotes
@@ -87,6 +97,18 @@ function InstanceDerivedComponent({
         </>
       )}
     </BlockWithFootnotes>
+  );
+
+  const baseless: Readonly<Partial<Record<FactionId, FactionId>>> = useMemo(
+    () =>
+      isModular || factionIds == null || baselessBases == null
+        ? {}
+        : $(
+            Vec.filter(factionIds, (fid) => Factions[fid].order == null),
+            Vec.sort,
+            ($$) => Dict.associate($$, baselessBases)
+          ),
+    [baselessBases, factionIds, isModular]
   );
 
   if (isModular) {
@@ -123,9 +145,13 @@ function InstanceDerivedComponent({
         <React.Fragment key={fid}>
           <FactionChip key={fid} factionId={fid} />:{" "}
           <GrammaticalList>
-            {Vec.map(Factions[fid].startingWorkersLocations!, (hexType) => (
-              <em key={`${fid}_${hexType}`}>{HEX_TYPE_LABEL[hexType]}</em>
-            ))}
+            {Vec.map(
+              Factions[fid].startingWorkersLocations ??
+                Factions[baseless[fid]!].startingWorkersLocations!,
+              (hexType) => (
+                <em key={`${fid}_${hexType}`}>{HEX_TYPE_LABEL[hexType]}</em>
+              )
+            )}
           </GrammaticalList>
         </React.Fragment>
       ))}
