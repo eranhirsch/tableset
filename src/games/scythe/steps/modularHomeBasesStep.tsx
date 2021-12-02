@@ -21,7 +21,7 @@ import {
 } from "games/global/ux/AlwaysNeverMultiChipSelector";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
-import { FactionId, Factions } from "../utils/Factions";
+import { Factions } from "../utils/Factions";
 import { HomeBaseId, HomeBases } from "../utils/HomeBases";
 import modularBoardVariant from "./modularBoardVariant";
 import productsMetaStep from "./productsMetaStep";
@@ -52,15 +52,34 @@ export default createRandomGameStep({
   resolve: ({ always, never }, productIds, isModular) =>
     isModular ? HomeBases.randomIdx(always, never, productIds!) : null,
 
-  refresh: ({ always, never }, products, _isModular) =>
-    templateValue(
-      products.willContain("fenris") ||
-        (Vec.contained_in(never, ["vesna", "fenris"] as readonly FactionId[]) &&
-          !always.includes("vesna") &&
-          !always.includes("fenris"))
-        ? "unchanged"
-        : "unfixable"
-    ),
+  refresh({ always, never }, products, _isModular) {
+    const available = Factions.availableForProducts(
+      products.onlyResolvableValue()!
+    );
+    if (!Vec.is_contained_in(always, available)) {
+      // The always array contains factions that aren't available anymore
+      templateValue("unfixable");
+    }
+
+    if (Vec.is_contained_in(never, available)) {
+      templateValue(
+        available.length - never.length < HomeBases.COUNT
+          ? // We won't have enough factions to fill all the bases
+            "unfixable"
+          : // The current config doesn't have any unsupported values
+            "unchanged"
+      );
+    }
+
+    const newNever = Vec.intersect(never, available);
+    if (available.length - newNever.length < HomeBases.COUNT) {
+      // We won't have enough factions to fill all the bases
+      templateValue("unfixable");
+    }
+
+    // We need to remove unsupported factions from the never array
+    return { always, never: newNever };
+  },
 
   skip: (_, [_products, isModular]) => !isModular,
 

@@ -77,10 +77,10 @@ function union_by<Ta, Tb, Ts>(
   return [...out, ...V.map(remaining, ([orig]) => orig)];
 }
 
-const contained_in = <Ta, Tb>(a: readonly Ta[], b: readonly Tb[]): boolean =>
-  contained_in_by(a, b, (x) => x);
+const is_contained_in = <Ta, Tb>(a: readonly Ta[], b: readonly Tb[]): boolean =>
+  is_contained_in_by(a, b, (x) => x);
 
-function contained_in_by<Ta, Tb, Ts>(
+function is_contained_in_by<Ta, Tb, Ts>(
   a: readonly Ta[],
   b: readonly Tb[],
   scalarFunc: (value: Ta | Tb) => Ts
@@ -101,10 +101,12 @@ function contained_in_by<Ta, Tb, Ts>(
   return true;
 }
 
-const equal_multiset = <Ta, Tb>(a: readonly Ta[], b: readonly Tb[]): boolean =>
-  equal_multiset_by(a, b, (x) => x);
+const is_equal_multiset = <Ta, Tb>(
+  a: readonly Ta[],
+  b: readonly Tb[]
+): boolean => is_equal_multiset_by(a, b, (x) => x);
 
-function equal_multiset_by<Ta, Tb, Ts>(
+function is_equal_multiset_by<Ta, Tb, Ts>(
   a: readonly Ta[],
   b: readonly Tb[],
   scalarFunc: (value: Ta | Tb) => Ts
@@ -125,10 +127,10 @@ function equal_multiset_by<Ta, Tb, Ts>(
 
   return true;
 }
-const intersects = <Ta, Tb>(a: readonly Ta[], b: readonly Tb[]): boolean =>
-  intersects_by(a, b, (x) => x);
+const is_disjoint = <Ta, Tb>(a: readonly Ta[], b: readonly Tb[]): boolean =>
+  is_disjoint_by(a, b, (x) => x);
 
-function intersects_by<Ta, Tb, Ts>(
+function is_disjoint_by<Ta, Tb, Ts>(
   a: readonly Ta[],
   b: readonly Tb[],
   scalarFunc: (value: Ta | Tb) => Ts
@@ -136,23 +138,23 @@ function intersects_by<Ta, Tb, Ts>(
   for (const item of a) {
     const i = b.findIndex((x) => scalarFunc(item) === scalarFunc(x));
     if (i !== -1) {
-      return true;
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 export const Vec = {
-  diff,
   diff_by,
-  intersect,
+  diff,
   intersect_by,
-  union,
+  intersect,
+  is_contained_in_by,
+  is_contained_in,
+  is_disjoint_by,
+  is_disjoint,
+  is_equal_multiset_by,
+  is_equal_multiset,
   union_by,
-  contained_in,
-  contained_in_by,
-  equal_multiset,
-  equal_multiset_by,
-  intersects,
-  intersects_by,
+  union,
 } as const;

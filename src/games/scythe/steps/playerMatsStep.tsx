@@ -264,7 +264,7 @@ function refreshAlwaysNever(
     templateValue("unfixable");
   }
 
-  if (Vec.contained_in(never, available)) {
+  if (Vec.is_contained_in(never, available)) {
     // At this point the 'always' array is valid, so if the never array
     // doesn't require any fixing too, we don't need to touch the config.
     templateValue("unchanged");

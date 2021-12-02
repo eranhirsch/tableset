@@ -303,7 +303,7 @@ function refresh<ItemId extends string | number>(
   advancedModeCount: CountFunction | undefined,
   isAdvancedOn: Query<boolean>
 ): Readonly<TemplateConfig<ItemId>> {
-  if (!Vec.contained_in(always, available)) {
+  if (!Vec.is_contained_in(always, available)) {
     // If the template has a hard-constraint on a specific item that isn't
     // available anymore we can't simply drop it
     templateValue("unfixable");
@@ -322,7 +322,7 @@ function refresh<ItemId extends string | number>(
     templateValue("unfixable");
   }
 
-  if (Vec.contained_in(never, available)) {
+  if (Vec.is_contained_in(never, available)) {
     templateValue(
       available.length - never.length < minRemaining
         ? // There are too many items in the never array, we won't be able

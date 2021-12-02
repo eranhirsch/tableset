@@ -171,7 +171,7 @@ function compliesWithTeams(
   // they have the same members. If they do then this ordering complies with the
   // existing teams.
   return teamsFromOrder.every((team) =>
-    teams.some((t) => Vec.equal_multiset(t, team))
+    teams.some((t) => Vec.is_equal_multiset(t, team))
   );
 }
 

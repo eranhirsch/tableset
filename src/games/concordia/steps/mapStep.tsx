@@ -298,7 +298,7 @@ function DynamicChip({
       variant={
         ("dynamic" in config && config.dynamic === mode) ||
         ("static" in config &&
-          Vec.equal_multiset(config.static, equivalentStaticSet))
+          Vec.is_equal_multiset(config.static, equivalentStaticSet))
           ? "filled"
           : "outlined"
       }

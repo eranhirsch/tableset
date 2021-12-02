@@ -123,7 +123,7 @@ export class CombinationsLazyArrayWithDuplicates<T> {
    * cheaper than calling `indexOf`.
    */
   includes(combination: readonly T[]): boolean {
-    return Vec.contained_in(combination, this.pool);
+    return Vec.is_contained_in(combination, this.pool);
   }
 
   /**
