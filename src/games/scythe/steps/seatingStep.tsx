@@ -13,6 +13,7 @@ import { ScytheProductId } from "../ScytheProductId";
 import { Combos } from "../utils/Combos";
 import { FactionId, Factions } from "../utils/Factions";
 import { HomeBases } from "../utils/HomeBases";
+import baselessFactionsStep from "./baselessFactionsStep";
 import factionsStep from "./factionsStep";
 import modularBoardVariant from "./modularBoardVariant";
 import modularHomeBasesStep from "./modularHomeBasesStep";
@@ -29,6 +30,7 @@ export default createDerivedGameStep({
     playerAssignmentsStep,
     modularBoardVariant,
     modularHomeBasesStep,
+    baselessFactionsStep,
   ],
   InstanceDerivedComponent,
 });
@@ -41,6 +43,7 @@ function InstanceDerivedComponent({
     order,
     isModular,
     modularBasesIndex,
+    baselessBases,
   ],
 }: DerivedStepInstanceComponentProps<
   readonly ScytheProductId[],
@@ -48,13 +51,14 @@ function InstanceDerivedComponent({
   number,
   readonly PlayerId[],
   boolean,
-  number
+  number,
+  readonly FactionId[]
 >): JSX.Element {
-  const assignments = useMemo(
+  const assignmentIds = useMemo(
     () =>
       order == null
         ? null
-        : Combos.objectsWithPlayers(
+        : Combos.idsWithPlayerIds(
             order,
             playerMatsIdx,
             factionIds,
@@ -79,9 +83,22 @@ function InstanceDerivedComponent({
             productIds!,
             Factions.availableForProducts,
             ($$) => Shape.select_keys(Factions, $$),
+            ($$) => Shape.filter($$, ({ order }) => order != null),
             ($$) => Dict.sort_by($$, ({ order }) => order)
           ),
     [isModular, modularBasesIndex, productIds]
+  );
+
+  const baseless: Readonly<Partial<Record<FactionId, FactionId>>> = useMemo(
+    () =>
+      isModular || factionIds == null || baselessBases == null
+        ? {}
+        : $(
+            Vec.filter(factionIds, (fid) => Factions[fid].order == null),
+            Vec.sort,
+            ($$) => Dict.associate($$, baselessBases)
+          ),
+    [baselessBases, factionIds, isModular]
   );
 
   const header = (
@@ -131,29 +148,35 @@ function InstanceDerivedComponent({
     <>
       <Typography variant="body1">
         {header}:
-        {assignments == null && (
+        {assignmentIds == null && (
           <>
             {" "}
             <GrammaticalList>
-              {Vec.map_with_key(
-                Dict.sort_by(
-                  Shape.select_keys(Factions, factionIds),
-                  ({ order }) => order
-                ),
-                (_, { color, name: { short } }) => (
-                  <Chip size="small" color={color} label={short} />
-                )
+              {$(
+                Shape.select_keys(Factions, factionIds),
+                ($$) =>
+                  Dict.sort_by_with_key(
+                    $$,
+                    (fid, { order }) => order ?? Factions[baseless[fid]!].order
+                  ),
+                ($$) =>
+                  Vec.map_with_key($$, (_, { color, name: { short } }) => (
+                    <Chip size="small" color={color} label={short} />
+                  ))
               )}
             </GrammaticalList>
             .
           </>
         )}
       </Typography>
-      {assignments != null && (
+      {assignmentIds != null && (
         <AvatarGroup sx={{ justifyContent: "center" }}>
           {" "}
           {Vec.map_with_key(
-            Dict.sort_by(assignments, ([faction]) => faction!.order),
+            Dict.sort_by(
+              assignmentIds,
+              ([fid]) => Factions[fid!].order ?? Factions[baseless[fid!]!].order
+            ),
             (playerId) => (
               <PlayerAvatar playerId={playerId} />
             )
