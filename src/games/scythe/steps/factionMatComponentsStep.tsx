@@ -143,7 +143,7 @@ function InstanceDerivedComponent({
             factionIds={factionIds}
             productIds={productIds!}
           />
-          : <strong>Influence token chits (cardboard) (16):</strong>.
+          : <strong>Influence token chits (cardboard) (16)</strong>.
         </>
       )}
       <BlockWithFootnotes footnote={<>These are enlist bonuses.</>}>
