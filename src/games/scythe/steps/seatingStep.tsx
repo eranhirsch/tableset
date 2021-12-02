@@ -89,18 +89,6 @@ function InstanceDerivedComponent({
     [isModular, modularBasesIndex, productIds]
   );
 
-  const baseless: Readonly<Partial<Record<FactionId, FactionId>>> = useMemo(
-    () =>
-      isModular || factionIds == null || baselessBases == null
-        ? {}
-        : $(
-            Vec.filter(factionIds, (fid) => Factions[fid].order == null),
-            Vec.sort,
-            ($$) => Dict.associate($$, baselessBases)
-          ),
-    [baselessBases, factionIds, isModular]
-  );
-
   const header = (
     <>
       Sit players around the table with each player near their faction's
@@ -108,7 +96,11 @@ function InstanceDerivedComponent({
     </>
   );
 
-  if (factionIds == null) {
+  if (
+    factionIds == null ||
+    (factionIds.some((fid) => Factions[fid].order == null) &&
+      baselessBases == null)
+  ) {
     if (homeBases == null) {
       return (
         <Typography variant="body1">
@@ -143,6 +135,15 @@ function InstanceDerivedComponent({
       </BlockWithFootnotes>
     );
   }
+
+  const baseless: Readonly<Partial<Record<FactionId, FactionId>>> =
+    baselessBases == null
+      ? {}
+      : $(
+          Vec.filter(factionIds, (fid) => Factions[fid].order == null),
+          Vec.sort,
+          ($$) => Dict.associate($$, baselessBases)
+        );
 
   return (
     <>
