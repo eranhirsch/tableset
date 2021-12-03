@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid, Stack, Typography } from "@mui/material";
 import { Random } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { templateValue } from "features/template/templateSlice";
@@ -117,11 +117,19 @@ function InstanceVariableComponent({
   value: trackId,
 }: VariableStepInstanceComponentProps<TrackId>): JSX.Element {
   return (
-    <Typography variant="body1">
-      Place the <em>Triumph track tile</em> showing the{" "}
-      <ChosenElement>{label(trackId)}</ChosenElement> side, on the board
-      covering the printed triumph track on the top left corner.
-    </Typography>
+    <Stack direction="column" spacing={1}>
+      <Typography variant="body1">
+        Place the <em>Triumph track tile</em> showing the{" "}
+        <ChosenElement>{label(trackId)}</ChosenElement> side, on the board
+        covering the printed triumph track on the top left corner.
+      </Typography>
+      <Typography variant="subtitle1" color="primary">
+        Rules
+      </Typography>
+      <Stack direction="column" spacing={1} paddingX={2}>
+        {trackId === "war" ? <WarRules /> : <PeaceRules />}
+      </Stack>
+    </Stack>
   );
 }
 
@@ -145,4 +153,62 @@ function label(trackId: TrackId): string {
     case "war":
       return "War";
   }
+}
+
+function WarRules(): JSX.Element {
+  return (
+    // Copied verbatim from the manual, at page 16
+    <>
+      <Typography variant="body2">
+        Place a star for 6 Upgrades OR 4 Structures. You may not place a star
+        for both.
+      </Typography>
+      <Typography variant="body2">
+        All players may place up to 4 combat stars. Saxony can still place
+        unlimited combat and objective stars.
+      </Typography>
+      <Typography variant="body2">
+        Place a star for having 8 Combat Cards in your hand at the end of your
+        turn.
+      </Typography>
+      <Typography variant="body2">
+        There are no stars for placing all 8 workers or maximizing Popularity on
+        the War Triumph Track.
+      </Typography>
+    </>
+  );
+}
+
+function PeaceRules(): JSX.Element {
+  return (
+    // Copied verbatim from the manual, at page 18
+    <>
+      <Typography variant="body2">
+        Place a star for 4 mechs OR 4 recruits, but not both.
+      </Typography>
+      <Typography variant="body2">
+        All players may place stars for 2 Objectives. After you place your
+        objective star, instead of discarding your other objective card, draw
+        another objective card (if available—do not reshuffle discarded
+        objectives).
+      </Typography>
+      <Typography variant="body2">
+        Place a star for claiming 3 encounter tokens.
+      </Typography>
+      <Typography variant="body2">
+        Place a star for achieving 13 popularity.
+      </Typography>
+      <Typography variant="body2">
+        Place a star for gaining a Factory card (place your star on the same
+        turn that you gain the Factory card).
+      </Typography>
+      <Typography variant="body2">
+        Place a star for controlling 16 total resources (these resources do not
+        need to be on the same territory).
+      </Typography>
+      <Typography variant="body2">
+        No stars are placed for combat victories or 16 power
+      </Typography>
+    </>
+  );
 }
