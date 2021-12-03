@@ -12,6 +12,7 @@ import missionPossibleStep from "./missionPossibleStep";
 import productsMetaStep from "./productsMetaStep";
 import resolutionTileStep, { MISSION_POSSIBLE_ID } from "./resolutionTileStep";
 import resolutionVariant from "./resolutionVariant";
+import rivalsVariant from "./rivalsVariant";
 import warAndPeaceVariant from "./warAndPeaceVariant";
 import warOrPeaceStep, { TrackId } from "./warOrPeaceStep";
 
@@ -23,13 +24,16 @@ export default createDerivedGameStep({
     resolutionTileStep,
     missionPossibleStep,
     warAndPeaceVariant,
+    rivalsVariant,
     warOrPeaceStep,
   ],
+
   skip: ([_products, isResolution, resolutionTile, missionPossibleHash]) =>
     isResolution! &&
     resolutionTile != null &&
     resolutionTile.includes(MISSION_POSSIBLE_ID) &&
     missionPossibleHash == null,
+
   InstanceDerivedComponent,
 });
 
@@ -40,6 +44,7 @@ function InstanceDerivedComponent({
     resolution,
     _missionPossibleCards,
     isTriumphTrack,
+    isRivals,
     triumphTrackId,
   ],
 }: DerivedStepInstanceComponentProps<
@@ -47,6 +52,7 @@ function InstanceDerivedComponent({
   boolean,
   readonly number[],
   number,
+  boolean,
   boolean,
   TrackId
 >): JSX.Element {
@@ -84,7 +90,7 @@ function InstanceDerivedComponent({
         </BlockWithFootnotes>
       }
     >
-      {isTriumphTrack && triumphTrackId !== "war" && (
+      {isTriumphTrack && !isRivals && triumphTrackId !== "war" && (
         <BlockWithFootnotes
           footnote={<InstanceStepLink step={warOrPeaceStep} />}
         >
@@ -103,7 +109,11 @@ function InstanceDerivedComponent({
         </BlockWithFootnotes>
       )}
       <>
-        Shuffle all {isTriumphTrack && triumphTrackId !== "war" && "remaining "}
+        Shuffle all{" "}
+        {isTriumphTrack &&
+          !isRivals &&
+          triumphTrackId !== "war" &&
+          "remaining "}
         objective cards.
       </>
       <BlockWithFootnotes footnote={<>At the bottom.</>}>

@@ -10,6 +10,7 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { PercentSlider } from "games/core/ux/PercentSlider";
+import rivalsVariant from "./rivalsVariant";
 import warAndPeaceVariant from "./warAndPeaceVariant";
 
 type TemplateConfig = { percentWar: number };
@@ -21,9 +22,10 @@ export default createRandomGameStep({
   id: "warOrPeaceTriumphTrack",
   labelOverride: "Triumph Track: Side",
 
-  dependencies: [warAndPeaceVariant],
+  dependencies: [warAndPeaceVariant, rivalsVariant],
 
-  isTemplatable: (isEnabled) => isEnabled.canResolveTo(true),
+  isTemplatable: (isEnabled, isRivalsEnabled) =>
+    isEnabled.canResolveTo(true) && isRivalsEnabled.canResolveTo(false),
 
   initialConfig: { percentWar: 50 },
 
@@ -45,9 +47,9 @@ export default createRandomGameStep({
 
 function ConfigPanel({
   config: { percentWar },
-  queries: [isEnabled],
+  queries: [isEnabled, isRivalsEnabled],
   onChange,
-}: ConfigPanelProps<TemplateConfig, boolean>): JSX.Element {
+}: ConfigPanelProps<TemplateConfig, boolean, boolean>): JSX.Element {
   return (
     <Grid container textAlign="center">
       <Grid item xs={2}>
@@ -70,6 +72,18 @@ function ConfigPanel({
             Ignored when <em>{warAndPeaceVariant.label}</em> isn't enabled.
           </Typography>
         </Grid>
+      )}
+      {isRivalsEnabled.canResolveTo(true) && percentWar < 100 && (
+        <>
+          <Grid item xs={2} />
+          <Grid item xs={8}>
+            <Typography variant="caption" color="error">
+              This setting is ignored when {rivalsVariant.label} is enabled, in
+              those cases the Peace track cannot be used.
+            </Typography>
+          </Grid>
+          <Grid item xs={2} />
+        </>
       )}
     </Grid>
   );

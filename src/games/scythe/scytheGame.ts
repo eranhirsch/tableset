@@ -37,6 +37,8 @@ import removeModularTilesStep from "./steps/removeModularTilesStep";
 import resolutionTileStep from "./steps/resolutionTileStep";
 import resolutionVariant from "./steps/resolutionVariant";
 import resourcesPilesStep from "./steps/resourcesPilesStep";
+import rivalsStep from "./steps/rivalsStep";
+import rivalsVariant from "./steps/rivalsVariant";
 import seatingStep from "./steps/seatingStep";
 import startingWorkersStep from "./steps/startingWorkersStep";
 import structureBonusStep from "./steps/structureBonusStep";
@@ -152,6 +154,7 @@ export const scytheGame = createGame({
     resolutionVariant, // Variant
     modularBoardVariant, // Variant
     warAndPeaceVariant, // Variant
+    rivalsVariant, // Variant
 
     boardStep, // Templatable
     modularTilesStep, // Templatable
@@ -218,6 +221,8 @@ export const scytheGame = createGame({
       InstanceManualComponent:
         "Hand each player a riverwalk card, and for new players a quick-start card too.",
     }),
+
+    rivalsStep,
 
     firstPlayerStep,
   ],

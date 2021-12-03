@@ -9,6 +9,7 @@ import { FactionId } from "../utils/Factions";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
 import playerAssignmentsStep from "./playerAssignmentsStep";
+import rivalsVariant from "./rivalsVariant";
 import warAndPeaceVariant from "./warAndPeaceVariant";
 import warOrPeaceStep, { TrackId } from "./warOrPeaceStep";
 
@@ -17,6 +18,7 @@ export default createDerivedGameStep({
   labelOverride: "Objectives",
   dependencies: [
     warAndPeaceVariant,
+    rivalsVariant,
     warOrPeaceStep,
     factionsStep,
     playerAssignmentsStep,
@@ -25,8 +27,15 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [isTriumphTrack, triumphTrackId, factionIds, assignments],
+  dependencies: [
+    isTriumphTrack,
+    isRivals,
+    triumphTrackId,
+    factionIds,
+    assignments,
+  ],
 }: DerivedStepInstanceComponentProps<
+  boolean,
   boolean,
   TrackId,
   readonly FactionId[],
@@ -45,10 +54,11 @@ function InstanceDerivedComponent({
           Deal each player a hand of <strong>2</strong> objective cards
           <Footnote />.<br />
           {isTriumphTrack &&
+            !isRivals &&
             triumphTrackId !== "war" &&
             (factionIds == null || factionIds.includes("saxony")) && (
               <>
-                {triumphTrackId == null && (
+                {triumphTrackId == null && !isRivals && (
                   <em>
                     If the <strong>Peace</strong> triumph track is used
                     {factionIds != null && ":"}
@@ -56,7 +66,8 @@ function InstanceDerivedComponent({
                 )}
                 {factionIds == null && (
                   <em>
-                    {triumphTrackId == null && " and"} if they are in play:
+                    {triumphTrackId == null && !isRivals && " and"} if they are
+                    in play:
                   </em>
                 )}{" "}
                 give{" "}
