@@ -6,7 +6,7 @@ import { VariableGameStep } from "model/VariableGameStep";
 import { templateSelectors } from "./templateSlice";
 
 export interface WithDependencies extends GameStepBase {
-  dependencies: [...VariableGameStep<unknown>[]];
+  dependencies: readonly [...VariableGameStep<unknown>[]];
 }
 
 export const isWithDependencies = (

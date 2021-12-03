@@ -64,7 +64,7 @@ export function StepConfigPanelWrapper<C = unknown>({
 }
 
 function useQueries(
-  dependencies: [...VariableGameStep<unknown>[]]
+  dependencies: readonly [...VariableGameStep<unknown>[]]
 ): readonly [...Query[]] {
   const context = useFeaturesContext();
   const template = useAppSelector(templateSelectors.selectEntities);
