@@ -2,6 +2,9 @@ import { Stack, Typography } from "@mui/material";
 import { createVariant } from "games/core/steps/createVariant";
 import productsMetaStep from "./productsMetaStep";
 
+// TODO: convert this to a randomGameStep and make it dependent on the triumph
+// track so we can make this variant configurable so that it is conditional on
+// playing with the triumph track
 export default createVariant({
   id: "rivals",
   name: "Rivals",
