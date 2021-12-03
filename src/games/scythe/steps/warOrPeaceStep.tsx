@@ -31,8 +31,12 @@ export default createRandomGameStep({
 
   initialConfig: { percentWar: 50 },
 
-  resolve: ({ percentWar }, isEnabled) =>
-    !isEnabled ? null : Random.coin_flip(percentWar / 100) ? "war" : "peace",
+  resolve: ({ percentWar }, isEnabled, isRivalsEnabled) =>
+    !isEnabled || isRivalsEnabled
+      ? null
+      : Random.coin_flip(percentWar / 100)
+      ? "war"
+      : "peace",
 
   refresh: () => templateValue("unchanged"),
 
