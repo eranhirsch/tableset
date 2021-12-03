@@ -299,7 +299,7 @@ function MultiSliderConfigPanel({
   ): void;
   label: string;
 }): JSX.Element {
-  const [isSync, setSync] = useState(true);
+  const [isSync, setSync] = useState(conditionalPercent == null);
 
   useEffect(() => {
     // Make sure that when sync is on we don't have a specific setting for the
