@@ -19,11 +19,10 @@ function InstanceDerivedComponent({
 }: DerivedStepInstanceComponentProps<boolean, boolean>): JSX.Element {
   return (
     <Typography variant="body1">
-      Players may declare “rivals” by placing 1 or more of your stars on other
-      players’ home bases. You may place up to{" "}
-      <strong>{isTriumphEnabled ? 4 : 2}</strong> of your stars this way, and
-      you may place multiple stars on the same home base. All players do this
-      simultaneously.
+      All players may <em>simultaneously</em> declare “rivals” by placing 1 or
+      more of their stars on other players’ home bases. They may place up to{" "}
+      <strong>{isTriumphEnabled ? 4 : 2}</strong> of their stars this way, and
+      they may place multiple stars on the same home base.
     </Typography>
   );
 }
