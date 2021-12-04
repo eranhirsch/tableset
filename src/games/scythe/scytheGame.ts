@@ -2,13 +2,15 @@ import { createGameStep } from "games/core/steps/createGameStep";
 import { createGame } from "model/Game";
 import advancedAirshipVariant from "./steps/advancedAirshipVariant";
 import airshipAggressiveStep, {
-  airshipAggressiveAssignmentStep,
+  airshipAggressiveAssignmentStep
 } from "./steps/airshipAggressiveStep";
 import airshipPassiveStep, {
-  airshipPassiveAssignmentStep,
+  airshipPassiveAssignmentStep
 } from "./steps/airshipPassiveStep";
 import airshipPlacementStep from "./steps/airshipPlacementStep";
 import airshipVariant from "./steps/airshipVariant";
+import alliancesStep from "./steps/alliancesStep";
+import alliancesVariant from "./steps/alliancesVariant";
 import baselessFactionsStep from "./steps/baselessFactionsStep";
 import boardStep from "./steps/boardStep";
 import combatCardsDeckStep from "./steps/combatCardsDeckStep";
@@ -155,6 +157,7 @@ export const scytheGame = createGame({
     modularBoardVariant, // Variant
     warAndPeaceVariant, // Variant
     rivalsVariant, // Variant
+    alliancesVariant, // Variant
 
     boardStep, // Templatable
     modularTilesStep, // Templatable
@@ -196,6 +199,7 @@ export const scytheGame = createGame({
     vesnaFactoryCardsStep, // Templatable
     vesnaMechAbilitiesStep, // Templatable
     factionMatComponentsStep,
+    alliancesStep,
 
     createGameStep({
       id: "character",
