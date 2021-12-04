@@ -10,7 +10,7 @@ import {
   ConfigPanelProps,
   InstanceContext,
   RandomGameStep,
-  TemplateContext,
+  TemplateContext
 } from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
 import { buildQuery, Query } from "./Query";
@@ -126,25 +126,31 @@ export function createVariant({
 
     // The value can never be changed following changes in the template, it
     // could only be disabled via `canBeTemplated`
-    refreshTemplateConfig(config, template, context) {
-      if (config.conditionalPercent == null) {
+    refreshTemplateConfig({ percent, conditionalPercent }, template, context) {
+      if (conditionalPercent == null) {
         templateValue("unchanged");
       }
 
       // conditional must be non-null here because the config already has a
       // conditional component to it.
       const conditionalQuery = conditional!.query(template, context);
-      if (
-        conditionalQuery.canResolveTo(true) &&
-        conditionalQuery.canResolveTo(false)
-      ) {
-        templateValue("unchanged");
+
+      if (!conditionalQuery.canResolveTo(true)) {
+        // If conditional can no longer resolve to true we need to remove the
+        // conditional part as it's no longer relevant.
+        return { percent };
       }
 
-      // We only need to refresh the config if conditional is part of the
-      // config, but is no longer a variant state (it's either never, or always,
-      // both not requiring a specific conditional setting)
-      return { percent: config.percent };
+      if (!conditionalQuery.canResolveTo(false)) {
+        // Similarly, when the conditional is always true we no longer need a
+        // setting for that case, and because the case for the conditional being
+        // enabled is stored in the conditionalPercent, we need to copy the
+        // value into `percent` and drop that extra field. 
+        return { percent: conditionalPercent };
+      }
+
+      // In any other case we don't need to change anything
+      templateValue("unchanged");
     },
 
     initialConfig: () => ({ percent: 100 }),
