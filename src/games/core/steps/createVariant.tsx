@@ -3,14 +3,14 @@ import LinkOffIcon from "@mui/icons-material/LinkOff";
 import { Box, Grid, IconButton, Typography } from "@mui/material";
 import { coerce, invariant_violation, Random, Vec } from "common";
 import { templateValue } from "features/template/templateSlice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PercentSlider } from "../ux/PercentSlider";
 import { createGameStep } from "./createGameStep";
 import {
   ConfigPanelProps,
   InstanceContext,
   RandomGameStep,
-  TemplateContext
+  TemplateContext,
 } from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
 import { buildQuery, Query } from "./Query";
@@ -145,7 +145,7 @@ export function createVariant({
         // Similarly, when the conditional is always true we no longer need a
         // setting for that case, and because the case for the conditional being
         // enabled is stored in the conditionalPercent, we need to copy the
-        // value into `percent` and drop that extra field. 
+        // value into `percent` and drop that extra field.
         return { percent: conditionalPercent };
       }
 
@@ -307,26 +307,6 @@ function MultiSliderConfigPanel({
 }): JSX.Element {
   const [isSync, setSync] = useState(conditionalPercent == null);
 
-  useEffect(() => {
-    // Make sure that when sync is on we don't have a specific setting for the
-    // conditional
-    if (isSync) {
-      if (conditionalPercent != null) {
-        onChange(
-          // This is equivalent to removing conditionalPercent from the config
-          ({ percent }) => ({ percent })
-        );
-      }
-    } else {
-      if (conditionalPercent == null) {
-        onChange(({ percent }) => ({
-          percent,
-          conditionalPercent: percent,
-        }));
-      }
-    }
-  }, [conditionalPercent, isSync, onChange]);
-
   return (
     <Grid container paddingX={1} textAlign="center">
       <Grid item xs={4} lineHeight={1}>
@@ -338,12 +318,20 @@ function MultiSliderConfigPanel({
         <PercentSlider
           percent={percent}
           onChange={(percent) =>
-            onChange(({ percent: _currentPercent, ...rest }) => ({
+            onChange(({ percent: currentPercent, conditionalPercent }) => ({
               percent,
-              ...rest,
+              // Remove conditionalPercent when it's value is identical to
+              // regular percent
+              ...(isSync
+                ? {}
+                : conditionalPercent == null
+                ? { conditionalPercent: currentPercent }
+                : conditionalPercent === percent
+                ? {}
+                : { conditionalPercent }),
             }))
           }
-          preventZero={isSync}
+          preventZero={isSync || conditionalPercent === 0}
         />
       </Grid>
       <Grid item xs={1} />
@@ -361,10 +349,9 @@ function MultiSliderConfigPanel({
               percent,
               // When conditionalPercent is equal to percent we remove it, we don't
               // want to store meaningless settings.
-              conditionalPercent:
-                newConditionalPercent !== percent
-                  ? newConditionalPercent
-                  : undefined,
+              ...(newConditionalPercent !== percent
+                ? { conditionalPercent: newConditionalPercent }
+                : {}),
             }))
           }
           preventZero={percent === 0}
@@ -375,7 +362,14 @@ function MultiSliderConfigPanel({
           disabled={percent === 0}
           size="small"
           color={isSync ? "default" : "primary"}
-          onClick={() => setSync((current) => !current)}
+          onClick={() => {
+            setSync((current) => !current);
+            if (!isSync) {
+              // reenabling sync so remove conditional setting (we deconstruct
+              // without the prop, and then build a new object without it)
+              onChange(({ percent }) => ({ percent }));
+            }
+          }}
         >
           {isSync ? (
             <LinkIcon fontSize="small" />
