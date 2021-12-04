@@ -322,13 +322,9 @@ function MultiSliderConfigPanel({
               percent,
               // Remove conditionalPercent when it's value is identical to
               // regular percent
-              ...(isSync
+              ...(isSync || conditionalPercent === percent
                 ? {}
-                : conditionalPercent == null
-                ? { conditionalPercent: currentPercent }
-                : conditionalPercent === percent
-                ? {}
-                : { conditionalPercent }),
+                : { conditionalPercent: conditionalPercent ?? currentPercent }),
             }))
           }
           preventZero={isSync || conditionalPercent === 0}
