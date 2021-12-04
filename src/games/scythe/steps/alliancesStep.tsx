@@ -1,18 +1,27 @@
 import { Typography } from "@mui/material";
-import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
+import {
+  createDerivedGameStep,
+  DerivedStepInstanceComponentProps,
+} from "games/core/steps/createDerivedGameStep";
+import { playersMetaStep } from "games/global";
 import { RulesSection } from "games/global/ux/RulesSection";
-import React from "react";
+import { PlayerId } from "model/Player";
 import alliancesVariant from "./alliancesVariant";
 
 export default createDerivedGameStep({
   id: "alliances",
   labelOverride: "Alliances: Token",
-  dependencies: [alliancesVariant],
+  dependencies: [playersMetaStep, alliancesVariant],
   skip: ([isEnabled]) => !isEnabled,
   InstanceDerivedComponent,
 });
 
-function InstanceDerivedComponent(): JSX.Element {
+function InstanceDerivedComponent({
+  dependencies: [playerIds],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
   return (
     // Copied from the manual, page 18
     <>
@@ -30,12 +39,9 @@ function InstanceDerivedComponent(): JSX.Element {
           You now have their faction ability as noted on the token in addition
           to the ability on your faction mat.
         </>
-        <>
-          <em>
-            In games with an odd number of players, the moment you become the
-            “odd man out,” gain $5.
-          </em>
-        </>
+        {playerIds!.length % 2 === 1 && (
+          <em>The moment you become the “odd man out,” gain $5.</em>
+        )}
         <>
           If you ever attack a player who has your{" "}
           <strong>faction’s Alliance token</strong> or force their workers off a
