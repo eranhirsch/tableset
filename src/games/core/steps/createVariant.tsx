@@ -330,7 +330,7 @@ function MultiSliderConfigPanel({
   return (
     <Grid container paddingX={1} textAlign="center">
       <Grid item xs={4} lineHeight={1}>
-        <Typography variant="caption">
+        <Typography variant="caption" lineHeight={1}>
           <em>Without</em> {label}
         </Typography>
       </Grid>
@@ -348,7 +348,7 @@ function MultiSliderConfigPanel({
       </Grid>
       <Grid item xs={1} />
       <Grid item xs={4} lineHeight={1}>
-        <Typography variant="caption">
+        <Typography variant="caption" lineHeight={1}>
           <strong>With</strong> {label}
         </Typography>
       </Grid>
