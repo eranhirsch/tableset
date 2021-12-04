@@ -74,23 +74,18 @@ function ConfigPanel({
       </Grid>
       {isEnabled.canResolveTo(false) && (
         <Grid item xs={12} textAlign="center" paddingX={10}>
-          {" "}
           <Typography color="error" variant="caption">
             Ignored when <em>{warAndPeaceVariant.label}</em> isn't enabled.
           </Typography>
         </Grid>
       )}
       {isRivalsEnabled.canResolveTo(true) && percentWar < 100 && (
-        <>
-          <Grid item xs={2} />
-          <Grid item xs={8}>
-            <Typography variant="caption" color="error">
-              This setting is ignored when {rivalsVariant.label} is enabled, in
-              those cases the Peace track cannot be used.
-            </Typography>
-          </Grid>
-          <Grid item xs={2} />
-        </>
+        <Grid item xs={12} textAlign="center" paddingX={10}>
+          <Typography color="error" variant="caption">
+            Ignored when {rivalsVariant.label} is enabled (only {label("war")}{" "}
+            is available in that case).
+          </Typography>
+        </Grid>
       )}
     </Grid>
   );
