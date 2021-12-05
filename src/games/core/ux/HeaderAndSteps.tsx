@@ -5,17 +5,18 @@ export function HeaderAndSteps({
   synopsis,
   children,
 }: PropsWithChildren<{
-  synopsis: JSX.Element | string;
+  synopsis?: JSX.Element | string;
 }>): JSX.Element {
   const theme = useTheme();
 
   return (
     <>
-      {typeof synopsis === "string" ? (
-        <Typography variant="body1">{synopsis}</Typography>
-      ) : (
-        synopsis
-      )}
+      {synopsis != null &&
+        (typeof synopsis === "string" ? (
+          <Typography variant="body1">{synopsis}</Typography>
+        ) : (
+          synopsis
+        ))}
       <Stack
         component="ol"
         sx={{ paddingInlineStart: theme.spacing(2) }}

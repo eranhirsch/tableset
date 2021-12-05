@@ -22,6 +22,8 @@ import factionsStep from "./steps/factionsStep";
 import factionStartingPowerStep from "./steps/factionStartingPowerStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
+import madTeslaStep from "./steps/madTeslaStep";
+import madTeslaVariant from "./steps/madTeslaVariant";
 import missionPossibleStep from "./steps/missionPossibleStep";
 import modularBoardVariant from "./steps/modularBoardVariant";
 import modularFactionDrafting from "./steps/modularFactionDrafting";
@@ -164,6 +166,7 @@ export const scytheGame = createGame({
     rivalsVariant, // Variant
     alliancesVariant, // Variant
     teslaVariant, // Variant
+    madTeslaVariant, // Variant
 
     boardStep, // Templatable
     modularTilesStep, // Templatable
@@ -236,6 +239,7 @@ export const scytheGame = createGame({
     rivalsStep,
 
     teslaStep,
+    madTeslaStep,
 
     firstPlayerStep,
   ],
