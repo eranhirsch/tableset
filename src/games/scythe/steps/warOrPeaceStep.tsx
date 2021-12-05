@@ -187,7 +187,7 @@ function InstanceCards({
   onClick,
 }: InstanceCardsProps<TrackId, boolean>): JSX.Element {
   return (
-    <InstanceCard title="Side" subheader="Triumph" onClick={onClick}>
+    <InstanceCard title="Track" subheader="Triumph" onClick={onClick}>
       <Typography variant="h3" color="primary">
         {trackId === "peace" ? "🕊️" : "💣"}
       </Typography>

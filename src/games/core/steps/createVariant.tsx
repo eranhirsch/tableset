@@ -230,7 +230,7 @@ export function createVariant({
             // would have different value from config, and that would mean that
             // we can't be in a situation where either true or false can't be
             // resolved via the config.
-            return false;
+            return true;
           }
 
           // a variant can resolve to false if the percent is lower than 100
