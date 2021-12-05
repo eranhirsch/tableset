@@ -3,6 +3,7 @@ import LinkOffIcon from "@mui/icons-material/LinkOff";
 import { Box, Grid, IconButton, Stack, Typography } from "@mui/material";
 import { coerce, invariant_violation, Random, Vec } from "common";
 import { templateValue } from "features/template/templateSlice";
+import { VariableGameStep } from "model/VariableGameStep";
 import { useState } from "react";
 import { PercentSlider } from "../ux/PercentSlider";
 import createConstantValueMetaStep from "./createConstantValueMetaStep";
@@ -45,8 +46,8 @@ interface Options<
     query9: Query<D9>,
     query10: Query<D10>
   ): boolean;
-  conditional?: VariantGameStep;
-  incompatibleWith?: VariantGameStep;
+  conditional?: VariableGameStep<boolean>;
+  incompatibleWith?: VariableGameStep<boolean>;
   Description: (() => JSX.Element) | string;
 }
 
@@ -446,7 +447,7 @@ function ConfigPanelTLDR({
   conditionalStep,
 }: {
   config: TemplateConfig;
-  conditionalStep?: VariantGameStep;
+  conditionalStep?: VariableGameStep<boolean>;
 }): JSX.Element {
   if (percent === 0) {
     return (
