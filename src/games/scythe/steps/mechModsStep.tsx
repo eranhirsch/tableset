@@ -8,6 +8,7 @@ import { playersMetaStep } from "games/global";
 import mechModsVariant from "./mechModsVariant";
 
 const FACTION_ABILITIES = [
+  // spell-checker: disable
   "artillery",
   "camaraderie",
   "scout",
@@ -26,6 +27,7 @@ const NEW_ABILITIES = [
   "reinforce",
   "stealth",
   "tactics",
+  // spell-checker: enable
 ] as const;
 const ALL_TILES = [...NEW_ABILITIES, ...FACTION_ABILITIES] as const;
 type TileId = typeof ALL_TILES[number];
