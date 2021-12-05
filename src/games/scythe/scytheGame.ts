@@ -24,6 +24,7 @@ import factoryDeckStep from "./steps/factoryDeckStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import madTeslaStep from "./steps/madTeslaStep";
 import madTeslaVariant from "./steps/madTeslaVariant";
+import mechModsStep from "./steps/mechModsStep";
 import mechModsVariant from "./steps/mechModsVariant";
 import missionPossibleStep from "./steps/missionPossibleStep";
 import modularBoardVariant from "./steps/modularBoardVariant";
