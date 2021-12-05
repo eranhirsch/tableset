@@ -44,6 +44,7 @@ import rivalsVariant from "./steps/rivalsVariant";
 import seatingStep from "./steps/seatingStep";
 import startingWorkersStep from "./steps/startingWorkersStep";
 import structureBonusStep from "./steps/structureBonusStep";
+import triumphTilesStep from "./steps/triumphTilesStep";
 import triumphTilesVariant from "./steps/triumphTilesVariant";
 import vesnaFactoryCardsStep from "./steps/vesnaFactoryCardsStep";
 import vesnaMechAbilitiesStep from "./steps/vesnaMechAbilitiesStep";
@@ -166,6 +167,7 @@ export const scytheGame = createGame({
     modularHomeBasesStep, // Templatable
 
     warOrPeaceStep, // Templatable
+    triumphTilesStep, // Templatable
 
     structureBonusStep, // Templatable
 
