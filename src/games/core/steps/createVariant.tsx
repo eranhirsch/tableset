@@ -1,17 +1,13 @@
 import LinkIcon from "@mui/icons-material/Link";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
-import { Box, Grid, IconButton, Typography } from "@mui/material";
+import { Box, Grid, IconButton, Stack, Typography } from "@mui/material";
 import { coerce, invariant_violation, Random, Vec } from "common";
 import { templateValue } from "features/template/templateSlice";
 import { useState } from "react";
 import { PercentSlider } from "../ux/PercentSlider";
+import createConstantValueMetaStep from "./createConstantValueMetaStep";
 import { createGameStep } from "./createGameStep";
-import {
-  ConfigPanelProps,
-  InstanceContext,
-  RandomGameStep,
-  TemplateContext,
-} from "./createRandomGameStep";
+import { ConfigPanelProps, RandomGameStep } from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
 import { buildQuery, Query } from "./Query";
 
@@ -50,7 +46,8 @@ interface Options<
     query10: Query<D10>
   ): boolean;
   conditional?: VariantGameStep;
-  InstanceVariableComponent(): JSX.Element;
+  incompatibleWith?: VariantGameStep;
+  Description: (() => JSX.Element) | string;
 }
 
 interface OptionsInternal
@@ -86,7 +83,8 @@ export function createVariant({
   name,
   dependencies,
   conditional,
-  InstanceVariableComponent,
+  incompatibleWith,
+  Description,
   isTemplatable,
 }: OptionsInternal): VariantGameStep {
   const baseStep = createGameStep({
@@ -99,8 +97,11 @@ export function createVariant({
 
     isVariant: true,
 
-    dependencies:
-      conditional != null ? [conditional, ...dependencies] : dependencies,
+    dependencies: Vec.concat(
+      [conditional ?? createConstantValueMetaStep(true)],
+      [incompatibleWith ?? createConstantValueMetaStep(false)],
+      dependencies
+    ),
 
     // Variants are not part of the regular display and don't run this method
     skip: () =>
@@ -115,17 +116,22 @@ export function createVariant({
           x == null || typeof x === "boolean"
       ) ?? false,
 
-    InstanceVariableComponent,
+    InstanceVariableComponent: () =>
+      typeof Description === "string" ? (
+        <Typography variant="body1">{Description}</Typography>
+      ) : (
+        <Description />
+      ),
 
     canBeTemplated: (template, context) =>
+      (incompatibleWith == null ||
+        incompatibleWith.query(template, context).canResolveTo(false)) &&
       isTemplatable(
         ...Vec.map(dependencies, (dependency) =>
           dependency.query(template, context)
         )
       ),
 
-    // The value can never be changed following changes in the template, it
-    // could only be disabled via `canBeTemplated`
     refreshTemplateConfig({ percent, conditionalPercent }, template, context) {
       if (conditionalPercent == null) {
         templateValue("unchanged");
@@ -153,56 +159,98 @@ export function createVariant({
       templateValue("unchanged");
     },
 
-    initialConfig: () => ({ percent: 100 }),
+    initialConfig: { percent: 100 },
 
-    hasValue: (_: TemplateContext | InstanceContext) => true,
+    hasValue: () => true,
 
-    resolve: ({ percent, conditionalPercent }, instance, context) =>
-      dependencies.every((dependency) =>
-        // We check generally for falsy values (nulls, false, etc...)
-        Boolean(dependency.extractInstanceValue(instance, context))
-      )
-        ? Random.coin_flip(
-            (conditionalPercent != null &&
-            // If conditionalPercent is non-null then conditional itself must be
-            // non-null too, so we can extract the instance value for it and
-            // use it if it's true.
-            Boolean(conditional!.extractInstanceValue(instance, context))
-              ? conditionalPercent
-              : percent) / 100
-          )
-          ? true
-          : null
-        : null,
+    resolve({ percent, conditionalPercent }, instance, context) {
+      if (
+        incompatibleWith != null &&
+        incompatibleWith.extractInstanceValue(instance, context)
+      ) {
+        // The incompatible variant is enabled so this variant can't be.
+        return null;
+      }
 
-    query: (template) =>
+      if (
+        dependencies.some(
+          ({ extractInstanceValue }) =>
+            // We use the Boolean function instead of casting to cover all falsy
+            // values (nulls, undefined, 0, empty arrays, etc...)
+            !Boolean(extractInstanceValue(instance, context))
+        )
+      ) {
+        // At least one of the dependencies are falsy
+        return null;
+      }
+
+      const relevantValue =
+        conditionalPercent != null &&
+        // If conditionalPercent is non-null then conditional itself must be
+        // non-null too, so we can extract the instance value for it and
+        // use it if it's true.
+        conditional!.extractInstanceValue(instance, context)
+          ? conditionalPercent
+          : percent;
+
+      return Random.coin_flip(relevantValue / 100) ? true : null;
+    },
+
+    query: (template, context) =>
       buildQuery(baseStep.id, {
-        canResolveTo(value: boolean) {
+        canResolveTo(value) {
           const element = template[baseStep.id];
           if (element == null) {
             return !value;
           }
 
+          if (value) {
+            // If we have a config we always have at least a way to resolve to
+            // true (by definition, otherwise we would remove the config)
+            return true;
+          }
+
+          // From here on the only value in question is `false` ----------
+
+          if (
+            incompatibleWith != null &&
+            incompatibleWith.query(template, context).canResolveTo(true)
+          ) {
+            // If the incompatible dependency can resolve to true then there are
+            // cases where we wouldn't resolve this variant
+            return true;
+          }
+
           const { percent, conditionalPercent } =
             element.config as Readonly<TemplateConfig>;
 
-          if (conditionalPercent == null) {
-            // a variant can resolve to false if the percent is lower than 100
-            // it can always resolve to true when a config is present
-            return value || percent < 100;
+          if (conditionalPercent != null) {
+            // If conditionalPercent is present in the config by definition it
+            // would have different value from config, and that would mean that
+            // we can't be in a situation where either true or false can't be
+            // resolved via the config.
+            return false;
           }
 
-          // If both percent and conditionalPercent are present in the config,
-          // by definition they would have different values, and that would mean
-          // that we can't be in a situation where either true or false can't be
-          // resolved via the config.
-          return true;
+          // a variant can resolve to false if the percent is lower than 100
+          return percent < 100;
         },
 
         onlyResolvableValue() {
           const element = template[baseStep.id];
           if (element == null) {
             return false;
+          }
+
+          if (
+            incompatibleWith != null &&
+            incompatibleWith.query(template, context).onlyResolvableValue() !==
+              false
+          ) {
+            // If the incompatible dependency isn't only resolvable to false
+            // then it's value might cause us to return true or false, so we
+            // can't say what our only resolvable value is.
+            return undefined;
           }
 
           const { percent, conditionalPercent } =
@@ -218,12 +266,15 @@ export function createVariant({
         },
       }),
 
-    ConfigPanel: (props: ConfigPanelProps<TemplateConfig>) =>
-      conditional != null ? (
-        <ConditionalConfigPanel {...props} conditionalStep={conditional} />
-      ) : (
-        <SimpleConfigPanel {...props} />
-      ),
+    ConfigPanel: (
+      props: ConfigPanelProps<TemplateConfig, boolean, boolean>
+    ) => (
+      <ConfigPanel
+        {...props}
+        conditionalLabel={conditional?.label}
+        incompatibleWithLabel={incompatibleWith?.label}
+      />
+    ),
     ConfigPanelTLDR: (props) => (
       <ConfigPanelTLDR {...props} conditionalStep={conditional} />
     ),
@@ -237,31 +288,43 @@ export function createVariant({
   };
 }
 
-function SimpleConfigPanel({
-  config: { percent },
+function ConfigPanel({
+  config,
+  queries: [conditional, incompatibleWith],
   onChange,
-}: ConfigPanelProps<TemplateConfig>): JSX.Element {
-  return <ConfigPanelSlider value={percent} onChange={onChange} />;
-}
-
-function ConditionalConfigPanel({
-  config: { percent, conditionalPercent },
-  queries: [conditional],
-  onChange,
-  conditionalStep,
-}: ConfigPanelProps<TemplateConfig, boolean> & {
-  conditionalStep: VariantGameStep;
+  conditionalLabel,
+  incompatibleWithLabel,
+}: ConfigPanelProps<TemplateConfig, boolean, boolean> & {
+  conditionalLabel?: string;
+  incompatibleWithLabel?: string;
 }): JSX.Element {
-  if (!conditional.canResolveTo(true) || !conditional.canResolveTo(false)) {
-    return <ConfigPanelSlider value={percent} onChange={onChange} />;
+  const sliders =
+    !conditional.canResolveTo(true) || !conditional.canResolveTo(false) ? (
+      <ConfigPanelSlider value={config.percent} onChange={onChange} />
+    ) : (
+      <MultiSliderConfigPanel
+        config={config}
+        onChange={onChange}
+        label={conditionalLabel!}
+      />
+    );
+
+  if (!incompatibleWith.canResolveTo(true)) {
+    return sliders;
   }
 
   return (
-    <MultiSliderConfigPanel
-      config={{ percent, conditionalPercent }}
-      onChange={onChange}
-      label={conditionalStep.label}
-    />
+    <Stack direction="column" spacing={1}>
+      {sliders}
+      <Typography
+        variant="caption"
+        color="error"
+        paddingX={6}
+        textAlign="center"
+      >
+        Ignored when {incompatibleWithLabel} is <strong>Enabled</strong>
+      </Typography>
+    </Stack>
   );
 }
 

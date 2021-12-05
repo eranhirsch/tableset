@@ -12,7 +12,7 @@ export default createVariant({
   conditional: saltVariantStep,
   isTemplatable: (products) =>
     products.willContainAny(["aegyptusCreta", "venus", "venusBase"]),
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
 });
 
 function InstanceVariableComponent(): JSX.Element {

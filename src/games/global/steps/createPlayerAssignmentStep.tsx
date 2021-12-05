@@ -21,6 +21,7 @@ import {
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { templateValue } from "features/template/templateSlice";
+import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import {
   ConfigPanelProps,
   createRandomGameStep,
@@ -41,7 +42,6 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
-import alwaysOnMetaStep from "./alwaysOnMetaStep";
 import playersMetaStep from "./playersMetaStep";
 
 interface Options<ItemId extends string | number, Pid extends ProductId> {
@@ -94,7 +94,7 @@ function createPlayerAssignmentStep<
     dependencies: [
       playersMetaStep,
       productsMetaStep,
-      enabler ?? alwaysOnMetaStep,
+      enabler ?? createConstantValueMetaStep(true),
       itemsStep,
     ],
 

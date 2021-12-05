@@ -30,7 +30,7 @@ export default function createTeamVariant<ProductId = never>({
       (productDependencies == null ||
         products.willContainAny(productDependencies.products)) &&
       optionalAt.some((playCount) => players.willContainNumElements(playCount)),
-    InstanceVariableComponent,
+    Description: InstanceVariableComponent,
   });
 
   if (enabledAt == null) {

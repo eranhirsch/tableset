@@ -9,7 +9,7 @@ export default createVariant({
   dependencies: [productsMetaStep],
   conditional: warAndPeaceVariant,
   isTemplatable: (products) => products.willContain("fenris")!,
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
 });
 
 function InstanceVariableComponent(): JSX.Element {

@@ -44,6 +44,7 @@ import rivalsVariant from "./steps/rivalsVariant";
 import seatingStep from "./steps/seatingStep";
 import startingWorkersStep from "./steps/startingWorkersStep";
 import structureBonusStep from "./steps/structureBonusStep";
+import triumphTilesVariant from "./steps/triumphTilesVariant";
 import vesnaFactoryCardsStep from "./steps/vesnaFactoryCardsStep";
 import vesnaMechAbilitiesStep from "./steps/vesnaMechAbilitiesStep";
 import warAndPeaceVariant from "./steps/warAndPeaceVariant";
@@ -156,6 +157,7 @@ export const scytheGame = createGame({
     resolutionVariant, // Variant
     modularBoardVariant, // Variant
     warAndPeaceVariant, // Variant
+    triumphTilesVariant, // Variant
     rivalsVariant, // Variant
     alliancesVariant, // Variant
 

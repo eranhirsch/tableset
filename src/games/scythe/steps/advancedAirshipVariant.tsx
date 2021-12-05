@@ -7,7 +7,7 @@ export default createVariant({
   name: "Airship: Per Player",
   dependencies: [airshipVariant],
   isTemplatable: (airship) => airship.canResolveTo(true),
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
 });
 
 function InstanceVariableComponent(): JSX.Element {

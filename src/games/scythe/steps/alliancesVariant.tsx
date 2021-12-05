@@ -7,7 +7,7 @@ export default createVariant({
   name: "Alliances",
   dependencies: [productsMetaStep],
   isTemplatable: (products) => products.willContain("fenris")!,
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
 });
 
 function InstanceVariableComponent(): JSX.Element {

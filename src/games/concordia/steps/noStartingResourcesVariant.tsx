@@ -9,7 +9,7 @@ const noStartingResourcesVariant = createVariant({
   id: "noStartingResources",
   name: "No Starting Resources",
   dependencies: [],
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
   isTemplatable: () => true,
 });
 export default noStartingResourcesVariant;

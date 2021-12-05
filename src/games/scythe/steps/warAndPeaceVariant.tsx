@@ -10,7 +10,7 @@ export default createVariant({
 
   isTemplatable: (products) => products.willContain("fenris")!,
 
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
 });
 
 function InstanceVariableComponent(): JSX.Element {

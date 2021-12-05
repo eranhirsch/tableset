@@ -9,7 +9,7 @@ export default createVariant({
   id: "salsa",
   name: "Salt",
   dependencies: [productsMetaStep],
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
   isTemplatable: (products) => products.willContain("salsa")!,
 });
 

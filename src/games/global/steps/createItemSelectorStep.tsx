@@ -10,11 +10,12 @@ import {
   templateValue
 } from "features/template/templateSlice";
 import { useFeaturesContext } from "features/useFeaturesContext";
+import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
@@ -26,11 +27,9 @@ import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import {
   AlwaysNeverMultiChipSelector,
   AlwaysNeverMultiLabel,
-  Limits
+  Limits,
 } from "../ux/AlwaysNeverMultiChipSelector";
 import { SingleItemSelect } from "../ux/SingleItemSelect";
-import alwaysOnMetaStep from "./alwaysOnMetaStep";
-import createNegateMetaStep from "./createNegateMetaStep";
 import createPlayerAssignmentStep from "./createPlayerAssignmentStep";
 import playersMetaStep from "./playersMetaStep";
 
@@ -164,8 +163,8 @@ export default function createItemSelectorStep<
     dependencies: [
       playersMetaStep,
       productsMetaStep,
-      enabler ?? alwaysOnMetaStep,
-      advancedMode?.enabler ?? createNegateMetaStep(alwaysOnMetaStep),
+      enabler ?? createConstantValueMetaStep(true),
+      advancedMode?.enabler ?? createConstantValueMetaStep(false),
     ],
 
     isTemplatable: (_players, products, isOn, _isAdvancedOn) =>

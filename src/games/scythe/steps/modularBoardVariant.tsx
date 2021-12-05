@@ -7,7 +7,7 @@ export default createVariant({
   name: "Modular Board",
   dependencies: [productsMetaStep],
   isTemplatable: (products) => products.willContain("modularBoard")!,
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
 });
 
 function InstanceVariableComponent(): JSX.Element {

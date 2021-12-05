@@ -7,7 +7,7 @@ export default createVariant({
   name: "Forum",
   dependencies: [productsMetaStep],
   isTemplatable: (products) => products.willContain("salsa")!,
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
 });
 
 function InstanceVariableComponent(): JSX.Element {

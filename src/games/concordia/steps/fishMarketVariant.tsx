@@ -8,7 +8,7 @@ export default createVariant({
   dependencies: [productsMetaStep],
   isTemplatable: (products) =>
     products.willContainAny(["balearicaCyprus", "balearicaItalia"]),
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
 });
 
 function InstanceVariableComponent(): JSX.Element {

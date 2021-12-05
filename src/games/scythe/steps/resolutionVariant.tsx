@@ -7,7 +7,7 @@ export default createVariant({
   name: "Resolution",
   dependencies: [productsMetaStep],
   isTemplatable: (products) => products.willContain("windGambit")!,
-  InstanceVariableComponent,
+  Description: InstanceVariableComponent,
 });
 
 function InstanceVariableComponent(): JSX.Element {
