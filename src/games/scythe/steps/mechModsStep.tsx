@@ -1,40 +1,40 @@
-import { Dict } from "common";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
 import mechModsVariant from "./mechModsVariant";
 
-const FACTION_ABILITIES = [
-  // spell-checker: disable
-  "artillery",
-  "camaraderie",
-  "scout",
-  "suiton",
-  "sword",
-  "township",
-  "underpass",
-] as const;
-const NEW_ABILITIES = [
-  "armor",
-  "entrenched",
-  "feint",
-  "foothold",
-  "pontoons",
-  "regroup",
-  "reinforce",
-  "stealth",
-  "tactics",
-  // spell-checker: enable
-] as const;
-const ALL_TILES = [...NEW_ABILITIES, ...FACTION_ABILITIES] as const;
-type TileId = typeof ALL_TILES[number];
-const TILES = Dict.merge(
-  Dict.from_keys(FACTION_ABILITIES, () => 2),
-  Dict.from_keys(NEW_ABILITIES, () => 3)
-);
+// const FACTION_ABILITIES = [
+//   // spell-checker: disable
+//   "artillery",
+//   "camaraderie",
+//   "scout",
+//   "suiton",
+//   "sword",
+//   "township",
+//   "underpass",
+// ] as const;
+// const NEW_ABILITIES = [
+//   "armor",
+//   "entrenched",
+//   "feint",
+//   "foothold",
+//   "pontoons",
+//   "regroup",
+//   "reinforce",
+//   "stealth",
+//   "tactics",
+//   // spell-checker: enable
+// ] as const;
+// const ALL_TILES = [...NEW_ABILITIES, ...FACTION_ABILITIES] as const;
+// type TileId = typeof ALL_TILES[number];
+// const TILES = Dict.merge(
+//   Dict.from_keys(FACTION_ABILITIES, () => 2),
+//   Dict.from_keys(NEW_ABILITIES, () => 3)
+// );
 
 export default createRandomGameStep({
   id: "mechMods",
@@ -42,11 +42,15 @@ export default createRandomGameStep({
   isTemplatable: (_, isEnabled) => isEnabled.canResolveTo(true)!,
   skip: (_value, [_players, isEnabled]) => !isEnabled,
 
-  resolve: (_, players, isEnabled) => (isEnabled ? 0 : null),
+  resolve: (_, _players, isEnabled) => (isEnabled ? 0 : null),
 
   InstanceVariableComponent,
 
   instanceAvroType: "long",
+
+  InstanceCards: (props) => (
+    <IndexHashInstanceCard {...props} title="Mods" subheader="Mech" />
+  ),
 
   ...NoConfigPanel,
 });

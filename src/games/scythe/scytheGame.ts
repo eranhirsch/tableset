@@ -24,6 +24,7 @@ import factoryDeckStep from "./steps/factoryDeckStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import madTeslaStep from "./steps/madTeslaStep";
 import madTeslaVariant from "./steps/madTeslaVariant";
+import mechModsVariant from "./steps/mechModsVariant";
 import missionPossibleStep from "./steps/missionPossibleStep";
 import modularBoardVariant from "./steps/modularBoardVariant";
 import modularFactionDrafting from "./steps/modularFactionDrafting";
@@ -160,13 +161,14 @@ export const scytheGame = createGame({
     airshipVariant, // Variant
     advancedAirshipVariant, // Variant
     resolutionVariant, // Variant
-    modularBoardVariant, // Variant
+    mechModsVariant, // Variant
     warAndPeaceVariant, // Variant
     triumphTilesVariant, // Variant
     rivalsVariant, // Variant
     alliancesVariant, // Variant
     teslaVariant, // Variant
     madTeslaVariant, // Variant
+    modularBoardVariant, // Variant
 
     boardStep, // Templatable
     modularTilesStep, // Templatable
@@ -208,6 +210,7 @@ export const scytheGame = createGame({
     playerMatComponentsStep,
     vesnaFactoryCardsStep, // Templatable
     vesnaMechAbilitiesStep, // Templatable
+    mechModsStep, // Templatable
     factionMatComponentsStep,
     alliancesStep,
 
