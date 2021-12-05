@@ -12,7 +12,7 @@ export default createDerivedGameStep({
   id: "alliances",
   labelOverride: "Alliances: Token",
   dependencies: [playersMetaStep, alliancesVariant],
-  skip: ([isEnabled]) => !isEnabled,
+  skip: ([_, isEnabled]) => !isEnabled,
   InstanceDerivedComponent,
 });
 
