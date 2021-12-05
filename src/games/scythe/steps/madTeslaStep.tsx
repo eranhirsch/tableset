@@ -87,13 +87,20 @@ function InstanceDerivedComponent(): JSX.Element {
           <ol>
             <li>Gain 1 Popularity</li>
             <li>
-              Set your combat dial and select combat cards as usual. a. Mad
-              Tesla’s base power is equal to the top 2 cards on the combat card
-              discard pile. b. Mech Mods, Infrastructure Mods, and mech
-              abilities that affect an opponent’s power/combat cards do not
-              apply to combat with Mad Tesla (they are marked with the icon).
-              Combat abilities that affect only the player may be used, but
-              there is no way to reduce Mad Tesla’s power or combat cards.
+              Set your combat dial and select combat cards as usual.{" "}
+              <ol>
+                <li>
+                  Mad Tesla’s base power is equal to the top 2 cards on the
+                  combat card discard pile.
+                </li>
+                <li>
+                  Mech Mods, Infrastructure Mods, and mech abilities that affect
+                  an opponent’s power/combat cards do not apply to combat with
+                  Mad Tesla (they are marked with an icon). Combat abilities
+                  that affect only the player may be used, but there is no way
+                  to reduce Mad Tesla’s power or combat cards.
+                </li>
+              </ol>
             </li>
             <li>
               Roll the orange six-sided die, placing it on the Combat slot on
