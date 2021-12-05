@@ -9,5 +9,6 @@ export default createVariant({
   isTemplatable: (products) => products.willContain("fenris")!,
   incompatibleWith: warAndPeaceVariant,
   Description:
-    "Use the Triumph Tiles when you want some variability in how to achieve stars.",
+    // Taken from the manual, page 37
+    "Triumph Tiles create a fully randomized, customizable version of the Triumph Track",
 });
