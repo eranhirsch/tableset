@@ -44,6 +44,8 @@ import rivalsVariant from "./steps/rivalsVariant";
 import seatingStep from "./steps/seatingStep";
 import startingWorkersStep from "./steps/startingWorkersStep";
 import structureBonusStep from "./steps/structureBonusStep";
+import teslaStep from "./steps/teslaStep";
+import teslaVariant from "./steps/teslaVariant";
 import triumphTilesStep from "./steps/triumphTilesStep";
 import triumphTilesVariant from "./steps/triumphTilesVariant";
 import vesnaFactoryCardsStep from "./steps/vesnaFactoryCardsStep";
@@ -161,6 +163,7 @@ export const scytheGame = createGame({
     triumphTilesVariant, // Variant
     rivalsVariant, // Variant
     alliancesVariant, // Variant
+    teslaVariant, // Variant
 
     boardStep, // Templatable
     modularTilesStep, // Templatable
@@ -231,6 +234,8 @@ export const scytheGame = createGame({
     }),
 
     rivalsStep,
+
+    teslaStep,
 
     firstPlayerStep,
   ],
