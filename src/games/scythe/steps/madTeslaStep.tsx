@@ -6,7 +6,7 @@ import madTeslaVariant from "./madTeslaVariant";
 export default createDerivedGameStep({
   id: "madTesla",
   dependencies: [madTeslaVariant],
-  skip: (isEnabled) => !isEnabled,
+  skip: ([isEnabled]) => !isEnabled,
   InstanceDerivedComponent,
 });
 

@@ -6,7 +6,7 @@ import teslaVariant from "./teslaVariant";
 export default createDerivedGameStep({
   id: "tesla",
   dependencies: [teslaVariant],
-  skip: (isEnabled) => !isEnabled,
+  skip: ([isEnabled]) => !isEnabled,
   InstanceDerivedComponent,
 });
 
