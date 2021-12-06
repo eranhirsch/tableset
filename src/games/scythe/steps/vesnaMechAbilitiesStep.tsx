@@ -1,12 +1,17 @@
 import { Stack } from "@mui/material";
 import { $, Dict, MathUtils, Random, Vec } from "common";
-import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
+import { InstanceStepLink } from "features/instance/InstanceStepLink";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
@@ -15,6 +20,8 @@ import { HomeBases } from "../utils/HomeBases";
 import { ALL_VESNA_MECH_IDS, VESNA_MECH_ABILITIES } from "../utils/VesnaMechs";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
+import mechModsStep from "./mechModsStep";
+import mechModsVariant from "./mechModsVariant";
 import modularBoardVariant from "./modularBoardVariant";
 import modularHomeBasesStep from "./modularHomeBasesStep";
 import playerAssignmentsStep from "./playerAssignmentsStep";
@@ -41,7 +48,7 @@ export default createRandomGameStep({
       // type than the actual step instance type we can change this...
       isModular.canResolveTo(true)),
 
-  resolve(_, productIds, factionIds, _isModular, homeBasesIdx) {
+  resolve(_, _productIds, factionIds, _isModular, homeBasesIdx) {
     if (factionIds != null && !factionIds.includes("vesna")) {
       return null;
     }
@@ -80,6 +87,8 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: mechIdx,
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
+  const isMechMods = useRequiredInstanceValue(mechModsVariant);
+
   const vesnaAbilities = useMemo(
     () =>
       $(
@@ -103,19 +112,33 @@ function InstanceVariableComponent({
           ))}
         </Stack>
       </>
+      {isMechMods && (
+        <BlockWithFootnotes footnote={<InstanceStepLink step={mechModsStep} />}>
+          {(Footnote) => (
+            <>
+              Combine these with the 2 Mech Mods selected previously
+              <Footnote />.
+            </>
+          )}
+        </BlockWithFootnotes>
+      )}
       <>
         Pick <strong>2, 3</strong>, <em>or</em> <strong>4</strong> of these.
       </>
       <>
-        Cover the mech ability spaces on <em>Vesna's</em> faction mat. If you
-        picked more than 2 also cover the printed <em>Riverwalk</em>,{" "}
-        <em>Speed</em>, or both abilities.
+        {/* copied from the manual, p. 22 */}
+        Place 2 of those tokens on the blank spaces on your faction mat; if you
+        choose a 3rd or 4th token, place them over your printed mech abilities
+        (Riverwalk and Speed).
       </>
+      <>Set aside unused tokens.</>
     </HeaderAndSteps>
   );
 }
 
 function InstanceManualComponent(): JSX.Element {
+  const isMechMods = useRequiredInstanceValue(mechModsVariant);
+
   return (
     <HeaderAndSteps synopsis={<MechAbilitiesSynopsis />}>
       <>
@@ -124,15 +147,26 @@ function InstanceManualComponent(): JSX.Element {
       <>
         Draw <strong>6</strong> tiles.
       </>
+      {isMechMods && (
+        <BlockWithFootnotes footnote={<InstanceStepLink step={mechModsStep} />}>
+          {(Footnote) => (
+            <>
+              Combine these with the 2 Mech Mods selected previously
+              <Footnote />.
+            </>
+          )}
+        </BlockWithFootnotes>
+      )}
       <>
         Pick <strong>2, 3</strong>, <em>or</em> <strong>4</strong> of these.
       </>
       <>
-        Cover the mech ability spaces on <em>Vesna's</em> faction mat. If you
-        picked more than 2 also cover the printed <em>Riverwalk</em>,{" "}
-        <em>Speed</em>, or both abilities.
+        {/* copied from the manual, p. 22 */}
+        Place 2 of those tokens on the blank spaces on your faction mat; if you
+        choose a 3rd or 4th token, place them over your printed mech abilities
+        (Riverwalk and Speed).
       </>
-      <>Return unused tiles back to the box.</>
+      <>Set aside unused tokens.</>
     </HeaderAndSteps>
   );
 }

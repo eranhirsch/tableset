@@ -2,12 +2,12 @@ import { Stack, Typography } from "@mui/material";
 import { $, tuple, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
@@ -16,14 +16,16 @@ import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { RulesSection } from "games/global/ux/RulesSection";
 import React, { useMemo } from "react";
+import { Factions } from "../utils/Factions";
+import { HomeBases } from "../utils/HomeBases";
 import { MechMods } from "../utils/MechMods";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";
 import mechModsVariant from "./mechModsVariant";
+import modularHomeBasesStep from "./modularHomeBasesStep";
 import playerAssignmentsStep from "./playerAssignmentsStep";
+import productsMetaStep from "./productsMetaStep";
 
-// TODO: Vesna mech abilities step has some caveats regarding this step, we
-// need to take that into account here...
 export default createRandomGameStep({
   id: "mechMods",
   dependencies: [mechModsVariant, factionsStep],
@@ -67,6 +69,8 @@ function InstanceVariableComponent({
     [assignments, factionIds, mechModsIdx]
   );
 
+  const vesnaIndex = factionIds.indexOf("vesna");
+
   return (
     <>
       <Typography variant="body1">
@@ -75,7 +79,20 @@ function InstanceVariableComponent({
           1, 2, <em>or none</em>
         </strong>{" "}
         of them and places them <strong>over</strong> any of their faction's
-        printed mech abilities, discarding the rest:
+        printed mech abilities
+        {vesnaIndex > -1 && (
+          <em>
+            {" "}
+            (except{" "}
+            {mechMods[vesnaIndex][1] != null ? (
+              <PlayerAvatar playerId={mechMods[vesnaIndex][1]!} inline />
+            ) : (
+              <FactionChip factionId="vesna" />
+            )}{" "}
+            doesn't place the mods yet)
+          </em>
+        )}
+        , discarding the rest:
       </Typography>
       <Stack direction="column" marginTop={2} spacing={1}>
         {React.Children.toArray(
@@ -101,6 +118,16 @@ function InstanceVariableComponent({
 }
 
 function InstanceManualComponent(): JSX.Element {
+  const productIds = useRequiredInstanceValue(productsMetaStep);
+  const homeBasesIdx = useOptionalInstanceValue(modularHomeBasesStep);
+  const availableFactions = useMemo(
+    () =>
+      homeBasesIdx != null
+        ? HomeBases.decode(homeBasesIdx)
+        : Factions.availableForProducts(productIds),
+    [homeBasesIdx, productIds]
+  );
+
   return (
     <>
       <HeaderAndSteps synopsis="Each player:">
@@ -117,7 +144,15 @@ function InstanceManualComponent(): JSX.Element {
         </>
         <>
           Places them <strong>over</strong> any of their faction's printed mech
-          abilities.
+          abilities
+          {availableFactions.includes("vesna") && (
+            <em>
+              {" "}
+              (except if <FactionChip factionId="vesna" /> are playing: they
+              don't need to place them yet)
+            </em>
+          )}
+          .
         </>
         <>Discard the rest.</>
       </HeaderAndSteps>

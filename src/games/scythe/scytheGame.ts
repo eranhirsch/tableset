@@ -209,9 +209,9 @@ export const scytheGame = createGame({
     }),
 
     playerMatComponentsStep,
+    mechModsStep, // Templatable
     vesnaFactoryCardsStep, // Templatable
     vesnaMechAbilitiesStep, // Templatable
-    mechModsStep, // Templatable
     factionMatComponentsStep,
     alliancesStep,
 
