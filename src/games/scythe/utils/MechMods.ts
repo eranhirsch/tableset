@@ -38,28 +38,14 @@ const NEW_ABILITIES = [
   // spell-checker: enable
 ] as const;
 
-const ALL_TILES = [...NEW_ABILITIES, ...FACTION_ABILITIES] as const;
-type TileId = typeof ALL_TILES[number];
-
-const TILES = $(
-  // There are 2 copies of each faction-specific ability
-  Vec.map(FACTION_ABILITIES, (ability) => Vec.fill(2, ability as TileId)),
-  ($$) =>
-    Vec.concat(
-      $$,
-      // There are 3 copies of each mech-mod only ability
-      Vec.map(NEW_ABILITIES, (ability) => Vec.fill(3, ability as TileId))
-    ),
-  Vec.flatten,
-  Vec.sort
-);
+type TileId = typeof NEW_ABILITIES[number] | typeof FACTION_ABILITIES[number];
 
 const ABILITIES_PER_PLAYER = 4;
 
 export const MechMods = {
   randomIdx(factionIds: readonly FactionId[]): number {
     // Start with all tiles
-    let availableTiles = TILES;
+    let availableTiles = allTiles();
 
     return Vec.map(factionIds, (factionId) => {
       // Each of the base factions has one ability from the mech mods which they
@@ -94,7 +80,7 @@ export const MechMods = {
     idx: number,
     factionIds: readonly FactionId[]
   ): readonly (readonly TileId[])[] {
-    let availableTiles = TILES;
+    let availableTiles = allTiles();
     let ongoingIdx = idx;
 
     return Vec.map(factionIds, (factionId) => {
@@ -117,7 +103,23 @@ export const MechMods = {
       return selected;
     });
   },
+
+  label,
 } as const;
+
+const allTiles = () =>
+  $(
+    // There are 2 copies of each faction-specific ability
+    Vec.map(FACTION_ABILITIES, (ability) => Vec.fill(2, ability as TileId)),
+    ($$) =>
+      Vec.concat(
+        $$,
+        // There are 3 copies of each mech-mod only ability
+        Vec.map(NEW_ABILITIES, (ability) => Vec.fill(3, ability as TileId))
+      ),
+    Vec.flatten,
+    Vec.sort
+  );
 
 /**
  * We use the combinations-array to map an index for the resulting combination
@@ -148,3 +150,42 @@ const drawAbilities = (
     } while (selected.includes(candidate) || candidate === factionAbility);
     return Vec.concat(selected, candidate);
   }, [] as readonly TileId[]);
+
+function label(tileId: TileId): string {
+  switch (tileId) {
+    // Spell-checker: disable
+    case "armor":
+      return "Armor";
+    case "artillery":
+      return "Artillery";
+    case "camaraderie":
+      return "Camaraderie";
+    case "entrenched":
+      return "Entrenched";
+    case "feint":
+      return "Feint";
+    case "foothold":
+      return "Foothold";
+    case "pontoons":
+      return "Pontoons";
+    case "regroup":
+      return "Regroup";
+    case "reinforce":
+      return "Reinforce";
+    case "scout":
+      return "Scout";
+    case "stealth":
+      return "Stealth";
+    case "suiton":
+      return "Suiton";
+    case "sword":
+      return "Sword";
+    case "tactics":
+      return "Tactics";
+    case "township":
+      return "Township";
+    case "underpass":
+      return "Underpass";
+    // Spell-checker: enable
+  }
+}
