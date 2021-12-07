@@ -89,7 +89,7 @@ function InstanceVariableComponent({
             ) : (
               <FactionChip factionId="vesna" />
             )}{" "}
-            doesn't place the mods yet)
+            who doesn't place the mods yet)
           </em>
         )}
         , discarding the rest:
@@ -105,7 +105,11 @@ function InstanceVariableComponent({
               )}
               :{" "}
               <GrammaticalList>
-                {React.Children.toArray(Vec.map(mods, MechMods.label))}
+                {React.Children.toArray(
+                  Vec.map(mods, (tileId) =>
+                    MechMods.label(tileId).toLocaleUpperCase()
+                  )
+                )}
               </GrammaticalList>
             </span>
           ))
@@ -171,8 +175,8 @@ function Rules({
       {withSelectionRule && (
         <>
           When drawing Mech Mods, discard any duplicates (e.g., from your draw,
-          Mods you already have, and abilities on your current faction mat) and
-          draw replacements. You may only have 1 of each Mod.
+          and abilities on your current faction mat) and draw replacements. You
+          may only have 1 of each Mod.
         </>
       )}
       <>

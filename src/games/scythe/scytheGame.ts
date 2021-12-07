@@ -22,6 +22,8 @@ import factionsStep from "./steps/factionsStep";
 import factionStartingPowerStep from "./steps/factionStartingPowerStep";
 import factoryDeckStep from "./steps/factoryDeckStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
+import infraModsStep from "./steps/infraModsStep";
+import infraModsVariant from "./steps/infraModsVariant";
 import madTeslaStep from "./steps/madTeslaStep";
 import madTeslaVariant from "./steps/madTeslaVariant";
 import mechModsStep from "./steps/mechModsStep";
@@ -163,6 +165,7 @@ export const scytheGame = createGame({
     advancedAirshipVariant, // Variant
     resolutionVariant, // Variant
     mechModsVariant, // Variant
+    infraModsVariant, // Variant
     warAndPeaceVariant, // Variant
     triumphTilesVariant, // Variant
     rivalsVariant, // Variant
@@ -210,6 +213,7 @@ export const scytheGame = createGame({
 
     playerMatComponentsStep,
     mechModsStep, // Templatable
+    infraModsStep, // Templatable
     vesnaFactoryCardsStep, // Templatable
     vesnaMechAbilitiesStep, // Templatable
     factionMatComponentsStep,
@@ -234,16 +238,16 @@ export const scytheGame = createGame({
     playerMatStartingMoneyStep,
     playerObjectivesStep,
 
+    rivalsStep,
+
+    teslaStep,
+    madTeslaStep,
+
     createGameStep({
       id: "playerAids",
       InstanceManualComponent:
         "Hand each player a riverwalk card, and for new players a quick-start card too.",
     }),
-
-    rivalsStep,
-
-    teslaStep,
-    madTeslaStep,
 
     firstPlayerStep,
   ],

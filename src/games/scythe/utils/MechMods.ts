@@ -40,7 +40,10 @@ const NEW_ABILITIES = [
 
 type TileId = typeof NEW_ABILITIES[number] | typeof FACTION_ABILITIES[number];
 
-const ABILITIES_PER_PLAYER = 4;
+const FACTION_ABILITY_COPIES = 2;
+const NEW_ABILITY_COPIES = 3;
+
+const MODS_PER_PLAYER = 4;
 
 export const MechMods = {
   randomIdx(factionIds: readonly FactionId[]): number {
@@ -53,18 +56,12 @@ export const MechMods = {
       // drawing tiles.
       const factionAbility = FACTION_ABILITY[factionId];
 
-      // We use the combinations-array to map an index for the resulting
-      // combination of abilities
-      // IMPORTANT: This is done before we fetch the candidates because we need
-      // the `availableTiles` to contain the tiles before we select them.
       const combsMapper = encoder(availableTiles, factionAbility);
 
       const selected = drawAbilities(availableTiles, factionAbility);
 
       // Remove the selected tiles from the available ones for the next faction
       availableTiles = Vec.diff(availableTiles, selected);
-
-      console.log(factionId, selected);
 
       return tuple(
         // The "digit" in our encoding
@@ -107,15 +104,19 @@ export const MechMods = {
   label,
 } as const;
 
-const allTiles = () =>
+const allTiles = (): readonly TileId[] =>
   $(
     // There are 2 copies of each faction-specific ability
-    Vec.map(FACTION_ABILITIES, (ability) => Vec.fill(2, ability as TileId)),
+    Vec.map(FACTION_ABILITIES, (ability) =>
+      Vec.fill(FACTION_ABILITY_COPIES, ability as TileId)
+    ),
     ($$) =>
       Vec.concat(
         $$,
         // There are 3 copies of each mech-mod only ability
-        Vec.map(NEW_ABILITIES, (ability) => Vec.fill(3, ability as TileId))
+        Vec.map(NEW_ABILITIES, (ability) =>
+          Vec.fill(NEW_ABILITY_COPIES, ability as TileId)
+        )
       ),
     Vec.flatten,
     Vec.sort
@@ -136,14 +137,14 @@ const encoder = (
     availableTiles,
     Vec.unique,
     ($$) => Vec.diff($$, [factionAbility]),
-    ($$) => MathUtils.combinations_lazy_array($$, ABILITIES_PER_PLAYER)
+    ($$) => MathUtils.combinations_lazy_array($$, MODS_PER_PLAYER)
   );
 
 const drawAbilities = (
   availableTiles: readonly TileId[],
   factionAbility: TileId | undefined
 ): readonly TileId[] =>
-  Vec.range(1, ABILITIES_PER_PLAYER).reduce((selected, _) => {
+  Vec.range(1, MODS_PER_PLAYER).reduce((selected, _) => {
     let candidate: TileId;
     do {
       candidate = Random.sample_1(Vec.diff(availableTiles, selected))!;
