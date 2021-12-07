@@ -1,6 +1,7 @@
 import { Stack } from "@mui/material";
 import { Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
+import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createRandomGameStep,
@@ -8,6 +9,8 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
@@ -23,6 +26,7 @@ export default createRandomGameStep({
   resolve: (_, playerIds) => Random.shuffle(playerIds!),
 
   InstanceVariableComponent,
+  InstanceManualComponent,
   InstanceCards,
 
   ...NoConfigPanel,
@@ -41,11 +45,21 @@ function InstanceVariableComponent({
   return (
     <>
       <HeaderAndSteps synopsis="Give each player a player mat:">
-        <>
-          Find all <strong>{order.length}</strong> player mats with{" "}
-          <strong>{order.length} player</strong> written in the top-right corner
-          of the mat.
-        </>
+        <BlockWithFootnotes
+          footnote={
+            <>
+              Each player count has a corresponding set of player mats,
+              indicated by the number in the top right corner.
+            </>
+          }
+        >
+          {(Footnote) => (
+            <>
+              Gather all <strong>{order!.length}</strong> player mats
+              <Footnote />.
+            </>
+          )}
+        </BlockWithFootnotes>
         <>
           Hand each player their character mat:
           <Stack direction="column" spacing={1} marginTop={1}>
@@ -57,7 +71,47 @@ function InstanceVariableComponent({
             ))}
           </Stack>
         </>
-        <>Place the mats face-up in front of each player.</>
+        <>Players place their mat portrait side up in front of them.</>
+      </HeaderAndSteps>
+      <strong>IMPORTANT:</strong> Keep the back of the player mats hidden from
+      other players.
+    </>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+  return (
+    <>
+      <HeaderAndSteps synopsis="Give each player a player mat:">
+        <BlockWithFootnotes
+          footnote={
+            <>
+              Each player count has a corresponding set of player mats,
+              indicated by the number in the top right corner. For{" "}
+              <strong>{playerIds.length}</strong> players those are:{" "}
+              <GrammaticalList>
+                {Vec.map(
+                  Characters.forPlayerCount(playerIds.length),
+                  (characterId) => (
+                    <CharacterChip characterId={characterId} small />
+                  )
+                )}
+              </GrammaticalList>
+            </>
+          }
+        >
+          {(Footnote) => (
+            <>
+              Gather all <strong>{playerIds.length}</strong> player mats
+              <Footnote />.
+            </>
+          )}
+        </BlockWithFootnotes>
+        <>
+          Set <strong>1</strong> player mat portrait side up in front of each
+          player.
+        </>
       </HeaderAndSteps>
       <strong>IMPORTANT:</strong> Keep the back of the player mats hidden from
       other players.

@@ -34,7 +34,10 @@ export function GrammaticalList({
       {prefix}{" "}
       {Children.toArray(
         Vec.map(Vec.take(children, children.length - 1), (child) => (
-          <>{child}, </>
+          <>
+            {child}
+            {"\u2060"},{" "}
+          </>
         ))
       )}{" "}
       {finalConjunction} {children[children.length - 1]}

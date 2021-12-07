@@ -7,6 +7,7 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
@@ -31,6 +32,7 @@ export default createRandomGameStep({
     ),
 
   InstanceVariableComponent,
+  InstanceManualComponent,
   InstanceCards: (props) => (
     <IndexHashInstanceCard {...props} title="Locations" />
   ),
@@ -126,5 +128,35 @@ function InstanceVariableComponent({
       </Grid>
       <IndexHashCaption idx={permIdx} />
     </>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+
+  return (
+    <HeaderAndSteps synopsis="Put characters in starting locations:">
+      <>Gather the player tokens that match the colors of the player mats.</>
+      <>Flip all tokens to their back side.</>
+      <>Shuffle them.</>
+      <>
+        Starting with the <em>Prepare</em> location card and going from left to
+        right, put one character token on each location
+        {playerIds.length > 4 && (
+          <>
+            . Skip the <em>Go to the Cops</em> location and continue putting
+            tokens from the <em>Prepare</em> location again
+          </>
+        )}
+        .
+      </>
+      <>
+        Flip all tokens to show the character;{" "}
+        <em>
+          Take note of which character was put first on the Prepare location
+        </em>
+        .
+      </>
+    </HeaderAndSteps>
   );
 }

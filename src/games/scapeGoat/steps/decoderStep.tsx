@@ -7,6 +7,7 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { ChosenElement } from "games/core/ux/ChosenElement";
 
 const DICE_SIZE = 80;
 
@@ -19,6 +20,7 @@ export default createRandomGameStep({
   resolve: () => Random.int(10, 130),
 
   InstanceVariableComponent,
+  InstanceManualComponent,
   InstanceCards,
 
   instanceAvroType: "int",
@@ -81,6 +83,23 @@ function InstanceVariableComponent({
         </Paper>
       </Box>
     </>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  return (
+    <Typography variant="body1">
+      Roll the <strong>2</strong>{" "}
+      <ChosenElement extraInfo="dice">Decoder</ChosenElement>, and use the
+      number on each die and the table printed on the back of the player mat to
+      secretly find out who the scapegoat is - or if you are the scapegoat, who
+      you think the scapegoat is. The{" "}
+      <Chip size="small" color="white" label="White" /> die refers to the white
+      vertical column of numbers, and the{" "}
+      <Chip size="small" color="black" label="Black" /> die refers to the black
+      horizontal row of numbers. Be sure not to reroll the dice so that those
+      numbers can be referenced throughout the game.
+    </Typography>
   );
 }
 
