@@ -1,13 +1,13 @@
-import { Stack, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { $, tuple, Vec } from "common";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import {
   createRandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
@@ -94,27 +94,34 @@ function InstanceVariableComponent({
         )}
         , discarding the rest:
       </Typography>
-      <Stack direction="column" marginTop={2} spacing={1}>
-        {React.Children.toArray(
-          Vec.map(mechMods, ([factionId, playerId, mods]) => (
-            <span>
+      <Grid container marginTop={2} rowSpacing={1} alignItems="center">
+        {Vec.map(mechMods, ([factionId, playerId, mods]) => (
+          <React.Fragment key={`mechMods_${factionId}`}>
+            <Grid item xs={3} textAlign="center">
               {playerId != null ? (
                 <PlayerAvatar playerId={playerId} inline />
               ) : (
                 <FactionChip factionId={factionId} />
               )}
-              :{" "}
+            </Grid>
+            <Grid item xs={9} lineHeight={1}>
               <GrammaticalList>
                 {React.Children.toArray(
-                  Vec.map(mods, (tileId) =>
-                    MechMods.label(tileId).toLocaleUpperCase()
-                  )
+                  Vec.map(mods, (tileId) => (
+                    <Typography
+                      variant="caption"
+                      fontSize="small"
+                      sx={{ fontVariant: "small-caps" }}
+                    >
+                      <strong>{MechMods.label(tileId)}</strong>
+                    </Typography>
+                  ))
                 )}
               </GrammaticalList>
-            </span>
-          ))
-        )}
-      </Stack>
+            </Grid>
+          </React.Fragment>
+        ))}
+      </Grid>
       <IndexHashCaption idx={mechModsIdx} />
       <Rules />
     </>
