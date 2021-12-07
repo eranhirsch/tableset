@@ -2,9 +2,11 @@ import { ProductId } from "model/Game";
 import { VariableGameStep } from "model/VariableGameStep";
 import { buildQuery } from "./Query";
 
-export const createProductsMetaStep = <Pid extends ProductId>(): Readonly<
-  VariableGameStep<readonly Pid[]>
-> => ({
+type BaseOnly = "base";
+
+export const createProductsMetaStep = <
+  Pid extends ProductId = BaseOnly
+>(): Readonly<VariableGameStep<readonly Pid[]>> => ({
   id: "__product",
   label: `<Product>`,
 
