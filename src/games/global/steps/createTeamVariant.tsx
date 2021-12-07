@@ -1,6 +1,8 @@
+import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import { createVariant } from "games/core/steps/createVariant";
-import { neverResolvesMetaStep, playersMetaStep } from "games/global";
+import { playersMetaStep } from "games/global";
 import { VariableGameStep } from "model/VariableGameStep";
+
 interface Options<ProductId = never> {
   productDependencies?: {
     step: Readonly<VariableGameStep<readonly ProductId[]>>;
@@ -22,8 +24,7 @@ export default function createTeamVariant<ProductId = never>({
     name: "Teams",
     dependencies: [
       playersMetaStep,
-      productDependencies?.step ??
-        (neverResolvesMetaStep as VariableGameStep<readonly ProductId[]>),
+      productDependencies?.step ?? createConstantValueMetaStep(null),
     ],
     isTemplatable: (players, products) =>
       optionalAt != null &&

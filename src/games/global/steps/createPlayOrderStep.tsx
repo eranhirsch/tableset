@@ -9,17 +9,18 @@ import {
   FormControlLabel,
   Stack,
   Switch,
-  Typography,
+  Typography
 } from "@mui/material";
 import { C, invariant, Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { templateValue } from "features/template/templateSlice";
+import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import { Query } from "games/core/steps/Query";
 import { GamePiecesColor } from "model/GamePiecesColor";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -27,9 +28,9 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
-import { neverResolvesMetaStep, playersMetaStep } from ".";
+import { playersMetaStep } from ".";
 import { useAppSelector } from "../../../app/hooks";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
@@ -39,7 +40,7 @@ import {
   createRandomGameStep,
   InstanceCardsProps,
   RandomGameStep,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { Teams, TeamSelectionStep } from "./createTeamSelectionStep";
@@ -59,7 +60,7 @@ interface Options {
 }
 
 const createPlayOrderStep = ({
-  teamSelectionStep = neverResolvesMetaStep as TeamSelectionStep,
+  teamSelectionStep,
 }: Options): RandomGameStep<readonly PlayerId[], TemplateConfig> =>
   createRandomGameStep({
     id: "playOrder",
@@ -67,8 +68,8 @@ const createPlayOrderStep = ({
 
     dependencies: [
       playersMetaStep,
-      teamSelectionStep.enablerStep,
-      teamSelectionStep,
+      teamSelectionStep?.enablerStep ?? createConstantValueMetaStep(false),
+      teamSelectionStep ?? createConstantValueMetaStep(null),
     ],
 
     isType: (x): x is PlayerId[] =>
@@ -476,10 +477,12 @@ function InstanceVariableComponent({
   value: playOrder,
   teamSelectionStep,
 }: VariableStepInstanceComponentProps<readonly PlayerId[]> & {
-  teamSelectionStep: TeamSelectionStep;
+  teamSelectionStep?: TeamSelectionStep;
 }): JSX.Element {
   const firstPlayerId = useAppSelector(firstPlayerIdSelector);
-  const teams = useOptionalInstanceValue(teamSelectionStep);
+  const teams = useOptionalInstanceValue(
+    teamSelectionStep ?? createConstantValueMetaStep(null)
+  );
 
   const [showTeams, setShowTeams] = useState(false);
 
@@ -533,10 +536,14 @@ function InstanceVariableComponent({
 function InstanceManualComponent({
   teamSelectionStep,
 }: {
-  teamSelectionStep: TeamSelectionStep;
+  teamSelectionStep?: TeamSelectionStep;
 }): JSX.Element {
-  const teamPlay = useRequiredInstanceValue(teamSelectionStep.enablerStep);
-  const teams = useOptionalInstanceValue(teamSelectionStep);
+  const teamPlay = useRequiredInstanceValue(
+    teamSelectionStep?.enablerStep ?? createConstantValueMetaStep(false)
+  );
+  const teams = useOptionalInstanceValue(
+    teamSelectionStep ?? createConstantValueMetaStep(null)
+  );
 
   return (
     <BlockWithFootnotes

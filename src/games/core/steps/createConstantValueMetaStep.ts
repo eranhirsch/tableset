@@ -8,11 +8,12 @@ import { buildQuery } from "./Query";
 const createConstantValueMetaStep = <T>(value: T): VariableGameStep<T> => ({
   id: `__constantValue:${value}`,
   label: `<CONSTANT:${value}>`,
-  hasValue: () => true,
+  hasValue: () => value != null,
   extractInstanceValue: () => value,
   query: () =>
     buildQuery(`__constantValue:${value}`, {
-      canResolveTo: (x) => x === value,
+      canResolveTo: (x) => value != null && x === value,
+      willResolve: () => value != null,
     }),
 });
 export default createConstantValueMetaStep;
