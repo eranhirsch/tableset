@@ -3,6 +3,7 @@ import { createGame } from "model/Game";
 import dealEvidenceStep from "./steps/dealEvidenceStep";
 import decoderStep from "./steps/decoderStep";
 import evidenceDeckStep from "./steps/evidenceDeckStep";
+import firstPlayerStep from "./steps/firstPlayerStep";
 import locationsStep from "./steps/locationsStep";
 import playerMatsStep from "./steps/playerMatsStep";
 import playOrderStep from "./steps/playOrderStep";
@@ -25,5 +26,6 @@ export default createGame({
     evidenceDeckStep,
     dealEvidenceStep,
     decoderStep, // Templatable
+    firstPlayerStep,
   ],
 });
