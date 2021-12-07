@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { $, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
@@ -31,7 +31,7 @@ export default createRandomGameStep({
   InstanceVariableComponent,
   InstanceManualComponent,
 
-  instanceAvroType: "int",
+  instanceAvroType: "long",
 
   InstanceCards: (props) => (
     <IndexHashInstanceCard {...props} title="Infra." subheader="Mods" />
@@ -62,22 +62,28 @@ function InstanceVariableComponent({
         <strong>2</strong> of them, places them near their player mat face-up,
         then discards the remaining 2:
       </Typography>
-      <Stack direction="column" marginTop={2} spacing={1}>
-        {React.Children.toArray(
-          Vec.map(infraMods, ([playerId, mods]) => (
-            <span>
-              <PlayerAvatar playerId={playerId} inline />:{" "}
+      <Grid container marginTop={2} rowSpacing={2} alignItems="center">
+        {Vec.map(infraMods, ([playerId, mods]) => (
+          <React.Fragment key={`infraMods_${playerId}`}>
+            <Grid item xs={2}>
+              <PlayerAvatar playerId={playerId} inline />
+            </Grid>
+            <Grid item xs={10} lineHeight={1}>
               <GrammaticalList>
-                {React.Children.toArray(
-                  Vec.map(mods, (tileId) =>
-                    InfraMods.label(tileId).toLocaleUpperCase()
-                  )
-                )}
+                {Vec.map(mods, (tileId) => (
+                  <Typography
+                    variant="caption"
+                    fontSize="small"
+                    sx={{ fontVariant: "small-caps" }}
+                  >
+                    <strong>{InfraMods.label(tileId)}</strong>
+                  </Typography>
+                ))}
               </GrammaticalList>
-            </span>
-          ))
-        )}
-      </Stack>
+            </Grid>
+          </React.Fragment>
+        ))}
+      </Grid>
       <IndexHashCaption idx={infraModsIdx} />
       <Rules />
     </>
