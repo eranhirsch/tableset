@@ -79,7 +79,6 @@ export const scytheGame = createGame({
       name: "The Rise of Fenris",
       bggId: 242277,
       year: 2018,
-      isNotImplemented: true,
     },
     modularBoard: {
       name: "Modular Board",
