@@ -61,7 +61,7 @@ interface Options {
 
 const createPlayOrderStep = ({
   teamSelectionStep,
-}: Options): RandomGameStep<readonly PlayerId[], TemplateConfig> =>
+}: Options = {}): RandomGameStep<readonly PlayerId[], TemplateConfig> =>
   createRandomGameStep({
     id: "playOrder",
     labelOverride: "Seating",

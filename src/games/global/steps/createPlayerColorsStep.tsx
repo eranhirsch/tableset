@@ -19,6 +19,7 @@ import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { playersSelectors } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
+import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import {
   ConfigPanelProps,
   createRandomGameStep,
@@ -45,7 +46,7 @@ type TemplateConfig = Record<PlayerId, GamePiecesColor>;
 type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
 
 interface Options<Pid extends ProductId> {
-  productsMetaStep: VariableGameStep<readonly Pid[]>;
+  productsMetaStep?: VariableGameStep<readonly Pid[]>;
   availableColors(
     playerIds: readonly PlayerId[],
     products: readonly Pid[]
@@ -53,7 +54,7 @@ interface Options<Pid extends ProductId> {
 }
 
 const createPlayerColorsStep = <Pid extends ProductId>({
-  productsMetaStep,
+  productsMetaStep = createConstantValueMetaStep([]),
   availableColors,
 }: Options<Pid>): RandomGameStep<PlayerColors, TemplateConfig> =>
   createRandomGameStep({

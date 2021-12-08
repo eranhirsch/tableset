@@ -112,12 +112,12 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
       boolean
     >
   ): JSX.Element | null;
-  InstanceManualComponent(): JSX.Element;
   InstanceVariableComponent(
     props: VariableStepInstanceComponentProps<readonly ItemId[]>
   ): JSX.Element;
 
   // Optional fields for createRandomGameStep
+  InstanceManualComponent?(): JSX.Element;
   labelOverride?: string;
 }
 
