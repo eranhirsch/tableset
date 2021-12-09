@@ -137,7 +137,7 @@ export default createGame({
       InstanceManualComponent: () => (
         <Typography variant="body1">
           Place the <ChosenElement>Saga token</ChosenElement> on the first spot
-          of the First Age on the Story Track. This is the “Gods’ Gifts – Age 1”
+          of the First Age on the Story Track. This is the “Gods' Gifts - Age 1”
           spot. The Saga token will be moved from phase to phase of each Age,
           one Age after the other, in order to help players keep track as the
           game progresses.
