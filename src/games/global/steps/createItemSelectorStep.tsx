@@ -167,9 +167,10 @@ export default function createItemSelectorStep<
       advancedMode?.enabler ?? createConstantValueMetaStep(false),
     ],
 
-    isTemplatable: (_players, products, isOn, _isAdvancedOn) =>
+    isTemplatable: (players, products, isOn, _isAdvancedOn) =>
       isOn.canResolveTo(true) &&
-      !Vec.is_empty(availableForProducts(products.onlyResolvableValue()!)),
+      count(players.onlyResolvableValue()!.length) <
+        availableForProducts(products.onlyResolvableValue()!).length,
 
     isType: (x: unknown): x is readonly ItemId[] =>
       Array.isArray(x) && x.every(isItemType),
