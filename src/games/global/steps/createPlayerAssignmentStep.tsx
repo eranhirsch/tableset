@@ -15,10 +15,7 @@ import {
 } from "@mui/material";
 import { $, Dict, Random, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
-import {
-  useOptionalInstanceValue,
-  useRequiredInstanceValue,
-} from "features/instance/useInstanceValue";
+import { useOptionalInstanceValue, useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { templateValue } from "features/template/templateSlice";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
@@ -26,7 +23,7 @@ import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
@@ -39,7 +36,7 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
 import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import playersMetaStep from "./playersMetaStep";
@@ -145,6 +142,8 @@ function createPlayerAssignmentStep<
         labelForId={labelForId}
         getColor={getColor}
         categoryName={categoryName}
+        productsMetaStep={productsMetaStep}
+        availableForProducts={availableForProducts}
       />
     ),
     InstanceManualComponent: () => (
@@ -505,19 +504,26 @@ function ConfigPanelTLDR<ItemId extends string | number>({
   return <>Random{!Vec.is_empty(config) && " (with player preferences)"}</>;
 }
 
-function InstanceVariableComponent<ItemId extends string | number>({
+function InstanceVariableComponent<ItemId extends string | number, Pid extends ProductId>({
   value: order,
   itemsStep,
   categoryName,
   labelForId,
   getColor,
+  availableForProducts,
+  productsMetaStep,
 }: VariableStepInstanceComponentProps<readonly PlayerId[]> & {
   itemsStep: VariableGameStep<readonly ItemId[]>;
   categoryName: string;
   labelForId: LabelFunction<ItemId>;
   getColor?: ColorFunction<ItemId>;
+  availableForProducts: ProductsFunction<ItemId, Pid>;
+  productsMetaStep: VariableGameStep<readonly Pid[]>;
 }): JSX.Element {
-  const itemIds = useRequiredInstanceValue(itemsStep);
+  const productIds = useRequiredInstanceValue(productsMetaStep);
+  const itemIds = useOptionalInstanceValue(itemsStep);
+
+  const actualItemIds = useMemo(() => itemIds != null ? itemIds : availableForProducts(productIds), [availableForProducts, itemIds, productIds]);
 
   return (
     <>
@@ -536,11 +542,11 @@ function InstanceVariableComponent<ItemId extends string | number>({
               <PlayerAvatar playerId={playerId} inline />:{" "}
               {getColor != null ? (
                 <Chip
-                  color={getColor(itemIds[index])}
-                  label={labelForId(itemIds[index])}
+                  color={getColor(actualItemIds[index])}
+                  label={labelForId(actualItemIds[index])}
                 />
               ) : (
-                labelForId(itemIds[index])
+                labelForId(actualItemIds[index])
               )}
             </span>
           ))
