@@ -4,11 +4,13 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { firstPlayerStep } from "games/global";
 import { createGame } from "model/Game";
 import { clanStep, playerClanStep } from "./steps/clanStep";
+import clanTokensStep from "./steps/clanTokensStep";
 import destroyedStep from "./steps/destroyedStep";
 import pillageTokensStep from "./steps/pillageTokensStep";
 import playOrderStep from "./steps/playOrderStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import ragnarokStep from "./steps/ragnarokStep";
+import reserveStep from "./steps/reserveStep";
 
 export default createGame({
   id: "bloodRage",
@@ -102,7 +104,20 @@ export default createGame({
     clanStep, // Templatable
     playerClanStep, // Templatable
 
-    // TODO: Prepare your clan
+    reserveStep,
+
+    createGameStep({
+      id: "glory",
+      InstanceManualComponent: () => (
+        <Typography variant="body1">
+          Each player takes their clan’s{" "}
+          <ChosenElement>Glory Marker</ChosenElement> and place it on the Glory
+          Track around the board, on the <strong>0</strong> spot.
+        </Typography>
+      ),
+    }),
+
+    clanTokensStep,
 
     // TODO: Prepare Cards
 
