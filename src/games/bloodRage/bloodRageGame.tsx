@@ -16,6 +16,62 @@ export default createGame({
   productsMetaStep,
   products: {
     base: { name: "Blood Rage", bggId: 170216, year: 2015, isBase: true },
+    // Expansions
+    mystics: {
+      name: "Mystics of Midgard",
+      bggId: 175100,
+      year: 2015,
+      isNotImplemented: true,
+    },
+    gods: {
+      name: "Gods of Asgard",
+      bggId: 174801,
+      year: 2015,
+      isNotImplemented: true,
+    },
+    player5: {
+      name: "5th Player",
+      bggId: 174506,
+      year: 2015,
+      isNotImplemented: true,
+    },
+    // Promos
+    troll: {
+      name: "Mystic Troll",
+      bggId: 310026,
+      year: 2015,
+      isNotImplemented: true,
+    },
+    giant: {
+      name: "Mountain Giant",
+      bggId: 350961,
+      year: 2015,
+      isNotImplemented: true,
+    },
+    ksExclusives: {
+      name: "Kickstarter Exclusives",
+      bggId: 174388,
+      year: 2015,
+      isNotImplemented: true,
+    },
+    fenrir: {
+      name: "Fenrir",
+      bggId: 311901,
+      year: 2015,
+      isNotImplemented: true,
+    },
+    hili: {
+      name: "Hili - The Even-Handed",
+      bggId: 193898,
+      year: 2016,
+      isNotImplemented: true,
+    },
+    promos: {
+      name: "Promos Box",
+      bggId: 286883,
+      year: 2019,
+      isNotImplemented: true,
+    },
   },
   steps: [
     createGameStep({
