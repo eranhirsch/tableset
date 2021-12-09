@@ -1,12 +1,16 @@
 import { Chip, Grid, Typography } from "@mui/material";
 import { $, Vec } from "common";
-import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { ChosenElement } from "games/core/ux/ChosenElement";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
@@ -26,6 +30,7 @@ export default createRandomGameStep({
       : null,
 
   InstanceVariableComponent,
+  InstanceManualComponent,
   InstanceCards: (props) => (
     <IndexHashInstanceCard {...props} title="Destroyed" />
   ),
@@ -103,6 +108,36 @@ function MapRegion({
         ) : undefined
       }
     />
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+  const ragnarokIdx = useOptionalInstanceValue(ragnarokStep);
+
+  const numTokens = Destroyed.perPlayerCount(playerIds.length);
+
+  return (
+    <HeaderAndSteps synopsis="Before the game begins, some provinces will already have been destroyed by Ragnarök, leaving less usable space on the board:">
+      {ragnarokIdx != null && (
+        <>
+          Take the remaining <strong>5</strong>{" "}
+          <ChosenElement>Ragnarök tokens</ChosenElement>.
+        </>
+      )}
+      {ragnarokIdx != null && (
+        <>Flip them on the side where the province name is hidden.</>
+      )}
+      {ragnarokIdx != null && <>Shuffle them.</>}
+      <>
+        Take <strong>{numTokens}</strong> Ragnarök tokens.
+      </>
+      <>
+        Place {numTokens > 1 ? "them" : "it"} on the province
+        {numTokens > 1 && "s"} indicated on {numTokens > 1 ? "them" : "it"},
+        with the “destroyed” side facing up.
+      </>
+    </HeaderAndSteps>
   );
 }
 

@@ -65,6 +65,7 @@ function InstanceManualComponent(): JSX.Element {
         Take the <strong>8</strong>{" "}
         <ChosenElement>Ragnarök tokens</ChosenElement>.
       </>
+      <>Flip them on the side where the province name is hidden.</>
       <>Shuffle them.</>
       <>
         Place one on each of the <strong>3</strong> Ragnarök spots on the{" "}

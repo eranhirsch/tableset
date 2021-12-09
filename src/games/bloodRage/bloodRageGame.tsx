@@ -6,6 +6,7 @@ import ageDecksStep from "./steps/ageDecksStep";
 import { clanStep, playerClanStep } from "./steps/clanStep";
 import clanTokensStep from "./steps/clanTokensStep";
 import destroyedStep from "./steps/destroyedStep";
+import doomTokenStep from "./steps/doomTokenStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import firstPlayerToken from "./steps/firstPlayerToken";
 import pillageTokensStep from "./steps/pillageTokensStep";
@@ -99,6 +100,7 @@ export default createGame({
     }),
 
     ragnarokStep, // Templatable
+    doomTokenStep,
     destroyedStep, // Templatable
     pillageTokensStep, // Templatable
 
