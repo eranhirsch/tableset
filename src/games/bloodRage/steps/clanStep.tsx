@@ -67,7 +67,10 @@ function PlayerInstanceCards({
   boolean,
   readonly ClanId[]
 >): JSX.Element | null {
-  const pairs = useMemo(() => Vec.zip(order, clanIds!), [clanIds, order]);
+  const pairs = useMemo(
+    () => Vec.zip(order, clanIds ?? Clans.ids),
+    [clanIds, order]
+  );
   return (
     <>
       {Vec.map(pairs, ([playerId, clanId]) => (

@@ -98,11 +98,24 @@ function createPlayerAssignmentStep<
       itemsStep,
     ],
 
-    isTemplatable: (_players, _products, enabler, itemsStep) =>
-      enabler.canResolveTo(true) && itemsStep.willResolve(),
+    isTemplatable: (players, products, enabler, itemsStep) =>
+      enabler.canResolveTo(true) &&
+      (itemsStep.willResolve() ||
+        players.onlyResolvableValue()!.length ===
+          availableForProducts(products.onlyResolvableValue()!).length),
 
     initialConfig: [] as TemplateConfig<ItemId>,
-    resolve,
+
+    resolve: (config, players, products, isEnabled, itemIds) =>
+      resolve(
+        config,
+        players!,
+        products!,
+        isEnabled!,
+        itemIds,
+        availableForProducts
+      ),
+
     refresh,
 
     skip: (_, [_playerIds, _productIds, isOn, _itemIds]) => !isOn,
@@ -152,16 +165,19 @@ export default createPlayerAssignmentStep;
 
 function resolve<ItemId extends string | number, Pid extends ProductId>(
   config: Readonly<TemplateConfig<ItemId>>,
-  playerIds: readonly PlayerId[] | null,
-  _productIds: readonly Pid[] | null,
-  isEnabled: boolean | null,
-  itemIds: readonly ItemId[] | null
+  playerIds: readonly PlayerId[],
+  productIds: readonly Pid[],
+  isEnabled: boolean,
+  itemIds: readonly ItemId[] | null,
+  availableForProducts: ProductsFunction<ItemId, Pid>
 ): readonly PlayerId[] | null {
   if (!isEnabled) {
     return null;
   }
 
-  if (itemIds == null) {
+  const actualItemIds = itemIds ?? availableForProducts(productIds);
+
+  if (actualItemIds.length > playerIds.length) {
     return null;
   }
 
@@ -176,7 +192,7 @@ function resolve<ItemId extends string | number, Pid extends ProductId>(
       }
 
       // We look for a combo that this preference matches
-      const itemIdx = itemIds.findIndex(
+      const itemIdx = actualItemIds.findIndex(
         (itemId, index) =>
           // It's not already assigned to a different player because of a
           // previous preference...
@@ -198,7 +214,7 @@ function resolve<ItemId extends string | number, Pid extends ProductId>(
         Vec.drop(assigned, itemIdx + 1)
       );
     },
-    Vec.fill(itemIds.length, null as PlayerId | null)
+    Vec.fill(actualItemIds.length, null as PlayerId | null)
   );
 
   const remaining = [...Random.shuffle(Vec.diff(playerIds!, byPreferences))];
