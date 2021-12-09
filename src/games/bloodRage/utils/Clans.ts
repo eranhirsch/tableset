@@ -1,13 +1,24 @@
+import avro from "avsc";
+import { Vec } from "common";
 import { GamePiecesColor } from "model/GamePiecesColor";
+import { BloodRageProductId } from "../steps/productsMetaStep";
 
-const ALL_CLAN_IDS = ["bear", "raven", "serpent", "wolf"] as const;
-export type ClanId = typeof ALL_CLAN_IDS[number];
+const ALL_IDS = ["bear", "ram", "raven", "serpent", "wolf"] as const;
+export type ClanId = typeof ALL_IDS[number];
+
+const AVRO_TYPE: avro.schema.DefinedType = {
+  type: "enum",
+  name: "ClanId",
+  symbols: [...ALL_IDS],
+};
 
 export const Clans = {
-  ids: ALL_CLAN_IDS,
-  isClanId: (x: unknown): x is ClanId => ALL_CLAN_IDS.includes(x as ClanId),
+  isClanId: (x: unknown): x is ClanId => ALL_IDS.includes(x as ClanId),
   color,
   label,
+  availableForProducts: (productIds: readonly BloodRageProductId[]) =>
+    productIds.includes("player5") ? ALL_IDS : Vec.diff(ALL_IDS, ["ram"]),
+  avroType: AVRO_TYPE,
 } as const;
 
 function color(clanId: ClanId): GamePiecesColor {
@@ -20,6 +31,8 @@ function color(clanId: ClanId): GamePiecesColor {
       return "orange";
     case "wolf":
       return "red";
+    case "ram":
+      return "green";
   }
 }
 
@@ -31,6 +44,8 @@ function label(clanId: ClanId): string {
       return "Raven";
     case "serpent":
       return "Serpent";
+    case "ram":
+      return "Ram";
     case "wolf":
       return "Wolf";
   }

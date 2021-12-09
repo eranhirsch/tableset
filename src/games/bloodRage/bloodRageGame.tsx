@@ -23,10 +23,9 @@ export default createGame({
     base: { name: "Blood Rage", bggId: 170216, year: 2015, isBase: true },
     // Expansions
     player5: {
-      name: "5th Player",
+      name: "5th Player Expansion",
       bggId: 174506,
       year: 2015,
-      isNotImplemented: true,
     },
     gods: {
       name: "Gods of Asgard",

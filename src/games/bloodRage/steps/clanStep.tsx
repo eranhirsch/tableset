@@ -19,7 +19,7 @@ import productsMetaStep from "./productsMetaStep";
 
 export const clanStep = createItemSelectorStep({
   id: "clanSelection",
-  availableForProducts: () => Clans.ids,
+  availableForProducts: Clans.availableForProducts,
   productsMetaStep,
   isItemType: Clans.isClanId,
   labelForId: Clans.label,
@@ -28,7 +28,7 @@ export const clanStep = createItemSelectorStep({
   InstanceCards,
   InstanceVariableComponent,
   InstanceManualComponent,
-  itemAvroType: { type: "enum", name: "ClanId", symbols: [...Clans.ids] },
+  itemAvroType: Clans.avroType,
 });
 
 export const playerClanStep = clanStep.createAssignmentStep({
@@ -63,7 +63,7 @@ function InstanceCards({
 
 function PlayerInstanceCards({
   value: order,
-  dependencies: [_playerIds, _productIds, _isEnabled, clanIds],
+  dependencies: [_playerIds, productIds, _isEnabled, clanIds],
   onClick,
 }: InstanceCardsProps<
   readonly PlayerId[],
@@ -73,9 +73,10 @@ function PlayerInstanceCards({
   readonly ClanId[]
 >): JSX.Element | null {
   const pairs = useMemo(
-    () => Vec.zip(order, clanIds ?? Clans.ids),
-    [clanIds, order]
+    () => Vec.zip(order, clanIds ?? Clans.availableForProducts(productIds!)),
+    [clanIds, order, productIds]
   );
+
   return (
     <>
       {Vec.map(pairs, ([playerId, clanId]) => (
@@ -113,6 +114,7 @@ function InstanceVariableComponent({
 
 function InstanceManualComponent(): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
+  const productIds = useRequiredInstanceValue(productsMetaStep);
 
   return (
     <Typography variant="body1">
@@ -120,7 +122,7 @@ function InstanceManualComponent(): JSX.Element {
       <ChosenElement>clans</ChosenElement> with which to play with;{" "}
       <em>all clans are mechanically identical</em>:{" "}
       <GrammaticalList finalConjunction="or">
-        {Vec.map(Clans.ids, (cid) => (
+        {Vec.map(Clans.availableForProducts(productIds), (cid) => (
           <Chip
             key={cid}
             size="small"

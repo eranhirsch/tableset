@@ -1,4 +1,4 @@
-import { Vec } from "common";
+import { $, Vec } from "common";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -8,22 +8,45 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
+import { useMemo } from "react";
+import productsMetaStep, { BloodRageProductId } from "./productsMetaStep";
 
-// "Each deck contains eight 4+ cards and six 3+ cards" (manual, p.11)
-const REMOVED_CARDS = [null, null, 6 * 3, 8 * 3] as const;
+const REMOVED_CARDS = [
+  null,
+  null,
+  // "Each deck contains eight 4+ cards and six 3+ cards" (manual, p.11)
+  6,
+  8,
+  // "this expansion box comes with 24 "Gods' Gifts" cards (8 for each Age
+  // deck)" (BoardGameGeek product description page)
+  8,
+] as const;
 
 export default createDerivedGameStep({
   id: "ageDecks",
-  dependencies: [playersMetaStep],
+  dependencies: [playersMetaStep, productsMetaStep],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds],
-}: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
-  const removed = Vec.map(REMOVED_CARDS, (cardsRemoved, playerCount) =>
-    playerCount < playerIds!.length ? null : cardsRemoved
+  dependencies: [playerIds, productIds],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  readonly BloodRageProductId[]
+>): JSX.Element {
+  const removed = useMemo(
+    () =>
+      $(
+        REMOVED_CARDS,
+        ($$) => Vec.take($$, productIds!.includes("player5") ? 5 : 4),
+        ($$) =>
+          Vec.map($$, (cardsRemoved, playerCount) =>
+            playerCount < playerIds!.length ? null : cardsRemoved
+          )
+      ),
+    [playerIds, productIds]
   );
+
   return (
     <HeaderAndSteps>
       {removed.some((count) => count != null) && (
@@ -33,7 +56,8 @@ function InstanceDerivedComponent({
             {Vec.maybe_map(removed, (count, playerCount) =>
               count != null ? (
                 <>
-                  <strong>{playerCount + 1}+</strong> ({count} cards)
+                  <strong>{playerCount + 1}+</strong> ({count} cards in each
+                  age)
                 </>
               ) : undefined
             )}

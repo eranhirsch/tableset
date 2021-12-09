@@ -22,12 +22,16 @@ import ragnarokStep from "./ragnarokStep";
 export default createRandomGameStep({
   id: "destroyed",
   dependencies: [playersMetaStep, ragnarokStep],
-  isTemplatable: (_, ragnarok) => ragnarok.willResolve(),
+  isTemplatable: (players, ragnarok) =>
+    Destroyed.perPlayerCount(players.onlyResolvableValue()!.length) > 0 &&
+    ragnarok.willResolve(),
 
   resolve: (_, playerIds, ragnarokIdx) =>
     ragnarokIdx != null
       ? Destroyed.randomIdx(playerIds!.length, ragnarokIdx)
       : null,
+
+  skip: (_, [playerIds]) => Destroyed.perPlayerCount(playerIds!.length) === 0,
 
   InstanceVariableComponent,
   InstanceManualComponent,
