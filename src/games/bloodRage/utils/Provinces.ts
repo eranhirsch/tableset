@@ -27,7 +27,7 @@ interface Province {
 const PROVINCES: Readonly<Required<Record<ProvinceId, Province>>> = {
   /* Spell-checker: disable */
   angerboda: { name: "Angerboda", color: "yellow", position: 2 },
-  anolang: { name: "anolang", color: "white", position: 6 },
+  anolang: { name: "Anolang", color: "white", position: 6 },
   eluagar: { name: "Eluagar", color: "yellow", position: 1 },
   gimle: { name: "Gimle", color: "white", position: 7 },
   horgr: { name: "Horgr", color: "blue", position: 4 },
@@ -48,4 +48,5 @@ export const Provinces = {
     ),
   label: (pid: ProvinceId) => PROVINCES[pid].name,
   color: (pid: ProvinceId) => PROVINCES[pid].color,
+  position: (pid: ProvinceId) => PROVINCES[pid].position,
 } as const;

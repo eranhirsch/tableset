@@ -1,6 +1,5 @@
 import { Chip, Grid, Typography } from "@mui/material";
-import { $, MathUtils, nullthrows, Random, Vec } from "common";
-import { CombinationsLazyArray } from "common/standard_library/math/combinationsLazyArray";
+import { $, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
@@ -12,8 +11,8 @@ import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
 import React, { useMemo } from "react";
+import { Destroyed } from "../utils/Destroyed";
 import { ProvinceId, Provinces } from "../utils/Provinces";
-import { Ragnarok } from "../utils/Ragnarok";
 import ragnarokStep from "./ragnarokStep";
 
 export default createRandomGameStep({
@@ -23,7 +22,7 @@ export default createRandomGameStep({
 
   resolve: (_, playerIds, ragnarokIdx) =>
     ragnarokIdx != null
-      ? Random.index(combinationsArray(ragnarokIdx, playerIds!.length))
+      ? Destroyed.randomIdx(playerIds!.length, ragnarokIdx)
       : null,
 
   InstanceVariableComponent,
@@ -41,12 +40,10 @@ function InstanceVariableComponent({
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const ragnarokIdx = useRequiredInstanceValue(ragnarokStep);
 
-  const destroyed = useMemo(() => {
-    return nullthrows(
-      combinationsArray(ragnarokIdx, playerIds.length).at(destroyedIdx),
-      `Index ${destroyedIdx} is out of range`
-    );
-  }, [destroyedIdx, playerIds.length, ragnarokIdx]);
+  const destroyed = useMemo(
+    () => Destroyed.decode(destroyedIdx, playerIds.length, ragnarokIdx),
+    [destroyedIdx, playerIds.length, ragnarokIdx]
+  );
 
   return (
     <>
@@ -64,12 +61,14 @@ function InstanceVariableComponent({
           Vec.range(0, 8),
           ($$) =>
             Vec.map($$, (gridIdx) => (
-              <MapRegion gridIdx={gridIdx} destroyed={destroyed} />
+              <Grid item xs={4}>
+                <MapRegion gridIdx={gridIdx} destroyed={destroyed} />
+              </Grid>
             )),
           React.Children.toArray
         )}
       </Grid>
-      <IndexHashCaption idx={ragnarokIdx} />
+      <IndexHashCaption idx={destroyedIdx} />
     </>
   );
 }
@@ -85,29 +84,29 @@ function MapRegion({
 
   if (pos == null) {
     return (
-      <Grid item xs={4}>
-        <Chip
-          sx={{ width: "100%" }}
-          color="green"
-          label={<strong>Yggdrasil</strong>}
-        />
-      </Grid>
+      <Chip
+        sx={{ width: "100%" }}
+        color="green"
+        label={<strong>Yggdrasil</strong>}
+      />
     );
   }
 
-  const provinceAtPos = Provinces.atPosition(pos);
+  const provinceIdAtPos = Provinces.atPosition(pos);
   return (
-    <Grid item xs={4}>
-      <Chip
-        sx={{ width: "100%" }}
-        color={destroyed.includes(provinceAtPos) ? "red" : undefined}
-        label={
-          destroyed.includes(provinceAtPos)
-            ? Provinces.label(provinceAtPos)
-            : undefined
-        }
-      />
-    </Grid>
+    <Chip
+      sx={{ width: "100%" }}
+      color={
+        destroyed.includes(provinceIdAtPos)
+          ? "red"
+          : Provinces.color(provinceIdAtPos)
+      }
+      label={
+        destroyed.includes(provinceIdAtPos)
+          ? Provinces.label(provinceIdAtPos)
+          : undefined
+      }
+    />
   );
 }
 
@@ -132,14 +131,3 @@ function gridIndexToPosition(idx: number): number | undefined {
       return;
   }
 }
-
-const combinationsArray = (
-  ragnarokIdx: number,
-  playerCount: number
-): CombinationsLazyArray<ProvinceId> =>
-  $(
-    ragnarokIdx,
-    Ragnarok.decode,
-    ($$) => Vec.diff(Provinces.ids, $$),
-    ($$) => MathUtils.combinations_lazy_array($$, 5 - playerCount)
-  );

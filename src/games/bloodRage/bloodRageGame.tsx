@@ -98,9 +98,9 @@ export default createGame({
       ),
     }),
 
-    pillageTokensStep, // Templatable
     ragnarokStep, // Templatable
     destroyedStep, // Templatable
+    pillageTokensStep, // Templatable
 
     playOrderStep, // Templatable
     clanStep, // Templatable
