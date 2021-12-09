@@ -54,8 +54,8 @@ function InstanceVariableComponent({
   return (
     <>
       <Typography variant="body1">
-        Take the <ChosenElement>god figure</ChosenElement> corresponding to the
-        cards drawn to place them in their starting provinces;{" "}
+        Take the <ChosenElement>god figure</ChosenElement> and place them in
+        their starting provinces;{" "}
         <em>
           the god figures never occupy any villages; they are simply placed
           inside the indicated province area
