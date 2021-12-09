@@ -2,6 +2,7 @@ import { Typography } from "@mui/material";
 import { createGameStep } from "games/core/steps/createGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { createGame } from "model/Game";
+import ageDecksStep from "./steps/ageDecksStep";
 import { clanStep, playerClanStep } from "./steps/clanStep";
 import clanTokensStep from "./steps/clanTokensStep";
 import destroyedStep from "./steps/destroyedStep";
@@ -111,7 +112,7 @@ export default createGame({
       id: "glory",
       InstanceManualComponent: () => (
         <Typography variant="body1">
-          Each player takes their clan’s{" "}
+          Each player takes their clan's{" "}
           <ChosenElement>Glory Marker</ChosenElement> and place it on the Glory
           Track around the board, on the <strong>0</strong> spot.
         </Typography>
@@ -120,7 +121,7 @@ export default createGame({
 
     clanTokensStep,
 
-    // TODO: Prepare Cards
+    ageDecksStep,
 
     createGameStep({
       id: "monsters",
