@@ -15,7 +15,7 @@ import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
@@ -27,7 +27,7 @@ import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import {
   AlwaysNeverMultiChipSelector,
   AlwaysNeverMultiLabel,
-  Limits,
+  Limits
 } from "../ux/AlwaysNeverMultiChipSelector";
 import { SingleItemSelect } from "../ux/SingleItemSelect";
 import createPlayerAssignmentStep from "./createPlayerAssignmentStep";
@@ -190,7 +190,8 @@ export default function createItemSelectorStep<
         isAdvancedOn
       ),
 
-    skip: (_value, [_playerIds, _productIds, isOn]) => !isOn,
+    skip: (_value, [playerIds, productIds, isOn]) =>
+      !isOn || playerIds!.length === availableForProducts(productIds!).length,
 
     ConfigPanel: (
       props: ConfigPanelProps<
