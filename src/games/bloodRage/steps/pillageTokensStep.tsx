@@ -1,4 +1,4 @@
-import { Chip, Grid, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { $, MathUtils, nullthrows, Random, Vec } from "common";
 import {
   useOptionalInstanceValue,
@@ -19,6 +19,7 @@ import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { Destroyed } from "../utils/Destroyed";
 import { Provinces } from "../utils/Provinces";
+import { MapGrid } from "../ux/MapGrid";
 import destroyedStep from "./destroyedStep";
 import ragnarokStep from "./ragnarokStep";
 
@@ -119,46 +120,14 @@ function InstanceVariableComponent({
         Put the following <ChosenElement>Pillage Token</ChosenElement> with the
         reward side facing up in each province:
       </Typography>
-      <Grid container spacing={1} maxWidth="100%" paddingRight={1} marginY={2}>
-        {$(
-          Vec.range(0, 8),
-          ($$) =>
-            Vec.map($$, (gridIdx) => (
-              <Grid item xs={4}>
-                <MapRegion gridIdx={gridIdx} tokens={tokens} />
-              </Grid>
-            )),
-          React.Children.toArray
-        )}
-      </Grid>
+      <MapGrid
+        color={(provinceId, pos) =>
+          tokens[pos] == null ? "red" : Provinces.color(provinceId)
+        }
+        label={(_, pos) => <strong>{label(tokens[pos])}</strong>}
+      />
       <IndexHashCaption idx={pillageTokenIdx} />
     </>
-  );
-}
-
-function MapRegion({
-  gridIdx,
-  tokens,
-}: {
-  gridIdx: number;
-  tokens: readonly (PillageTokenType | null)[];
-}): JSX.Element {
-  const pos = gridIndexToPosition(gridIdx);
-
-  if (pos == null) {
-    return (
-      <Chip sx={{ width: "100%" }} color="green" label={<em>Yggdrasil</em>} />
-    );
-  }
-
-  return (
-    <Chip
-      sx={{ width: "100%" }}
-      color={
-        tokens[pos] == null ? "red" : Provinces.color(Provinces.atPosition(pos))
-      }
-      label={<strong>{label(tokens[pos])}</strong>}
-    />
   );
 }
 
@@ -284,28 +253,6 @@ function decode(
         destroyed.includes(Provinces.atPosition(position)) ? null : $$.pop()!
       )
   );
-}
-
-function gridIndexToPosition(idx: number): number | undefined {
-  switch (idx) {
-    case 0:
-    case 1:
-    case 2:
-      return idx;
-
-    case 3:
-      return 7;
-    case 5:
-      return 3;
-
-    case 6:
-    case 7:
-    case 8:
-      return 12 - idx;
-
-    default:
-      return;
-  }
 }
 
 function label(token: PillageTokenType | null): string {

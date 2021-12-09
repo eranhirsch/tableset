@@ -1,5 +1,4 @@
-import { Chip, Grid, Typography } from "@mui/material";
-import { $, Vec } from "common";
+import { Typography } from "@mui/material";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
@@ -14,9 +13,10 @@ import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Destroyed } from "../utils/Destroyed";
-import { ProvinceId, Provinces } from "../utils/Provinces";
+import { Provinces } from "../utils/Provinces";
+import { MapGrid } from "../ux/MapGrid";
 import ragnarokStep from "./ragnarokStep";
 
 export default createRandomGameStep({
@@ -65,53 +65,18 @@ function InstanceVariableComponent({
         on the province{destroyed.length > 1 && "s"}, with the “destroyed” side
         facing up.
       </Typography>
-      <Grid container spacing={1} maxWidth="100%" paddingRight={1} marginY={2}>
-        {$(
-          Vec.range(0, 8),
-          ($$) =>
-            Vec.map($$, (gridIdx) => (
-              <Grid item xs={4}>
-                <MapRegion gridIdx={gridIdx} destroyed={destroyed} />
-              </Grid>
-            )),
-          React.Children.toArray
-        )}
-      </Grid>
+      <MapGrid
+        color={(provinceId) =>
+          destroyed.includes(provinceId) ? "red" : Provinces.color(provinceId)
+        }
+        label={(provinceId) =>
+          destroyed.includes(provinceId) ? (
+            <strong>{Provinces.label(provinceId)}</strong>
+          ) : undefined
+        }
+      />
       <IndexHashCaption idx={destroyedIdx} />
     </>
-  );
-}
-
-function MapRegion({
-  gridIdx,
-  destroyed,
-}: {
-  gridIdx: number;
-  destroyed: readonly ProvinceId[];
-}): JSX.Element {
-  const pos = gridIndexToPosition(gridIdx);
-
-  if (pos == null) {
-    return (
-      <Chip sx={{ width: "100%" }} color="green" label={<em>Yggdrasil</em>} />
-    );
-  }
-
-  const provinceIdAtPos = Provinces.atPosition(pos);
-  return (
-    <Chip
-      sx={{ width: "100%" }}
-      color={
-        destroyed.includes(provinceIdAtPos)
-          ? "red"
-          : Provinces.color(provinceIdAtPos)
-      }
-      label={
-        destroyed.includes(provinceIdAtPos) ? (
-          <strong>{Provinces.label(provinceIdAtPos)}</strong>
-        ) : undefined
-      }
-    />
   );
 }
 
@@ -143,26 +108,4 @@ function InstanceManualComponent(): JSX.Element {
       </>
     </HeaderAndSteps>
   );
-}
-
-function gridIndexToPosition(idx: number): number | undefined {
-  switch (idx) {
-    case 0:
-    case 1:
-    case 2:
-      return idx;
-
-    case 3:
-      return 7;
-    case 5:
-      return 3;
-
-    case 6:
-    case 7:
-    case 8:
-      return 12 - idx;
-
-    default:
-      return;
-  }
 }

@@ -1,5 +1,5 @@
-import { Chip, Grid, Stack, Typography } from "@mui/material";
-import { $, Vec } from "common";
+import { Stack, Typography } from "@mui/material";
+import { Vec } from "common";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -9,9 +9,10 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
-import React, { useMemo } from "react";
-import { ProvinceId, Provinces } from "../utils/Provinces";
+import { useMemo } from "react";
+import { Provinces } from "../utils/Provinces";
 import { Ragnarok } from "../utils/Ragnarok";
+import { MapGrid } from "../ux/MapGrid";
 
 export default createRandomGameStep({
   id: "ragnarok",
@@ -46,6 +47,7 @@ function InstanceVariableComponent({
       <Stack direction="column" spacing={1} textAlign="center" marginY={2}>
         {Vec.map(ragnarokOrder, (provinceId) => (
           <Typography
+            key={provinceId}
             variant="subtitle1"
             sx={{ fontVariantCaps: "small-caps" }}
           >
@@ -53,46 +55,22 @@ function InstanceVariableComponent({
           </Typography>
         ))}
       </Stack>
-      <Grid container spacing={1} maxWidth="100%" paddingRight={1} marginY={2}>
-        {$(
-          Vec.range(0, 8),
-          ($$) =>
-            Vec.map($$, (gridIdx) => (
-              <Grid item xs={4}>
-                <MapRegion gridIdx={gridIdx} ragnarokOrder={ragnarokOrder} />
-              </Grid>
-            )),
-          React.Children.toArray
-        )}
-      </Grid>
+      <MapGrid
+        color={(provinceId) =>
+          ragnarokOrder.includes(provinceId)
+            ? "red"
+            : Provinces.color(provinceId)
+        }
+        label={(provinceId) =>
+          ragnarokOrder.includes(provinceId) ? (
+            <strong>Age {ragnarokOrder.indexOf(provinceId) + 1}</strong>
+          ) : (
+            Provinces.label(provinceId)
+          )
+        }
+      />
       <IndexHashCaption idx={ragnarokIdx} />
     </>
-  );
-}
-
-function MapRegion({
-  gridIdx,
-  ragnarokOrder,
-}: {
-  gridIdx: number;
-  ragnarokOrder: readonly ProvinceId[];
-}): JSX.Element {
-  const pos = gridIndexToPosition(gridIdx);
-
-  if (pos == null) {
-    return (
-      <Chip sx={{ width: "100%" }} color="green" label={<em>Yggdrasil</em>} />
-    );
-  }
-
-  const provinceIdAtPos = Provinces.atPosition(pos);
-  const age = ragnarokOrder.indexOf(provinceIdAtPos);
-  return (
-    <Chip
-      sx={{ width: "100%" }}
-      color={age >= 0 ? "red" : undefined}
-      label={age >= 0 ? <strong>Age {age + 1}</strong> : undefined}
-    />
   );
 }
 
@@ -116,26 +94,4 @@ function InstanceManualComponent(): JSX.Element {
       </>
     </HeaderAndSteps>
   );
-}
-
-function gridIndexToPosition(idx: number): number | undefined {
-  switch (idx) {
-    case 0:
-    case 1:
-    case 2:
-      return idx;
-
-    case 3:
-      return 7;
-    case 5:
-      return 3;
-
-    case 6:
-    case 7:
-    case 8:
-      return 12 - idx;
-
-    default:
-      return;
-  }
 }

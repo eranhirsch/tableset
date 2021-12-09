@@ -1,4 +1,4 @@
-import { Chip, Grid, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { $, Random, Vec } from "common";
 import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
 import {
@@ -8,11 +8,11 @@ import {
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { playersMetaStep } from "games/global";
-import React from "react";
 import { Destroyed } from "../utils/Destroyed";
 import { Gods } from "../utils/Gods";
 import { ProvinceId, Provinces } from "../utils/Provinces";
 import { Ragnarok } from "../utils/Ragnarok";
+import { MapGrid } from "../ux/MapGrid";
 import destroyedStep from "./destroyedStep";
 import godsSelectionStep from "./godsSelectionStep";
 import godsVariant from "./godsVariant";
@@ -51,6 +51,8 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: godProvinceIds,
 }: VariableStepInstanceComponentProps<readonly ProvinceId[]>): JSX.Element {
+  const godIds = useOptionalInstanceValue(godsSelectionStep);
+
   return (
     <>
       <Typography variant="body1">
@@ -62,80 +64,22 @@ function InstanceVariableComponent({
         </em>
         .
       </Typography>
-      <Grid container spacing={1} maxWidth="100%" paddingRight={1} marginY={2}>
-        {$(
-          Vec.range(0, 8),
-          ($$) =>
-            Vec.map($$, (gridIdx) => (
-              <Grid item xs={4}>
-                <MapRegion gridIdx={gridIdx} godProvinceIds={godProvinceIds} />
-              </Grid>
-            )),
-          React.Children.toArray
-        )}
-      </Grid>
+      <MapGrid
+        color={(provinceId) =>
+          !godProvinceIds.includes(provinceId)
+            ? undefined
+            : godIds != null
+            ? Gods.color(godIds[godProvinceIds.indexOf(provinceId)])
+            : "primary"
+        }
+        label={(provinceId) =>
+          !godProvinceIds.includes(provinceId)
+            ? undefined
+            : godIds != null
+            ? Gods.label(godIds[godProvinceIds.indexOf(provinceId)])
+            : Provinces.label(provinceId)
+        }
+      />
     </>
   );
-}
-
-function MapRegion({
-  gridIdx,
-  godProvinceIds,
-}: {
-  gridIdx: number;
-  godProvinceIds: readonly ProvinceId[];
-}): JSX.Element {
-  const godIds = useOptionalInstanceValue(godsSelectionStep);
-
-  const pos = gridIndexToPosition(gridIdx);
-
-  if (pos == null) {
-    return (
-      <Chip sx={{ width: "100%" }} color="green" label={<em>Yggdrasil</em>} />
-    );
-  }
-
-  const provinceIdAtPos = Provinces.atPosition(pos);
-  const godIdx = godProvinceIds.indexOf(provinceIdAtPos);
-  return (
-    <Chip
-      sx={{ width: "100%" }}
-      color={
-        godIdx < 0
-          ? undefined
-          : godIds != null
-          ? Gods.color(godIds[godIdx])
-          : "primary"
-      }
-      label={
-        godIdx < 0
-          ? undefined
-          : godIds != null
-          ? Gods.label(godIds[godIdx])
-          : Provinces.label(provinceIdAtPos)
-      }
-    />
-  );
-}
-
-function gridIndexToPosition(idx: number): number | undefined {
-  switch (idx) {
-    case 0:
-    case 1:
-    case 2:
-      return idx;
-
-    case 3:
-      return 7;
-    case 5:
-      return 3;
-
-    case 6:
-    case 7:
-    case 8:
-      return 12 - idx;
-
-    default:
-      return;
-  }
 }
