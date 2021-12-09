@@ -84,11 +84,7 @@ function MapRegion({
 
   if (pos == null) {
     return (
-      <Chip
-        sx={{ width: "100%" }}
-        color="green"
-        label={<strong>Yggdrasil</strong>}
-      />
+      <Chip sx={{ width: "100%" }} color="green" label={<em>Yggdrasil</em>} />
     );
   }
 
@@ -102,9 +98,9 @@ function MapRegion({
           : Provinces.color(provinceIdAtPos)
       }
       label={
-        destroyed.includes(provinceIdAtPos)
-          ? Provinces.label(provinceIdAtPos)
-          : undefined
+        destroyed.includes(provinceIdAtPos) ? (
+          <strong>{Provinces.label(provinceIdAtPos)}</strong>
+        ) : undefined
       }
     />
   );

@@ -144,11 +144,7 @@ function MapRegion({
 
   if (pos == null) {
     return (
-      <Chip
-        sx={{ width: "100%" }}
-        color="green"
-        label={<strong>Yggdrasil</strong>}
-      />
+      <Chip sx={{ width: "100%" }} color="green" label={<em>Yggdrasil</em>} />
     );
   }
 
@@ -158,7 +154,7 @@ function MapRegion({
       color={
         tokens[pos] == null ? "red" : Provinces.color(Provinces.atPosition(pos))
       }
-      label={label(tokens[pos])}
+      label={<strong>{label(tokens[pos])}</strong>}
     />
   );
 }
