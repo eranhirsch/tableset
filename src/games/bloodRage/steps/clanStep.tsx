@@ -1,13 +1,17 @@
 import { Chip, Typography } from "@mui/material";
 import { Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
-import { useHasDownstreamInstanceValue } from "features/instance/useInstanceValue";
+import {
+  useHasDownstreamInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import {
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
+import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
-import { createItemSelectorStep } from "games/global";
+import { createItemSelectorStep, playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { ClanId, Clans } from "../utils/Clans";
@@ -23,6 +27,7 @@ export const clanStep = createItemSelectorStep({
   count: (playerCount) => playerCount,
   InstanceCards,
   InstanceVariableComponent,
+  InstanceManualComponent,
   itemAvroType: { type: "enum", name: "ClanId", symbols: [...Clans.ids] },
 });
 
@@ -102,6 +107,29 @@ function InstanceVariableComponent({
           />
         ))}
       </GrammaticalList>
+    </Typography>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+
+  return (
+    <Typography variant="body1">
+      Choose <strong>{playerIds.length}</strong>{" "}
+      <ChosenElement>clans</ChosenElement> with which to play with;{" "}
+      <em>all clans are mechanically identical</em>:{" "}
+      <GrammaticalList finalConjunction="or">
+        {Vec.map(Clans.ids, (cid) => (
+          <Chip
+            key={cid}
+            size="small"
+            color={Clans.color(cid)}
+            label={Clans.label(cid)}
+          />
+        ))}
+      </GrammaticalList>
+      .
     </Typography>
   );
 }
