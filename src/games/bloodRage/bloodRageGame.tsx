@@ -8,7 +8,10 @@ import clanTokensStep from "./steps/clanTokensStep";
 import destroyedStep from "./steps/destroyedStep";
 import doomTokenStep from "./steps/doomTokenStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
-import firstPlayerToken from "./steps/firstPlayerToken";
+import firstPlayerTokenStep from "./steps/firstPlayerTokenStep";
+import godsLocationStep from "./steps/godsLocationStep";
+import godsSelectionStep from "./steps/godsSelectionStep";
+import godsVariant from "./steps/godsVariant";
 import pillageTokensStep from "./steps/pillageTokensStep";
 import playOrderStep from "./steps/playOrderStep";
 import productsMetaStep from "./steps/productsMetaStep";
@@ -79,6 +82,8 @@ export default createGame({
   },
 
   steps: [
+    godsVariant, // Variant
+
     createGameStep({
       id: "board",
       InstanceManualComponent: () => (
@@ -148,6 +153,9 @@ export default createGame({
     }),
 
     firstPlayerStep, // Templatable
-    firstPlayerToken,
+    firstPlayerTokenStep,
+
+    godsSelectionStep, // Templatable,
+    godsLocationStep, // Templatable
   ],
 });
