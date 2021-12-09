@@ -1,3 +1,4 @@
+import { $, C, Dict, Vec } from "common";
 import { GamePiecesColor } from "model/GamePiecesColor";
 
 const ALL_PROVINCE_IDS = [
@@ -14,54 +15,37 @@ const ALL_PROVINCE_IDS = [
 ] as const;
 export type ProvinceId = typeof ALL_PROVINCE_IDS[number];
 
+interface Province {
+  name: string;
+  color: GamePiecesColor;
+  /**
+   * Going from the top left column and going clockwise around the board from 0
+   * to 7.
+   */
+  position: number;
+}
+const PROVINCES: Readonly<Required<Record<ProvinceId, Province>>> = {
+  /* Spell-checker: disable */
+  angerboda: { name: "Angerboda", color: "yellow", position: 2 },
+  anolang: { name: "anolang", color: "white", position: 6 },
+  eluagar: { name: "Eluagar", color: "yellow", position: 1 },
+  gimle: { name: "Gimle", color: "white", position: 7 },
+  horgr: { name: "Horgr", color: "blue", position: 4 },
+  muspelheim: { name: "Muspelheim", color: "blue", position: 3 },
+  myrkulor: { name: "Myrkulor", color: "yellow", position: 0 },
+  utgard: { name: "Utgard", color: "blue", position: 5 },
+  /* Spell-checker: enable */
+};
+
 export const Provinces = {
   ids: ALL_PROVINCE_IDS,
-  label,
-  color,
+  atPosition: (pos: number) =>
+    $(
+      PROVINCES,
+      ($$) => Dict.filter($$, ({ position }) => pos === position),
+      Vec.keys,
+      C.onlyx
+    ),
+  label: (pid: ProvinceId) => PROVINCES[pid].name,
+  color: (pid: ProvinceId) => PROVINCES[pid].color,
 } as const;
-
-function label(provinceId: ProvinceId): string {
-  switch (provinceId) {
-    /* Spell-checker: disable */
-    case "angerboda":
-      return "Angerboda";
-    case "anolang":
-      return "Anolang";
-    case "eluagar":
-      return "Eluagar";
-    case "gimle":
-      return "Gimle";
-    case "horgr":
-      return "Horgr";
-    case "muspelheim":
-      return "Muspelheim";
-    case "myrkulor":
-      return "Myrkulor";
-    case "utgard":
-      return "Utgard";
-    /* Spell-checker: enable */
-  }
-}
-
-function color(provinceId: ProvinceId): GamePiecesColor {
-  switch (provinceId) {
-    /* Spell-checker: disable */
-    case "angerboda":
-      return "yellow";
-    case "anolang":
-      return "white";
-    case "eluagar":
-      return "yellow";
-    case "gimle":
-      return "white";
-    case "horgr":
-      return "blue";
-    case "muspelheim":
-      return "blue";
-    case "myrkulor":
-      return "yellow";
-    case "utgard":
-      return "blue";
-    /* Spell-checker: enable */
-  }
-}
