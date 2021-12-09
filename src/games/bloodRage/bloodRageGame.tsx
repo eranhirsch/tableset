@@ -6,6 +6,7 @@ import { createGame } from "model/Game";
 import { clanStep, playerClanStep } from "./steps/clanStep";
 import clanTokensStep from "./steps/clanTokensStep";
 import destroyedStep from "./steps/destroyedStep";
+import firstPlayerToken from "./steps/firstPlayerToken";
 import pillageTokensStep from "./steps/pillageTokensStep";
 import playOrderStep from "./steps/playOrderStep";
 import productsMetaStep from "./steps/productsMetaStep";
@@ -144,7 +145,6 @@ export default createGame({
     }),
 
     firstPlayerStep, // Templatable
-
-    // TODO: First Player Token
+    firstPlayerToken,
   ],
 });
