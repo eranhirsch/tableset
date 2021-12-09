@@ -5,17 +5,18 @@ import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { PlayerAvatarsList } from "games/core/ux/PlayerAvatarsList";
-import { firstPlayerStep, fullPlayOrder, playersMetaStep } from "games/global";
+import { fullPlayOrder, playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps
+  DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import { GrammaticalList } from "../../core/ux/GrammaticalList";
 import { ConcordiaProductId } from "../ConcordiaProductId";
 import { MapId, MAPS, mapsForProducts } from "../utils/MAPS";
 import RomanTitle from "../ux/RomanTitle";
+import firstPlayerStep from "./firstPlayerStep";
 import mapStep from "./mapStep";
 import playOrderStep from "./playOrderStep";
 import productsMetaStep from "./productsMetaStep";

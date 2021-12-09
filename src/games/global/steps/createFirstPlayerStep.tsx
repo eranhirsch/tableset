@@ -4,6 +4,7 @@ import { InstanceCard } from "features/instance/InstanceCard";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { templateValue } from "features/template/templateSlice";
+import { VariableGameStep } from "model/VariableGameStep";
 import React from "react";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { PlayerId } from "../../../model/Player";
@@ -15,40 +16,52 @@ import {
 } from "../../core/steps/createRandomGameStep";
 import playersMetaStep from "./playersMetaStep";
 
+interface Options {
+  InstanceManualComponent?: (() => JSX.Element) | string;
+}
+
+const DEFAULT_MANUAL_COMPONENT = "Choose which player goes first.";
+
 type TemplateConfig = { playerId?: PlayerId };
 
-export default createRandomGameStep({
-  id: "firstPlayer",
+function createFirstPlayerStep({
+  InstanceManualComponent = DEFAULT_MANUAL_COMPONENT,
+}: Options = {}): VariableGameStep<PlayerId> {
+  return createRandomGameStep({
+    id: "firstPlayer",
 
-  dependencies: [playersMetaStep],
+    dependencies: [playersMetaStep],
 
-  isType: (x): x is PlayerId => typeof x === "string",
+    isType: (x): x is PlayerId => typeof x === "string",
 
-  InstanceVariableComponent,
-  InstanceManualComponent: "Choose which player goes first.",
+    InstanceVariableComponent,
+    InstanceManualComponent,
 
-  isTemplatable: (players) =>
-    players.willContainNumElements({
-      // Solo games don't need a first player
-      min: 2,
-    }),
-  resolve: ({ playerId }, playerIds) => playerId ?? Random.sample_1(playerIds!),
-  onlyResolvableValue: (config) => config?.playerId,
-  initialConfig: (): TemplateConfig => ({}),
-  refresh: ({ playerId }, players) =>
-    templateValue(
-      playerId != null && !players.onlyResolvableValue()!.includes(playerId)
-        ? "unfixable"
-        : "unchanged"
-    ),
+    isTemplatable: (players) =>
+      players.willContainNumElements({
+        // Solo games don't need a first player
+        min: 2,
+      }),
+    resolve: ({ playerId }, playerIds) =>
+      playerId ?? Random.sample_1(playerIds!),
+    onlyResolvableValue: (config) => config?.playerId,
+    initialConfig: (): TemplateConfig => ({}),
+    refresh: ({ playerId }, players) =>
+      templateValue(
+        playerId != null && !players.onlyResolvableValue()!.includes(playerId)
+          ? "unfixable"
+          : "unchanged"
+      ),
 
-  ConfigPanel,
-  ConfigPanelTLDR,
+    ConfigPanel,
+    ConfigPanelTLDR,
 
-  InstanceCards,
+    InstanceCards,
 
-  instanceAvroType: "string",
-});
+    instanceAvroType: "string",
+  });
+}
+export default createFirstPlayerStep;
 
 function ConfigPanel({
   config: { playerId: firstPlayerId },

@@ -1,11 +1,11 @@
 import { Typography } from "@mui/material";
 import { createGameStep } from "games/core/steps/createGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
-import { firstPlayerStep } from "games/global";
 import { createGame } from "model/Game";
 import { clanStep, playerClanStep } from "./steps/clanStep";
 import clanTokensStep from "./steps/clanTokensStep";
 import destroyedStep from "./steps/destroyedStep";
+import firstPlayerStep from "./steps/firstPlayerStep";
 import firstPlayerToken from "./steps/firstPlayerToken";
 import pillageTokensStep from "./steps/pillageTokensStep";
 import playOrderStep from "./steps/playOrderStep";

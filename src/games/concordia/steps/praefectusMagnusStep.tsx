@@ -1,13 +1,14 @@
 import { Typography } from "@mui/material";
 import { Str } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
-import { firstPlayerStep, playersMetaStep } from "games/global";
+import { playersMetaStep } from "games/global";
 import { PlayerId } from "../../../model/Player";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "../../core/steps/createDerivedGameStep";
 import RomanTitle from "../ux/RomanTitle";
+import firstPlayerStep from "./firstPlayerStep";
 import fishMarketVariant from "./fishMarketVariant";
 import playOrderStep from "./playOrderStep";
 

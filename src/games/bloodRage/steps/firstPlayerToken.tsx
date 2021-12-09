@@ -5,8 +5,8 @@ import {
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
-import { firstPlayerStep } from "games/global";
 import { PlayerId } from "model/Player";
+import firstPlayerStep from "./firstPlayerStep";
 
 export default createDerivedGameStep({
   id: "firstPlayerToken",

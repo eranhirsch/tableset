@@ -1,14 +1,15 @@
 import { Avatar, AvatarGroup, Grid, Typography } from "@mui/material";
 import { nullthrows, Str, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
-import { firstPlayerStep, fullPlayOrder, playersMetaStep } from "games/global";
+import { fullPlayOrder, playersMetaStep } from "games/global";
 import { Teams } from "games/global/steps/createTeamSelectionStep";
 import { PlayerId } from "model/Player";
 import React from "react";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps,
+  DerivedStepInstanceComponentProps
 } from "../../core/steps/createDerivedGameStep";
+import firstPlayerStep from "./firstPlayerStep";
 import noStartingResourcesVariant from "./noStartingResourcesVariant";
 import playOrderStep from "./playOrderStep";
 import teamPlayVariant from "./teamPlayVariant";

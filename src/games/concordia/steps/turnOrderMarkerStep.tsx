@@ -6,8 +6,8 @@ import {
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
-import { firstPlayerStep } from "games/global";
 import { PlayerId } from "model/Player";
+import firstPlayerStep from "./firstPlayerStep";
 import teamPlayVariant from "./teamPlayVariant";
 
 export default createDerivedGameStep({

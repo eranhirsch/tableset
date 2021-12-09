@@ -1,5 +1,5 @@
 import { createGameStep } from "games/core/steps/createGameStep";
-import { firstPlayerStep } from "games/global";
+import { createFirstPlayerStep } from "games/global";
 import { createGame } from "model/Game";
 import aegyptusStep from "./steps/aegyptusStep";
 import bonusTilesStep from "./steps/bonusTilesStep";
@@ -122,7 +122,7 @@ export const concordiaGame = createGame({
     teamSelectionStep, // Templatable
 
     playOrderStep, // Templatable
-    firstPlayerStep, // Templatable
+    createFirstPlayerStep(), // Templatable
 
     // Base game
     playerColorsStep, // Templatable
