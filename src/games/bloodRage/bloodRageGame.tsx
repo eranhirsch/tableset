@@ -12,6 +12,8 @@ import firstPlayerTokenStep from "./steps/firstPlayerTokenStep";
 import godsLocationStep from "./steps/godsLocationStep";
 import godsSelectionStep from "./steps/godsSelectionStep";
 import godsVariant from "./steps/godsVariant";
+import mysticsStep from "./steps/mysticsStep";
+import mysticsVariant from "./steps/mysticsVariant";
 import pillageTokensStep from "./steps/pillageTokensStep";
 import playOrderStep from "./steps/playOrderStep";
 import productsMetaStep from "./steps/productsMetaStep";
@@ -39,7 +41,6 @@ export default createGame({
       name: "Mystics of Midgard",
       bggId: 175100,
       year: 2015,
-      isNotImplemented: true,
     },
     // Promos
     ksExclusives: {
@@ -82,6 +83,7 @@ export default createGame({
 
   steps: [
     godsVariant, // Variant
+    mysticsVariant, // Variant
 
     createGameStep({
       id: "board",
@@ -138,6 +140,9 @@ export default createGame({
         </Typography>
       ),
     }),
+
+    mysticsStep,
+
     createGameStep({
       id: "sagaToken",
       InstanceManualComponent: () => (
