@@ -7,6 +7,7 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createItemSelectorStep } from "games/global";
 import { GodId, Gods } from "../utils/Gods";
 import godsVariant from "./godsVariant";
@@ -25,6 +26,7 @@ export default createItemSelectorStep({
   itemAvroType: Gods.avroType,
   InstanceCards,
   InstanceVariableComponent,
+  InstanceManualComponent,
 });
 
 function InstanceCards({
@@ -34,12 +36,13 @@ function InstanceCards({
   return (
     <>
       {Vec.map(godIds, (godId) => (
-        <InstanceCard key={godId} onClick={onClick} title="God">
-          <Chip
-            size="small"
-            color={Gods.color(godId)}
-            label={Gods.label(godId)}
-          />
+        <InstanceCard
+          key={godId}
+          onClick={onClick}
+          subheader="Gods"
+          title="Selection"
+        >
+          <Chip color={Gods.color(godId)} label={Gods.label(godId)} />
         </InstanceCard>
       ))}
     </>
@@ -63,5 +66,25 @@ function InstanceVariableComponent({
       </GrammaticalList>{" "}
       next to the board, where all players can see them.
     </Typography>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  return (
+    <HeaderAndSteps>
+      <>
+        Shuffle the <strong>{Gods.ids.length}</strong>{" "}
+        <ChosenElement>God Cards</ChosenElement>
+      </>
+      <>
+        Randomly draw <strong>{Gods.PER_GAME}</strong> of them.{" "}
+        <em>Only {Gods.PER_GAME} gods are used during each game session</em>.
+      </>
+      <>Return the remaining god cards to the box.</>
+      <>
+        Place the {Gods.PER_GAME} selected god cards next to the board, where
+        all players can see them.
+      </>
+    </HeaderAndSteps>
   );
 }

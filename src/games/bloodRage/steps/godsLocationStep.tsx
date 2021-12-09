@@ -1,12 +1,19 @@
-import { Typography } from "@mui/material";
+import { Chip, Typography } from "@mui/material";
 import { $, Random, Vec } from "common";
-import { useOptionalInstanceValue } from "features/instance/useInstanceValue";
+import { InstanceCard } from "features/instance/InstanceCard";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { ChosenElement } from "games/core/ux/ChosenElement";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import { Destroyed } from "../utils/Destroyed";
 import { Gods } from "../utils/Gods";
@@ -44,6 +51,8 @@ export default createRandomGameStep({
   instanceAvroType: { type: "array", items: Provinces.avroType },
 
   InstanceVariableComponent,
+  InstanceManualComponent,
+  InstanceCards,
 
   ...NoConfigPanel,
 });
@@ -56,7 +65,8 @@ function InstanceVariableComponent({
   return (
     <>
       <Typography variant="body1">
-        Take the <ChosenElement>god figure</ChosenElement> and place them in
+        Take the <ChosenElement>God figures</ChosenElement>{" "}
+        {godIds == null && "corresponding to the cards drawn"} and place them in
         their starting provinces;{" "}
         <em>
           the god figures never occupy any villages; they are simply placed
@@ -70,16 +80,80 @@ function InstanceVariableComponent({
             ? undefined
             : godIds != null
             ? Gods.color(godIds[godProvinceIds.indexOf(provinceId)])
-            : "primary"
+            : "black"
         }
         label={(provinceId) =>
-          !godProvinceIds.includes(provinceId)
-            ? undefined
-            : godIds != null
-            ? Gods.label(godIds[godProvinceIds.indexOf(provinceId)])
-            : Provinces.label(provinceId)
+          !godProvinceIds.includes(provinceId) ? undefined : (
+            <strong>
+              {godIds != null
+                ? Gods.label(godIds[godProvinceIds.indexOf(provinceId)])
+                : `God ${godProvinceIds.indexOf(provinceId) + 1}`}
+            </strong>
+          )
         }
       />
+    </>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+  const godIds = useOptionalInstanceValue(godsSelectionStep);
+
+  return (
+    <HeaderAndSteps>
+      <>
+        Take all{" "}
+        <strong>{5 - Destroyed.perPlayerCount(playerIds.length)}</strong>{" "}
+        leftover Ragnarok tokens that were returned to the box (the ones that
+        are neither on the Game Board nor on the Age Track).
+      </>
+      <>Shuffle them.</>
+      <>
+        Draw <strong>2</strong> tiles, 1 for each of the 2 gods
+        {godIds != null && (
+          <>
+            :{" "}
+            <GrammaticalList>
+              {Vec.map(godIds, (godId) => (
+                <Chip
+                  key={godId}
+                  size="small"
+                  color={Gods.color(godId)}
+                  label={Gods.label(godId)}
+                />
+              ))}
+            </GrammaticalList>
+          </>
+        )}
+        .
+      </>
+      <>Place the god figure in the province indicated on the token.</>
+      <>Return the Ragnarok tokens to the box without eny effect.</>
+    </HeaderAndSteps>
+  );
+}
+
+function InstanceCards({
+  value: godProvinceId,
+  onClick,
+}: InstanceCardsProps<readonly ProvinceId[]>): JSX.Element {
+  return (
+    <>
+      {Vec.map(godProvinceId, (provinceId, index) => (
+        <InstanceCard
+          key={provinceId}
+          onClick={onClick}
+          title="Provinces"
+          subheader="Gods"
+        >
+          <Chip
+            size="small"
+            color={Provinces.color(provinceId)}
+            label={Provinces.label(provinceId)}
+          />
+        </InstanceCard>
+      ))}
     </>
   );
 }
