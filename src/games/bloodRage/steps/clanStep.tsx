@@ -14,7 +14,7 @@ import { ClanId, Clans } from "../utils/Clans";
 import productsMetaStep from "./productsMetaStep";
 
 export const clanStep = createItemSelectorStep({
-  id: "clan",
+  id: "clanSelection",
   availableForProducts: () => Clans.ids,
   productsMetaStep,
   isItemType: Clans.isClanId,
