@@ -34,7 +34,6 @@ export default createGame({
       name: "Gods of Asgard",
       bggId: 174801,
       year: 2015,
-      isNotImplemented: true,
     },
     mystics: {
       name: "Mystics of Midgard",
