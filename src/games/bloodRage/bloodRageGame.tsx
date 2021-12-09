@@ -22,9 +22,9 @@ export default createGame({
   products: {
     base: { name: "Blood Rage", bggId: 170216, year: 2015, isBase: true },
     // Expansions
-    mystics: {
-      name: "Mystics of Midgard",
-      bggId: 175100,
+    player5: {
+      name: "5th Player",
+      bggId: 174506,
       year: 2015,
       isNotImplemented: true,
     },
@@ -34,34 +34,34 @@ export default createGame({
       year: 2015,
       isNotImplemented: true,
     },
-    player5: {
-      name: "5th Player",
-      bggId: 174506,
+    mystics: {
+      name: "Mystics of Midgard",
+      bggId: 175100,
       year: 2015,
       isNotImplemented: true,
     },
     // Promos
-    troll: {
-      name: "Mystic Troll",
-      bggId: 310026,
-      year: 2015,
-      isNotImplemented: true,
-    },
-    giant: {
-      name: "Mountain Giant",
-      bggId: 350961,
-      year: 2015,
-      isNotImplemented: true,
-    },
     ksExclusives: {
       name: "Kickstarter Exclusives",
       bggId: 174388,
       year: 2015,
       isNotImplemented: true,
     },
+    troll: {
+      name: "Mystic Troll",
+      bggId: 310026,
+      year: 2015,
+      isNotImplemented: true,
+    },
     fenrir: {
       name: "Fenrir",
       bggId: 311901,
+      year: 2015,
+      isNotImplemented: true,
+    },
+    giant: {
+      name: "Mountain Giant",
+      bggId: 350961,
       year: 2015,
       isNotImplemented: true,
     },
@@ -78,6 +78,7 @@ export default createGame({
       isNotImplemented: true,
     },
   },
+
   steps: [
     createGameStep({
       id: "board",
