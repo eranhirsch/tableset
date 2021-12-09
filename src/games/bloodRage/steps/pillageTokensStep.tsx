@@ -10,6 +10,8 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { ChosenElement } from "games/core/ux/ChosenElement";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
@@ -45,6 +47,7 @@ export default createRandomGameStep({
     resolve(playerIds!, ragnarokIdx, destroyedIdx),
 
   InstanceVariableComponent,
+  InstanceManualComponent,
   InstanceCards: (props) => (
     <IndexHashInstanceCard {...props} title="Pillage Tokens" />
   ),
@@ -156,6 +159,75 @@ function MapRegion({
       }
       label={<strong>{label(tokens[pos])}</strong>}
     />
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+  const ragnarokIdx = useOptionalInstanceValue(ragnarokStep);
+  const destroyedIdx = useOptionalInstanceValue(destroyedStep);
+
+  const destroyed = useMemo(
+    () =>
+      destroyedIdx == null
+        ? null
+        : Destroyed.decode(destroyedIdx, playerIds.length, ragnarokIdx!),
+    [destroyedIdx, playerIds.length, ragnarokIdx]
+  );
+
+  return (
+    <HeaderAndSteps synopsis="The Pillage tokens show the reward you get for pillaging that province.">
+      <>
+        Take all <strong>9</strong>{" "}
+        <ChosenElement>Pillage tokens</ChosenElement>.
+      </>
+      <>
+        Place the one with the green border on the{" "}
+        <ChosenElement>Yggdrasil</ChosenElement> province at the center of the
+        board, with the reward side facing up.
+      </>
+      <>
+        Flip the remaining <strong>8</strong> Pillage tokens, hiding the bonus.
+      </>
+      <>Shuffle them.</>
+      <>
+        Place them randomly on the other provinces surrounding Yggdrasil, face
+        up
+        {destroyed != null
+          ? !Vec.is_empty(destroyed) && (
+              <>
+                , skipping{" "}
+                <GrammaticalList>
+                  {React.Children.toArray(
+                    Vec.map(destroyed, (pid) => <em>{Provinces.label(pid)}</em>)
+                  )}
+                </GrammaticalList>
+              </>
+            )
+          : Destroyed.perPlayerCount(playerIds.length) > 0 && (
+              <>
+                , skipping the{" "}
+                <strong>{Destroyed.perPlayerCount(playerIds.length)}</strong>{" "}
+                destroyed provinces
+              </>
+            )}
+        .
+      </>
+      {(destroyed != null
+        ? !Vec.is_empty(destroyed) && (
+            <>
+              You should have <strong>{destroyed.length}</strong> tokens
+              remaining.
+            </>
+          )
+        : Destroyed.perPlayerCount(playerIds.length) > 0) && (
+        <>
+          You should have{" "}
+          <strong>{Destroyed.perPlayerCount(playerIds.length)}</strong> tokens
+          remaining.
+        </>
+      )}
+    </HeaderAndSteps>
   );
 }
 
