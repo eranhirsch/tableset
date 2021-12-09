@@ -28,8 +28,7 @@ function InstanceDerivedComponent({
         As a constant reminder of which province is doomed to be swallowed next
         by Ragnarök
       </em>
-      , place the <ChosenElement>Doom token</ChosenElement>
-      on{" "}
+      , place the <ChosenElement>Doom token</ChosenElement> on{" "}
       {firstAgeProvinceId != null ? (
         <strong>{Provinces.label(firstAgeProvinceId)}</strong>
       ) : (
