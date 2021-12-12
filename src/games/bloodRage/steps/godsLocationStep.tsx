@@ -30,7 +30,9 @@ export default createRandomGameStep({
   dependencies: [playersMetaStep, godsVariant, ragnarokStep, destroyedStep],
 
   isTemplatable: (_, isEnabled, ragnarok, destroyed) =>
-    isEnabled && ragnarok.willResolve() && destroyed.willResolve(),
+    isEnabled.canResolveTo(true) &&
+    ragnarok.willResolve() &&
+    destroyed.willResolve(),
 
   resolve: (_, playerIds, isEnabled, ragnarokIdx, destroyedIdx) =>
     isEnabled
