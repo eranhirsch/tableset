@@ -2,12 +2,19 @@ import avro from "avsc";
 import { $, Dict, Vec } from "common";
 import { GameId } from "games/core/GAMES";
 import { GameStepBase } from "./GameStepBase";
-import { Product } from "./Product";
 import { VariableGameStep } from "./VariableGameStep";
 
 export type StepId = string;
 
 export type ProductId = string;
+
+interface Product {
+  bggId: number;
+  isBase?: true;
+  name: string;
+  year: number;
+  isNotImplemented?: true;
+}
 
 export interface GameOptions<Pid extends ProductId = ProductId> {
   id: GameId;
