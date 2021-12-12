@@ -1,5 +1,5 @@
+import { ColorId } from "app/utils/Colors";
 import { Vec } from "common";
-import { GamePiecesColor } from "model/GamePiecesColor";
 
 const CHARACTERS = [
   // 3 Players
@@ -39,7 +39,7 @@ function label(characterId: CharacterId): string {
   }
 }
 
-function color(characterId: CharacterId): GamePiecesColor {
+function color(characterId: CharacterId): ColorId {
   switch (characterId) {
     case "driver":
       return "purple";

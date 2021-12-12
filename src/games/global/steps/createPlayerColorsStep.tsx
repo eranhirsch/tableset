@@ -12,7 +12,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
-import { colorName } from "app/ux/themeWithGameColors";
+import { ColorId, Colors } from "app/utils/Colors";
 import { Dict, invariant, nullthrows, Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
@@ -28,7 +28,6 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { ProductId } from "model/Game";
-import { GamePiecesColor, GAME_PIECES_COLORS } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
@@ -39,18 +38,18 @@ import { GrammaticalList } from "../../core/ux/GrammaticalList";
 
 const AVATAR_SIZE = 36;
 
-type TemplateConfig = Record<PlayerId, GamePiecesColor>;
+type TemplateConfig = Record<PlayerId, ColorId>;
 
 // This is the instance type, it's identical to the TemplateConfig, but it
 // doesn't HAVE to be, so don't merge the two type definitions.
-type PlayerColors = Readonly<Record<PlayerId, GamePiecesColor>>;
+type PlayerColors = Readonly<Record<PlayerId, ColorId>>;
 
 interface Options<Pid extends ProductId> {
   productsMetaStep?: VariableGameStep<readonly Pid[]>;
   availableColors(
     playerIds: readonly PlayerId[],
     products: readonly Pid[]
-  ): readonly GamePiecesColor[];
+  ): readonly ColorId[];
 }
 
 const createPlayerColorsStep = <Pid extends ProductId>({
@@ -144,11 +143,7 @@ const createPlayerColorsStep = <Pid extends ProductId>({
 
     instanceAvroType: {
       type: "map",
-      values: {
-        type: "enum",
-        name: "GamePiecesColor",
-        symbols: [...GAME_PIECES_COLORS],
-      },
+      values: Colors.avroType,
     },
   });
 export default createPlayerColorsStep;
@@ -156,7 +151,7 @@ export default createPlayerColorsStep;
 const resolve = (
   config: TemplateConfig,
   playerIds: readonly PlayerId[],
-  availableColors: readonly GamePiecesColor[]
+  availableColors: readonly ColorId[]
 ): Readonly<PlayerColors> =>
   normalize(
     {
@@ -181,7 +176,7 @@ function ConfigPanel({
   config: Readonly<TemplateConfig>;
   onChange: ConfigPanelProps<TemplateConfig>["onChange"];
   playerIds: readonly PlayerId[];
-  colors: readonly GamePiecesColor[];
+  colors: readonly ColorId[];
 }): JSX.Element {
   const assignedPlayers = useMemo(() => Vec.keys(config), [config]);
 
@@ -291,10 +286,10 @@ function IndividualPlayerConfigPanel({
   onDelete,
 }: {
   playerId: PlayerId;
-  color: GamePiecesColor;
+  color: ColorId;
   remainingPlayerIds: readonly PlayerId[];
-  remainingColors: readonly GamePiecesColor[];
-  onChange(playerId: PlayerId, color: GamePiecesColor): void;
+  remainingColors: readonly ColorId[];
+  onChange(playerId: PlayerId, color: ColorId): void;
   onDelete(): void;
 }): JSX.Element {
   return (
@@ -337,7 +332,7 @@ function SelectedColor({
   color,
   playerId,
 }: {
-  color: GamePiecesColor;
+  color: ColorId;
   playerId: PlayerId;
 }): JSX.Element {
   return (
@@ -356,8 +351,8 @@ function ColorSelector({
   availableColors,
   onChange,
 }: {
-  availableColors: readonly GamePiecesColor[];
-  onChange(color: GamePiecesColor): void;
+  availableColors: readonly ColorId[];
+  onChange(color: ColorId): void;
 }): JSX.Element {
   if (availableColors.length < 3) {
     return (
@@ -385,8 +380,8 @@ function ColorSelectorRow({
   availableColors,
   onChange,
 }: {
-  availableColors: readonly GamePiecesColor[];
-  onChange(color: GamePiecesColor): void;
+  availableColors: readonly ColorId[];
+  onChange(color: ColorId): void;
 }): JSX.Element {
   const theme = useTheme();
 
@@ -536,7 +531,7 @@ function InstanceManualComponent<Pid extends ProductId>({
   availableColors(
     playerIds: readonly PlayerId[],
     products: readonly Pid[]
-  ): readonly GamePiecesColor[];
+  ): readonly ColorId[];
 }): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const products = useRequiredInstanceValue(productsMetaStep);
@@ -558,7 +553,7 @@ function InstanceManualComponent<Pid extends ProductId>({
                 variant="filled"
                 color={color}
                 size="small"
-                label={colorName[color]}
+                label={Colors.label(color)}
               />
             ))}
           </GrammaticalList>
@@ -593,7 +588,7 @@ function InstanceCards<Pid extends ProductId>({
           playerId={playerId}
           onClick={onClick}
         >
-          <Chip color={color} label={colorName[color]} />
+          <Chip color={color} label={Colors.label(color)} />
         </InstanceCard>
       ))}
     </>

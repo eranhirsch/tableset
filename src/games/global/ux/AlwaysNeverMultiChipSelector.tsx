@@ -2,9 +2,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import { Box, Chip } from "@mui/material";
+import { ColorId } from "app/utils/Colors";
 import { Random, Vec } from "common";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
-import { GamePiecesColor } from "model/GamePiecesColor";
 import React from "react";
 import { ColorFunction, LabelFunction } from "../types";
 
@@ -68,7 +68,7 @@ function AlwaysNeverChip({
 }: {
   label: string;
   mode: Mode;
-  color?: GamePiecesColor;
+  color?: ColorId;
   onClick(): void;
 }): JSX.Element {
   return (

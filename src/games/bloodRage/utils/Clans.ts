@@ -1,6 +1,6 @@
+import { ColorId } from "app/utils/Colors";
 import avro from "avsc";
 import { Vec } from "common";
-import { GamePiecesColor } from "model/GamePiecesColor";
 import { BloodRageProductId } from "../steps/productsMetaStep";
 
 const ALL_IDS = ["bear", "ram", "raven", "serpent", "wolf"] as const;
@@ -21,7 +21,7 @@ export const Clans = {
   avroType: AVRO_TYPE,
 } as const;
 
-function color(clanId: ClanId): GamePiecesColor {
+function color(clanId: ClanId): ColorId {
   switch (clanId) {
     case "bear":
       return "brown";

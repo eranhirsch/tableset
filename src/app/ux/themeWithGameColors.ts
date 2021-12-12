@@ -6,7 +6,7 @@
  * You only need to add definitions to this file when typescript surfaces type
  * issues after adding a new color in GamePiecesColor, otherwise you don't need
  * to touch anything else here.
- * @see GamePiecesColor
+ * @see Colors
  */
 import { createTheme, PaletteColor, PaletteColorOptions } from "@mui/material";
 import {
@@ -19,28 +19,9 @@ import {
   pink,
   purple,
   red,
-  yellow,
+  yellow
 } from "@mui/material/colors";
-import { GamePiecesColor } from "model/GamePiecesColor";
-
-/**
- * These names would be used in contexts where we need to describe the color
- * textually. Multiple piece colors can share a name (in case different games
- * want to use different hues for the same "color").
- */
-export const colorName: Readonly<Record<GamePiecesColor, string>> = {
-  black: "Black",
-  blue: "Blue",
-  brown: "Brown",
-  cyan: "Cyan",
-  green: "Green",
-  orange: "Orange",
-  pink: "Pink",
-  purple: "Purple",
-  red: "Red",
-  white: "White",
-  yellow: "Yellow",
-};
+import { ColorId } from "app/utils/Colors";
 
 /**
  * For each color we want to add we need to provide all colors required by the
@@ -54,7 +35,7 @@ export const colorName: Readonly<Record<GamePiecesColor, string>> = {
  *
  * @see https://material.io/resources/color/
  */
-const colorDefs: Readonly<Record<GamePiecesColor, Readonly<PaletteColor>>> = {
+const colorDefs: Readonly<Record<ColorId, Readonly<PaletteColor>>> = {
   black: {
     main: grey[900],
     light: "#484848",
@@ -127,14 +108,14 @@ declare module "@mui/material/styles" {
   // We need to add the color ids into the main palette object so they can be
   // used wherever a prop expects a theme color.
 
-  interface Palette extends Record<GamePiecesColor, PaletteColor> {}
+  interface Palette extends Record<ColorId, PaletteColor> {}
   interface PaletteOptions
-    extends Record<GamePiecesColor, PaletteColorOptions> {}
+    extends Record<ColorId, PaletteColorOptions> {}
 }
 
 // Certain UI elements don't accept palette colors directly, and require us to
 // manually add the colors as overrides.
-type ColorOverrides = Record<GamePiecesColor, true>;
+type ColorOverrides = Record<ColorId, true>;
 declare module "@mui/material/Badge" {
   interface BadgePropsColorOverrides extends ColorOverrides {}
 }

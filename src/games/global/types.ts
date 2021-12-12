@@ -1,9 +1,7 @@
+import { ColorId } from "app/utils/Colors";
 import { ProductId } from "model/Game";
-import { GamePiecesColor } from "model/GamePiecesColor";
 
-export type ColorFunction<ItemId> = (
-  itemId: ItemId
-) => GamePiecesColor | undefined;
+export type ColorFunction<ItemId> = (itemId: ItemId) => ColorId | undefined;
 
 export type ProductsFunction<
   ItemId extends string | number,

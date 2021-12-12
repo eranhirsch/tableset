@@ -13,9 +13,13 @@ import {
   ListSubheader,
   Stack
 } from "@mui/material";
+import { ColorId } from "app/utils/Colors";
 import { $, Dict, Random, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
-import { useOptionalInstanceValue, useRequiredInstanceValue } from "features/instance/useInstanceValue";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { templateValue } from "features/template/templateSlice";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
@@ -23,12 +27,11 @@ import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ProductId } from "model/Game";
-import { GamePiecesColor } from "model/GamePiecesColor";
 import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useState } from "react";
@@ -36,7 +39,7 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult
+  DropResult,
 } from "react-beautiful-dnd";
 import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import playersMetaStep from "./playersMetaStep";
@@ -370,7 +373,7 @@ function PreferenceListItem<ItemId extends string | number>({
 }: {
   itemId: ItemId;
   label: string;
-  color?: GamePiecesColor;
+  color?: ColorId;
   playerId: PlayerId;
   index: number;
   withDrag: boolean;

@@ -1,20 +1,20 @@
+import { ColorId } from "app/utils/Colors";
 import { Vec } from "common";
 import { createPlayerColorsStep } from "games/global";
-import { GamePiecesColor } from "model/GamePiecesColor";
 import productsMetaStep from "./productsMetaStep";
 
-const BASE_COLORS: readonly GamePiecesColor[] = [
+const BASE_COLORS: readonly ColorId[] = [
   "black",
   "blue",
   "green",
   "red",
   "yellow",
 ];
-const VENUS_COLORS: readonly GamePiecesColor[] = ["white"];
+const VENUS_COLORS: readonly ColorId[] = ["white"];
 
 export default createPlayerColorsStep({
   productsMetaStep,
-  availableColors: (_, products): readonly GamePiecesColor[] =>
+  availableColors: (_, products): readonly ColorId[] =>
     Vec.concat(
       BASE_COLORS,
       products.includes("venus") || products.includes("venusBase")

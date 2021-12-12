@@ -1,5 +1,5 @@
 import { Typography, useTheme } from "@mui/material";
-import { GamePiecesColor } from "model/GamePiecesColor";
+import { ColorId } from "app/utils/Colors";
 
 export function ChosenElement({
   children,
@@ -7,7 +7,7 @@ export function ChosenElement({
   color,
 }: React.PropsWithChildren<{
   extraInfo?: string;
-  color?: GamePiecesColor;
+  color?: ColorId;
 }>): JSX.Element {
   const theme = useTheme();
 

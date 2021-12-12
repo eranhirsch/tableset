@@ -1,5 +1,5 @@
+import { ColorId } from "app/utils/Colors";
 import { Dict, Vec } from "common";
-import { GamePiecesColor } from "model/GamePiecesColor";
 import { ScytheProductId } from "../ScytheProductId";
 import { HexType } from "./HexType";
 
@@ -36,7 +36,7 @@ interface FactionName {
 
 export interface Faction {
   name: FactionName;
-  color: GamePiecesColor;
+  color: ColorId;
   power: number;
   combatCards: number;
   order?: number;

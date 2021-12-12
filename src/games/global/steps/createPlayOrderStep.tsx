@@ -11,24 +11,24 @@ import {
   Switch,
   Typography
 } from "@mui/material";
+import { ColorId } from "app/utils/Colors";
 import { C, invariant, Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { templateValue } from "features/template/templateSlice";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import { Query } from "games/core/steps/Query";
-import { GamePiecesColor } from "model/GamePiecesColor";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult
+  DropResult,
 } from "react-beautiful-dnd";
 import { playersMetaStep } from ".";
 import { useAppSelector } from "../../../app/hooks";
@@ -40,12 +40,12 @@ import {
   createRandomGameStep,
   InstanceCardsProps,
   RandomGameStep,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "../../core/steps/createRandomGameStep";
 import { BlockWithFootnotes } from "../../core/ux/BlockWithFootnotes";
 import { Teams, TeamSelectionStep } from "./createTeamSelectionStep";
 
-const TEAM_COLORS: readonly GamePiecesColor[] = [
+const TEAM_COLORS: readonly ColorId[] = [
   "blue",
   "yellow",
   "red",

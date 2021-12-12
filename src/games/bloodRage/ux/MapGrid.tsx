@@ -1,6 +1,6 @@
 import { Chip, Grid } from "@mui/material";
+import { ColorId } from "app/utils/Colors";
 import { $, Vec } from "common";
-import { GamePiecesColor } from "model/GamePiecesColor";
 import React from "react";
 import { ProvinceId, Provinces } from "../utils/Provinces";
 
@@ -11,7 +11,7 @@ export function MapGrid({
   color(
     provinceId: ProvinceId,
     position: number
-  ): GamePiecesColor | undefined | "primary";
+  ): ColorId | undefined | "primary";
   label(
     provinceId: ProvinceId,
     position: number
@@ -42,7 +42,7 @@ function MapRegion({
   color(
     provinceId: ProvinceId,
     position: number
-  ): GamePiecesColor | undefined | "primary";
+  ): ColorId | undefined | "primary";
   label(provinceId: ProvinceId, position: number): React.ReactNode | undefined;
 }): JSX.Element {
   const pos = gridIndexToPosition(gridIdx);

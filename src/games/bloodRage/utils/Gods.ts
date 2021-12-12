@@ -1,5 +1,5 @@
+import { ColorId } from "app/utils/Colors";
 import avro from "avsc";
-import { GamePiecesColor } from "model/GamePiecesColor";
 
 const ALL_GOD_IDS = [
   "heimdall",
@@ -46,7 +46,7 @@ function label(godId: GodId): string {
   }
 }
 
-function color(godId: GodId): GamePiecesColor {
+function color(godId: GodId): ColorId {
   switch (godId) {
     case "frigga":
       return "purple";

@@ -1,6 +1,6 @@
+import { ColorId } from "app/utils/Colors";
 import avro from "avsc";
 import { $, C, Dict, Vec } from "common";
-import { GamePiecesColor } from "model/GamePiecesColor";
 
 const ALL_PROVINCE_IDS = [
   /* Spell-checker: disable */
@@ -18,7 +18,7 @@ export type ProvinceId = typeof ALL_PROVINCE_IDS[number];
 
 interface Province {
   name: string;
-  color: GamePiecesColor;
+  color: ColorId;
   /**
    * Going from the top left column and going clockwise around the board from 0
    * to 7.
