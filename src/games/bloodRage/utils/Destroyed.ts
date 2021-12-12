@@ -1,19 +1,23 @@
-import { $, MathUtils, nullthrows, Random, Vec } from "common";
+import { MathUtils, nullthrows, Random, Vec } from "common";
 import { CombinationsLazyArray } from "common/standard_library/math/combinationsLazyArray";
 import { ProvinceId, Provinces } from "./Provinces";
-import { Ragnarok } from "./Ragnarok";
 
 export const Destroyed = {
   perPlayerCount,
-  randomIdx: (playerCount: number, ragnarokIdx: number): number =>
-    Random.index(combinationsArray(ragnarokIdx, playerCount)),
+
+  randomIdx: (
+    playerCount: number,
+    ragnarokProvinceIds: readonly ProvinceId[]
+  ): number =>
+    Random.index(combinationsArray(ragnarokProvinceIds, playerCount)),
+
   decode: (
     idx: number,
     playerCount: number,
-    ragnarokIdx: number
+    ragnarokProvinceIds: readonly ProvinceId[]
   ): readonly ProvinceId[] =>
     nullthrows(
-      combinationsArray(ragnarokIdx, playerCount).at(idx),
+      combinationsArray(ragnarokProvinceIds, playerCount).at(idx),
       `Index ${idx} is out of range`
     ),
 } as const;
@@ -23,12 +27,10 @@ function perPlayerCount(playerCount: number): number {
 }
 
 const combinationsArray = (
-  ragnarokIdx: number,
+  ragnarokProvinceIds: readonly ProvinceId[],
   playerCount: number
 ): CombinationsLazyArray<ProvinceId> =>
-  $(
-    ragnarokIdx,
-    Ragnarok.decode,
-    ($$) => Vec.diff(Provinces.ids, $$),
-    ($$) => MathUtils.combinations_lazy_array($$, perPlayerCount(playerCount))
+  MathUtils.combinations_lazy_array(
+    Vec.diff(Provinces.ids, ragnarokProvinceIds),
+    perPlayerCount(playerCount)
   );

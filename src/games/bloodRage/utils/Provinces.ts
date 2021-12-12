@@ -38,12 +38,6 @@ const PROVINCES: Readonly<Required<Record<ProvinceId, Province>>> = {
   /* Spell-checker: enable */
 };
 
-const AVRO_TYPE: avro.schema.DefinedType = {
-  type: "enum",
-  name: "ProvinceId",
-  symbols: [...ALL_PROVINCE_IDS],
-};
-
 export const Provinces = {
   ids: ALL_PROVINCE_IDS,
   atPosition: (pos: number) =>
@@ -56,5 +50,9 @@ export const Provinces = {
   label: (pid: ProvinceId) => PROVINCES[pid].name,
   color: (pid: ProvinceId) => PROVINCES[pid].color,
   position: (pid: ProvinceId) => PROVINCES[pid].position,
-  avroType: AVRO_TYPE,
+  avroType: (name: string): avro.schema.DefinedType => ({
+    type: "enum",
+    name: name,
+    symbols: [...ALL_PROVINCE_IDS],
+  }),
 } as const;

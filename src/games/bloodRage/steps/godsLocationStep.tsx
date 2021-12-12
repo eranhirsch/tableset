@@ -18,7 +18,6 @@ import { playersMetaStep } from "games/global";
 import { Destroyed } from "../utils/Destroyed";
 import { Gods } from "../utils/Gods";
 import { ProvinceId, Provinces } from "../utils/Provinces";
-import { Ragnarok } from "../utils/Ragnarok";
 import { MapGrid } from "../ux/MapGrid";
 import destroyedStep from "./destroyedStep";
 import godsSelectionStep from "./godsSelectionStep";
@@ -34,15 +33,19 @@ export default createRandomGameStep({
     ragnarok.willResolve() &&
     destroyed.willResolve(),
 
-  resolve: (_, playerIds, isEnabled, ragnarokIdx, destroyedIdx) =>
+  resolve: (_, playerIds, isEnabled, ragnarokProvinceIds, destroyedIdx) =>
     isEnabled
       ? $(
           Provinces.ids,
-          ($$) => Vec.diff($$, Ragnarok.decode(ragnarokIdx!)),
+          ($$) => Vec.diff($$, ragnarokProvinceIds!),
           ($$) =>
             Vec.diff(
               $$,
-              Destroyed.decode(destroyedIdx!, playerIds!.length, ragnarokIdx!)
+              Destroyed.decode(
+                destroyedIdx!,
+                playerIds!.length,
+                ragnarokProvinceIds!
+              )
             ),
           ($$) => Random.sample($$, Gods.PER_GAME),
           Random.shuffle
@@ -50,7 +53,10 @@ export default createRandomGameStep({
       : null,
   skip: (_value, [_playerIds, isEnabled]) => !isEnabled,
 
-  instanceAvroType: { type: "array", items: Provinces.avroType },
+  instanceAvroType: {
+    type: "array",
+    items: Provinces.avroType("GodsProvinceId"),
+  },
 
   InstanceVariableComponent,
   InstanceManualComponent,

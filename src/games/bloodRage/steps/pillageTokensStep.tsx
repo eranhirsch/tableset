@@ -18,7 +18,7 @@ import { playersMetaStep } from "games/global";
 import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { Destroyed } from "../utils/Destroyed";
-import { Provinces } from "../utils/Provinces";
+import { ProvinceId, Provinces } from "../utils/Provinces";
 import { MapGrid } from "../ux/MapGrid";
 import destroyedStep from "./destroyedStep";
 import ragnarokStep from "./ragnarokStep";
@@ -44,8 +44,8 @@ export default createRandomGameStep({
   dependencies: [playersMetaStep, ragnarokStep, destroyedStep],
   isTemplatable: () => true,
 
-  resolve: (_, playerIds, ragnarokIdx, destroyedIdx) =>
-    resolve(playerIds!, ragnarokIdx, destroyedIdx),
+  resolve: (_, playerIds, ragnarokProvinceIds, destroyedIdx) =>
+    resolve(playerIds!, ragnarokProvinceIds, destroyedIdx),
 
   InstanceVariableComponent,
   InstanceManualComponent,
@@ -59,7 +59,7 @@ export default createRandomGameStep({
 
 function resolve(
   playerIds: readonly PlayerId[],
-  ragnarokIdx: number | null,
+  ragnarokProvinceIds: readonly ProvinceId[] | null,
   destroyedIdx: number | null
 ): number {
   if (destroyedIdx == null) {
@@ -75,7 +75,7 @@ function resolve(
         $$,
         playerIds!.length,
         nullthrows(
-          ragnarokIdx,
+          ragnarokProvinceIds,
           `RagnarokIdx is null when DestroyedIdx ${destroyedIdx} isn't?!`
         )
       ),
@@ -106,12 +106,12 @@ function InstanceVariableComponent({
   value: pillageTokenIdx,
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
-  const ragnarokIdx = useOptionalInstanceValue(ragnarokStep);
+  const ragnarokProvinceIds = useOptionalInstanceValue(ragnarokStep);
   const destroyedIdx = useOptionalInstanceValue(destroyedStep);
 
   const tokens = useMemo(
-    () => decode(pillageTokenIdx, playerIds, ragnarokIdx, destroyedIdx),
-    [destroyedIdx, pillageTokenIdx, playerIds, ragnarokIdx]
+    () => decode(pillageTokenIdx, playerIds, ragnarokProvinceIds, destroyedIdx),
+    [destroyedIdx, pillageTokenIdx, playerIds, ragnarokProvinceIds]
   );
 
   return (
@@ -203,7 +203,7 @@ function InstanceManualComponent(): JSX.Element {
 function decode(
   pillageTokensIdx: number,
   playerIds: readonly PlayerId[],
-  ragnarokIdx: number | null,
+  ragnarokProvinceIds: readonly ProvinceId[] | null,
   destroyedIdx: number | null
 ): readonly (PillageTokenType | null)[] {
   if (destroyedIdx == null) {
@@ -219,8 +219,8 @@ function decode(
     destroyedIdx,
     playerIds.length,
     nullthrows(
-      ragnarokIdx,
-      `RagnarokIdx is null when DestroyedIdx ${destroyedIdx} isn't`
+      ragnarokProvinceIds,
+      `Ragnarok is null when DestroyedIdx ${destroyedIdx} isn't`
     )
   );
 

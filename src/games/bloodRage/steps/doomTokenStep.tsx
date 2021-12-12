@@ -1,12 +1,11 @@
 import { C } from "common";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps,
+  DerivedStepInstanceComponentProps
 } from "games/core/steps/createDerivedGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { useMemo } from "react";
-import { Provinces } from "../utils/Provinces";
-import { Ragnarok } from "../utils/Ragnarok";
+import { ProvinceId, Provinces } from "../utils/Provinces";
 import ragnarokStep from "./ragnarokStep";
 
 export default createDerivedGameStep({
@@ -16,11 +15,11 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [ragnarokIdx],
-}: DerivedStepInstanceComponentProps<number>): JSX.Element {
+  dependencies: [ragnarokProvinceIds],
+}: DerivedStepInstanceComponentProps<readonly ProvinceId[]>): JSX.Element {
   const firstAgeProvinceId = useMemo(
-    () => (ragnarokIdx == null ? null : C.firstx(Ragnarok.decode(ragnarokIdx))),
-    [ragnarokIdx]
+    () => (ragnarokProvinceIds == null ? null : C.firstx(ragnarokProvinceIds)),
+    [ragnarokProvinceIds]
   );
   return (
     <>
