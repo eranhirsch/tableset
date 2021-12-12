@@ -1,5 +1,5 @@
+import { ContextBase } from "features/useFeaturesContext";
 import { Query } from "games/core/steps/Query";
-import { ContextBase } from "model/ContextBase";
 import { StepId } from "model/Game";
 import { GameStepBase } from "model/GameStepBase";
 import { VariableGameStep } from "model/VariableGameStep";
