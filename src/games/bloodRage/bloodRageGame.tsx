@@ -49,6 +49,12 @@ export default createGame({
       year: 2015,
       isNotImplemented: true,
     },
+    player5Extras: {
+      name: "5th Player Extras - Kickstarter Exclusives",
+      bggId: 174849,
+      year: 2015,
+      isNotImplemented: true,
+    },
     troll: {
       name: "Mystic Troll",
       bggId: 310026,

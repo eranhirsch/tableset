@@ -3,15 +3,16 @@ import { createProductsMetaStep } from "games/core/steps/createProductDependency
 export type BloodRageProductId =
   /* Spell-checker: disable */
   | "base"
-  | "mystics"
-  | "troll"
-  | "giant"
-  | "ksExclusives"
-  | "gods"
   | "fenrir"
-  | "player5"
+  | "giant"
+  | "gods"
   | "hili"
-  | "promos";
+  | "ksExclusives"
+  | "mystics"
+  | "player5"
+  | "player5Extras"
+  | "promos"
+  | "troll";
 /* Spell-checker: enable */
 
 export default createProductsMetaStep<BloodRageProductId>();
