@@ -15,7 +15,6 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
-import { Destroyed } from "../utils/Destroyed";
 import { Gods } from "../utils/Gods";
 import { ProvinceId, Provinces } from "../utils/Provinces";
 import { MapGrid } from "../ux/MapGrid";
@@ -33,20 +32,18 @@ export default createRandomGameStep({
     ragnarok.willResolve() &&
     destroyed.willResolve(),
 
-  resolve: (_, playerIds, isEnabled, ragnarokProvinceIds, destroyedIdx) =>
+  resolve: (
+    _,
+    playerIds,
+    isEnabled,
+    ragnarokProvinceIds,
+    destroyedProvinceIds
+  ) =>
     isEnabled
       ? $(
           Provinces.ids,
           ($$) => Vec.diff($$, ragnarokProvinceIds!),
-          ($$) =>
-            Vec.diff(
-              $$,
-              Destroyed.decode(
-                destroyedIdx!,
-                playerIds!.length,
-                ragnarokProvinceIds!
-              )
-            ),
+          ($$) => Vec.diff($$, destroyedProvinceIds!),
           ($$) => Random.sample($$, Gods.PER_GAME),
           Random.shuffle
         )
@@ -111,10 +108,9 @@ function InstanceManualComponent(): JSX.Element {
   return (
     <HeaderAndSteps>
       <>
-        Take all{" "}
-        <strong>{5 - Destroyed.perPlayerCount(playerIds.length)}</strong>{" "}
-        leftover Ragnarok tokens that were returned to the box (the ones that
-        are neither on the Game Board nor on the Age Track).
+        Take all <strong>{playerIds.length}</strong> leftover Ragnarok tokens
+        that were returned to the box (the ones that are neither on the Game
+        Board nor on the Age Track).
       </>
       <>Shuffle them.</>
       <>

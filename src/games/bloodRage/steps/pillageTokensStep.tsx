@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { $, MathUtils, nullthrows, Random, Vec } from "common";
+import { $, MathUtils, Random, Vec } from "common";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
@@ -15,13 +15,10 @@ import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
-import { Destroyed } from "../utils/Destroyed";
 import { ProvinceId, Provinces } from "../utils/Provinces";
 import { MapGrid } from "../ux/MapGrid";
-import destroyedStep from "./destroyedStep";
-import ragnarokStep from "./ragnarokStep";
+import destroyedStep, { destroyedPerPlayerCount } from "./destroyedStep";
 
 const ALL_PILLAGE_TOKEN_TYPES = ["rage", "axe", "horn", "glory"] as const;
 type PillageTokenType = typeof ALL_PILLAGE_TOKEN_TYPES[number];
@@ -41,11 +38,10 @@ const PILLAGE_TOKENS = Vec.flatten(
 
 export default createRandomGameStep({
   id: "pillageTokens",
-  dependencies: [playersMetaStep, ragnarokStep, destroyedStep],
+  dependencies: [destroyedStep],
   isTemplatable: () => true,
 
-  resolve: (_, playerIds, ragnarokProvinceIds, destroyedIdx) =>
-    resolve(playerIds!, ragnarokProvinceIds, destroyedIdx),
+  resolve: (_, destroyedProvinceIds) => resolve(destroyedProvinceIds),
 
   InstanceVariableComponent,
   InstanceManualComponent,
@@ -57,30 +53,16 @@ export default createRandomGameStep({
   ...NoConfigPanel,
 });
 
-function resolve(
-  playerIds: readonly PlayerId[],
-  ragnarokProvinceIds: readonly ProvinceId[] | null,
-  destroyedIdx: number | null
-): number {
-  if (destroyedIdx == null) {
+function resolve(destroyedProvinceIds: readonly ProvinceId[] | null): number {
+  if (destroyedProvinceIds == null) {
     return Random.index(MathUtils.permutations_lazy_array(PILLAGE_TOKENS));
   }
 
   // We need to remove tokens because of the destroyed provinces which won't
   // need a token any more.
-  const removedTokens = $(
-    destroyedIdx,
-    ($$) =>
-      Destroyed.decode(
-        $$,
-        playerIds!.length,
-        nullthrows(
-          ragnarokProvinceIds,
-          `RagnarokIdx is null when DestroyedIdx ${destroyedIdx} isn't?!`
-        )
-      ),
-    ($$) => $$.length,
-    ($$) => Random.sample(PILLAGE_TOKENS, $$)
+  const removedTokens = Random.sample(
+    PILLAGE_TOKENS,
+    destroyedProvinceIds.length
   );
 
   // We find the "encoding" of the removed tokens so we can serialize the
@@ -105,13 +87,11 @@ function resolve(
 function InstanceVariableComponent({
   value: pillageTokenIdx,
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
-  const playerIds = useRequiredInstanceValue(playersMetaStep);
-  const ragnarokProvinceIds = useOptionalInstanceValue(ragnarokStep);
-  const destroyedIdx = useOptionalInstanceValue(destroyedStep);
+  const destroyedProvinceIds = useOptionalInstanceValue(destroyedStep);
 
   const tokens = useMemo(
-    () => decode(pillageTokenIdx, playerIds, ragnarokProvinceIds, destroyedIdx),
-    [destroyedIdx, pillageTokenIdx, playerIds, ragnarokProvinceIds]
+    () => decode(pillageTokenIdx, destroyedProvinceIds),
+    [destroyedProvinceIds, pillageTokenIdx]
   );
 
   return (
@@ -133,16 +113,7 @@ function InstanceVariableComponent({
 
 function InstanceManualComponent(): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
-  const ragnarokIdx = useOptionalInstanceValue(ragnarokStep);
-  const destroyedIdx = useOptionalInstanceValue(destroyedStep);
-
-  const destroyed = useMemo(
-    () =>
-      destroyedIdx == null
-        ? null
-        : Destroyed.decode(destroyedIdx, playerIds.length, ragnarokIdx!),
-    [destroyedIdx, playerIds.length, ragnarokIdx]
-  );
+  const destroyedProvinceIds = useOptionalInstanceValue(destroyedStep);
 
   return (
     <HeaderAndSteps synopsis="The Pillage tokens show the reward you get for pillaging that province.">
@@ -162,37 +133,39 @@ function InstanceManualComponent(): JSX.Element {
       <>
         Place them randomly on the other provinces surrounding Yggdrasil, face
         up
-        {destroyed != null
-          ? !Vec.is_empty(destroyed) && (
+        {destroyedProvinceIds != null
+          ? !Vec.is_empty(destroyedProvinceIds) && (
               <>
                 , skipping{" "}
                 <GrammaticalList>
                   {React.Children.toArray(
-                    Vec.map(destroyed, (pid) => <em>{Provinces.label(pid)}</em>)
+                    Vec.map(destroyedProvinceIds, (pid) => (
+                      <em>{Provinces.label(pid)}</em>
+                    ))
                   )}
                 </GrammaticalList>
               </>
             )
-          : Destroyed.perPlayerCount(playerIds.length) > 0 && (
+          : destroyedPerPlayerCount(playerIds.length) > 0 && (
               <>
                 , skipping the{" "}
-                <strong>{Destroyed.perPlayerCount(playerIds.length)}</strong>{" "}
+                <strong>{destroyedPerPlayerCount(playerIds.length)}</strong>{" "}
                 destroyed provinces
               </>
             )}
         .
       </>
-      {(destroyed != null
-        ? !Vec.is_empty(destroyed) && (
+      {(destroyedProvinceIds != null
+        ? !Vec.is_empty(destroyedProvinceIds) && (
             <>
-              You should have <strong>{destroyed.length}</strong> tokens
-              remaining.
+              You should have <strong>{destroyedProvinceIds.length}</strong>{" "}
+              tokens remaining.
             </>
           )
-        : Destroyed.perPlayerCount(playerIds.length) > 0) && (
+        : destroyedPerPlayerCount(playerIds.length) > 0) && (
         <>
           You should have{" "}
-          <strong>{Destroyed.perPlayerCount(playerIds.length)}</strong> tokens
+          <strong>{destroyedPerPlayerCount(playerIds.length)}</strong> tokens
           remaining.
         </>
       )}
@@ -202,11 +175,9 @@ function InstanceManualComponent(): JSX.Element {
 
 function decode(
   pillageTokensIdx: number,
-  playerIds: readonly PlayerId[],
-  ragnarokProvinceIds: readonly ProvinceId[] | null,
-  destroyedIdx: number | null
+  destroyedProvinceIds: readonly ProvinceId[] | null
 ): readonly (PillageTokenType | null)[] {
-  if (destroyedIdx == null) {
+  if (destroyedProvinceIds == null) {
     return $(
       PILLAGE_TOKENS,
       ($$) => MathUtils.permutations_lazy_array($$),
@@ -215,18 +186,9 @@ function decode(
     );
   }
 
-  const destroyed = Destroyed.decode(
-    destroyedIdx,
-    playerIds.length,
-    nullthrows(
-      ragnarokProvinceIds,
-      `Ragnarok is null when DestroyedIdx ${destroyedIdx} isn't`
-    )
-  );
-
   const removedArr = MathUtils.combinations_lazy_array_with_duplicates(
     PILLAGE_TOKENS,
-    destroyed.length
+    destroyedProvinceIds.length
   );
 
   return $(
@@ -250,7 +212,9 @@ function decode(
     ($$) => [...$$],
     ($$) =>
       Vec.map(Vec.range(0, 7), (position) =>
-        destroyed.includes(Provinces.atPosition(position)) ? null : $$.pop()!
+        destroyedProvinceIds.includes(Provinces.atPosition(position))
+          ? null
+          : $$.pop()!
       )
   );
 }

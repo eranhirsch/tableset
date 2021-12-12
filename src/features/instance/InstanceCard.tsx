@@ -65,6 +65,7 @@ export function InstanceCard({
             justifyContent: "center",
             alignItems: "center",
             textAlign: "center",
+            alignContent: "center",
           }}
         >
           {children}

@@ -1,21 +1,20 @@
-import { Typography } from "@mui/material";
+import { Chip, Typography } from "@mui/material";
+import { Random, Vec } from "common";
+import { InstanceCard } from "features/instance/InstanceCard";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
+  InstanceCardsProps,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
-import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
-import { useMemo } from "react";
-import { Destroyed } from "../utils/Destroyed";
-import { Provinces } from "../utils/Provinces";
+import { ProvinceId, Provinces } from "../utils/Provinces";
 import { MapGrid } from "../ux/MapGrid";
 import ragnarokStep from "./ragnarokStep";
 
@@ -23,81 +22,102 @@ export default createRandomGameStep({
   id: "destroyed",
   dependencies: [playersMetaStep, ragnarokStep],
   isTemplatable: (players, ragnarok) =>
-    Destroyed.perPlayerCount(players.onlyResolvableValue()!.length) > 0 &&
+    destroyedPerPlayerCount(players.onlyResolvableValue()!.length) > 0 &&
     ragnarok.willResolve(),
 
-  resolve: (_, playerIds, ragnarokIdx) =>
-    ragnarokIdx != null
-      ? Destroyed.randomIdx(playerIds!.length, ragnarokIdx)
+  resolve: (_, playerIds, ragnarokProvinceIds) =>
+    ragnarokProvinceIds != null
+      ? Random.sample(
+          Vec.diff(Provinces.ids, ragnarokProvinceIds),
+          destroyedPerPlayerCount(playerIds!.length)
+        )
       : null,
 
-  skip: (_, [playerIds]) => Destroyed.perPlayerCount(playerIds!.length) === 0,
+  skip: (_, [playerIds]) => destroyedPerPlayerCount(playerIds!.length) === 0,
 
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCards: (props) => (
-    <IndexHashInstanceCard {...props} title="Destroyed" />
-  ),
+  InstanceCards,
 
-  instanceAvroType: "int",
+  instanceAvroType: {
+    type: "array",
+    items: Provinces.avroType("DestroyedProvinceId"),
+  },
   ...NoConfigPanel,
 });
 
 function InstanceVariableComponent({
-  value: destroyedIdx,
-}: VariableStepInstanceComponentProps<number>): JSX.Element {
-  const playerIds = useRequiredInstanceValue(playersMetaStep);
-  const ragnarokIdx = useRequiredInstanceValue(ragnarokStep);
-
-  const destroyed = useMemo(
-    () => Destroyed.decode(destroyedIdx, playerIds.length, ragnarokIdx),
-    [destroyedIdx, playerIds.length, ragnarokIdx]
-  );
-
+  value: destroyedProvinceIds,
+}: VariableStepInstanceComponentProps<readonly ProvinceId[]>): JSX.Element {
   return (
     <>
       <Typography variant="body1">
         Before the game begins, some provinces will already have been destroyed
         by Ragnarök, leaving less usable space on the board. Place the following{" "}
         <ChosenElement>
-          Ragnarok Token{destroyed.length > 1 && "s"}
+          Ragnarok Token{destroyedProvinceIds.length > 1 && "s"}
         </ChosenElement>{" "}
-        on the province{destroyed.length > 1 && "s"}, with the “destroyed” side
-        facing up.
+        on the province{destroyedProvinceIds.length > 1 && "s"}, with the
+        “destroyed” side facing up.
       </Typography>
       <MapGrid
         color={(provinceId) =>
-          destroyed.includes(provinceId) ? "red" : Provinces.color(provinceId)
+          destroyedProvinceIds.includes(provinceId)
+            ? "red"
+            : Provinces.color(provinceId)
         }
         label={(provinceId) =>
-          destroyed.includes(provinceId) ? (
+          destroyedProvinceIds.includes(provinceId) ? (
             <strong>{Provinces.label(provinceId)}</strong>
           ) : undefined
         }
       />
-      <IndexHashCaption idx={destroyedIdx} />
+    </>
+  );
+}
+
+function InstanceCards({
+  value: destroyedProvinceIds,
+  onClick,
+}: InstanceCardsProps<readonly ProvinceId[]>): JSX.Element {
+  return (
+    <>
+      {Vec.map(destroyedProvinceIds, (provinceId) => (
+        <InstanceCard
+          key={`destroyed_${provinceId}`}
+          onClick={onClick}
+          title="Destroyed"
+        >
+          <Typography variant="h5">🔥</Typography>
+          <Chip
+            sx={{ width: "100%" }}
+            label={Provinces.label(provinceId)}
+            color={Provinces.color(provinceId)}
+          />
+        </InstanceCard>
+      ))}
     </>
   );
 }
 
 function InstanceManualComponent(): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
-  const ragnarokIdx = useOptionalInstanceValue(ragnarokStep);
+  const ragnarokProvinceIds = useOptionalInstanceValue(ragnarokStep);
 
-  const numTokens = Destroyed.perPlayerCount(playerIds.length);
+  const numTokens = destroyedPerPlayerCount(playerIds.length);
 
   return (
     <HeaderAndSteps synopsis="Before the game begins, some provinces will already have been destroyed by Ragnarök, leaving less usable space on the board:">
-      {ragnarokIdx != null && (
+      {ragnarokProvinceIds != null && (
         <>
           Take the remaining <strong>5</strong>{" "}
           <ChosenElement>Ragnarök tokens</ChosenElement>.
         </>
       )}
-      {ragnarokIdx != null && (
+      {ragnarokProvinceIds != null && (
         <>Flip them on the side where the province name is hidden.</>
       )}
-      {ragnarokIdx != null && <>Shuffle them.</>}
+      {ragnarokProvinceIds != null && <>Shuffle them.</>}
       <>
         Take <strong>{numTokens}</strong> Ragnarök tokens.
       </>
@@ -109,3 +129,6 @@ function InstanceManualComponent(): JSX.Element {
     </HeaderAndSteps>
   );
 }
+
+export const destroyedPerPlayerCount = (playerCount: number): number =>
+  5 - playerCount;
