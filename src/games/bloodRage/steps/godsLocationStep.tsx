@@ -15,16 +15,18 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
+import { useMemo } from "react";
 import { Gods } from "../utils/Gods";
 import { ProvinceId, Provinces } from "../utils/Provinces";
 import { MapGrid } from "../ux/MapGrid";
+import { BloodRageStepId } from "./BloodRageStepId";
 import destroyedStep from "./destroyedStep";
 import godsSelectionStep from "./godsSelectionStep";
 import godsVariant from "./godsVariant";
 import ragnarokStep from "./ragnarokStep";
 
 export default createRandomGameStep({
-  id: "godsLocation",
+  id: BloodRageStepId.GOD_LOCATIONS,
   dependencies: [playersMetaStep, godsVariant, ragnarokStep, destroyedStep],
 
   isTemplatable: (_, isEnabled, ragnarok, destroyed) =>
@@ -142,19 +144,33 @@ function InstanceCards({
   value: godProvinceId,
   onClick,
 }: InstanceCardsProps<readonly ProvinceId[]>): JSX.Element {
+  const godIds = useOptionalInstanceValue(godsSelectionStep);
+
+  const zipped = useMemo(
+    () => Vec.zip(godProvinceId, godIds == null ? Vec.fill(2, null) : godIds),
+    [godIds, godProvinceId]
+  );
+
   return (
     <>
-      {Vec.map(godProvinceId, (provinceId, index) => (
+      {Vec.map(zipped, ([provinceId, godId]) => (
         <InstanceCard
-          key={provinceId}
+          key={`godLocation_${provinceId}${godId != null ? `_${godId}` : ""}`}
           onClick={onClick}
-          title="Provinces"
-          subheader="Gods"
+          title={godId == null ? "Start Loc." : "Gods"}
+          subheader={godId == null ? "Gods" : undefined}
         >
+          {godId != null && (
+            <Chip
+              sx={{ width: "100%" }}
+              color={Gods.color(godId)}
+              label={<strong>{Gods.label(godId)}</strong>}
+            />
+          )}
           <Chip
-            size="small"
+            sx={{ width: "100%", marginTop: 0.5 }}
             color={Provinces.color(provinceId)}
-            label={Provinces.label(provinceId)}
+            label={<em>@{Provinces.label(provinceId)}</em>}
           />
         </InstanceCard>
       ))}

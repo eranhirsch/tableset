@@ -1,6 +1,7 @@
 import { Chip, Typography } from "@mui/material";
 import { Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
+import { useHasDownstreamInstanceValue } from "features/instance/useInstanceValue";
 import {
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
@@ -10,6 +11,7 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createItemSelectorStep } from "games/global";
 import { GodId, Gods } from "../utils/Gods";
+import { BloodRageStepId } from "./BloodRageStepId";
 import godsVariant from "./godsVariant";
 import productsMetaStep from "./productsMetaStep";
 
@@ -32,7 +34,14 @@ export default createItemSelectorStep({
 function InstanceCards({
   value: godIds,
   onClick,
-}: InstanceCardsProps<readonly GodId[]>): JSX.Element {
+}: InstanceCardsProps<readonly GodId[]>): JSX.Element | null {
+  const withLocations = useHasDownstreamInstanceValue(
+    BloodRageStepId.GOD_LOCATIONS
+  );
+  if (withLocations) {
+    return null;
+  }
+
   return (
     <>
       {Vec.map(godIds, (godId) => (
