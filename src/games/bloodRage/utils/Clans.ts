@@ -39,14 +39,14 @@ function color(clanId: ClanId): GamePiecesColor {
 function label(clanId: ClanId): string {
   switch (clanId) {
     case "bear":
-      return "Bear";
+      return "🐻 Bear";
     case "raven":
-      return "Raven";
+      return "🐦 Raven";
     case "serpent":
-      return "Serpent";
+      return "🐍 Serpent";
     case "ram":
-      return "Ram";
+      return "🐏 Ram";
     case "wolf":
-      return "Wolf";
+      return "🐺 Wolf";
   }
 }
