@@ -1,5 +1,5 @@
+import { PlayerId } from "features/players/playersSlice";
 import { VariableGameStep } from "model/VariableGameStep";
-import { PlayerId } from "../../../model/Player";
 import { buildQuery } from "../../core/steps/Query";
 
 const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = {

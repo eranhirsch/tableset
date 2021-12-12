@@ -1,12 +1,12 @@
 import { AvatarGroup, Typography } from "@mui/material";
 import { Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { PlayerMats } from "../utils/PlayerMats";

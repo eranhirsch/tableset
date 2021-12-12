@@ -20,6 +20,7 @@ import {
 } from "features/instance/useInstanceValue";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
+import { PlayerId } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import { Query } from "games/core/steps/Query";
@@ -34,7 +35,6 @@ import { playersMetaStep } from ".";
 import { useAppSelector } from "../../../app/hooks";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import { firstPlayerIdSelector } from "../../../features/players/playersSlice";
-import { PlayerId } from "../../../model/Player";
 import {
   ConfigPanelProps,
   createRandomGameStep,

@@ -1,7 +1,7 @@
 import { Avatar } from "@mui/material";
 import { SxProps } from "@mui/system";
-import { PlayerId } from "model/Player";
 import { PlayerNameShortAbbreviation } from "./PlayerNameShortAbbreviation";
+import { PlayerId } from "./playersSlice";
 
 export function PlayerAvatar({
   playerId,

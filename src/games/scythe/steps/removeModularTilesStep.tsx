@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import { Vec } from "common";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -7,7 +8,6 @@ import {
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { FactionId } from "../utils/Factions";
 import { HomeBases } from "../utils/HomeBases";

@@ -1,6 +1,7 @@
 import { invariant, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -10,7 +11,6 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { PlayerAvatarsList } from "games/core/ux/PlayerAvatarsList";
 import { fullPlayOrder, playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import React from "react";
 import { ConcordiaProductId } from "../ConcordiaProductId";
 import RomanTitle from "../ux/RomanTitle";

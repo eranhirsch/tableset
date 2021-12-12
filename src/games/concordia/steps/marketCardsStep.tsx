@@ -1,6 +1,6 @@
 import { invariant, Vec } from "common";
+import { PlayerId } from "features/players/playersSlice";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,

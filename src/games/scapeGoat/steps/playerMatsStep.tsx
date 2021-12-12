@@ -3,6 +3,7 @@ import { Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createRandomGameStep,
   InstanceCardsProps,
@@ -13,7 +14,6 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { Characters } from "../utils/Characters";
 import { CharacterChip } from "../ux/CharacterChip";

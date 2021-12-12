@@ -1,13 +1,13 @@
 import { Stack } from "@mui/material";
 import { Shape, Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
-import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { Combos } from "../utils/Combos";

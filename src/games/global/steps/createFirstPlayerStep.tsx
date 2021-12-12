@@ -3,11 +3,11 @@ import { Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
+import { PlayerId } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import { VariableGameStep } from "model/VariableGameStep";
 import React from "react";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
-import { PlayerId } from "../../../model/Player";
 import {
   ConfigPanelProps,
   createRandomGameStep,

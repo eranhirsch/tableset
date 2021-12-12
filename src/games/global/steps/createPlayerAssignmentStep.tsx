@@ -21,6 +21,7 @@ import {
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import {
@@ -32,7 +33,6 @@ import {
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ProductId } from "model/Game";
-import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useState } from "react";
 import {

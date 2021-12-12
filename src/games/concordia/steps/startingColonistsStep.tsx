@@ -2,11 +2,11 @@ import { Typography } from "@mui/material";
 import { Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { PlayerAvatarsList } from "games/core/ux/PlayerAvatarsList";
 import { fullPlayOrder, playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import React from "react";
 import {
   createDerivedGameStep,

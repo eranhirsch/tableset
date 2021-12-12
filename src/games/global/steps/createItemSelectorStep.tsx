@@ -4,10 +4,10 @@ import avro from "avsc";
 import { $, Dict, MathUtils, nullthrows, Random, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import { gameSelector } from "features/game/gameSlice";
-import { playersSelectors } from "features/players/playersSlice";
+import { PlayerId, playersSelectors } from "features/players/playersSlice";
 import {
   templateSelectors,
-  templateValue
+  templateValue,
 } from "features/template/templateSlice";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
@@ -15,12 +15,11 @@ import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
 import { ProductId, StepId } from "model/Game";
-import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
 import { ColorFunction, LabelFunction, ProductsFunction } from "../types";

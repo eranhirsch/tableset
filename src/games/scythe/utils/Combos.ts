@@ -1,5 +1,5 @@
 import { Dict, invariant, tuple, Vec } from "common";
-import { PlayerId } from "model/Player";
+import { PlayerId } from "features/players/playersSlice";
 import { ScytheProductId } from "../ScytheProductId";
 import { Faction, FactionId, Factions } from "./Factions";
 import { Mat, MatId, PlayerMats } from "./PlayerMats";

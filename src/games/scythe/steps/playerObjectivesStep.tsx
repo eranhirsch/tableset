@@ -1,10 +1,10 @@
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
-import { PlayerId } from "model/Player";
 import { FactionId } from "../utils/Factions";
 import { FactionChip } from "../ux/FactionChip";
 import factionsStep from "./factionsStep";

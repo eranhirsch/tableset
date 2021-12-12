@@ -1,12 +1,12 @@
 import { Typography } from "@mui/material";
 import { $, C, MathUtils } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { Characters } from "../utils/Characters";
 import playerMatsStep from "./playerMatsStep";

@@ -1,11 +1,11 @@
 import { Typography } from "@mui/material";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { playersMetaStep } from "games/global";
 import { RulesSection } from "games/global/ux/RulesSection";
-import { PlayerId } from "model/Player";
 import alliancesVariant from "./alliancesVariant";
 
 export default createDerivedGameStep({

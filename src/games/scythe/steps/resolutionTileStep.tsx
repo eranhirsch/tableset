@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
+import { PlayerId } from "features/players/playersSlice";
 import {
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
@@ -9,7 +10,6 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createItemSelectorStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { ScytheProductId } from "../ScytheProductId";
 import productsMetaStep from "./productsMetaStep";
 import resolutionVariant from "./resolutionVariant";

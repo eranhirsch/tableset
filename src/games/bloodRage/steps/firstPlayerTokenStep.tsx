@@ -1,11 +1,11 @@
 import { Typography } from "@mui/material";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
-import { PlayerId } from "model/Player";
 import firstPlayerStep from "./firstPlayerStep";
 
 export default createDerivedGameStep({

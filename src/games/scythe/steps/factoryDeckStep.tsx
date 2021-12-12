@@ -1,5 +1,6 @@
 import { Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -7,7 +8,6 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { ScytheProductId } from "../ScytheProductId";
 import { FactionId } from "../utils/Factions";
 import { FactoryCards } from "../utils/FactoryCards";

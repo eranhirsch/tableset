@@ -2,9 +2,9 @@ import { Button, Chip, Grid, styled, Typography } from "@mui/material";
 import { C, Dict, MathUtils, nullthrows, Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
+import { PlayerId } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import React, { useCallback, useMemo } from "react";
 import {
   ConfigPanelProps,

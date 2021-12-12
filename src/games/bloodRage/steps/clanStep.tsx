@@ -5,6 +5,7 @@ import {
   useHasDownstreamInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
+import { PlayerId } from "features/players/playersSlice";
 import {
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
@@ -12,7 +13,6 @@ import {
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { createItemSelectorStep, playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { ClanId, Clans } from "../utils/Clans";
 import productsMetaStep from "./productsMetaStep";

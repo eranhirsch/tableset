@@ -1,6 +1,6 @@
 import { Vec } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
-import { PlayerId } from "model/Player";
+import { PlayerId } from "features/players/playersSlice";
 import React from "react";
 import { GrammaticalList } from "./GrammaticalList";
 

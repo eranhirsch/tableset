@@ -17,7 +17,7 @@ import { Dict, invariant, nullthrows, Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerShortName } from "features/players/PlayerShortName";
-import { playersSelectors } from "features/players/playersSlice";
+import { PlayerId, playersSelectors } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import {
@@ -28,7 +28,6 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { ProductId } from "model/Game";
-import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
 import { playersMetaStep } from ".";

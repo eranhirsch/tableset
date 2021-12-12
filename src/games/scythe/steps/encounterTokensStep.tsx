@@ -1,5 +1,6 @@
 import { MathUtils, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -7,7 +8,6 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import { ModularMapTiles } from "../utils/ModularMapTiles";
 import modularBoardVariant from "./modularBoardVariant";

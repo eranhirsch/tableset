@@ -1,12 +1,12 @@
 import { Typography } from "@mui/material";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
-import { PlayerId } from "model/Player";
 import firstPlayerStep from "./firstPlayerStep";
 import teamPlayVariant from "./teamPlayVariant";
 

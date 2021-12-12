@@ -1,5 +1,5 @@
 import { Vec } from "common";
-import { PlayerId } from "model/Player";
+import { PlayerId } from "features/players/playersSlice";
 
 /**
  * Utility method to find the complete order of play from the list of players,

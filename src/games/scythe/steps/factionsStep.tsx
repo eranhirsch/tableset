@@ -5,6 +5,7 @@ import {
   useHasDownstreamInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
+import { PlayerId } from "features/players/playersSlice";
 import {
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
@@ -14,7 +15,6 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createItemSelectorStep, playersMetaStep } from "games/global";
 import createNegateMetaStep from "games/global/steps/createNegateMetaStep";
-import { PlayerId } from "model/Player";
 import React, { useMemo } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { ScytheStepId } from "../ScytheStepId";

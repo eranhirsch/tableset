@@ -1,4 +1,5 @@
 import { $, MathUtils, Vec } from "common";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -7,7 +8,6 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { useMemo } from "react";
 import mysticsVariant from "./mysticsVariant";
 import productsMetaStep, { BloodRageProductId } from "./productsMetaStep";

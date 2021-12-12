@@ -1,7 +1,7 @@
 import { Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
+import { PlayerId } from "features/players/playersSlice";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import React from "react";
 import {
   createDerivedGameStep,

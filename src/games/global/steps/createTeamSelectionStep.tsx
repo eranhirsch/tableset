@@ -13,7 +13,7 @@ import { C, invariant, Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerShortName } from "features/players/PlayerShortName";
-import { playersSelectors } from "features/players/playersSlice";
+import { PlayerId, playersSelectors } from "features/players/playersSlice";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import {
   ConfigPanelProps,
@@ -23,7 +23,6 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
-import { PlayerId } from "model/Player";
 import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
 import playersMetaStep from "./playersMetaStep";

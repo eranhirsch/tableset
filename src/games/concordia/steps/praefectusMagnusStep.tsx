@@ -1,8 +1,8 @@
 import { Typography } from "@mui/material";
 import { Str } from "common";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "../../../model/Player";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,

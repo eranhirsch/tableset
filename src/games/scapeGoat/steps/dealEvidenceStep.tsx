@@ -1,10 +1,10 @@
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { CARDS_PER_PLAYER_COUNT } from "./evidenceDeckStep";
 
 export default createDerivedGameStep({

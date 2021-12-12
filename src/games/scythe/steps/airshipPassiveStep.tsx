@@ -2,6 +2,7 @@ import { Stack, Typography, useTheme } from "@mui/material";
 import { Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { useHasDownstreamInstanceValue } from "features/instance/useInstanceValue";
+import { PlayerId } from "features/players/playersSlice";
 import {
   InstanceCardsProps,
   VariableStepInstanceComponentProps,
@@ -11,7 +12,6 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createItemSelectorStep } from "games/global";
-import { PlayerId } from "model/Player";
 import { ScytheProductId } from "../ScytheProductId";
 import { Airships } from "../utils/Airships";
 import advancedAirshipVariant from "./advancedAirshipVariant";

@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, CardHeader, Grid } from "@mui/material";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
-import { PlayerId } from "model/Player";
+import { PlayerId } from "features/players/playersSlice";
 
 const AVATAR_SIZE = 28;
 

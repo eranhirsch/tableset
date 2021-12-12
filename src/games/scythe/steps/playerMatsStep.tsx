@@ -23,7 +23,7 @@ import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
-import { playersSelectors } from "features/players/playersSlice";
+import { PlayerId, playersSelectors } from "features/players/playersSlice";
 import {
   templateValue,
   UnchangedTemplateValue,
@@ -44,7 +44,6 @@ import {
   AlwaysNeverMultiChipSelector,
   AlwaysNeverMultiLabel,
 } from "games/global/ux/AlwaysNeverMultiChipSelector";
-import { PlayerId } from "model/Player";
 import React, { useMemo, useState } from "react";
 import { ScytheProductId } from "../ScytheProductId";
 import { ScytheStepId } from "../ScytheStepId";

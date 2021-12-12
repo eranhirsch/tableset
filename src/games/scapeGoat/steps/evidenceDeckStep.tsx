@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import { $, Vec } from "common";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -7,7 +8,6 @@ import {
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { playersMetaStep } from "games/global";
-import { PlayerId } from "model/Player";
 import React from "react";
 
 export const CARDS_PER_PLAYER_COUNT = [0, 0, 13, 15, 22, 25] as const;
