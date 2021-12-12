@@ -27,20 +27,14 @@ import ragnarokStep from "./ragnarokStep";
 
 export default createRandomGameStep({
   id: BloodRageStepId.GOD_LOCATIONS,
-  dependencies: [playersMetaStep, godsVariant, ragnarokStep, destroyedStep],
+  dependencies: [godsVariant, ragnarokStep, destroyedStep],
 
-  isTemplatable: (_, isEnabled, ragnarok, destroyed) =>
+  isTemplatable: (isEnabled, ragnarok, destroyed) =>
     isEnabled.canResolveTo(true) &&
     ragnarok.willResolve() &&
     destroyed.willResolve(),
 
-  resolve: (
-    _,
-    playerIds,
-    isEnabled,
-    ragnarokProvinceIds,
-    destroyedProvinceIds
-  ) =>
+  resolve: (_, isEnabled, ragnarokProvinceIds, destroyedProvinceIds) =>
     isEnabled
       ? $(
           Provinces.ids,
@@ -116,7 +110,8 @@ function InstanceManualComponent(): JSX.Element {
       </>
       <>Shuffle them.</>
       <>
-        Draw <strong>2</strong> tiles, 1 for each of the 2 gods
+        Draw <strong>{Gods.PER_GAME}</strong> tiles, 1 for each of the{" "}
+        {Gods.PER_GAME} gods
         {godIds != null && (
           <>
             :{" "}
@@ -147,7 +142,11 @@ function InstanceCards({
   const godIds = useOptionalInstanceValue(godsSelectionStep);
 
   const zipped = useMemo(
-    () => Vec.zip(godProvinceId, godIds == null ? Vec.fill(2, null) : godIds),
+    () =>
+      Vec.zip(
+        godProvinceId,
+        godIds == null ? Vec.fill(godProvinceId.length, null) : godIds
+      ),
     [godIds, godProvinceId]
   );
 
