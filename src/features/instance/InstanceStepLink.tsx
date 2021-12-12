@@ -3,7 +3,7 @@ import { useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
 import { gameStepSelector } from "features/game/gameSlice";
 import { StepId } from "model/Game";
-import { GameStepBase } from "model/GameStepBase";
+import { GameStepBase } from "./GameStepBase";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
 
 export function InstanceStepLink(

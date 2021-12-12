@@ -1,7 +1,7 @@
 import avro from "avsc";
 import { $, Dict, Vec } from "common";
 import { GameId } from "games/core/GAMES";
-import { GameStepBase } from "./GameStepBase";
+import { GameStepBase } from "../features/instance/GameStepBase";
 import { VariableGameStep } from "./VariableGameStep";
 
 export type StepId = string;

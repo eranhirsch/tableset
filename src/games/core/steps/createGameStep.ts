@@ -1,5 +1,5 @@
+import { GameStepBase } from "features/instance/GameStepBase";
 import { StepId } from "../../../model/Game";
-import { GameStepBase } from "../../../model/GameStepBase";
 
 export interface CreateGameStepOptions {
   id: StepId;

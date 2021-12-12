@@ -1,4 +1,4 @@
-import { GameStepBase } from "model/GameStepBase";
+import { GameStepBase } from "features/instance/GameStepBase";
 import { Skippable } from "model/Skippable";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { InstanceContext } from "./createRandomGameStep";

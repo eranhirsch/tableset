@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { useFeaturesContext } from "features/useFeaturesContext";
-import React from "react";
 import { StepConfigPanelWrapper } from "./StepConfigPanelWrapper";
 import { Templatable } from "./Templatable";
 import {

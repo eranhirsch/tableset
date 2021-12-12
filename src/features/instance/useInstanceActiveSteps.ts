@@ -1,9 +1,9 @@
 import { Vec } from "common";
 import { isTemplatable } from "features/template/Templatable";
 import { useFeaturesContext } from "features/useFeaturesContext";
-import { GameStepBase } from "model/GameStepBase";
 import { isSkippable } from "model/Skippable";
 import { useMemo } from "react";
+import { GameStepBase } from "./GameStepBase";
 import { useGameFromParam } from "./useGameFromParam";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 

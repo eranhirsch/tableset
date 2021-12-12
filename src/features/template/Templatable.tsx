@@ -1,7 +1,7 @@
+import { GameStepBase } from "features/instance/GameStepBase";
 import { ContextBase } from "features/useFeaturesContext";
 import { Query } from "games/core/steps/Query";
 import { StepId } from "model/Game";
-import { GameStepBase } from "model/GameStepBase";
 import { VariableGameStep } from "model/VariableGameStep";
 import { templateSelectors } from "./templateSlice";
 

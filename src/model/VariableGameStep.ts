@@ -4,8 +4,8 @@ import {
   TemplateContext,
 } from "games/core/steps/createRandomGameStep";
 import { Queryable } from "games/core/steps/Queryable";
+import { GameStepBase } from "../features/instance/GameStepBase";
 import { StepId } from "./Game";
-import { GameStepBase } from "./GameStepBase";
 
 export interface VariableGameStep<T = unknown>
   extends GameStepBase,
