@@ -10,8 +10,6 @@ export const createProductsMetaStep = <
   id: "__product",
   label: `<Product>`,
 
-  hasValue: () => true,
-
   extractInstanceValue: (_, { productIds }) => productIds as readonly Pid[],
 
   query: (_, { productIds: currentProductIds }) =>

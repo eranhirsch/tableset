@@ -162,8 +162,6 @@ export function createVariant({
 
     initialConfig: { percent: 100 },
 
-    hasValue: () => true,
-
     resolve({ percent, conditionalPercent }, instance, context) {
       if (
         incompatibleWith != null &&

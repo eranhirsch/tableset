@@ -52,10 +52,6 @@ export default function createTeamVariant<ProductId = never>({
       baseTeamPlayVariant.skip(context) &&
       !enabledAt.includes(context.playerIds.length),
 
-    hasValue: (context) =>
-      baseTeamPlayVariant.hasValue(context) ||
-      enabledAt.includes(context.playerIds.length),
-
     extractInstanceValue: (upstreamInstance, context) =>
       baseTeamPlayVariant.extractInstanceValue(upstreamInstance, context) ??
       (enabledAt.includes(context.playerIds.length) ? true : null),

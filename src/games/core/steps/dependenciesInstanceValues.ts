@@ -50,11 +50,7 @@ export function maybeFulfillDependency<T>(
     return;
   }
 
-  const { hasValue, extractInstanceValue } = dependency;
-
-  if (!nullthrows(hasValue)({ instance, ...context })) {
-    return null;
-  }
+  const { extractInstanceValue } = dependency;
 
   return nullthrows(extractInstanceValue)(instance, context);
 }

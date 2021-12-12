@@ -12,7 +12,6 @@ function createNegateMetaStep(
   return {
     id: `__${step.id}_negated`,
     label: `<${step.label}:NEGATED>`,
-    hasValue: () => true,
     extractInstanceValue: (...args) => !step.extractInstanceValue(...args),
     query: (...args) =>
       buildQuery(`__${step.id}_negated`, {

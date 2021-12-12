@@ -208,7 +208,7 @@ function configUpdatedImpl<C = unknown>(
 }
 
 const isVariableGameStep = (step: GameStepBase): step is VariableGameStep =>
-  (step as Partial<VariableGameStep>).hasValue != null;
+  (step as Partial<VariableGameStep>).extractInstanceValue != null;
 
 function markDownstreamElementsStale(
   step: GameStepBase,

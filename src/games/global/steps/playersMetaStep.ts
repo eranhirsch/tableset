@@ -6,8 +6,6 @@ const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = {
   id: "__players",
   label: "<Players>",
 
-  hasValue: () => true,
-
   extractInstanceValue: (_, { playerIds }) => playerIds,
 
   query: (_, { playerIds }) =>

@@ -338,11 +338,6 @@ export function createRandomGameStep<T, C extends Object>({
           )
         : false,
 
-    hasValue: (context: TemplateContext | InstanceContext) =>
-      "template" in context
-        ? context.template[baseStep.id] != null
-        : context.instance[baseStep.id] != null,
-
     canBeTemplated: (template, context) =>
       isTemplatable(
         ...Vec.map(dependencies, (dependency) =>
