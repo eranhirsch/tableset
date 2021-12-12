@@ -153,11 +153,11 @@ function InstanceCards({
 
   return (
     <>
-      {Vec.map(zipped, ([provinceId, godId]) => (
+      {Vec.map(zipped, ([provinceId, godId], index) => (
         <InstanceCard
           key={`godLocation_${provinceId}${godId != null ? `_${godId}` : ""}`}
           onClick={onClick}
-          title={godId == null ? "Start Loc." : "Gods"}
+          title={godId == null ? `Start Loc. ${index + 1}` : "Gods"}
           subheader={godId == null ? "Gods" : undefined}
         >
           {godId != null && (
@@ -170,7 +170,13 @@ function InstanceCards({
           <Chip
             sx={{ width: "100%", marginTop: 0.5 }}
             color={Provinces.color(provinceId)}
-            label={<em>@{Provinces.label(provinceId)}</em>}
+            label={
+              godId != null ? (
+                <em>@{Provinces.label(provinceId)}</em>
+              ) : (
+                Provinces.label(provinceId)
+              )
+            }
           />
         </InstanceCard>
       ))}
