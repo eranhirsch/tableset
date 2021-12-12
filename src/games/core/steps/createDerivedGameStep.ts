@@ -1,5 +1,5 @@
 import { GameStepBase } from "features/instance/GameStepBase";
-import { Skippable } from "model/Skippable";
+import { Skippable } from "features/instance/useInstanceActiveSteps";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { InstanceContext } from "./createRandomGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";

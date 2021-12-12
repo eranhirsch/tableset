@@ -1,10 +1,10 @@
 import avro from "avsc";
 import { Vec } from "common";
+import { Skippable } from "features/instance/useInstanceActiveSteps";
 import { Templatable } from "features/template/Templatable";
 import { TemplateElement } from "features/template/templateSlice";
 import { ContextBase } from "features/useFeaturesContext";
 import { StepId } from "model/Game";
-import { Skippable } from "model/Skippable";
 import { VariableGameStep } from "model/VariableGameStep";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
