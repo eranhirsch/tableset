@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { useFeaturesContext } from "features/useFeaturesContext";
+import { DerivedGameStep } from "games/core/steps/createDerivedGameStep";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
-import { DerivedGameStep } from "model/DerivedGameStep";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 
 export function InstanceItemContent({

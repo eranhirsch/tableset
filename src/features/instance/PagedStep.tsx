@@ -5,7 +5,6 @@ import { TSPage } from "app/ux/Chrome";
 import { invariant_violation, ReactUtils } from "common";
 import { gameStepSelector } from "features/game/gameSlice";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
-import { DerivedGameStep } from "model/DerivedGameStep";
 import { StepId } from "model/Game";
 import { useParams } from "react-router-dom";
 import { CloseButton } from "./CloseButton";
@@ -24,9 +23,7 @@ export function PagedStep(): JSX.Element {
 function PagedStepInternal({ stepId }: { stepId: StepId }): JSX.Element {
   const navigateToSibling = ReactUtils.useNavigateToSibling();
 
-  const step = useAppSelector(gameStepSelector(stepId)) as
-    | RandomGameStep
-    | DerivedGameStep;
+  const step = useAppSelector(gameStepSelector(stepId)) as RandomGameStep;
 
   const activeSteps = useInstanceActiveSteps();
 

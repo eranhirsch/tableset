@@ -1,8 +1,14 @@
-import { DerivedGameStep } from "model/DerivedGameStep";
+import { GameStepBase } from "model/GameStepBase";
+import { Skippable } from "model/Skippable";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
+import { InstanceContext } from "./createRandomGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
 import { DepsTuple } from "./DepsTuple";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
+
+export interface DerivedGameStep extends GameStepBase, Skippable {
+  InstanceDerivedComponent(props: { context: InstanceContext }): JSX.Element;
+}
 
 export interface DerivedStepInstanceComponentProps<
   D1 = never,
