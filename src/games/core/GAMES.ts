@@ -1,3 +1,4 @@
+import azulGame from "games/azul/azulGame";
 import bloodRageGame from "games/bloodRage/bloodRageGame";
 import { concordiaGame } from "games/concordia/concordiaGame";
 import scapeGoatGame from "games/scapeGoat/scapeGoatGame";
@@ -6,6 +7,7 @@ import wingspanGame from "games/wingspan/wingspanGame";
 import { Game } from "model/Game";
 
 export type GameId =
+  | "azul"
   | "bloodRage"
   | "concordia"
   | "scapeGoat"
@@ -13,6 +15,7 @@ export type GameId =
   | "wingspan";
 
 export const GAMES: Record<GameId, Readonly<Game>> = {
+  azul: azulGame,
   bloodRage: bloodRageGame,
   concordia: concordiaGame,
   scapeGoat: scapeGoatGame,
