@@ -11,6 +11,7 @@ export default createGame({
       year: 2017,
       bggId: 230802,
       isNotImplemented: true,
+      isBase: true,
     },
     crystal: {
       name: "Crystal Mosaic",
