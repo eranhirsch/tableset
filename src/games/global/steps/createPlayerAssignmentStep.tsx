@@ -18,42 +18,43 @@ import { $, Dict, Random, Vec } from "common";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue,
+  useRequiredInstanceValue
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerId } from "features/players/playersSlice";
+import { Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
+import { ProductsMetaStep } from "games/core/steps/createProductDependencyMetaStep";
 import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps,
+  VariableStepInstanceComponentProps
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ProductId } from "model/Game";
-import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useState } from "react";
 import {
   DragDropContext,
   Draggable,
   Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
 import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import playersMetaStep from "./playersMetaStep";
 
 interface Options<ItemId extends string | number, Pid extends ProductId> {
   // Required
-  itemsStep: VariableGameStep<readonly ItemId[]>;
+  itemsStep: Templatable<readonly ItemId[]>;
   labelForId: LabelFunction<ItemId>;
   availableForProducts: ProductsFunction<ItemId, Pid>;
   categoryName: string;
-  productsMetaStep: VariableGameStep<readonly Pid[]>;
+  productsMetaStep: ProductsMetaStep<Pid>;
 
   // Optional
-  enabler?: VariableGameStep<boolean>;
+  enabler?: Templatable<boolean>;
   getColor?: ColorFunction<ItemId>;
 
   // Optional from RandomGameStep
@@ -88,7 +89,7 @@ function createPlayerAssignmentStep<
   labelForId,
   productsMetaStep,
   ...otherOptions
-}: Options<ItemId, Pid>): VariableGameStep<readonly PlayerId[]> {
+}: Options<ItemId, Pid>): Templatable<readonly PlayerId[]> {
   return createRandomGameStep({
     id: `${itemsStep.id}Assignments`,
     dependencies: [
@@ -507,7 +508,10 @@ function ConfigPanelTLDR<ItemId extends string | number>({
   return <>Random{!Vec.is_empty(config) && " (with player preferences)"}</>;
 }
 
-function InstanceVariableComponent<ItemId extends string | number, Pid extends ProductId>({
+function InstanceVariableComponent<
+  ItemId extends string | number,
+  Pid extends ProductId
+>({
   value: order,
   itemsStep,
   categoryName,
@@ -516,17 +520,20 @@ function InstanceVariableComponent<ItemId extends string | number, Pid extends P
   availableForProducts,
   productsMetaStep,
 }: VariableStepInstanceComponentProps<readonly PlayerId[]> & {
-  itemsStep: VariableGameStep<readonly ItemId[]>;
+  itemsStep: Templatable<readonly ItemId[]>;
   categoryName: string;
   labelForId: LabelFunction<ItemId>;
   getColor?: ColorFunction<ItemId>;
   availableForProducts: ProductsFunction<ItemId, Pid>;
-  productsMetaStep: VariableGameStep<readonly Pid[]>;
+  productsMetaStep: ProductsMetaStep<Pid>;
 }): JSX.Element {
   const productIds = useRequiredInstanceValue(productsMetaStep);
   const itemIds = useOptionalInstanceValue(itemsStep);
 
-  const actualItemIds = useMemo(() => itemIds != null ? itemIds : availableForProducts(productIds), [availableForProducts, itemIds, productIds]);
+  const actualItemIds = useMemo(
+    () => (itemIds != null ? itemIds : availableForProducts(productIds)),
+    [availableForProducts, itemIds, productIds]
+  );
 
   return (
     <>
@@ -565,7 +572,7 @@ function InstanceManualComponent<ItemId extends string | number>({
   labelForId,
   getColor,
 }: {
-  itemsStep: VariableGameStep<readonly ItemId[]>;
+  itemsStep: Templatable<readonly ItemId[]>;
   categoryName: string;
   labelForId: LabelFunction<ItemId>;
   getColor?: ColorFunction<ItemId>;

@@ -2,7 +2,7 @@ import { useAppSelector } from "app/hooks";
 import { nullthrows, Vec } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { Query } from "games/core/steps/Query";
-import { VariableGameStep } from "model/VariableGameStep";
+import { Queryable } from "games/core/steps/Queryable";
 import { useCallback, useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Templatable } from "./Templatable";
@@ -64,8 +64,8 @@ export function StepConfigPanelWrapper<C = unknown>({
 }
 
 function useQueries(
-  dependencies: readonly [...VariableGameStep<unknown>[]]
-): readonly [...Query[]] {
+  dependencies: readonly [...Queryable<unknown>[]]
+): readonly Query[] {
   const context = useFeaturesContext();
   const template = useAppSelector(templateSelectors.selectEntities);
 

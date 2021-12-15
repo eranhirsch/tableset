@@ -1,24 +1,25 @@
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
-import { createVariant } from "games/core/steps/createVariant";
+import { ProductsMetaStep } from "games/core/steps/createProductDependencyMetaStep";
+import { createVariant, VariantGameStep } from "games/core/steps/createVariant";
 import { playersMetaStep } from "games/global";
-import { VariableGameStep } from "model/VariableGameStep";
+import { ProductId } from "model/Game";
 
-interface Options<ProductId = never> {
+interface Options<Pid extends ProductId> {
   productDependencies?: {
-    step: Readonly<VariableGameStep<readonly ProductId[]>>;
-    products: readonly ProductId[];
+    step: Readonly<ProductsMetaStep<Pid>>;
+    products: readonly Pid[];
   };
   optionalAt?: readonly number[];
   enabledAt?: readonly number[];
   InstanceVariableComponent: () => JSX.Element;
 }
 
-export default function createTeamVariant<ProductId = never>({
+export default function createTeamVariant<Pid extends ProductId>({
   productDependencies,
   optionalAt,
   enabledAt,
   InstanceVariableComponent,
-}: Options<ProductId>): Readonly<VariableGameStep<boolean>> {
+}: Options<Pid>): Readonly<VariantGameStep> {
   const baseTeamPlayVariant = createVariant({
     id: "teams",
     name: "Teams",
@@ -51,10 +52,6 @@ export default function createTeamVariant<ProductId = never>({
     skip: (context) =>
       baseTeamPlayVariant.skip(context) &&
       !enabledAt.includes(context.playerIds.length),
-
-    extractInstanceValue: (upstreamInstance, context) =>
-      baseTeamPlayVariant.extractInstanceValue(upstreamInstance, context) ??
-      (enabledAt.includes(context.playerIds.length) ? true : null),
 
     query: (template, context) => {
       const baseQuery = baseTeamPlayVariant.query(template, context);

@@ -1,11 +1,11 @@
 import avro from "avsc";
 import { Vec } from "common";
+import { instanceValue } from "features/instance/instanceValue";
 import { Skippable } from "features/instance/useInstanceActiveSteps";
 import { Templatable } from "features/template/Templatable";
 import { TemplateElement } from "features/template/templateSlice";
 import { ContextBase } from "features/useFeaturesContext";
 import { StepId } from "model/Game";
-import { VariableGameStep } from "model/VariableGameStep";
 import { createGameStep, CreateGameStepOptions } from "./createGameStep";
 import { dependenciesInstanceValues } from "./dependenciesInstanceValues";
 import { DepsTuple } from "./DepsTuple";
@@ -25,8 +25,7 @@ export interface InstanceContext extends ContextBase {
 }
 
 export interface RandomGameStep<T = unknown, C = unknown>
-  extends VariableGameStep<T>,
-    Skippable,
+  extends Skippable,
     Templatable<T, C> {
   InstanceVariableComponent(props: { value: T }): JSX.Element;
 }
@@ -301,23 +300,18 @@ export function createRandomGameStep<T, C extends Object>({
 }: OptionsInternal<T, C>): Readonly<RandomGameStep<T, C>> {
   const baseStep = createGameStep(baseOptions);
 
-  const extractInstanceValue: VariableGameStep<T>["extractInstanceValue"] = (
-    instance
-  ) => instance[baseStep.id] as T | null;
-
   const variableStep: RandomGameStep<T, C> = {
     ...baseStep,
 
     isVariant,
 
     dependencies,
-    extractInstanceValue,
     InstanceVariableComponent,
 
     skip: ({ instance, ...context }) =>
       skip != null
         ? skip(
-            extractInstanceValue(instance, context),
+            instanceValue(variableStep, instance, context),
             dependencies != null
               ? dependenciesInstanceValues(
                   { instance, ...context },
@@ -367,7 +361,7 @@ export function createRandomGameStep<T, C extends Object>({
       resolve(
         config,
         ...Vec.map(dependencies, (dependency) =>
-          dependency.extractInstanceValue(upstreamInstance, context)
+          instanceValue(dependency, upstreamInstance, context)
         )
       ),
 

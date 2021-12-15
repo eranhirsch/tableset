@@ -20,6 +20,7 @@ import { PlayerShortName } from "features/players/PlayerShortName";
 import { PlayerId, playersSelectors } from "features/players/playersSlice";
 import { templateValue } from "features/template/templateSlice";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
+import { ProductsMetaStep } from "games/core/steps/createProductDependencyMetaStep";
 import {
   ConfigPanelProps,
   createRandomGameStep,
@@ -28,7 +29,6 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { ProductId } from "model/Game";
-import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
 import { playersMetaStep } from ".";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
@@ -44,7 +44,7 @@ type TemplateConfig = Record<PlayerId, ColorId>;
 type PlayerColors = Readonly<Record<PlayerId, ColorId>>;
 
 interface Options<Pid extends ProductId> {
-  productsMetaStep?: VariableGameStep<readonly Pid[]>;
+  productsMetaStep?: ProductsMetaStep<Pid>;
   availableColors(
     playerIds: readonly PlayerId[],
     products: readonly Pid[]
@@ -526,7 +526,7 @@ function InstanceManualComponent<Pid extends ProductId>({
   availableColors,
   productsMetaStep,
 }: {
-  productsMetaStep: VariableGameStep<readonly Pid[]>;
+  productsMetaStep: ProductsMetaStep<Pid>;
   availableColors(
     playerIds: readonly PlayerId[],
     products: readonly Pid[]

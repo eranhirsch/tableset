@@ -4,13 +4,16 @@ import avro from "avsc";
 import { $, Dict, MathUtils, nullthrows, Random, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import { gameSelector } from "features/game/gameSlice";
+import { InstanceValueStep } from "features/instance/instanceValue";
 import { PlayerId, playersSelectors } from "features/players/playersSlice";
+import { Templatable } from "features/template/Templatable";
 import {
   templateSelectors,
   templateValue,
 } from "features/template/templateSlice";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
+import { ProductsMetaStep } from "games/core/steps/createProductDependencyMetaStep";
 import {
   ConfigPanelProps,
   createRandomGameStep,
@@ -20,13 +23,12 @@ import {
 import { Query } from "games/core/steps/Query";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
 import { ProductId, StepId } from "model/Game";
-import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
 import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import {
   AlwaysNeverMultiChipSelector,
   AlwaysNeverMultiLabel,
-  Limits
+  Limits,
 } from "../ux/AlwaysNeverMultiChipSelector";
 import { SingleItemSelect } from "../ux/SingleItemSelect";
 import createPlayerAssignmentStep from "./createPlayerAssignmentStep";
@@ -44,13 +46,13 @@ type Variant = "select" | "chips";
 const DEFAULT_VARIANT: Variant = "chips";
 
 type AdvancedMode = {
-  enabler: VariableGameStep<boolean>;
+  enabler: InstanceValueStep<boolean>;
   count: CountFunction;
 };
 
 interface Options<ItemId extends string | number, Pid extends ProductId> {
   // Required
-  productsMetaStep: VariableGameStep<readonly Pid[]>;
+  productsMetaStep: ProductsMetaStep<Pid>;
   availableForProducts: ProductsFunction<ItemId, Pid>;
   labelForId: LabelFunction<ItemId>;
   isItemType(x: unknown): x is ItemId;
@@ -74,7 +76,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
    * step is false this step would be entirely skipped.
    * @default alwaysTrue
    */
-  enabler?: VariableGameStep<boolean>;
+  enabler?: InstanceValueStep<boolean>;
 
   /**
    * Use this method to supply a different label for items when shown in the
@@ -135,7 +137,7 @@ interface AdditionalApiMethods {
       | "getColor"
       | "labelForId"
     >
-  ): VariableGameStep<readonly PlayerId[]>;
+  ): Templatable<readonly PlayerId[]>;
 }
 
 export default function createItemSelectorStep<
@@ -154,7 +156,7 @@ export default function createItemSelectorStep<
   productsMetaStep,
   variant = DEFAULT_VARIANT,
   ...randomGameStepOptions
-}: Options<ItemId, Pid>): VariableGameStep<readonly ItemId[]> &
+}: Options<ItemId, Pid>): Templatable<readonly ItemId[]> &
   AdditionalApiMethods {
   const itemsStep = createRandomGameStep({
     ...randomGameStepOptions,

@@ -1,5 +1,8 @@
-import { nullthrows, tuple } from "common";
-import { VariableGameStep } from "model/VariableGameStep";
+import { tuple } from "common";
+import {
+  instanceValue,
+  InstanceValueStep,
+} from "features/instance/instanceValue";
 import { InstanceContext } from "./createRandomGameStep";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
 
@@ -44,13 +47,9 @@ export const dependenciesInstanceValues = <
 
 export function maybeFulfillDependency<T>(
   { instance, ...context }: InstanceContext,
-  dependency: VariableGameStep<T> | undefined
+  dependency: InstanceValueStep<T> | undefined
 ): T | null | undefined {
-  if (dependency == null) {
-    return;
-  }
-
-  const { extractInstanceValue } = dependency;
-
-  return nullthrows(extractInstanceValue)(instance, context);
+  return dependency == null
+    ? undefined
+    : instanceValue(dependency, instance, context);
 }

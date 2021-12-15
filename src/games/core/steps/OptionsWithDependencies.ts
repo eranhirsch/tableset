@@ -1,7 +1,4 @@
-import { VariableGameStep } from "model/VariableGameStep";
-import { Queryable } from "./Queryable";
-
-export type Dependency<T> = VariableGameStep<T> & Queryable<T>;
+import { Dependency } from "features/template/Templatable";
 
 export interface OptionsWithDependencies<
   D1 = never,

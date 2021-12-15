@@ -1,9 +1,10 @@
 import LinkIcon from "@mui/icons-material/Link";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
 import { Box, Grid, IconButton, Stack, Typography } from "@mui/material";
-import { coerce, invariant_violation, Random, Vec } from "common";
+import { invariant_violation, Random, Vec } from "common";
+import { instanceValue } from "features/instance/instanceValue";
+import { MetaGameStep } from "features/instance/MetaGameStep";
 import { templateValue } from "features/template/templateSlice";
-import { VariableGameStep } from "model/VariableGameStep";
 import { useState } from "react";
 import { PercentSlider } from "../ux/PercentSlider";
 import createConstantValueMetaStep from "./createConstantValueMetaStep";
@@ -18,7 +19,8 @@ interface TemplateConfig {
   conditionalPercent?: number;
 }
 
-type VariantGameStep = RandomGameStep<boolean, TemplateConfig>;
+export type VariantGameStep = RandomGameStep<boolean, TemplateConfig> &
+  MetaGameStep<boolean>;
 
 interface Options<
   D1 = never,
@@ -46,8 +48,8 @@ interface Options<
     query9: Query<D9>,
     query10: Query<D10>
   ): boolean;
-  conditional?: VariableGameStep<boolean>;
-  incompatibleWith?: VariableGameStep<boolean>;
+  conditional?: VariantGameStep;
+  incompatibleWith?: VariantGameStep;
   Description: (() => JSX.Element) | string;
 }
 
@@ -98,6 +100,11 @@ export function createVariant({
 
     isVariant: true,
 
+    // computeInstanceValue is always called when the value is missing from the
+    // instance. This makes it possible for us to hack the system so that we
+    // return `false` when a value is missing from the instance instead of null.
+    computeInstanceValue: () => false,
+
     dependencies: Vec.concat(
       [conditional ?? createConstantValueMetaStep(true)],
       [incompatibleWith ?? createConstantValueMetaStep(false)],
@@ -109,13 +116,6 @@ export function createVariant({
       invariant_violation(
         `'skip' should never be called on variant: ${baseStep.id}!`
       ),
-
-    extractInstanceValue: ({ [baseStep.id]: instanceValue }) =>
-      coerce(
-        instanceValue,
-        (x: unknown): x is boolean | undefined =>
-          x == null || typeof x === "boolean"
-      ) ?? false,
 
     InstanceVariableComponent: () =>
       typeof Description === "string" ? (
@@ -165,7 +165,7 @@ export function createVariant({
     resolve({ percent, conditionalPercent }, instance, context) {
       if (
         incompatibleWith != null &&
-        incompatibleWith.extractInstanceValue(instance, context)
+        instanceValue(incompatibleWith, instance, context)
       ) {
         // The incompatible variant is enabled so this variant can't be.
         return null;
@@ -173,10 +173,10 @@ export function createVariant({
 
       if (
         dependencies.some(
-          ({ extractInstanceValue }) =>
+          (step) =>
             // We use the Boolean function instead of casting to cover all falsy
             // values (nulls, undefined, 0, empty arrays, etc...)
-            !Boolean(extractInstanceValue(instance, context))
+            !Boolean(instanceValue(step, instance, context))
         )
       ) {
         // At least one of the dependencies are falsy
@@ -188,7 +188,7 @@ export function createVariant({
         // If conditionalPercent is non-null then conditional itself must be
         // non-null too, so we can extract the instance value for it and
         // use it if it's true.
-        conditional!.extractInstanceValue(instance, context)
+        instanceValue(conditional!, instance, context)
           ? conditionalPercent
           : percent;
 
@@ -445,7 +445,7 @@ function ConfigPanelTLDR({
   conditionalStep,
 }: {
   config: TemplateConfig;
-  conditionalStep?: VariableGameStep<boolean>;
+  conditionalStep?: VariantGameStep;
 }): JSX.Element {
   if (percent === 0) {
     return (

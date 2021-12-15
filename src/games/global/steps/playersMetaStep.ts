@@ -1,12 +1,11 @@
+import { MetaGameStep } from "features/instance/MetaGameStep";
 import { PlayerId } from "features/players/playersSlice";
-import { VariableGameStep } from "model/VariableGameStep";
 import { buildQuery } from "../../core/steps/Query";
 
-const playersMetaStep: Readonly<VariableGameStep<readonly PlayerId[]>> = {
+const playersMetaStep: Readonly<MetaGameStep<readonly PlayerId[]>> = {
   id: "__players",
-  label: "<Players>",
 
-  extractInstanceValue: (_, { playerIds }) => playerIds,
+  computeInstanceValue: (_, { playerIds }) => playerIds,
 
   query: (_, { playerIds }) =>
     buildQuery("__players", {

@@ -7,14 +7,13 @@ import {
 import { RootState } from "app/store";
 import { $, coerce, Dict, nullthrows, Vec } from "common";
 import { collectionActions } from "features/collection/collectionSlice";
-import { GameStepBase } from "features/instance/GameStepBase";
 import { playersActions } from "features/players/playersSlice";
 import { ContextBase } from "features/useFeaturesContext";
 import { GameId, GAMES } from "games/core/GAMES";
+import { Queryable } from "games/core/steps/Queryable";
 import { playersMetaStep } from "games/global";
 import { Game, StepId } from "model/Game";
-import { VariableGameStep } from "model/VariableGameStep";
-import { isTemplatable, Templatable } from "./Templatable";
+import { Dependency, isTemplatable, Templatable } from "./Templatable";
 import { templateSteps } from "./templateSteps";
 
 export type TemplateElement<C = unknown> = {
@@ -30,7 +29,7 @@ export type TemplateElement<C = unknown> = {
  * IMPORTANT: Only use this rarely and wisely, this isn't good engineering!
  */
 export interface __WithBackdoorWrappedStep_DO_NOT_USE {
-  __backdoor_wrappedStep: VariableGameStep;
+  __backdoor_wrappedStep: Queryable<unknown>;
 }
 
 const templateAdapter = createEntityAdapter<TemplateElement>({
@@ -83,8 +82,8 @@ export const templateSlice = createSlice({
 
     disabled: {
       prepare: ({ id }: Templatable) => ({ payload: id }),
-      reducer(state, action: PayloadAction<StepId>): void {
-        disabledImpl(state, action.payload);
+      reducer(state, { payload: id }: PayloadAction<StepId>): void {
+        disabledImpl(state, GAMES[state.gameId!].steps[id] as Templatable);
       },
     },
 
@@ -98,7 +97,11 @@ export const templateSlice = createSlice({
           payload: { id, config },
         }: PayloadAction<{ id: StepId; config: Readonly<unknown> }>
       ) {
-        configUpdatedImpl(state, id, config);
+        configUpdatedImpl(
+          state,
+          GAMES[state.gameId!].steps[id] as Templatable,
+          config
+        );
       },
     },
 
@@ -115,8 +118,8 @@ export const templateSlice = createSlice({
         // step; this is because as we disable elements other elements
         // downstream might become stale and become untemplatable. If we
         // filtered first we would miss those cases.
-        templateSteps(state).forEach(([{ id, canBeTemplated }, { isStale }]) =>
-          removeUntemplatableStep(state, id, isStale, canBeTemplated, context)
+        templateSteps(state).forEach(([step, { isStale }]) =>
+          removeUntemplatableStep(state, step, isStale, context)
         );
 
         // These steps are stale after removing all untemplatable ones, that
@@ -190,37 +193,34 @@ export const fullTemplateSelector = createSelector(
 
 export const templateActions = templateSlice.actions;
 
-function disabledImpl(state: RootState["template"], stepId: StepId): void {
-  templateAdapter.removeOne(state, stepId);
-  markDownstreamElementsStale(GAMES[state.gameId!].steps[stepId], state);
+function disabledImpl(state: RootState["template"], step: Templatable): void {
+  templateAdapter.removeOne(state, step.id);
+  markDownstreamElementsStale(step, state);
 }
 
 function configUpdatedImpl<C = unknown>(
   state: RootState["template"],
-  id: StepId,
+  step: Templatable,
   config: Readonly<C>
 ): void {
   templateAdapter.updateOne(state, {
-    id,
+    id: step.id,
     changes: { config },
   });
-  markDownstreamElementsStale(GAMES[state.gameId!].steps[id], state);
+  markDownstreamElementsStale(step, state);
 }
 
-const isVariableGameStep = (step: GameStepBase): step is VariableGameStep =>
-  (step as Partial<VariableGameStep>).extractInstanceValue != null;
-
 function markDownstreamElementsStale(
-  step: GameStepBase,
+  step: Dependency<unknown>,
   state: RootState["template"]
 ): void {
-  filterDownstreamSteps(coerce(step, isVariableGameStep), state).forEach(
+  filterDownstreamSteps(step, state).forEach(
     (element) => (element.isStale = true)
   );
 }
 
 const filterDownstreamSteps = (
-  step: VariableGameStep,
+  step: Dependency<unknown>,
   state: RootState["template"]
 ): readonly TemplateElement[] =>
   $(
@@ -243,20 +243,19 @@ const filterDownstreamSteps = (
 
 function removeUntemplatableStep(
   state: RootState["template"],
-  id: StepId,
+  step: Templatable,
   isStale: true | undefined,
-  canBeTemplated: Templatable["canBeTemplated"],
   context: ContextBase
 ): void {
   if (isStale == null) {
     // Nothing to do
     return;
   }
-  if (canBeTemplated(state.entities, context)) {
+  if (step.canBeTemplated(state.entities, context)) {
     return;
   }
 
-  disabledImpl(state, id);
+  disabledImpl(state, step);
 }
 
 export class UnfixableTemplateValue extends Error {}
@@ -294,12 +293,19 @@ function refreshStep(
       state.entities,
       context
     );
-    configUpdatedImpl(state, element.id, newValue);
+    configUpdatedImpl(
+      state,
+      GAMES[state.gameId!].steps[element.id] as Templatable,
+      newValue
+    );
   } catch (e: unknown) {
     if (e instanceof UnfixableTemplateValue) {
       // The template value is unfixable, we need to reset it in order to make
       // the template valid again.
-      disabledImpl(state, element.id);
+      disabledImpl(
+        state,
+        GAMES[state.gameId!].steps[element.id] as Templatable
+      );
       return;
     }
 

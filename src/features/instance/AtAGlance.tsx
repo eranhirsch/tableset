@@ -1,7 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import { $, Dict, ReactUtils, Vec } from "common";
 import { isTemplatable, Templatable } from "features/template/Templatable";
-import { VariableGameStep } from "model/VariableGameStep";
 import { useMemo } from "react";
 import { InstanceCard } from "./InstanceCard";
 import { useGameFromParam } from "./useGameFromParam";
@@ -41,8 +40,7 @@ export function AtAGlance(): JSX.Element {
         {Vec.map(components, ([step, value]) => (
           <InstanceCards
             key={step.id}
-            // TODO: Fix the typing here
-            step={step as unknown as VariableGameStep & Templatable}
+            step={step}
             onClick={() => navigateToChild(step.id)}
           />
         ))}
@@ -51,11 +49,11 @@ export function AtAGlance(): JSX.Element {
   );
 }
 
-function InstanceCards({
+function InstanceCards<T>({
   step,
   onClick,
 }: {
-  step: VariableGameStep & Templatable;
+  step: Templatable<T>;
   onClick(): void;
 }): JSX.Element {
   const value = useRequiredInstanceValue(step);

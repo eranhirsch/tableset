@@ -11,6 +11,7 @@ import {
 import { useAppSelector } from "app/hooks";
 import { C, invariant, Random, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
+import { InstanceValueStep } from "features/instance/instanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { PlayerId, playersSelectors } from "features/players/playersSlice";
@@ -23,7 +24,6 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
-import { VariableGameStep } from "model/VariableGameStep";
 import React, { useCallback, useMemo, useRef } from "react";
 import playersMetaStep from "./playersMetaStep";
 
@@ -35,7 +35,7 @@ type TemplateConfig = Teams;
 
 interface Options {
   teamSize: number;
-  enablerStep?: VariableGameStep<boolean>;
+  enablerStep?: InstanceValueStep<boolean>;
 }
 
 export type TeamSelectionStep = ReturnType<typeof createTeamSelectionStep>;

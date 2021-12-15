@@ -1,10 +1,11 @@
 import { nullthrows, Vec } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
 import { StepId } from "model/Game";
-import { VariableGameStep } from "model/VariableGameStep";
+import { useMemo } from "react";
+import { instanceValue, InstanceValueStep } from "./instanceValue";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 
-export function useRequiredInstanceValue<T>(step: VariableGameStep<T>): T {
+export function useRequiredInstanceValue<T>(step: InstanceValueStep<T>): T {
   return nullthrows(
     useOptionalInstanceValue(step),
     `Missing required instance value of step '${step.id}'`
@@ -12,20 +13,14 @@ export function useRequiredInstanceValue<T>(step: VariableGameStep<T>): T {
 }
 
 export function useOptionalInstanceValue<T>(
-  step: VariableGameStep<T>
+  step: InstanceValueStep<T>
 ): T | null {
   const context = useFeaturesContext();
   const instance = useInstanceFromParam();
-
-  const value = instance[step.id];
-  if (value != null) {
-    // The cast here is safe because avro makes sure our types match when
-    // decoding.
-    return value as T;
-  }
-
-  // This is needed for the meta steps (players, products)
-  return step.extractInstanceValue(instance, context);
+  return useMemo(
+    () => instanceValue(step, instance, context),
+    [context, instance, step]
+  );
 }
 
 export function useHasDownstreamInstanceValue(stepId: StepId): boolean {
@@ -34,17 +29,12 @@ export function useHasDownstreamInstanceValue(stepId: StepId): boolean {
 }
 
 export function useOptionalInstanceValues(
-  steps: readonly VariableGameStep[]
+  steps: readonly InstanceValueStep<unknown>[]
 ): readonly unknown[] {
   const context = useFeaturesContext();
-
   const instance = useInstanceFromParam();
-  return Vec.map(steps, (step) =>
-    step.id in instance
-      ? // We don't need to coerce the values here because they are already
-        // type-checked by avro when decoding the param
-        instance[step.id]
-      : // This is needed for meta-steps like players and products
-        step.extractInstanceValue(instance, context)
+  return useMemo(
+    () => Vec.map(steps, (step) => instanceValue(step, instance, context)),
+    [context, instance, steps]
   );
 }

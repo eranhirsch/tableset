@@ -1,12 +1,15 @@
 import { GameStepBase } from "features/instance/GameStepBase";
+import { InstanceValueStep } from "features/instance/instanceValue";
 import { ContextBase } from "features/useFeaturesContext";
 import { Query } from "games/core/steps/Query";
+import { Queryable } from "games/core/steps/Queryable";
 import { StepId } from "model/Game";
-import { VariableGameStep } from "model/VariableGameStep";
 import { templateSelectors } from "./templateSlice";
 
+export type Dependency<T> = Queryable<T> & InstanceValueStep<T>;
+
 export interface WithDependencies extends GameStepBase {
-  dependencies: readonly [...VariableGameStep<unknown>[]];
+  dependencies: readonly Dependency<unknown>[];
 }
 
 export const isWithDependencies = (
@@ -19,7 +22,8 @@ type Template = Readonly<
 >;
 
 export interface Templatable<T = unknown, C extends object | unknown = unknown>
-  extends WithDependencies {
+  extends WithDependencies,
+    Queryable<T> {
   isVariant?: true;
   resolve(
     config: C,

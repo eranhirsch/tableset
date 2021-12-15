@@ -4,8 +4,8 @@ import { InstanceCard } from "features/instance/InstanceCard";
 import { PlayerNameShortAbbreviation } from "features/players/PlayerNameShortAbbreviation";
 import { PlayerShortName } from "features/players/PlayerShortName";
 import { PlayerId } from "features/players/playersSlice";
+import { Templatable } from "features/template/Templatable";
 import { templateValue } from "features/template/templateSlice";
-import { VariableGameStep } from "model/VariableGameStep";
 import React from "react";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";
 import {
@@ -26,7 +26,7 @@ type TemplateConfig = { playerId?: PlayerId };
 
 function createFirstPlayerStep({
   InstanceManualComponent = DEFAULT_MANUAL_COMPONENT,
-}: Options = {}): VariableGameStep<PlayerId> {
+}: Options = {}): Templatable<PlayerId> {
   return createRandomGameStep({
     id: "firstPlayer",
 
