@@ -24,11 +24,8 @@ export interface InstanceContext extends ContextBase {
   instance: Readonly<Record<StepId, unknown>>;
 }
 
-export interface RandomGameStep<T = unknown, C = unknown>
-  extends Skippable,
-    Templatable<T, C> {
-  InstanceVariableComponent(props: { value: T }): JSX.Element;
-}
+export type RandomGameStep<T = unknown, C = unknown> = Skippable &
+  Templatable<T, C>;
 
 export type ConfigPanelProps<
   C,

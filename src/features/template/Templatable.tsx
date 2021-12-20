@@ -53,6 +53,8 @@ export interface Templatable<T = unknown, C extends object | unknown = unknown>
     dependencies: readonly unknown[];
     onClick(): void;
   }): JSX.Element | null;
+
+  InstanceVariableComponent(props: { value: T }): JSX.Element;
 }
 
 export const isTemplatable = (x: GameStepBase): x is Templatable =>
