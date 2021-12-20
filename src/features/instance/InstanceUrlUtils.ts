@@ -1,5 +1,5 @@
 import { $, base64Url, Dict } from "common";
-import { Game, StepId } from "model/Game";
+import { Game, StepId } from "./Game";
 
 export const InstanceUrlUtils = {
   encode: (game: Game, instance: Readonly<Record<StepId, unknown>>) =>

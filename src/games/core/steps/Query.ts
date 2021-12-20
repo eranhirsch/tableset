@@ -1,5 +1,5 @@
 import { invariant_violation, Vec } from "common";
-import { StepId } from "model/Game";
+import { StepId } from "features/instance/Game";
 
 export type ArrayElement<T> = T extends readonly (infer E)[] ? E : never;
 

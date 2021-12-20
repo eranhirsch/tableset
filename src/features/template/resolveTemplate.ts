@@ -1,9 +1,9 @@
 import { Dictionary } from "@reduxjs/toolkit";
+import { StepId } from "features/instance/Game";
 import { TemplateElement } from "features/template/templateSlice";
 import { templateSteps } from "features/template/templateSteps";
 import { ContextBase } from "features/useFeaturesContext";
 import { GameId } from "games/core/GAMES";
-import { StepId } from "model/Game";
 
 export const resolveTemplate = (
   gameId: GameId,

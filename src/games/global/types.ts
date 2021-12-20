@@ -1,5 +1,5 @@
 import { ColorId } from "app/utils/Colors";
-import { ProductId } from "model/Game";
+import { ProductId } from "features/instance/Game";
 
 export type ColorFunction<ItemId> = (itemId: ItemId) => ColorId | undefined;
 

@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
+import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
-import { createGame } from "model/Game";
 import ageDecksStep from "./steps/ageDecksStep";
 import { clanStep, playerClanStep } from "./steps/clanStep";
 import clanTokensStep from "./steps/clanTokensStep";

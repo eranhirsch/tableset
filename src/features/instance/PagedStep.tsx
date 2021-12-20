@@ -5,9 +5,9 @@ import { TSPage } from "app/ux/Chrome";
 import { invariant_violation, ReactUtils } from "common";
 import { gameStepSelector } from "features/game/gameSlice";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
-import { StepId } from "model/Game";
 import { useParams } from "react-router-dom";
 import { CloseButton } from "./CloseButton";
+import { StepId } from "./Game";
 import { InstanceItemContent } from "./InstanceItemContent";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
 

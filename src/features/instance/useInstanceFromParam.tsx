@@ -1,7 +1,7 @@
 import { $ } from "common";
-import { StepId } from "model/Game";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { StepId } from "./Game";
 import { InstanceUrlUtils } from "./InstanceUrlUtils";
 import { useGameFromParam } from "./useGameFromParam";
 

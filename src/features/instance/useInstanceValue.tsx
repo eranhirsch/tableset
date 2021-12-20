@@ -1,7 +1,7 @@
 import { nullthrows, Vec } from "common";
 import { useFeaturesContext } from "features/useFeaturesContext";
-import { StepId } from "model/Game";
 import { useMemo } from "react";
+import { StepId } from "./Game";
 import { instanceValue, InstanceValueStep } from "./instanceValue";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 

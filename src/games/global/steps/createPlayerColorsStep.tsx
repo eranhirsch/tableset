@@ -14,6 +14,7 @@ import {
 import { useAppSelector } from "app/hooks";
 import { ColorId, Colors } from "app/utils/Colors";
 import { Dict, invariant, nullthrows, Random, Vec } from "common";
+import { ProductId } from "features/instance/Game";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import { PlayerShortName } from "features/players/PlayerShortName";
@@ -28,7 +29,6 @@ import {
   RandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
-import { ProductId } from "model/Game";
 import React, { useCallback, useMemo, useRef } from "react";
 import { playersMetaStep } from ".";
 import { PlayerAvatar } from "../../../features/players/PlayerAvatar";

@@ -2,7 +2,7 @@ import { Link } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { ReactUtils } from "common";
 import { gameStepSelector } from "features/game/gameSlice";
-import { StepId } from "model/Game";
+import { StepId } from "./Game";
 import { GameStepBase } from "./GameStepBase";
 import { useInstanceActiveSteps } from "./useInstanceActiveSteps";
 

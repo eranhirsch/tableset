@@ -4,6 +4,7 @@ import avro from "avsc";
 import { $, Dict, MathUtils, nullthrows, Random, Vec } from "common";
 import { allProductIdsSelector } from "features/collection/collectionSlice";
 import { gameSelector } from "features/game/gameSlice";
+import { ProductId, StepId } from "features/instance/Game";
 import { InstanceValueStep } from "features/instance/instanceValue";
 import { PlayerId, playersSelectors } from "features/players/playersSlice";
 import { Templatable } from "features/template/Templatable";
@@ -22,7 +23,6 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { AbbreviatedList } from "games/core/ux/AbbreviatedList";
-import { ProductId, StepId } from "model/Game";
 import { useMemo } from "react";
 import { ColorFunction, LabelFunction, ProductsFunction } from "../types";
 import {

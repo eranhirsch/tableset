@@ -7,12 +7,12 @@ import {
 import { RootState } from "app/store";
 import { $, coerce, Dict, nullthrows, Vec } from "common";
 import { collectionActions } from "features/collection/collectionSlice";
+import { Game, StepId } from "features/instance/Game";
 import { playersActions } from "features/players/playersSlice";
 import { ContextBase } from "features/useFeaturesContext";
 import { GameId, GAMES } from "games/core/GAMES";
 import { Queryable } from "games/core/steps/Queryable";
 import { playersMetaStep } from "games/global";
-import { Game, StepId } from "model/Game";
 import { Dependency, isTemplatable, Templatable } from "./Templatable";
 import { templateSteps } from "./templateSteps";
 

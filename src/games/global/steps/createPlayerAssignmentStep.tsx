@@ -15,10 +15,11 @@ import {
 } from "@mui/material";
 import { ColorId } from "app/utils/Colors";
 import { $, Dict, Random, Vec } from "common";
+import { ProductId } from "features/instance/Game";
 import { InstanceStepLink } from "features/instance/InstanceStepLink";
 import {
   useOptionalInstanceValue,
-  useRequiredInstanceValue
+  useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
 import { PlayerId } from "features/players/playersSlice";
@@ -30,11 +31,10 @@ import {
   ConfigPanelProps,
   createRandomGameStep,
   InstanceCardsProps,
-  VariableStepInstanceComponentProps
+  VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { Query } from "games/core/steps/Query";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
-import { ProductId } from "model/Game";
 import React, { useCallback, useMemo, useState } from "react";
 import {
   DragDropContext,

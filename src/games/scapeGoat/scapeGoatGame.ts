@@ -1,5 +1,5 @@
+import { createGame } from "games/core/Game";
 import { createProductsMetaStep } from "games/core/steps/createProductDependencyMetaStep";
-import { createGame } from "model/Game";
 import dealEvidenceStep from "./steps/dealEvidenceStep";
 import decoderStep from "./steps/decoderStep";
 import evidenceDeckStep from "./steps/evidenceDeckStep";

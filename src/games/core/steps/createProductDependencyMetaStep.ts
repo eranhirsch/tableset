@@ -1,5 +1,5 @@
+import { ProductId } from "features/instance/Game";
 import { MetaGameStep } from "features/instance/MetaGameStep";
-import { ProductId } from "model/Game";
 import { buildQuery } from "./Query";
 import { Queryable } from "./Queryable";
 

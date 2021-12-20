@@ -1,11 +1,11 @@
+import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
-import { createGame } from "model/Game";
 import advancedAirshipVariant from "./steps/advancedAirshipVariant";
 import airshipAggressiveStep, {
-  airshipAggressiveAssignmentStep
+  airshipAggressiveAssignmentStep,
 } from "./steps/airshipAggressiveStep";
 import airshipPassiveStep, {
-  airshipPassiveAssignmentStep
+  airshipPassiveAssignmentStep,
 } from "./steps/airshipPassiveStep";
 import airshipPlacementStep from "./steps/airshipPlacementStep";
 import airshipVariant from "./steps/airshipVariant";

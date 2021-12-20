@@ -5,8 +5,8 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
 import { Vec } from "common";
+import { Game, ProductId } from "features/instance/Game";
 import { GameId } from "games/core/GAMES";
-import { Game, ProductId } from "model/Game";
 
 interface Entity {
   id: GameId;

@@ -1,8 +1,8 @@
+import { ProductId } from "features/instance/Game";
 import createConstantValueMetaStep from "games/core/steps/createConstantValueMetaStep";
 import { ProductsMetaStep } from "games/core/steps/createProductDependencyMetaStep";
 import { createVariant, VariantGameStep } from "games/core/steps/createVariant";
 import { playersMetaStep } from "games/global";
-import { ProductId } from "model/Game";
 
 interface Options<Pid extends ProductId> {
   productDependencies?: {

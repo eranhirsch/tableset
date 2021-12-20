@@ -1,6 +1,6 @@
 import { Templatable } from "features/template/Templatable";
 import { ContextBase } from "features/useFeaturesContext";
-import { StepId } from "model/Game";
+import { StepId } from "./Game";
 import { MetaGameStep } from "./MetaGameStep";
 
 export type InstanceValueStep<T> = Templatable<T> | MetaGameStep<T>;

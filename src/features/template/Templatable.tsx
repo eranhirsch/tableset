@@ -1,9 +1,9 @@
+import { StepId } from "features/instance/Game";
 import { GameStepBase } from "features/instance/GameStepBase";
 import { InstanceValueStep } from "features/instance/instanceValue";
 import { ContextBase } from "features/useFeaturesContext";
 import { Query } from "games/core/steps/Query";
 import { Queryable } from "games/core/steps/Queryable";
-import { StepId } from "model/Game";
 import { templateSelectors } from "./templateSlice";
 
 export type Dependency<T> = Queryable<T> & InstanceValueStep<T>;

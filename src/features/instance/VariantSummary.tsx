@@ -3,8 +3,8 @@ import { Box, Chip, Collapse, Stack, Typography } from "@mui/material";
 import { Dict, Vec } from "common";
 import { isTemplatable } from "features/template/Templatable";
 import { RandomGameStep } from "games/core/steps/createRandomGameStep";
-import { StepId } from "model/Game";
 import { useMemo, useRef, useState } from "react";
+import { StepId } from "./Game";
 import { useGameFromParam } from "./useGameFromParam";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 

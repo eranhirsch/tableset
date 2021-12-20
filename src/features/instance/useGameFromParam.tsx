@@ -1,7 +1,7 @@
 import { $ } from "common";
 import { GameId, GAMES } from "games/core/GAMES";
-import { Game } from "model/Game";
 import { useParams } from "react-router-dom";
+import { Game } from "./Game";
 
 export function useGameFromParam(): Game {
   const { gameId } = useParams();

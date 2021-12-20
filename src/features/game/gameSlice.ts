@@ -1,7 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nullthrows, Vec } from "common";
+import { Game, StepId } from "features/instance/Game";
 import { GameStepBase } from "features/instance/GameStepBase";
-import { Game, StepId } from "model/Game";
 import { RootState } from "../../app/store";
 import { GameId, GAMES } from "../../games/core/GAMES";
 

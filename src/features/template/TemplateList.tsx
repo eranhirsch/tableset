@@ -1,8 +1,8 @@
 import { List, ListSubheader } from "@mui/material";
 import { ReactUtils, Vec } from "common";
 import { gameStepsSelectorByType } from "features/game/gameSlice";
+import { StepId } from "features/instance/Game";
 import { useFeaturesContext } from "features/useFeaturesContext";
-import { StepId } from "model/Game";
 import { useMemo, useState } from "react";
 import { useAppSelector } from "../../app/hooks";
 import { isTemplatable, Templatable } from "./Templatable";

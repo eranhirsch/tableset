@@ -11,8 +11,8 @@ import { TSPage } from "app/ux/Chrome";
 import { nullthrows, Shape, Vec } from "common";
 import { gameSelector } from "features/game/gameSlice";
 import { useGameHomeToolbarButton } from "features/game/useGameHomeToolbarButton";
+import { ProductId } from "features/instance/Game";
 import { GameId, GAMES } from "games/core/GAMES";
-import { ProductId } from "model/Game";
 import React from "react";
 import { useSearchParams } from "react-router-dom";
 import {

@@ -1,5 +1,5 @@
 import avro from "avsc";
-import { StepId } from "../../model/Game";
+import { StepId } from "./Game";
 
 export interface GameStepBase {
   readonly id: StepId;

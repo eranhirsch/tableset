@@ -1,4 +1,4 @@
-import { createGame } from "model/Game";
+import { createGame } from "games/core/Game";
 import productsMetaStep from "./steps/productsMetaStep";
 
 export default createGame({

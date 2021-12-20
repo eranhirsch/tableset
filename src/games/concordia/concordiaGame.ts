@@ -1,6 +1,6 @@
+import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
 import { createFirstPlayerStep } from "games/global";
-import { createGame } from "model/Game";
 import aegyptusStep from "./steps/aegyptusStep";
 import bonusTilesStep from "./steps/bonusTilesStep";
 import cityTilesStep from "./steps/cityTilesStep";

@@ -1,7 +1,7 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import { coerce, Dict, tuple, Vec } from "common";
+import { StepId } from "features/instance/Game";
 import { GameId, GAMES } from "games/core/GAMES";
-import { StepId } from "model/Game";
 import { isTemplatable, Templatable } from "./Templatable";
 import { TemplateElement } from "./templateSlice";
 
