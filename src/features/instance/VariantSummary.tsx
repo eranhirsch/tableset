@@ -2,7 +2,6 @@ import CheckIcon from "@mui/icons-material/Check";
 import { Box, Chip, Collapse, Stack, Typography } from "@mui/material";
 import { Dict, Vec } from "common";
 import { isTemplatable } from "features/template/Templatable";
-import { RandomGameStep } from "games/core/steps/createRandomGameStep";
 import { useMemo, useRef, useState } from "react";
 import { StepId } from "./Game";
 import { useGameFromParam } from "./useGameFromParam";
@@ -32,9 +31,7 @@ export function VariantSummary(): JSX.Element | null {
   if (expandedStepId != null) {
     // TODO: We need to pull this method into the templatable interface so that
     // we don't need awkward casts.
-    const { InstanceVariableComponent } = variants[
-      expandedStepId
-    ] as RandomGameStep;
+    const { InstanceVariableComponent } = variants[expandedStepId];
     expandedElement.current = <InstanceVariableComponent value={true} />;
   }
 
