@@ -1,5 +1,5 @@
-import { Grid, Stack, Typography } from "@mui/material";
-import { $, MathUtils, Random, Vec } from "common";
+import { Stack, Typography } from "@mui/material";
+import { $, MathUtils, Random, tuple, Vec } from "common";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -13,6 +13,7 @@ import { useMemo } from "react";
 import triumphTilesVariant from "./triumphTilesVariant";
 
 const TILES = [
+  // Printed
   "Upgrades",
   "Mechs",
   "Structures",
@@ -21,14 +22,16 @@ const TILES = [
   "Objective",
   "Combat",
   "Combat",
-  "Combat",
-  "Combat",
   "Popularity",
+  "Power",
+
+  // Special
+  "Resources",
   "Encounters",
   "Factory",
-  "Resources",
-  "Power",
   "Combat Cards",
+  "Combat",
+  "Combat",
 ] as const;
 
 const NUM_SLOTS = 10;
@@ -77,27 +80,42 @@ function InstanceVariableComponent({
     [tilesIdx]
   );
 
+  const replacements = useMemo(
+    () =>
+      $(
+        TILES,
+        ($$) => Vec.take($$, NUM_SLOTS),
+        ($$) => tuple(Vec.diff($$, combs), Vec.diff(combs, $$)),
+        ($$) =>
+          tuple(
+            $$[0],
+            Vec.rotate(
+              $$[1],
+              -Vec.filter($$[1], (tile) => tile === "Combat").length
+            )
+          ),
+        $.invariant(
+          ($$) => $$[0].length === $$[1].length,
+          ($$) =>
+            `Number of covering tiles ${$$[0]} different from the covered slots ${$$[1]}`
+        ),
+        ($$) => Vec.zip(...$$)
+      ),
+    [combs]
+  );
+
   return (
     <Stack direction="column" spacing={1}>
       <Typography variant="body1">
         Cover the triumph track printed on the board with the following tiles:
       </Typography>
-      <Grid container paddingX={4}>
-        {Vec.map(Vec.range(0, 4), (index) => (
-          <>
-            <Grid item xs={6} textAlign="center">
-              <Typography variant="body2">
-                <strong>{combs[index]}</strong>
-              </Typography>
-            </Grid>
-            <Grid item xs={6} textAlign="center">
-              <Typography variant="body2">
-                <strong>{combs[index + 5]}</strong>
-              </Typography>
-            </Grid>
-          </>
+      <Stack paddingX={4}>
+        {Vec.map(replacements, ([covered, tile]) => (
+          <Typography variant="body2">
+            <strong>{tile}</strong> on <em>{covered}</em>.
+          </Typography>
         ))}
-      </Grid>
+      </Stack>
       <IndexHashCaption idx={tilesIdx} />
       <Rules tiles={combs} />
     </Stack>
