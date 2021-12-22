@@ -109,7 +109,7 @@ function InstanceVariableComponent({
       <Typography variant="body1">
         Cover the triumph track printed on the board with the following tiles:
       </Typography>
-      <Stack paddingX={4}>
+      <Stack paddingX={3}>
         {Vec.map(replacements, ([covered, tile]) => (
           <Typography variant="body2">
             <strong>{tile}</strong> on <em>{covered}</em>.
