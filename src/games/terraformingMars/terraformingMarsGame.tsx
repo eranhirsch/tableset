@@ -5,6 +5,8 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { createPlayerColorsStep, createPlayOrderStep } from "games/global";
 import corporateEraVariant from "./steps/corporateEraVariant";
 import corporationsStep from "./steps/corporationsStep";
+import draftRulesStep from "./steps/draftRulesStep";
+import draftVariant from "./steps/draftVariant";
 import firstPlayerMarker from "./steps/firstPlayerMarker";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import mapStep from "./steps/mapStep";
@@ -58,6 +60,7 @@ export default createGame({
   },
   steps: [
     corporateEraVariant, // Variant
+    draftVariant, // Variant
 
     mapStep,
     createGameStep({
@@ -153,6 +156,8 @@ export default createGame({
       ),
     }),
     startingConditionsStep,
+
+    draftRulesStep,
 
     createGameStep({
       id: "startTheGame",
