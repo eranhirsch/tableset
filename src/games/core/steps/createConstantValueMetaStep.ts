@@ -12,6 +12,7 @@ const createConstantValueMetaStep = <T>(value: T): MetaGameStep<T> => ({
     buildQuery(`__constantValue:${value}`, {
       canResolveTo: (x) => value != null && x === value,
       willResolve: () => value != null,
+      onlyResolvableValue: () => value,
     }),
 });
 export default createConstantValueMetaStep;
