@@ -10,7 +10,7 @@ import { Decks } from "../utils/Decks";
 import corporateEraVariant from "./corporateEraVariant";
 
 export default createDerivedGameStep({
-  id: "projectDeck",
+  id: "corporation",
   dependencies: [corporateEraVariant],
   InstanceDerivedComponent,
 });
@@ -19,13 +19,26 @@ function InstanceDerivedComponent({
   dependencies: [isCorporateEra],
 }: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
   return (
-    <HeaderAndSteps
-      synopsis={
-        <>
-          Prepare the <ChosenElement extraInfo="deck">projects</ChosenElement>:
-        </>
-      }
-    >
+    <HeaderAndSteps synopsis="Players are assigned corporations:">
+      <BlockWithFootnotes
+        footnote={
+          <>
+            There are <strong>5</strong> Beginner Corporation cards.
+          </>
+        }
+      >
+        {(Footnote) => (
+          <>
+            Give players <strong>new</strong> to <em>Terraforming Mars</em> a{" "}
+            <ChosenElement extraInfo="card">Beginner Corporation</ChosenElement>
+            <em>
+              ; returning all remaining Beginner Corporation cards
+              <Footnote /> back to the box
+            </em>
+            .
+          </>
+        )}
+      </BlockWithFootnotes>
       {!isCorporateEra && (
         <BlockWithFootnotes
           footnote={
@@ -36,8 +49,8 @@ function InstanceDerivedComponent({
         >
           {(Footnote) => (
             <>
-              Return all <strong>{Decks.corporateEra.projects}</strong>{" "}
-              <ChosenElement extraInfo="project cards">
+              Return all <strong>{Decks.corporateEra.corps}</strong>{" "}
+              <ChosenElement extraInfo="corporations">
                 Corporate Era
               </ChosenElement>
               <Footnote /> back to the box.
@@ -46,19 +59,17 @@ function InstanceDerivedComponent({
         </BlockWithFootnotes>
       )}
       <>
-        Shuffle {isCorporateEra ? "all" : "the remaining"}{" "}
+        Shuffle the remaining{" "}
         <strong>
           {isCorporateEra
-            ? MathUtils.sum(
-                Vec.map_with_key(Decks, (_, { projects }) => projects)
-              )
-            : Decks.base.projects}
+            ? MathUtils.sum(Vec.map_with_key(Decks, (_, { corps }) => corps))
+            : Decks.base.corps}
         </strong>{" "}
-        project cards.
+        <ChosenElement extraInfo="corporations">normal</ChosenElement>.
       </>
       <>
-        Place the project deck next to the board
-        <em>; Leave space for a discard pile beside it</em>.
+        Deal <strong>2</strong> corporations to each remaining player
+        <em>; players should keep these cards hidden</em>.
       </>
     </HeaderAndSteps>
   );

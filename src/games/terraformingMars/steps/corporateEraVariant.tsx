@@ -11,7 +11,7 @@ export default createVariant({
 
 function Description(): JSX.Element {
   return (
-    <Typography variant="body1">
+    <Typography variant="body1" textAlign="justify">
       Corporate Era focuses on economy and technology. These are projects that
       do not contribute directly to the terraforming, but make the corporations
       stronger, adding new strategic choices to the game.

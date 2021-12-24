@@ -18,7 +18,7 @@ function InstanceDerivedComponent({
   dependencies: [firstPlayerId],
 }: DerivedStepInstanceComponentProps<PlayerId>): JSX.Element {
   return (
-    <Typography variant="body1">
+    <Typography variant="body1" textAlign="justify">
       Give{" "}
       {firstPlayerId != null ? (
         <PlayerAvatar playerId={firstPlayerId} inline />

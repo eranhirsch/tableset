@@ -48,7 +48,7 @@ function InstanceDerivedComponent({
         {(Footnote) => (
           <>
             Place a player marker on{" "}
-            <strong>the number {isCorporateEra ? 1 : 0}</strong> of each of the{" "}
+            <strong>the number {isCorporateEra ? 0 : 1}</strong> of each of the{" "}
             <em>{PLAYER_BOARD_TRACKS.length}</em>
             <Footnote /> tracks on the player board.
           </>
