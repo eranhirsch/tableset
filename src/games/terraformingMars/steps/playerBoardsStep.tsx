@@ -19,6 +19,9 @@ const PLAYER_BOARD_TRACKS = [
   "Heat",
 ] as const;
 
+const STARTING_TM = 20;
+const SOLO_STARTING_TM = 14;
+
 export default createDerivedGameStep({
   id: "playerBoards",
   dependencies: [playersMetaStep, corporateEraVariant],
@@ -63,8 +66,10 @@ function InstanceDerivedComponent({
       </BlockWithFootnotes>
       <>
         Place a <em>player marker</em> at the starting position{" "}
-        <ChosenElement>20</ChosenElement> of the <em>TR track</em> on the game
-        board.
+        <ChosenElement>
+          {playerIds!.length === 1 ? SOLO_STARTING_TM : STARTING_TM}
+        </ChosenElement>{" "}
+        of the <em>TR track</em> on the game board.
       </>
     </HeaderAndSteps>
   );
