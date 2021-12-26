@@ -27,7 +27,7 @@ function InstanceDerivedComponent({
           {isSolo
             ? "Pick a corporation to play"
             : "Reveals which corporation they will play"}
-          <em>; put the other corporation{!isSolo && "s"} back in the box</em>.
+          <em>; put the other corporation back in the box</em>.
         </>
         <>
           Take any starting resources and production stated on the corporation
