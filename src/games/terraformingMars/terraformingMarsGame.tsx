@@ -9,6 +9,7 @@ import draftRulesStep from "./steps/draftRulesStep";
 import draftVariant from "./steps/draftVariant";
 import firstPlayerMarker from "./steps/firstPlayerMarker";
 import firstPlayerStep from "./steps/firstPlayerStep";
+import initialProjectsStep from "./steps/initialProjectsStep";
 import mapStep from "./steps/mapStep";
 import mapTilesStep from "./steps/mapTilesStep";
 import playerBoardsStep from "./steps/playerBoardsStep";
@@ -109,20 +110,7 @@ export default createGame({
     soloCitiesStep,
 
     corporationsStep,
-    createGameStep({
-      id: "startingProjects",
-      InstanceManualComponent: () => (
-        <>
-          <Typography variant="body1" textAlign="justify">
-            Deal each player <strong>10</strong>{" "}
-            <ChosenElement extraInfo="cards">Project</ChosenElement>.
-          </Typography>
-          <Typography variant="body2" textAlign="justify">
-            <em>Players should keep these cards hidden</em>.
-          </Typography>
-        </>
-      ),
-    }),
+    initialProjectsStep,
     createGameStep({
       id: "researchPhase",
       InstanceManualComponent: () => (
