@@ -29,11 +29,13 @@ function InstanceDerivedComponent({
       >
         {(Footnote) => (
           <>
-            Give players <strong>new</strong> to <em>Terraforming Mars</em> a{" "}
-            <ChosenElement extraInfo="card">Beginner Corporation</ChosenElement>
             <em>
-              ; returning all remaining Beginner Corporation cards
-              <Footnote /> back to the box
+              Players <strong>new</strong> to Terraforming Mars:
+            </em>{" "}
+            Take a <ChosenElement>Beginner Corporation</ChosenElement>
+            <em>
+              ; all remaining Beginner Corporation cards
+              <Footnote /> should be returned back to the box
             </em>
             .
           </>
