@@ -30,7 +30,7 @@ function InstanceDerivedComponent({
     <HeaderAndSteps
       synopsis={
         <>
-          Players take the following components and prepare their personal{" "}
+          Each player prepares their personal{" "}
           <ChosenElement>player boards</ChosenElement>:
         </>
       }
@@ -39,7 +39,7 @@ function InstanceDerivedComponent({
         Take <strong>1</strong> <ChosenElement>player board</ChosenElement>.
       </>
       <>
-        <strong>40</strong> transparent plastic{" "}
+        Take <strong>40</strong> transparent plastic{" "}
         <ChosenElement>player marker</ChosenElement> cubes of their color.
       </>
       <BlockWithFootnotes
@@ -47,16 +47,17 @@ function InstanceDerivedComponent({
       >
         {(Footnote) => (
           <>
-            Place a player marker on{" "}
-            <strong>the number {isCorporateEra ? 0 : 1}</strong> of each of the{" "}
-            <em>{PLAYER_BOARD_TRACKS.length}</em>
+            Place a <em>player marker</em> on the number{" "}
+            <ChosenElement>{isCorporateEra ? 0 : 1}</ChosenElement> of each of
+            the <em>{PLAYER_BOARD_TRACKS.length}</em>
             <Footnote /> tracks on the player board.
           </>
         )}
       </BlockWithFootnotes>
       <>
-        Place a player marker at the starting position <strong>(20)</strong> of
-        the <em>TR track</em> on the game board.
+        Place a <em>player marker</em> at the starting position{" "}
+        <ChosenElement>20</ChosenElement> of the <em>TR track</em> on the game
+        board.
       </>
     </HeaderAndSteps>
   );
