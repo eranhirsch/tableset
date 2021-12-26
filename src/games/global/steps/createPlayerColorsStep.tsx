@@ -572,7 +572,7 @@ function InstanceManualComponent<Pid extends ProductId>({
     >
       {(Footnote) => (
         <>
-          Each player picks a color
+          {playerIds.length === 1 ? "Pick" : "Each player picks"} a color
           <Footnote />.
         </>
       )}
