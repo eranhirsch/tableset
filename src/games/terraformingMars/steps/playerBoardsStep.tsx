@@ -38,8 +38,14 @@ function InstanceDerivedComponent({
     <HeaderAndSteps
       synopsis={
         <>
-          Each player prepares their personal{" "}
-          <ChosenElement>player boards</ChosenElement>:
+          {playerIds!.length === 1
+            ? "Prepare your"
+            : "Each player prepares their"}{" "}
+          personal{" "}
+          <ChosenElement>
+            player board{playerIds!.length > 1 && "s"}
+          </ChosenElement>
+          :
         </>
       }
     >
