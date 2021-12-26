@@ -14,7 +14,7 @@ function InstanceDerivedComponent(): JSX.Element {
     <HeaderAndSteps
       synopsis={
         <>
-          The drafting variant changes the rules for the <em>Ressearch</em>{" "}
+          The drafting variant changes the rules for the <em>Research</em>{" "}
           phase:
         </>
       }
