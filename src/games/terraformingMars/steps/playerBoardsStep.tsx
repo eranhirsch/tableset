@@ -1,3 +1,4 @@
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -6,6 +7,7 @@ import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { playersMetaStep } from "games/global";
 import corporateEraVariant from "./corporateEraVariant";
 
 const PLAYER_BOARD_TRACKS = [
@@ -19,13 +21,16 @@ const PLAYER_BOARD_TRACKS = [
 
 export default createDerivedGameStep({
   id: "playerBoards",
-  dependencies: [corporateEraVariant],
+  dependencies: [playersMetaStep, corporateEraVariant],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [isCorporateEra],
-}: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
+  dependencies: [playerIds, isCorporateEra],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
   return (
     <HeaderAndSteps
       synopsis={
@@ -48,8 +53,10 @@ function InstanceDerivedComponent({
         {(Footnote) => (
           <>
             Place a <em>player marker</em> on the number{" "}
-            <ChosenElement>{isCorporateEra ? 0 : 1}</ChosenElement> of each of
-            the <em>{PLAYER_BOARD_TRACKS.length}</em>
+            <ChosenElement>
+              {playerIds!.length === 1 || isCorporateEra ? 0 : 1}
+            </ChosenElement>{" "}
+            of each of the <em>{PLAYER_BOARD_TRACKS.length}</em>
             <Footnote /> tracks on the player board.
           </>
         )}
