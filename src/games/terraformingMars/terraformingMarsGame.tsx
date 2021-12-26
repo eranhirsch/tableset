@@ -18,6 +18,7 @@ import projectDeckStep from "./steps/projectDeckStep";
 import researchPhaseStep from "./steps/researchPhaseStep";
 import resourceCubesStep from "./steps/resourceCubesStep";
 import soloCitiesStep from "./steps/soloCitiesStep";
+import soloRulesStep from "./steps/soloRulesStep";
 import startingConditionsStep from "./steps/startingConditionsStep";
 import startTheGameStep from "./steps/startTheGameStep";
 
@@ -129,6 +130,7 @@ export default createGame({
     startingConditionsStep,
 
     draftRulesStep,
+    soloRulesStep,
 
     startTheGameStep,
   ],
