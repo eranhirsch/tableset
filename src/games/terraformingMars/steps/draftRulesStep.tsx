@@ -9,6 +9,7 @@ import draftVariant from "./draftVariant";
 
 export default createDerivedGameStep({
   id: "draftRules",
+  labelOverride: "Draft: Research Phase Rules",
   dependencies: [playersMetaStep, draftVariant],
   skip: ([_, isDraft]) => !isDraft,
   InstanceDerivedComponent,
