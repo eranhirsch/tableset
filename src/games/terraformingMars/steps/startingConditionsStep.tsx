@@ -1,26 +1,46 @@
 import { Typography } from "@mui/material";
-import { createGameStep } from "games/core/steps/createGameStep";
+import { PlayerId } from "features/players/playersSlice";
+import {
+  createDerivedGameStep,
+  DerivedStepInstanceComponentProps,
+} from "games/core/steps/createDerivedGameStep";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { playersMetaStep } from "games/global";
 
-export default createGameStep({
+export default createDerivedGameStep({
   id: "startingConditions",
-  InstanceManualComponent: () => (
+  dependencies: [playersMetaStep],
+  InstanceDerivedComponent,
+});
+
+function InstanceDerivedComponent({
+  dependencies: [playerIds],
+}: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
+  const isSolo = playerIds!.length === 1;
+
+  return (
     <>
-      <HeaderAndSteps synopsis="In player order, each player:">
+      <HeaderAndSteps
+        synopsis={isSolo ? undefined : "In player order, each player:"}
+      >
         <>
-          Reveals which corporation they will play
-          <em>; Put the discarded corporation back in the box</em>.
+          {isSolo
+            ? "Pick a corporation to play"
+            : "Reveals which corporation they will play"}
+          <em>; put the other corporation{!isSolo && "s"} back in the box</em>.
         </>
         <>
           Take any starting resources and production stated on the corporation
           card.
         </>
         <>
-          Discard any project cards they don't want to keep to a common discard
-          pile<em>; cards are always discarded face down!</em>
+          Discard any project cards {isSolo ? "you" : "they"} don't want to keep
+          to {isSolo ? "the" : "a common"} discard pile
+          {isSolo ? "." : <em>; cards are always discarded face down!</em>}
         </>
         <>
-          Pay <strong>3M€</strong> for each project card they keep.
+          Pay <strong>3M€</strong> for each project card{" "}
+          {isSolo ? "you" : "they"} keep.
         </>
       </HeaderAndSteps>
       <Typography variant="body2">
@@ -30,5 +50,5 @@ export default createGameStep({
         </em>
       </Typography>
     </>
-  ),
-});
+  );
+}

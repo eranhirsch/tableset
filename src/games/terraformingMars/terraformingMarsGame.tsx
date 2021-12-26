@@ -14,9 +14,11 @@ import mapTilesStep from "./steps/mapTilesStep";
 import playerBoardsStep from "./steps/playerBoardsStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import projectDeckStep from "./steps/projectDeckStep";
+import researchPhaseStep from "./steps/researchPhaseStep";
 import resourceCubesStep from "./steps/resourceCubesStep";
 import soloCitiesStep from "./steps/soloCitiesStep";
 import startingConditionsStep from "./steps/startingConditionsStep";
+import startTheGameStep from "./steps/startTheGameStep";
 
 export default createGame({
   id: "terraformingMars",
@@ -109,38 +111,12 @@ export default createGame({
 
     corporationsStep,
     initialProjectsStep,
-    createGameStep({
-      id: "researchPhase",
-      InstanceManualComponent: () => (
-        <>
-          <Typography variant="body1" textAlign="justify">
-            Players now simultaneously choose which corporation to play, and
-            what project cards to keep in their starting hand.
-          </Typography>
-          <Typography variant="body2" textAlign="justify">
-            <em>
-              players shouldn't reveal their selections yet, that is done in the
-              next step.
-            </em>
-          </Typography>
-        </>
-      ),
-    }),
+    researchPhaseStep,
     startingConditionsStep,
 
     draftRulesStep,
 
-    createGameStep({
-      id: "startTheGame",
-      InstanceManualComponent: () => (
-        <Typography variant="body1" textAlign="justify">
-          The first generation starts without a <em>player order</em> phase and
-          without a <em>research</em> phase{" "}
-          <em>(since you just performed those phases during setup)</em>, so the
-          first player just starts the action phase.
-        </Typography>
-      ),
-    }),
+    startTheGameStep,
   ],
 });
 

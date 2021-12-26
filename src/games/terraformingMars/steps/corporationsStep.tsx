@@ -43,10 +43,8 @@ function InstanceDerivedComponent({
             {isSolo ? (
               <>
                 {" "}
-                and skip the rest of this step.{" "}
-                <em>
-                  Otherwise put all Beginner Corporation cards back in the box
-                </em>
+                and skip the other steps bellow. <em>Otherwise</em> put all
+                Beginner Corporation cards back in the box
               </>
             ) : (
               <em>
