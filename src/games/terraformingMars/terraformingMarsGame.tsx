@@ -13,6 +13,7 @@ import mapStep from "./steps/mapStep";
 import playerBoardsStep from "./steps/playerBoardsStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import projectDeckStep from "./steps/projectDeckStep";
+import soloCitiesStep from "./steps/soloCitiesStep";
 import startingConditionsStep from "./steps/startingConditionsStep";
 
 export default createGame({
@@ -122,6 +123,8 @@ export default createGame({
       availableColors: () => ["red", "green", "yellow", "black", "blue"],
     }),
     playerBoardsStep,
+
+    soloCitiesStep,
 
     corporationsStep,
     createGameStep({
