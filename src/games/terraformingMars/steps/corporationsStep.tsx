@@ -23,9 +23,9 @@ function InstanceDerivedComponent({
   readonly PlayerId[],
   boolean
 >): JSX.Element {
-  const isCorpOrSolo = playerIds!.length === 1 || isCorporateEra;
+  const isSolo = playerIds!.length === 1;
   return (
-    <HeaderAndSteps synopsis="Players are assigned corporations:">
+    <HeaderAndSteps>
       <BlockWithFootnotes
         footnote={
           <>
@@ -36,18 +36,29 @@ function InstanceDerivedComponent({
         {(Footnote) => (
           <>
             <em>
-              Players <strong>new</strong> to Terraforming Mars:
+              {isSolo ? "If" : "Players"} <strong>new</strong> to Terraforming
+              Mars:
             </em>{" "}
             Take a <ChosenElement>Beginner Corporation</ChosenElement>
-            <em>
-              ; all remaining Beginner Corporation cards
-              <Footnote /> should be returned back to the box
-            </em>
+            {isSolo ? (
+              <>
+                {" "}
+                and skip the rest of this step.{" "}
+                <em>
+                  Otherwise put all Beginner Corporation cards back in the box
+                </em>
+              </>
+            ) : (
+              <em>
+                ; all remaining Beginner Corporation cards
+                <Footnote /> should be returned back to the box
+              </em>
+            )}
             .
           </>
         )}
       </BlockWithFootnotes>
-      {!isCorpOrSolo && (
+      {!isSolo && !isCorporateEra && (
         <BlockWithFootnotes
           footnote={
             <>
@@ -69,15 +80,22 @@ function InstanceDerivedComponent({
       <>
         Shuffle the remaining{" "}
         <strong>
-          {isCorpOrSolo
+          {isSolo || isCorporateEra
             ? MathUtils.sum(Vec.map_with_key(Decks, (_, { corps }) => corps))
             : Decks.base.corps}
         </strong>{" "}
         <ChosenElement extraInfo="corporations">normal</ChosenElement>.
       </>
       <>
-        Deal <strong>2</strong> corporations to each remaining player
-        <em>; players should keep these cards hidden</em>.
+        {isSolo ? "Draw" : "Deal"} <strong>2</strong> corporations
+        {!isSolo && (
+          <>
+            {" "}
+            to each remaining player
+            <em>; players should keep these cards hidden</em>
+          </>
+        )}
+        .
       </>
     </HeaderAndSteps>
   );
