@@ -1,11 +1,15 @@
 import { Typography } from "@mui/material";
 import { createVariant } from "games/core/steps/createVariant";
+import { playersMetaStep } from "games/global";
 
 export default createVariant({
   id: "draft",
   name: "Draft",
-  dependencies: [],
-  isTemplatable: () => true,
+  dependencies: [playersMetaStep],
+  isTemplatable: (players) =>
+    // Drafting only makes sense with other players, in solo play it is
+    // meaningless
+    players.onlyResolvableValue()!.length > 1,
   Description,
 });
 

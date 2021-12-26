@@ -1,11 +1,14 @@
 import { Typography } from "@mui/material";
 import { createVariant } from "games/core/steps/createVariant";
+import { playersMetaStep } from "games/global";
 
 export default createVariant({
   id: "corporateEra",
   name: "Corporate Era",
-  dependencies: [],
-  isTemplatable: () => true,
+  dependencies: [playersMetaStep],
+  isTemplatable: (players) =>
+    // CorporateEra is always used with solo play
+    players.onlyResolvableValue()!.length > 1,
   Description,
 });
 
