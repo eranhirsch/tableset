@@ -6,17 +6,22 @@ import {
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
+import { playersMetaStep } from "games/global";
 import firstPlayerStep from "./firstPlayerStep";
 
 export default createDerivedGameStep({
   id: "firstPlayerMarker",
-  dependencies: [firstPlayerStep],
+  dependencies: [playersMetaStep, firstPlayerStep],
+  skip: ([playerIds]) => playerIds!.length === 1,
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [firstPlayerId],
-}: DerivedStepInstanceComponentProps<PlayerId>): JSX.Element {
+  dependencies: [_playerIds, firstPlayerId],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  PlayerId
+>): JSX.Element {
   return (
     <Typography variant="body1" textAlign="justify">
       Give{" "}
