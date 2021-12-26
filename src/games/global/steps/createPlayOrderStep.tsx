@@ -86,10 +86,7 @@ const createPlayOrderStep = ({
     ),
 
     isTemplatable: (players, teamPlay, teams) =>
-      players.willContainNumElements({
-        // It's meaningless to talk about order with less than 3 players
-        min: 3,
-      }) &&
+      players.onlyResolvableValue()!.length > 2 &&
       (teamPlay.canResolveTo(false) || teams.willResolve()),
 
     resolve: (config, playerIds, teamPlay, teams) =>
@@ -119,6 +116,8 @@ const createPlayOrderStep = ({
       "fixed" in current
         ? { fixed: refreshFixedConfig(current.fixed, players) }
         : templateValue("unchanged"),
+
+    skip: (_, [playerIds]) => playerIds!.length < 3,
 
     ConfigPanel,
     ConfigPanelTLDR,
