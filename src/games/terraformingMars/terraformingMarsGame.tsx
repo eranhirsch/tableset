@@ -31,7 +31,6 @@ export default createGame({
       bggId: 167791,
       year: 2016,
       isBase: true,
-      isNotImplemented: true,
     },
     venus: {
       name: "Venus Next",
