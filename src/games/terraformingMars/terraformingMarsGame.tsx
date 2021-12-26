@@ -103,7 +103,7 @@ export default createGame({
 
     createPlayerColorsStep({
       productsMetaStep,
-      availableColors: () => ["red", "green", "yellow", "black", "blue"],
+      availableColors: () => ["black", "blue", "green", "red", "yellow"],
     }),
     playerBoardsStep,
 
