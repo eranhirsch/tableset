@@ -1,4 +1,4 @@
-import { MathUtils, Vec } from "common";
+import { $, Dict, MathUtils, Vec } from "common";
 import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
@@ -6,24 +6,55 @@ import {
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
-import { Decks } from "../utils/Decks";
+import { useMemo } from "react";
+import { activeDecks, availableDecksForProducts, Decks } from "../utils/Decks";
 import corporateEraVariant from "./corporateEraVariant";
+import productsMetaStep, {
+  TerraformingMarsProductId,
+} from "./productsMetaStep";
+import venusCorpsVariant from "./venusCorpsVariant";
+import venusVariant from "./venusVariant";
 
 export default createDerivedGameStep({
   id: "corporation",
-  dependencies: [playersMetaStep, corporateEraVariant],
+  dependencies: [
+    playersMetaStep,
+    productsMetaStep,
+    corporateEraVariant,
+    venusVariant,
+    venusCorpsVariant,
+  ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, isCorporateEra],
+  dependencies: [playerIds, productIds, isCorporateEra, isVenus, isVenusCorps],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
+  readonly TerraformingMarsProductId[],
+  boolean,
+  boolean,
   boolean
 >): JSX.Element {
   const isSolo = playerIds!.length === 1;
+
+  const decksInUse = useMemo(
+    () => activeDecks(playerIds!.length === 1, isCorporateEra!, isVenus!),
+    [isCorporateEra, isVenus, playerIds]
+  );
+
+  const inactiveDecks = useMemo(
+    () =>
+      Dict.select_keys(
+        Decks,
+        Vec.diff(availableDecksForProducts(productIds!), decksInUse)
+      ),
+    [decksInUse, productIds]
+  );
+
   return (
     <HeaderAndSteps>
       <BlockWithFootnotes
@@ -56,36 +87,76 @@ function InstanceDerivedComponent({
           </>
         )}
       </BlockWithFootnotes>
-      {!isSolo && !isCorporateEra && (
+      {!Dict.is_empty(inactiveDecks) && (
+        <BlockWithFootnotes
+          footnotes={Vec.map_with_key(inactiveDecks, (_, { icon }) => (
+            <>These are marked with a {icon} icon in the lower left edge.</>
+          ))}
+        >
+          {(Footnote) => (
+            <>
+              Return{" "}
+              <GrammaticalList>
+                {Vec.map_with_key(
+                  inactiveDecks,
+                  (_, { name, corps }, index) => (
+                    <>
+                      the <strong>{corps}</strong>{" "}
+                      <ChosenElement extraInfo="corporations">
+                        {name}
+                      </ChosenElement>
+                      <Footnote index={index + 1} />
+                    </>
+                  )
+                )}
+              </GrammaticalList>{" "}
+              back to the box.
+            </>
+          )}
+        </BlockWithFootnotes>
+      )}
+      {isVenusCorps && (
         <BlockWithFootnotes
           footnote={
             <>
-              These are marked with a red and white icon in the lower left edge.
+              These are marked with a {Decks.venus.icon} icon in the lower left
+              edge.
             </>
           }
         >
           {(Footnote) => (
             <>
-              Return all <strong>{Decks.corporateEra.corps}</strong>{" "}
+              Find the <strong>{Decks.venus.corps}</strong>{" "}
               <ChosenElement extraInfo="corporations">
-                Corporate Era
+                {Decks.venus.name}
               </ChosenElement>
-              <Footnote /> back to the box.
+              <Footnote />.
             </>
           )}
         </BlockWithFootnotes>
       )}
+      {isVenusCorps && <>Shuffle them.</>}
+      {isVenusCorps && (
+        <>
+          {isSolo ? "Draw" : "Deal"} <strong>1</strong> of these
+          {!isSolo && " to each remaining player"}.
+        </>
+      )}
       <>
         Shuffle the remaining{" "}
         <strong>
-          {isSolo || isCorporateEra
-            ? MathUtils.sum(Vec.map_with_key(Decks, (_, { corps }) => corps))
-            : Decks.base.corps}
+          {$(
+            Vec.filter(decksInUse, (deck) => !isVenusCorps || deck !== "venus"),
+            ($$) => Dict.select_keys(Decks, $$),
+            ($$) => Vec.map_with_key($$, (_, { corps }) => corps),
+            MathUtils.sum
+          )}
         </strong>{" "}
         <ChosenElement extraInfo="corporations">normal</ChosenElement>.
       </>
       <>
-        {isSolo ? "Draw" : "Deal"} <strong>2</strong> corporations
+        {isSolo ? "Draw" : "Deal"} <strong>{isVenusCorps ? 1 : 2}</strong>{" "}
+        corporations
         {!isSolo && (
           <>
             {" "}

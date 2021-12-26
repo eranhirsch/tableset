@@ -2,7 +2,6 @@ import { Typography } from "@mui/material";
 import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
-import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createPlayerColorsStep, createPlayOrderStep } from "games/global";
 import corporateEraVariant from "./steps/corporateEraVariant";
 import corporationsStep from "./steps/corporationsStep";
@@ -12,6 +11,7 @@ import firstPlayerStep from "./steps/firstPlayerStep";
 import initialProjectsStep from "./steps/initialProjectsStep";
 import mapStep from "./steps/mapStep";
 import mapTilesStep from "./steps/mapTilesStep";
+import markersStep from "./steps/markersStep";
 import playerBoardsStep from "./steps/playerBoardsStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import projectDeckStep from "./steps/projectDeckStep";
@@ -21,6 +21,10 @@ import soloCitiesStep from "./steps/soloCitiesStep";
 import soloRulesStep from "./steps/soloRulesStep";
 import startingConditionsStep from "./steps/startingConditionsStep";
 import startTheGameStep from "./steps/startTheGameStep";
+import venusBoardStep from "./steps/venusBoardStep";
+import venusCorpsVariant from "./steps/venusCorpsVariant";
+import venusMilestoneAndAwardStep from "./steps/venusMilestoneAndAwardStep";
+import venusVariant from "./steps/venusVariant";
 
 export default createGame({
   id: "terraformingMars",
@@ -64,11 +68,15 @@ export default createGame({
       isNotImplemented: true,
     },
   },
+
   steps: [
     corporateEraVariant, // Variant
     draftVariant, // Variant
+    venusVariant, // Variant
+    venusCorpsVariant, // Variant
 
     mapStep,
+    venusBoardStep,
     createGameStep({
       id: "oceans",
       InstanceManualComponent: () => (
@@ -80,33 +88,8 @@ export default createGame({
         </Typography>
       ),
     }),
-    createGameStep({
-      id: "markers",
-      InstanceManualComponent: () => (
-        <HeaderAndSteps
-          synopsis={
-            <>
-              Place the white{" "}
-              <ChosenElement extraInfo="cubes">marker</ChosenElement> (plastic)
-              on their starting locations:
-            </>
-          }
-        >
-          <>
-            The <ChosenElement extraInfo="marker">temperature</ChosenElement> on{" "}
-            <strong>-30{"\u00b0"}C</strong>.
-          </>
-          <>
-            The <ChosenElement extraInfo="marker">oxygen</ChosenElement> on{" "}
-            <strong>0%</strong>.
-          </>
-          <>
-            The <ChosenElement extraInfo="marker">generation</ChosenElement> on{" "}
-            <strong>1</strong> on the <em>TR track</em>.
-          </>
-        </HeaderAndSteps>
-      ),
-    }),
+    markersStep,
+    venusMilestoneAndAwardStep,
 
     resourceCubesStep,
     mapTilesStep,

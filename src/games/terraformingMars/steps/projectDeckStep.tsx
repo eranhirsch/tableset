@@ -1,65 +1,91 @@
-import { MathUtils, Vec } from "common";
+import { $, Dict, MathUtils, Vec } from "common";
 import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
-  DerivedStepInstanceComponentProps,
+  DerivedStepInstanceComponentProps
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
-import { Decks } from "../utils/Decks";
+import { useMemo } from "react";
+import { activeDecks, availableDecksForProducts, Decks } from "../utils/Decks";
 import corporateEraVariant from "./corporateEraVariant";
+import productsMetaStep, {
+  TerraformingMarsProductId
+} from "./productsMetaStep";
+import venusVariant from "./venusVariant";
 
 export default createDerivedGameStep({
   id: "projectDeck",
-  dependencies: [playersMetaStep, corporateEraVariant],
+  dependencies: [
+    playersMetaStep,
+    productsMetaStep,
+    corporateEraVariant,
+    venusVariant,
+  ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, isCorporateEra],
+  dependencies: [playerIds, productIds, isCorporateEra, isVenus],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
+  readonly TerraformingMarsProductId[],
+  boolean,
   boolean
 >): JSX.Element {
-  const corpEraOrSolo = playerIds!.length === 1 || isCorporateEra;
+  const decksInUse = useMemo(
+    () => activeDecks(playerIds!.length === 1, isCorporateEra!, isVenus!),
+    [isCorporateEra, isVenus, playerIds]
+  );
+
+  const inactiveDecks = useMemo(
+    () =>
+      Dict.select_keys(
+        Decks,
+        Vec.diff(availableDecksForProducts(productIds!), decksInUse)
+      ),
+    [decksInUse, productIds]
+  );
 
   return (
-    <HeaderAndSteps
-      synopsis={
-        <>
-          Prepare the <ChosenElement extraInfo="deck">projects</ChosenElement>:
-        </>
-      }
-    >
-      {!corpEraOrSolo && (
+    <HeaderAndSteps>
+      {!Dict.is_empty(inactiveDecks) && (
         <BlockWithFootnotes
-          footnote={
-            <>
-              These are marked with a red and white icon in the lower left edge.
-            </>
-          }
+          footnotes={Vec.map_with_key(inactiveDecks, (_, { icon }) => (
+            <>These are marked with a {icon} icon in the lower left edge.</>
+          ))}
         >
           {(Footnote) => (
             <>
-              Return all <strong>{Decks.corporateEra.projects}</strong>{" "}
-              <ChosenElement extraInfo="project cards">
-                Corporate Era
-              </ChosenElement>
-              <Footnote /> back to the box.
+              Return{" "}
+              <GrammaticalList>
+                {Vec.map_with_key(
+                  inactiveDecks,
+                  (_, { name, projects }, index) => (
+                    <>
+                      the <strong>{projects}</strong>{" "}
+                      <ChosenElement extraInfo="projects">{name}</ChosenElement>
+                      <Footnote index={index + 1} />
+                    </>
+                  )
+                )}
+              </GrammaticalList>{" "}
+              back to the box.
             </>
           )}
         </BlockWithFootnotes>
       )}
       <>
-        Shuffle {corpEraOrSolo ? "all" : "the remaining"}{" "}
+        Shuffle {Dict.is_empty(inactiveDecks) ? "all" : "the remaining"}{" "}
         <strong>
-          {corpEraOrSolo
-            ? MathUtils.sum(
-                Vec.map_with_key(Decks, (_, { projects }) => projects)
-              )
-            : Decks.base.projects}
+          {$(
+            Dict.select_keys(Decks, decksInUse),
+            ($$) => Vec.map_with_key($$, (_, { projects }) => projects),
+            MathUtils.sum
+          )}
         </strong>{" "}
         project cards.
       </>
