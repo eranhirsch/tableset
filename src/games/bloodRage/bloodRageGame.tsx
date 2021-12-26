@@ -8,7 +8,6 @@ import clanTokensStep from "./steps/clanTokensStep";
 import destroyedStep from "./steps/destroyedStep";
 import doomTokenStep from "./steps/doomTokenStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
-import firstPlayerTokenStep from "./steps/firstPlayerTokenStep";
 import godsLocationStep from "./steps/godsLocationStep";
 import godsSelectionStep from "./steps/godsSelectionStep";
 import godsVariant from "./steps/godsVariant";
@@ -163,7 +162,6 @@ export default createGame({
     }),
 
     firstPlayerStep, // Templatable
-    firstPlayerTokenStep,
 
     godsSelectionStep, // Templatable,
     godsLocationStep, // Templatable

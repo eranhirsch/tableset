@@ -18,6 +18,7 @@ import playersMetaStep from "./playersMetaStep";
 
 interface Options {
   InstanceManualComponent?: (() => JSX.Element) | string;
+  FirstPlayerToken?: (() => JSX.Element) | string;
 }
 
 const DEFAULT_MANUAL_COMPONENT = "Choose which player goes first.";
@@ -26,6 +27,7 @@ type TemplateConfig = { playerId?: PlayerId };
 
 function createFirstPlayerStep({
   InstanceManualComponent = DEFAULT_MANUAL_COMPONENT,
+  FirstPlayerToken,
 }: Options = {}): Templatable<PlayerId> {
   return createRandomGameStep({
     id: "firstPlayer",
@@ -34,7 +36,12 @@ function createFirstPlayerStep({
 
     isType: (x): x is PlayerId => typeof x === "string",
 
-    InstanceVariableComponent,
+    InstanceVariableComponent: (props) => (
+      <InstanceVariableComponent
+        {...props}
+        FirstPlayerToken={FirstPlayerToken}
+      />
+    ),
     InstanceManualComponent,
 
     isTemplatable: (players) =>
@@ -99,10 +106,24 @@ function ConfigPanel({
 
 function InstanceVariableComponent({
   value: playerId,
-}: VariableStepInstanceComponentProps<PlayerId>): JSX.Element {
+  FirstPlayerToken,
+}: VariableStepInstanceComponentProps<PlayerId> & {
+  FirstPlayerToken?: (() => JSX.Element) | string;
+}): JSX.Element {
   return (
     <Typography variant="body1">
-      <PlayerAvatar playerId={playerId} inline /> will play first.
+      <PlayerAvatar playerId={playerId} inline /> will play first.{" "}
+      {FirstPlayerToken != null && (
+        <>
+          Give them the{" "}
+          {typeof FirstPlayerToken === "string" ? (
+            FirstPlayerToken
+          ) : (
+            <FirstPlayerToken />
+          )}
+          .
+        </>
+      )}
     </Typography>
   );
 }

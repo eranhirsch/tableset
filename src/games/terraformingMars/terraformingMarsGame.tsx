@@ -7,7 +7,6 @@ import corporateEraVariant from "./steps/corporateEraVariant";
 import corporationsStep from "./steps/corporationsStep";
 import draftRulesStep from "./steps/draftRulesStep";
 import draftVariant from "./steps/draftVariant";
-import firstPlayerMarker from "./steps/firstPlayerMarker";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import initialProjectsStep from "./steps/initialProjectsStep";
 import mapStep from "./steps/mapStep";
@@ -99,7 +98,6 @@ export default createGame({
 
     createPlayOrderStep(), // Templatable
     firstPlayerStep, // Templatable
-    firstPlayerMarker,
 
     createPlayerColorsStep({
       productsMetaStep,
