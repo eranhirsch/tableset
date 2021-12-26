@@ -1,15 +1,25 @@
-import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
+import { PlayerId } from "features/players/playersSlice";
+import {
+  createDerivedGameStep,
+  DerivedStepInstanceComponentProps,
+} from "games/core/steps/createDerivedGameStep";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { playersMetaStep } from "games/global";
 import draftVariant from "./draftVariant";
 
 export default createDerivedGameStep({
   id: "draftRules",
-  dependencies: [draftVariant],
-  skip: ([isDraft]) => !isDraft,
+  dependencies: [playersMetaStep, draftVariant],
+  skip: ([_, isDraft]) => !isDraft,
   InstanceDerivedComponent,
 });
 
-function InstanceDerivedComponent(): JSX.Element {
+function InstanceDerivedComponent({
+  dependencies: [playerIds, _isDraft],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
   return (
     <HeaderAndSteps
       synopsis={
@@ -23,25 +33,30 @@ function InstanceDerivedComponent(): JSX.Element {
         Each player draws <strong>4</strong> projects cards.
       </>
       <>
-        They pick a <strong>single</strong> card and put it in front of them,
-        facedown.
+        They pick a <strong>single</strong> card and put it facedown in front of
+        them.
       </>
       <>
-        They pass the <em>remaining</em> cards either to the player to their{" "}
-        <strong>right</strong> (on even-numbered generations) or to the player
-        to their <strong>left</strong> (on odd-numbered generations).
+        They <strong>pass</strong> the <em>remaining</em> <em>3</em> cards{" "}
+        {playerIds!.length > 2 ? (
+          <>
+            either to the player to their <strong>right</strong> (on
+            even-numbered generations) or to the player to their{" "}
+            <strong>left</strong> (on odd-numbered generations)
+          </>
+        ) : (
+          <>to the other player</>
+        )}
+        .
       </>
       <>
-        They continue picking and passing cards until each player has drafted 4
-        cards in front of them.
+        They <em>continue</em> picking and passing cards until all cards have
+        been drafted this way.
       </>
       <>
         Players now look at the 4 cards and decide simultaneously which ones
-        they want to buy.
-      </>
-      <>
-        Players discard the cards they don't want to keep to the common discard
-        pile, facedown.
+        they dont want to buy, <strong>discarding</strong> them facedown to the
+        common discard pile.
       </>
       <>
         Players pay <strong>3M€</strong> for each card they kept.
