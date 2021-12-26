@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import { ColorId, Colors } from "app/utils/Colors";
-import { Dict, invariant, nullthrows, Random, Vec } from "common";
+import { C, Dict, invariant, nullthrows, Random, Vec } from "common";
 import { ProductId } from "features/instance/Game";
 import { InstanceCard } from "features/instance/InstanceCard";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
@@ -500,6 +500,17 @@ function ConfigPanelTLDR({
 function InstanceVariableComponent({
   value: playerColor,
 }: VariableStepInstanceComponentProps<PlayerColors>): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+
+  if (playerIds.length === 1) {
+    const color = C.onlyx(Vec.values(playerColor));
+    return (
+      <Typography variant="body1">
+        You will play as <Chip color={color} label={Colors.label(color)} />
+      </Typography>
+    );
+  }
+
   return (
     <>
       <Typography variant="body1">
