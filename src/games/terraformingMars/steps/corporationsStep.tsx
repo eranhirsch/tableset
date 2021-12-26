@@ -1,4 +1,5 @@
 import { MathUtils, Vec } from "common";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -6,18 +7,23 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { playersMetaStep } from "games/global";
 import { Decks } from "../utils/Decks";
 import corporateEraVariant from "./corporateEraVariant";
 
 export default createDerivedGameStep({
   id: "corporation",
-  dependencies: [corporateEraVariant],
+  dependencies: [playersMetaStep, corporateEraVariant],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [isCorporateEra],
-}: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
+  dependencies: [playerIds, isCorporateEra],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
+  const isCorpOrSolo = playerIds!.length === 1 || isCorporateEra;
   return (
     <HeaderAndSteps synopsis="Players are assigned corporations:">
       <BlockWithFootnotes
@@ -41,7 +47,7 @@ function InstanceDerivedComponent({
           </>
         )}
       </BlockWithFootnotes>
-      {!isCorporateEra && (
+      {!isCorpOrSolo && (
         <BlockWithFootnotes
           footnote={
             <>
@@ -63,7 +69,7 @@ function InstanceDerivedComponent({
       <>
         Shuffle the remaining{" "}
         <strong>
-          {isCorporateEra
+          {isCorpOrSolo
             ? MathUtils.sum(Vec.map_with_key(Decks, (_, { corps }) => corps))
             : Decks.base.corps}
         </strong>{" "}
