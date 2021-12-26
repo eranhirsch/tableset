@@ -53,6 +53,8 @@ function createFirstPlayerStep({
           : "unchanged"
       ),
 
+    skip: (_, [playerIds]) => playerIds!.length === 1,
+
     ConfigPanel,
     ConfigPanelTLDR,
 
