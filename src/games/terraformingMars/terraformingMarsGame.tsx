@@ -10,9 +10,11 @@ import draftVariant from "./steps/draftVariant";
 import firstPlayerMarker from "./steps/firstPlayerMarker";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import mapStep from "./steps/mapStep";
+import mapTilesStep from "./steps/mapTilesStep";
 import playerBoardsStep from "./steps/playerBoardsStep";
 import productsMetaStep from "./steps/productsMetaStep";
 import projectDeckStep from "./steps/projectDeckStep";
+import resourceCubesStep from "./steps/resourceCubesStep";
 import soloCitiesStep from "./steps/soloCitiesStep";
 import startingConditionsStep from "./steps/startingConditionsStep";
 
@@ -89,28 +91,8 @@ export default createGame({
       ),
     }),
 
-    createGameStep({
-      id: "resourceCubes",
-      InstanceManualComponent: () => (
-        <Typography variant="body1" textAlign="justify">
-          Create a pile for the{" "}
-          <ChosenElement extraInfo="cubes">resource</ChosenElement> so that
-          everyone can reach them.
-        </Typography>
-      ),
-    }),
-    createGameStep({
-      id: "mapTiles",
-      InstanceManualComponent: () => (
-        <Typography variant="body1" textAlign="justify">
-          Create a pile for the <strong>60</strong>{" "}
-          <ChosenElement extraInfo="tiles">Greenery/City</ChosenElement>, and a
-          pile for the <strong>11</strong>{" "}
-          <ChosenElement extraInfo="tiles">Special</ChosenElement> so that
-          everyone can reach them.
-        </Typography>
-      ),
-    }),
+    resourceCubesStep,
+    mapTilesStep,
 
     projectDeckStep,
 
