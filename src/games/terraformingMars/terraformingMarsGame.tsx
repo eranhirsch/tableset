@@ -5,7 +5,7 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { createPlayerColorsStep, createPlayOrderStep } from "games/global";
 import corporateEraVariant from "./steps/corporateEraVariant";
 import corporationsStep from "./steps/corporationsStep";
-import draftRulesStep from "./steps/draftRulesStep";
+import draftRules from "./steps/draftRules";
 import draftVariant from "./steps/draftVariant";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import initialProjectsStep from "./steps/initialProjectsStep";
@@ -18,13 +18,15 @@ import projectDeckStep from "./steps/projectDeckStep";
 import researchPhaseStep from "./steps/researchPhaseStep";
 import resourceCubesStep from "./steps/resourceCubesStep";
 import soloCitiesStep from "./steps/soloCitiesStep";
-import soloRulesStep from "./steps/soloRulesStep";
+import soloRules from "./steps/soloRules";
 import startingConditionsStep from "./steps/startingConditionsStep";
 import startTheGameStep from "./steps/startTheGameStep";
 import venusBoardStep from "./steps/venusBoardStep";
 import venusCorpsVariant from "./steps/venusCorpsVariant";
 import venusMilestoneAndAwardStep from "./steps/venusMilestoneAndAwardStep";
 import venusVariant from "./steps/venusVariant";
+import worldGovernmentRules from "./steps/worldGovernmentRules";
+import worldGovernmentVariant from "./steps/worldGovernmentVariant";
 
 export default createGame({
   id: "terraformingMars",
@@ -74,6 +76,7 @@ export default createGame({
     draftVariant, // Variant
     venusVariant, // Variant
     venusCorpsVariant, // Variant
+    worldGovernmentVariant, // Variant
 
     mapStep,
     venusBoardStep,
@@ -112,8 +115,9 @@ export default createGame({
     researchPhaseStep,
     startingConditionsStep,
 
-    draftRulesStep,
-    soloRulesStep,
+    draftRules,
+    soloRules,
+    worldGovernmentRules,
 
     startTheGameStep,
   ],
