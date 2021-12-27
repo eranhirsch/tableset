@@ -1,18 +1,29 @@
-import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
+import { PlayerId } from "features/players/playersSlice";
+import {
+  createDerivedGameStep,
+  DerivedStepInstanceComponentProps,
+} from "games/core/steps/createDerivedGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { playersMetaStep } from "games/global";
 import { RulesSection } from "games/global/ux/RulesSection";
 import worldGovernmentVariant from "./worldGovernmentVariant";
 
 export default createDerivedGameStep({
   id: "worldGovernmentRules",
   labelOverride: "Solar Phase: Rules",
-  dependencies: [worldGovernmentVariant],
-  skip: (isWg) => !isWg,
+  dependencies: [playersMetaStep, worldGovernmentVariant],
+  skip: ([playerIds, isWg]) => playerIds!.length > 1 && !isWg,
   InstanceDerivedComponent,
 });
 
-function InstanceDerivedComponent(): JSX.Element {
+function InstanceDerivedComponent({
+  dependencies: [playerIds, _isWg],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
+  const isSolo = playerIds!.length === 1;
   return (
     <>
       <HeaderAndSteps
@@ -25,23 +36,32 @@ function InstanceDerivedComponent(): JSX.Element {
         }
       >
         <>
-          <strong>Game End Check:</strong> if temperature, oxygen, and oceans
-          are all maxed out, the game ends and final scoring begins with normal
-          conversion of plants
+          <strong>Game End Check:</strong> if temperature, oxygen,{" "}
+          {isSolo && "venus scale, "}and oceans are all maxed out,{" "}
+          {isSolo && (
+            <>
+              or you just played the <strong>14th</strong> generation,{" "}
+            </>
+          )}
+          the game ends and final scoring begins with normal conversion of
+          plants
           <em>; No further steps in the Solar Phase are executed</em>.
         </>
         <>
           <strong>World Government Terraforming:</strong> In order to terraform
           Venus without slowing down the terraforming of Mars, the WG has
-          decided to help out. The first player (player order hasn't yet
-          shifted) now acts as the WG, and chooses a non-maxed global parameter
-          and increases that track one step, or places an ocean tile.
+          decided to help out.{" "}
+          {isSolo
+            ? "you now act"
+            : "The first player (player order hasn't yet shifted) now acts"}{" "}
+          as the WG, and {isSolo ? "chose" : "chooses"} a non-maxed global
+          parameter and increases that track one step, or places an ocean tile.
         </>
       </HeaderAndSteps>
       <RulesSection>
         <>
-          All bonuses goes to the WG, and therefore no TR or other bonuses are
-          given to the first player.
+          All bonuses goes to the WG, and therefore no TR or other bonuses are{" "}
+          {isSolo ? "gained" : "given to the first player"}.
         </>
         <>
           Other cards may be triggered by this though, i.e.{" "}
