@@ -43,7 +43,6 @@ export default createGame({
       name: "Venus Next",
       bggId: 231965,
       year: 2017,
-      isNotImplemented: true,
     },
     boards: {
       name: "Hellas & Elysium",
