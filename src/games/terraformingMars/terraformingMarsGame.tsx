@@ -48,7 +48,6 @@ export default createGame({
       name: "Hellas & Elysium",
       bggId: 218127,
       year: 2017,
-      isNotImplemented: true,
     },
     prelude: {
       name: "Prelude",
@@ -94,7 +93,7 @@ export default createGame({
     venusMilestoneAndAwardStep,
 
     resourceCubesStep,
-    mapTilesStep,
+    mapTilesStep, // Templatable
 
     projectDeckStep,
 

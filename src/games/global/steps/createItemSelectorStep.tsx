@@ -104,7 +104,7 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
 
   // Required fields for createRandomGameStep
   id: StepId;
-  InstanceCards(
+  InstanceCards?(
     props: InstanceCardsProps<
       readonly ItemId[],
       readonly PlayerId[],
