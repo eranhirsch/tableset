@@ -7,23 +7,35 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import { RulesSection } from "games/global/ux/RulesSection";
+import preludeVariant from "./preludeVariant";
+import { NUM_GENS } from "./soloRules";
+import venusVariant from "./venusVariant";
 import worldGovernmentVariant from "./worldGovernmentVariant";
 
 export default createDerivedGameStep({
   id: "worldGovernmentRules",
   labelOverride: "Solar Phase: Rules",
-  dependencies: [playersMetaStep, worldGovernmentVariant],
-  skip: ([playerIds, isWg]) => playerIds!.length > 1 && !isWg,
+  dependencies: [
+    playersMetaStep,
+    venusVariant,
+    worldGovernmentVariant,
+    preludeVariant,
+  ],
+  skip: ([playerIds, isVenus, isWg, _isPrelude]) =>
+    playerIds!.length === 1 ? !isVenus : !isWg,
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, _isWg],
+  dependencies: [playerIds, _isVenus, _isWg, isPrelude],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
+  boolean,
+  boolean,
   boolean
 >): JSX.Element {
   const isSolo = playerIds!.length === 1;
+  const numGenerations = NUM_GENS[isPrelude ? "prelude" : "regular"];
   return (
     <>
       <HeaderAndSteps
@@ -40,7 +52,8 @@ function InstanceDerivedComponent({
           {isSolo && "venus scale, "}and oceans are all maxed out,{" "}
           {isSolo && (
             <>
-              or you just played the <strong>14th</strong> generation,{" "}
+              or you just played the <strong>{numGenerations}th</strong>{" "}
+              generation,{" "}
             </>
           )}
           the game ends and final scoring begins with normal conversion of

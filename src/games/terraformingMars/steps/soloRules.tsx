@@ -8,8 +8,7 @@ import { playersMetaStep } from "games/global";
 import preludeVariant from "./preludeVariant";
 import venusVariant from "./venusVariant";
 
-const NUM_GEN_REGULAR = 14;
-const NUM_GEN_PRELUDE = 12;
+export const NUM_GENS = { regular: 14, prelude: 12 } as const;
 
 export default createDerivedGameStep({
   id: "soloRules",
@@ -26,7 +25,7 @@ function InstanceDerivedComponent({
   boolean,
   boolean
 >): JSX.Element {
-  const numGenerations = isPrelude ? NUM_GEN_PRELUDE : NUM_GEN_REGULAR;
+  const numGenerations = NUM_GENS[isPrelude ? "prelude" : "regular"];
   return (
     <HeaderAndSteps synopsis="In Solo play the following rules are added:">
       {/* Copied verbatim from the manual */}

@@ -1,14 +1,15 @@
 import { createDerivedGameStep } from "games/core/steps/createDerivedGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { playersMetaStep } from "games/global";
 import { RulesSection } from "games/global/ux/RulesSection";
 import venusVariant from "./venusVariant";
 
 export default createDerivedGameStep({
   id: "venusMilestoneAndAward",
   labelOverride: "Venus: Milestone and Award",
-  dependencies: [venusVariant],
-  skip: ([isVenus]) => !isVenus,
+  dependencies: [playersMetaStep, venusVariant],
+  skip: ([playerIds, isVenus]) => playerIds!.length === 1 || !isVenus,
   InstanceDerivedComponent,
 });
 
