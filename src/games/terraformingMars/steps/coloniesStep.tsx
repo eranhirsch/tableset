@@ -10,7 +10,6 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { createItemSelectorStep, playersMetaStep } from "games/global";
-import { RulesSection } from "games/global/ux/RulesSection";
 import { useMemo } from "react";
 import coloniesVariant from "./coloniesVariant";
 import productsMetaStep from "./productsMetaStep";
@@ -103,7 +102,6 @@ function InstanceVariableComponent({
           <em>second step</em> of each Colony Tile track.
         </>
       </HeaderAndSteps>
-      <Rules specialColonies={specialColonies} />
     </>
   );
 }
@@ -128,36 +126,7 @@ function InstanceManualComponent(): JSX.Element {
           <em>second step</em> of each Colony Tile track.
         </>
       </HeaderAndSteps>
-      <Rules specialColonies={SPECIAL_COLONIES} />
     </>
-  );
-}
-
-function Rules({
-  specialColonies,
-}: {
-  specialColonies: readonly ColonyId[];
-}): JSX.Element {
-  return (
-    <RulesSection>
-      <>The marker indicates what you can gain from trading there.</>
-      {!Vec.is_empty(specialColonies) && (
-        <>
-          <strong>
-            for{" "}
-            <GrammaticalList>
-              {Vec.map(specialColonies, labelForId)}
-            </GrammaticalList>
-            :
-          </strong>{" "}
-          the marker is placed on the highlighted second step of the track
-          immediately when there is any card in play that may collect their
-          respective resources.
-          <br />
-          You can not place a colony there, or trade there, until that happens.
-        </>
-      )}
-    </RulesSection>
   );
 }
 
