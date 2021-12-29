@@ -25,6 +25,7 @@ import soloCitiesStep from "./steps/soloCitiesStep";
 import soloRules from "./steps/soloRules";
 import startingConditionsStep from "./steps/startingConditionsStep";
 import startTheGameStep from "./steps/startTheGameStep";
+import trSoloVariant from "./steps/trSoloVariant";
 import venusBoardStep from "./steps/venusBoardStep";
 import venusCorpsVariant from "./steps/venusCorpsVariant";
 import venusMilestoneAndAwardStep from "./steps/venusMilestoneAndAwardStep";
@@ -80,6 +81,7 @@ export default createGame({
     worldGovernmentVariant, // Variant
     preludeVariant, // Variant
     preludeCorpsVariant, // Variant
+    trSoloVariant, // Variant
 
     mapStep,
     venusBoardStep,

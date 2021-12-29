@@ -6,6 +6,7 @@ import {
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import preludeVariant from "./preludeVariant";
+import trSoloVariant, { TR_GOAL } from "./trSoloVariant";
 import venusVariant from "./venusVariant";
 
 export const NUM_GENS = { regular: 14, prelude: 12 } as const;
@@ -13,15 +14,16 @@ export const NUM_GENS = { regular: 14, prelude: 12 } as const;
 export default createDerivedGameStep({
   id: "soloRules",
   labelOverride: "Solo: Rules",
-  dependencies: [playersMetaStep, venusVariant, preludeVariant],
+  dependencies: [playersMetaStep, venusVariant, preludeVariant, trSoloVariant],
   skip: ([playerIds]) => playerIds!.length > 1,
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [_playerIds, isVenus, isPrelude],
+  dependencies: [_playerIds, isVenus, isPrelude, isTrSolo],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
+  boolean,
   boolean,
   boolean
 >): JSX.Element {
@@ -42,11 +44,21 @@ function InstanceDerivedComponent({
         ).
       </>
       <>
-        In order to win, you need to complete terraforming (i.e making the three
-        global parameters reach their goal) before the end of generation{" "}
-        {numGenerations}.
+        In order to win, you need to{" "}
+        {isTrSolo ? (
+          <>
+            reach a Terraform Rating of <strong>{TR_GOAL}</strong> in{" "}
+            {numGenerations} generations
+          </>
+        ) : (
+          <>
+            complete terraforming (i.e making the 3 global parameters reach
+            their goal) before the end of generation {numGenerations}
+          </>
+        )}
+        .
       </>
-      {isVenus && (
+      {isVenus && !isTrSolo && (
         <>
           <strong>Venus Next:</strong> you also need to max out the{" "}
           <em>Venus Scale</em>.
@@ -56,11 +68,19 @@ function InstanceDerivedComponent({
         After generation {numGenerations}, you may convert plants into greenery
         tiles, following normal rules but without raising the oxygen.
       </>
-      <>You score VPs to get as high a score as possible.</>
+      {!isTrSolo && <>You score VPs to get as high a score as possible.</>}
       <>
-        If you have not completed terraforming by the end of generation{" "}
-        {numGenerations}, you lose.
+        If you have not{" "}
+        {isTrSolo ? "reached the TR goal" : "completed terraforming"} by the end
+        of generation {numGenerations}, you lose.
       </>
+      {isTrSolo && (
+        <>
+          <strong>TR Solo:</strong> a new standard project is introduced,{" "}
+          <strong>BUFFER GAS</strong>, which costs <em>16M€</em> and gives{" "}
+          <em>1 TR</em>.
+        </>
+      )}
     </HeaderAndSteps>
   );
 }
