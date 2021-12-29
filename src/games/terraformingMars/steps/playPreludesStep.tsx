@@ -11,7 +11,7 @@ export default createDerivedGameStep({
   id: "playPreludes",
   labelOverride: "Prelude: Play",
   dependencies: [playersMetaStep, preludeVariant],
-  skip: ([isPrelude]) => !isPrelude,
+  skip: ([_playerIds, isPrelude]) => !isPrelude,
   InstanceDerivedComponent,
 });
 
