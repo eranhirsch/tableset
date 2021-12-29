@@ -7,6 +7,7 @@ const ALL_DECK_IDS = [
   "venus",
   "prelude",
   "colonies",
+  "turmoil",
 ] as const;
 export type DeckId = typeof ALL_DECK_IDS[number];
 
@@ -44,6 +45,12 @@ export const Decks: Readonly<Required<Record<DeckId, Deck>>> = {
     projects: 49,
     corps: 5,
     icon: "gray",
+  },
+  turmoil: {
+    name: "Turmoil",
+    projects: 16,
+    corps: 5,
+    icon: "orange",
   },
 };
 
