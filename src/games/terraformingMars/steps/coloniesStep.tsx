@@ -90,7 +90,7 @@ function InstanceVariableComponent({
         </>
         {isSolo && (
           <>
-            Discard <strong>1</strong> of them.
+            <strong>Solo:</strong> discard <strong>1</strong> of them.
           </>
         )}
         <>
@@ -130,7 +130,7 @@ function InstanceManualComponent(): JSX.Element {
         <>Draw {count(playerIds.length)} tiles.</>
         {isSolo && (
           <>
-            Discard <strong>1</strong> of them.
+            <strong>Solo:</strong> discard <strong>1</strong> of them.
           </>
         )}
         <>

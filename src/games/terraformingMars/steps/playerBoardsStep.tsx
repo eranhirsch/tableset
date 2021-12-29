@@ -36,18 +36,13 @@ function InstanceDerivedComponent({
   boolean,
   boolean
 >): JSX.Element {
+  const isSolo = playerIds!.length === 1;
   return (
     <HeaderAndSteps
       synopsis={
         <>
-          {playerIds!.length === 1
-            ? "Prepare your"
-            : "Each player prepares their"}{" "}
-          personal{" "}
-          <ChosenElement>
-            player board{playerIds!.length > 1 && "s"}
-          </ChosenElement>
-          :
+          {isSolo ? "Prepare your" : "Each player prepares their"} personal{" "}
+          <ChosenElement>player board{!isSolo && "s"}</ChosenElement>:
         </>
       }
     >
@@ -64,19 +59,20 @@ function InstanceDerivedComponent({
         {(Footnote) => (
           <>
             Place a <em>player marker</em> on the number{" "}
-            <ChosenElement>
-              {playerIds!.length === 1 || isCorporateEra ? 0 : 1}
-            </ChosenElement>{" "}
-            of each of the <em>{PLAYER_BOARD_TRACKS.length}</em>
+            <ChosenElement>{isSolo || isCorporateEra ? 0 : 1}</ChosenElement> of
+            each of the <em>{PLAYER_BOARD_TRACKS.length}</em>
             <Footnote /> tracks on the player board.
           </>
         )}
       </BlockWithFootnotes>
+      {isSolo && isColonies && (
+        <>
+          <strong>Solo Colonies:</strong> reduce M€ production 2 steps.
+        </>
+      )}
       <>
         Place a <em>player marker</em> at the starting position{" "}
-        <ChosenElement>
-          {playerIds!.length === 1 ? SOLO_STARTING_TM : STARTING_TM}
-        </ChosenElement>{" "}
+        <ChosenElement>{isSolo ? SOLO_STARTING_TM : STARTING_TM}</ChosenElement>{" "}
         of the <em>TR track</em> on the game board.
       </>
       {isColonies && (
