@@ -11,9 +11,10 @@ import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import { useMemo } from "react";
 import { activeDecks, availableDecksForProducts, Decks } from "../utils/Decks";
+import coloniesVariant from "./coloniesVariant";
 import corporateEraVariant from "./corporateEraVariant";
 import productsMetaStep, {
-  TerraformingMarsProductId
+  TerraformingMarsProductId,
 } from "./productsMetaStep";
 import venusVariant from "./venusVariant";
 
@@ -24,15 +25,17 @@ export default createDerivedGameStep({
     productsMetaStep,
     corporateEraVariant,
     venusVariant,
+    coloniesVariant,
   ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, productIds, isCorporateEra, isVenus],
+  dependencies: [playerIds, productIds, isCorporateEra, isVenus, isColonies],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly TerraformingMarsProductId[],
+  boolean,
   boolean,
   boolean
 >): JSX.Element {
@@ -45,9 +48,14 @@ function InstanceDerivedComponent({
     () =>
       Vec.intersect(
         available,
-        activeDecks(playerIds!.length === 1, isCorporateEra!, isVenus!)
+        activeDecks(
+          playerIds!.length === 1,
+          isCorporateEra!,
+          isVenus!,
+          isColonies!
+        )
       ),
-    [available, isCorporateEra, isVenus, playerIds]
+    [available, isColonies, isCorporateEra, isVenus, playerIds]
   );
 
   const inactiveDecks = useMemo(

@@ -8,6 +8,7 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
+import coloniesVariant from "./coloniesVariant";
 import corporateEraVariant from "./corporateEraVariant";
 
 const PLAYER_BOARD_TRACKS = [
@@ -24,14 +25,15 @@ const SOLO_STARTING_TM = 14;
 
 export default createDerivedGameStep({
   id: "playerBoards",
-  dependencies: [playersMetaStep, corporateEraVariant],
+  dependencies: [playersMetaStep, corporateEraVariant, coloniesVariant],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, isCorporateEra],
+  dependencies: [playerIds, isCorporateEra, isColonies],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
+  boolean,
   boolean
 >): JSX.Element {
   return (
@@ -77,6 +79,13 @@ function InstanceDerivedComponent({
         </ChosenElement>{" "}
         of the <em>TR track</em> on the game board.
       </>
+      {isColonies && (
+        <>
+          Take <strong>1</strong> <ChosenElement>Trade Fleet</ChosenElement> and
+          place it on the <em>Trade Fleets tile</em>, with their player marker
+          inside it.
+        </>
+      )}
     </HeaderAndSteps>
   );
 }

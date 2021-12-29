@@ -16,6 +16,7 @@ import {
   DeckId,
   Decks,
 } from "../utils/Decks";
+import coloniesVariant from "./coloniesVariant";
 import corporateEraVariant from "./corporateEraVariant";
 import preludeCorpsVariant from "./preludeCorpsVariant";
 import productsMetaStep, {
@@ -33,6 +34,7 @@ export default createDerivedGameStep({
     venusVariant,
     venusCorpsVariant,
     preludeCorpsVariant,
+    coloniesVariant,
   ],
   InstanceDerivedComponent,
 });
@@ -45,10 +47,12 @@ function InstanceDerivedComponent({
     isVenus,
     isVenusCorps,
     isPreludeCorps,
+    isColonies,
   ],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly TerraformingMarsProductId[],
+  boolean,
   boolean,
   boolean,
   boolean,
@@ -65,9 +69,14 @@ function InstanceDerivedComponent({
     () =>
       Vec.intersect(
         available,
-        activeDecks(playerIds!.length === 1, isCorporateEra!, isVenus!)
+        activeDecks(
+          playerIds!.length === 1,
+          isCorporateEra!,
+          isVenus!,
+          isColonies!
+        )
       ),
-    [available, isCorporateEra, isVenus, playerIds]
+    [available, isColonies, isCorporateEra, isVenus, playerIds]
   );
 
   const inactiveDecks = useMemo(

@@ -111,7 +111,7 @@ function InstanceVariableComponent({
       </Typography>
       <Stack paddingX={3}>
         {Vec.map(replacements, ([covered, tile]) => (
-          <Typography variant="body2">
+          <Typography key={`${covered}_${tile}`} variant="body2">
             <strong>{tile}</strong> on <em>{covered}</em>.
           </Typography>
         ))}

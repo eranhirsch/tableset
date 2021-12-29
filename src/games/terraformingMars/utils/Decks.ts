@@ -1,7 +1,13 @@
 import { Vec } from "common";
 import { TerraformingMarsProductId } from "../steps/productsMetaStep";
 
-const ALL_DECK_IDS = ["base", "corporateEra", "venus", "prelude"] as const;
+const ALL_DECK_IDS = [
+  "base",
+  "corporateEra",
+  "venus",
+  "prelude",
+  "colonies",
+] as const;
 export type DeckId = typeof ALL_DECK_IDS[number];
 
 interface Deck {
@@ -33,6 +39,12 @@ export const Decks: Readonly<Required<Record<DeckId, Deck>>> = {
     preludes: 35,
     icon: "pink",
   },
+  colonies: {
+    name: "Colonies",
+    projects: 49,
+    corps: 5,
+    icon: "gray",
+  },
 };
 
 export const availableDecksForProducts = (
@@ -43,12 +55,14 @@ export const availableDecksForProducts = (
     "corporateEra",
     productIds.includes("venus") ? "venus" : null,
     productIds.includes("prelude") ? "prelude" : null,
+    productIds.includes("colonies") ? "colonies" : null,
   ]);
 
 export const activeDecks = (
   isSolo: boolean,
   isCorporateEra: boolean,
-  isVenus: boolean
+  isVenus: boolean,
+  isColonies: boolean
 ): readonly DeckId[] =>
   Vec.filter_nulls([
     "base",
@@ -57,4 +71,5 @@ export const activeDecks = (
     // Prelude is always active, there's no variants which takes out the 5 corps
     // or the 7 project cards, at least not officially
     "prelude",
+    isColonies ? "colonies" : null,
   ]);

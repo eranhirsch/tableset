@@ -3,6 +3,9 @@ import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { createPlayerColorsStep, createPlayOrderStep } from "games/global";
+import additionalBoardsStep from "./steps/additionalBoardsStep";
+import coloniesStep from "./steps/coloniesStep";
+import coloniesVariant from "./steps/coloniesVariant";
 import corporateEraVariant from "./steps/corporateEraVariant";
 import corporationsStep from "./steps/corporationsStep";
 import draftRules from "./steps/draftRules";
@@ -26,7 +29,6 @@ import soloRules from "./steps/soloRules";
 import startingConditionsStep from "./steps/startingConditionsStep";
 import startTheGameStep from "./steps/startTheGameStep";
 import trSoloVariant from "./steps/trSoloVariant";
-import venusBoardStep from "./steps/venusBoardStep";
 import venusCorpsVariant from "./steps/venusCorpsVariant";
 import venusMilestoneAndAwardStep from "./steps/venusMilestoneAndAwardStep";
 import venusVariant from "./steps/venusVariant";
@@ -82,9 +84,11 @@ export default createGame({
     preludeVariant, // Variant
     preludeCorpsVariant, // Variant
     trSoloVariant, // Variant
+    coloniesVariant, // Variant
 
     mapStep,
-    venusBoardStep,
+    additionalBoardsStep,
+    coloniesStep,
     createGameStep({
       id: "oceans",
       InstanceManualComponent: () => (
