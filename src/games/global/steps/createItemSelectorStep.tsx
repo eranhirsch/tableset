@@ -192,7 +192,8 @@ export default function createItemSelectorStep<
       ),
 
     skip: (_value, [playerIds, productIds, isOn]) =>
-      !isOn || playerIds!.length === availableForProducts(productIds!).length,
+      !isOn ||
+      count(playerIds!.length) === availableForProducts(productIds!).length,
 
     ConfigPanel: (
       props: ConfigPanelProps<
