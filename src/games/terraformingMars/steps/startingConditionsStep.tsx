@@ -34,8 +34,8 @@ function InstanceDerivedComponent({
           card.
         </>
         <>
-          Discard any project cards {isSolo ? "you" : "they"} don't want to keep
-          to {isSolo ? "the" : "a common"} discard pile
+          Discard (to {isSolo ? "the" : "a common"} discard pile) any project
+          cards {isSolo ? "you" : "they"} don't want to keep
           {isSolo ? "." : <em>; cards are always discarded face down!</em>}
         </>
         <>

@@ -4,11 +4,13 @@ import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
+import preludeVariant from "./preludeVariant";
 
 export default createDerivedGameStep({
   id: "researchPhase",
-  dependencies: [playersMetaStep],
+  dependencies: [playersMetaStep, preludeVariant],
 
   // This step is meaningless as it only prompts players to think what cards
   // they want, but not do anything about that yet. The next step is active. For
@@ -19,18 +21,32 @@ export default createDerivedGameStep({
 });
 
 function InstanceDerivedComponent({
-  dependencies: [_playerIds],
-}: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
+  dependencies: [_playerIds, isPrelude],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
   return (
     <>
-      <Typography variant="body1" textAlign="justify">
-        Players now simultaneously choose which corporation to play, and what
-        project cards to keep in their starting hand.
-      </Typography>
+      <HeaderAndSteps synopsis={<>Players now simultaneously choose:</>}>
+        <>
+          <strong>1</strong> corporation.
+        </>
+        {isPrelude && (
+          <>
+            <strong>2</strong> prelude cards
+            <em>; these don't cost anything to keep</em>.
+          </>
+        )}
+        <>
+          <em>Any number</em> of project cards to keep in their starting hand
+          <em>; at a cost of 3M€ per card</em>.
+        </>
+      </HeaderAndSteps>
       <Typography variant="body2" textAlign="justify">
         <em>
-          players shouldn't reveal their selections yet, that is done in the
-          next step.
+          Players <strong>shouldn't</strong> reveal their selections yet! that
+          is done in the next step.
         </em>
       </Typography>
     </>

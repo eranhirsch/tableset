@@ -8,11 +8,15 @@ import corporationsStep from "./steps/corporationsStep";
 import draftRules from "./steps/draftRules";
 import draftVariant from "./steps/draftVariant";
 import firstPlayerStep from "./steps/firstPlayerStep";
+import initialPreludesStep from "./steps/initialPreludesStep";
 import initialProjectsStep from "./steps/initialProjectsStep";
 import mapStep from "./steps/mapStep";
 import mapTilesStep from "./steps/mapTilesStep";
 import markersStep from "./steps/markersStep";
 import playerBoardsStep from "./steps/playerBoardsStep";
+import playPreludesStep from "./steps/playPreludesStep";
+import preludeCorpsVariant from "./steps/preludeCorpsVariant";
+import preludeVariant from "./steps/preludeVariant";
 import productsMetaStep from "./steps/productsMetaStep";
 import projectDeckStep from "./steps/projectDeckStep";
 import researchPhaseStep from "./steps/researchPhaseStep";
@@ -53,7 +57,6 @@ export default createGame({
       name: "Prelude",
       bggId: 247030,
       year: 2018,
-      isNotImplemented: true,
     },
     colonies: {
       name: "Colonies",
@@ -75,6 +78,8 @@ export default createGame({
     venusVariant, // Variant
     venusCorpsVariant, // Variant
     worldGovernmentVariant, // Variant
+    preludeVariant, // Variant
+    preludeCorpsVariant, // Variant
 
     mapStep,
     venusBoardStep,
@@ -109,9 +114,11 @@ export default createGame({
     soloCitiesStep,
 
     corporationsStep,
+    initialPreludesStep,
     initialProjectsStep,
     researchPhaseStep,
     startingConditionsStep,
+    playPreludesStep,
 
     draftRules,
     soloRules,

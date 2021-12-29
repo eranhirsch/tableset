@@ -36,18 +36,23 @@ function InstanceDerivedComponent({
   boolean,
   boolean
 >): JSX.Element {
+  const available = useMemo(
+    () => availableDecksForProducts(productIds!),
+    [productIds]
+  );
+
   const decksInUse = useMemo(
-    () => activeDecks(playerIds!.length === 1, isCorporateEra!, isVenus!),
-    [isCorporateEra, isVenus, playerIds]
+    () =>
+      Vec.intersect(
+        available,
+        activeDecks(playerIds!.length === 1, isCorporateEra!, isVenus!)
+      ),
+    [available, isCorporateEra, isVenus, playerIds]
   );
 
   const inactiveDecks = useMemo(
-    () =>
-      Dict.select_keys(
-        Decks,
-        Vec.diff(availableDecksForProducts(productIds!), decksInUse)
-      ),
-    [decksInUse, productIds]
+    () => Dict.select_keys(Decks, Vec.diff(available, decksInUse)),
+    [available, decksInUse]
   );
 
   return (

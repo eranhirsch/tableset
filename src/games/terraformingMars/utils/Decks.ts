@@ -1,13 +1,14 @@
 import { Vec } from "common";
 import { TerraformingMarsProductId } from "../steps/productsMetaStep";
 
-const ALL_DECK_IDS = ["base", "corporateEra", "venus"] as const;
+const ALL_DECK_IDS = ["base", "corporateEra", "venus", "prelude"] as const;
 export type DeckId = typeof ALL_DECK_IDS[number];
 
 interface Deck {
   name: string;
   corps: number;
   projects: number;
+  preludes?: number;
   icon: string;
 }
 
@@ -17,13 +18,20 @@ export const Decks: Readonly<Required<Record<DeckId, Deck>>> = {
     name: "Corporate Era",
     projects: 71,
     corps: 2,
-    icon: "blue and white",
+    icon: "blue",
   },
   venus: {
     name: "Venus Next",
     projects: 49,
     corps: 5,
-    icon: "red and white",
+    icon: "red",
+  },
+  prelude: {
+    name: "Prelude",
+    projects: 7,
+    corps: 5,
+    preludes: 35,
+    icon: "pink",
   },
 };
 
@@ -34,6 +42,7 @@ export const availableDecksForProducts = (
     "base",
     "corporateEra",
     productIds.includes("venus") ? "venus" : null,
+    productIds.includes("prelude") ? "prelude" : null,
   ]);
 
 export const activeDecks = (
@@ -45,4 +54,7 @@ export const activeDecks = (
     "base",
     isSolo || isCorporateEra ? "corporateEra" : null,
     isVenus ? "venus" : null,
+    // Prelude is always active, there's no variants which takes out the 5 corps
+    // or the 7 project cards, at least not officially
+    "prelude",
   ]);

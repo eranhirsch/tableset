@@ -10,8 +10,14 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import { useMemo } from "react";
-import { activeDecks, availableDecksForProducts, Decks } from "../utils/Decks";
+import {
+  activeDecks,
+  availableDecksForProducts,
+  DeckId,
+  Decks,
+} from "../utils/Decks";
 import corporateEraVariant from "./corporateEraVariant";
+import preludeCorpsVariant from "./preludeCorpsVariant";
 import productsMetaStep, {
   TerraformingMarsProductId,
 } from "./productsMetaStep";
@@ -26,34 +32,57 @@ export default createDerivedGameStep({
     corporateEraVariant,
     venusVariant,
     venusCorpsVariant,
+    preludeCorpsVariant,
   ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, productIds, isCorporateEra, isVenus, isVenusCorps],
+  dependencies: [
+    playerIds,
+    productIds,
+    isCorporateEra,
+    isVenus,
+    isVenusCorps,
+    isPreludeCorps,
+  ],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly TerraformingMarsProductId[],
+  boolean,
   boolean,
   boolean,
   boolean
 >): JSX.Element {
   const isSolo = playerIds!.length === 1;
 
+  const available = useMemo(
+    () => availableDecksForProducts(productIds!),
+    [productIds]
+  );
+
   const decksInUse = useMemo(
-    () => activeDecks(playerIds!.length === 1, isCorporateEra!, isVenus!),
-    [isCorporateEra, isVenus, playerIds]
+    () =>
+      Vec.intersect(
+        available,
+        activeDecks(playerIds!.length === 1, isCorporateEra!, isVenus!)
+      ),
+    [available, isCorporateEra, isVenus, playerIds]
   );
 
   const inactiveDecks = useMemo(
-    () =>
-      Dict.select_keys(
-        Decks,
-        Vec.diff(availableDecksForProducts(productIds!), decksInUse)
-      ),
-    [decksInUse, productIds]
+    () => Dict.select_keys(Decks, Vec.diff(available, decksInUse)),
+    [available, decksInUse]
   );
+
+  // Each expansion enables a variant where that expansion's corporation are
+  // always dealt to players (and not randomly shuffled with the other
+  // corporations)
+  const forceExpansionCorps: DeckId | null = isVenusCorps
+    ? "venus"
+    : isPreludeCorps
+    ? "prelude"
+    : null;
 
   return (
     <HeaderAndSteps>
@@ -115,28 +144,28 @@ function InstanceDerivedComponent({
           )}
         </BlockWithFootnotes>
       )}
-      {isVenusCorps && (
+      {forceExpansionCorps != null && (
         <BlockWithFootnotes
           footnote={
             <>
-              These are marked with a {Decks.venus.icon} icon in the lower left
-              edge.
+              These are marked with a {Decks[forceExpansionCorps].icon} icon in
+              the lower left edge.
             </>
           }
         >
           {(Footnote) => (
             <>
-              Find the <strong>{Decks.venus.corps}</strong>{" "}
+              Find the <strong>{Decks[forceExpansionCorps].corps}</strong>{" "}
               <ChosenElement extraInfo="corporations">
-                {Decks.venus.name}
+                {Decks[forceExpansionCorps].name}
               </ChosenElement>
               <Footnote />.
             </>
           )}
         </BlockWithFootnotes>
       )}
-      {isVenusCorps && <>Shuffle them.</>}
-      {isVenusCorps && (
+      {forceExpansionCorps != null && <>Shuffle them.</>}
+      {forceExpansionCorps != null && (
         <>
           {isSolo ? "Draw" : "Deal"} <strong>1</strong> of these
           {!isSolo && " to each remaining player"}.
@@ -146,7 +175,7 @@ function InstanceDerivedComponent({
         Shuffle the remaining{" "}
         <strong>
           {$(
-            Vec.filter(decksInUse, (deck) => !isVenusCorps || deck !== "venus"),
+            Vec.filter(decksInUse, (deck) => deck !== forceExpansionCorps),
             ($$) => Dict.select_keys(Decks, $$),
             ($$) => Vec.map_with_key($$, (_, { corps }) => corps),
             MathUtils.sum
@@ -155,8 +184,8 @@ function InstanceDerivedComponent({
         <ChosenElement extraInfo="corporations">normal</ChosenElement>.
       </>
       <>
-        {isSolo ? "Draw" : "Deal"} <strong>{isVenusCorps ? 1 : 2}</strong>{" "}
-        corporations
+        {isSolo ? "Draw" : "Deal"}{" "}
+        <strong>{forceExpansionCorps != null ? 1 : 2}</strong> corporations
         {!isSolo && (
           <>
             {" "}
