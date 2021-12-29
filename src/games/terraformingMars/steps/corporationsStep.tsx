@@ -16,6 +16,7 @@ import {
   DeckId,
   Decks,
 } from "../utils/Decks";
+import coloniesCorpsVariant from "./coloniesCorpsVariant";
 import coloniesVariant from "./coloniesVariant";
 import corporateEraVariant from "./corporateEraVariant";
 import preludeCorpsVariant from "./preludeCorpsVariant";
@@ -35,6 +36,7 @@ export default createDerivedGameStep({
     venusCorpsVariant,
     preludeCorpsVariant,
     coloniesVariant,
+    coloniesCorpsVariant,
   ],
   InstanceDerivedComponent,
 });
@@ -48,10 +50,12 @@ function InstanceDerivedComponent({
     isVenusCorps,
     isPreludeCorps,
     isColonies,
+    isColoniesCorps,
   ],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly TerraformingMarsProductId[],
+  boolean,
   boolean,
   boolean,
   boolean,
@@ -91,6 +95,8 @@ function InstanceDerivedComponent({
     ? "venus"
     : isPreludeCorps
     ? "prelude"
+    : isColoniesCorps
+    ? "colonies"
     : null;
 
   return (

@@ -4,6 +4,7 @@ import { createGameStep } from "games/core/steps/createGameStep";
 import { ChosenElement } from "games/core/ux/ChosenElement";
 import { createPlayerColorsStep, createPlayOrderStep } from "games/global";
 import additionalBoardsStep from "./steps/additionalBoardsStep";
+import coloniesCorpsVariant from "./steps/coloniesCorpsVariant";
 import coloniesStep from "./steps/coloniesStep";
 import coloniesVariant from "./steps/coloniesVariant";
 import corporateEraVariant from "./steps/corporateEraVariant";
@@ -85,6 +86,7 @@ export default createGame({
     preludeCorpsVariant, // Variant
     trSoloVariant, // Variant
     coloniesVariant, // Variant
+    coloniesCorpsVariant, // Variant
 
     mapStep,
     additionalBoardsStep,
