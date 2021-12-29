@@ -27,8 +27,12 @@ const ALL_COLONY_IDS = [
   "titan",
   "triton",
 ] as const;
-type ColonyId = typeof ALL_COLONY_IDS[number];
-const SPECIAL_COLONIES: readonly ColonyId[] = ["miranda", "titan", "enceladus"];
+export type ColonyId = typeof ALL_COLONY_IDS[number];
+export const SPECIAL_COLONIES: readonly ColonyId[] = [
+  "miranda",
+  "titan",
+  "enceladus",
+];
 
 export default createItemSelectorStep({
   id: "colonies",
@@ -153,6 +157,6 @@ function count(playersCount: number): number {
   return playersCount + (playersCount < 3 ? 3 : 2);
 }
 
-function labelForId(colonyId: ColonyId): string {
+export function labelForId(colonyId: ColonyId): string {
   return colonyId.toLocaleUpperCase();
 }

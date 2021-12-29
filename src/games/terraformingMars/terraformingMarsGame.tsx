@@ -5,6 +5,7 @@ import { ChosenElement } from "games/core/ux/ChosenElement";
 import { createPlayerColorsStep, createPlayOrderStep } from "games/global";
 import additionalBoardsStep from "./steps/additionalBoardsStep";
 import coloniesCorpsVariant from "./steps/coloniesCorpsVariant";
+import coloniesRules from "./steps/coloniesRules";
 import coloniesStep from "./steps/coloniesStep";
 import coloniesVariant from "./steps/coloniesVariant";
 import corporateEraVariant from "./steps/corporateEraVariant";
@@ -131,6 +132,7 @@ export default createGame({
     draftRules,
     soloRules,
     solarPhaseRules,
+    coloniesRules,
 
     startTheGameStep,
   ],
