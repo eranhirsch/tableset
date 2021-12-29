@@ -68,6 +68,10 @@ function InstanceCards({
 function InstanceVariableComponent({
   value: colonyIds,
 }: VariableStepInstanceComponentProps<readonly ColonyId[]>): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+
+  const isSolo = playerIds.length === 1;
+
   const specialColonies = useMemo(
     () => Vec.intersect(colonyIds, SPECIAL_COLONIES),
     [colonyIds]
@@ -77,13 +81,20 @@ function InstanceVariableComponent({
     <>
       <HeaderAndSteps>
         <>
-          Place colonies{" "}
+          Find the colony tiles{" "}
           <GrammaticalList>
             {Vec.map(colonyIds, (colonyId) => (
               <strong key={colonyId}>{labelForId(colonyId)}</strong>
             ))}
           </GrammaticalList>{" "}
-          next to the main game board.
+        </>
+        {isSolo && (
+          <>
+            Discard <strong>1</strong> of them.
+          </>
+        )}
+        <>
+          Place the {isSolo && "remaining"} tiles next to the main game board.
         </>
         {!Vec.is_empty(specialColonies) && (
           <>
@@ -108,6 +119,7 @@ function InstanceVariableComponent({
 
 function InstanceManualComponent(): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
+  const isSolo = playerIds.length === 1;
   return (
     <>
       <HeaderAndSteps>
@@ -116,7 +128,14 @@ function InstanceManualComponent(): JSX.Element {
           <ChosenElement extraInfo="tiles">Colony</ChosenElement>.
         </>
         <>Draw {count(playerIds.length)} tiles.</>
-        <>Place them next to the main game board.</>
+        {isSolo && (
+          <>
+            Discard <strong>1</strong> of them.
+          </>
+        )}
+        <>
+          Place the {isSolo && "remaining"} tiles next to the main game board.
+        </>
         <>
           <strong>for TITAN, ENCELADUS, and MIRANDA:</strong> place a white cube
           on the <em>moon picture itself</em>.
