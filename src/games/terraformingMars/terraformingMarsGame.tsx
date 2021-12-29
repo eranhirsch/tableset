@@ -25,6 +25,7 @@ import productsMetaStep from "./steps/productsMetaStep";
 import projectDeckStep from "./steps/projectDeckStep";
 import researchPhaseStep from "./steps/researchPhaseStep";
 import resourceCubesStep from "./steps/resourceCubesStep";
+import solarPhaseRules from "./steps/solarPhaseRules";
 import soloCitiesStep from "./steps/soloCitiesStep";
 import soloRules from "./steps/soloRules";
 import startingConditionsStep from "./steps/startingConditionsStep";
@@ -33,7 +34,6 @@ import trSoloVariant from "./steps/trSoloVariant";
 import venusCorpsVariant from "./steps/venusCorpsVariant";
 import venusMilestoneAndAwardStep from "./steps/venusMilestoneAndAwardStep";
 import venusVariant from "./steps/venusVariant";
-import worldGovernmentRules from "./steps/worldGovernmentRules";
 import worldGovernmentVariant from "./steps/worldGovernmentVariant";
 
 export default createGame({
@@ -130,7 +130,7 @@ export default createGame({
 
     draftRules,
     soloRules,
-    worldGovernmentRules,
+    solarPhaseRules,
 
     startTheGameStep,
   ],
