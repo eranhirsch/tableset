@@ -109,7 +109,8 @@ function InstanceDerivedComponent({
           // Copied verbatim from the manual
           <HeaderAndSteps synopsis={<strong>TURMOIL:</strong>}>
             <>
-              <strong>TR revision:</strong> All players lose 1 TR.
+              <strong>TR revision:</strong> {!isSolo && "All players "}lose 1
+              TR.
             </>
             <>
               <strong>Global Event:</strong> Perform the{" "}
@@ -124,7 +125,8 @@ function InstanceDerivedComponent({
                 <strong>Change Policy tile.</strong>
               </>
               <>
-                Resolve the <strong>Ruling Bonus</strong> (affects all players).
+                Resolve the <strong>Ruling Bonus</strong>
+                {!isSolo && " (affects all players)"}.
               </>
               <>
                 <strong>Return</strong> the former Chairman and all non-leader
@@ -139,8 +141,8 @@ function InstanceDerivedComponent({
                 clockwise in case of a tie).
               </>
               <>
-                <strong>Fill the lobby</strong> from the reserve so that each
-                player has 1 delegate there.
+                <strong>Fill the lobby</strong> from the reserve so that{" "}
+                {isSolo ? "you have" : "each player has"} 1 delegate there.
               </>
             </HeaderAndSteps>
             <HeaderAndSteps synopsis={<strong>Changing Times:</strong>}>
