@@ -10,6 +10,7 @@ import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import coloniesVariant from "./coloniesVariant";
 import corporateEraVariant from "./corporateEraVariant";
+import turmoilVariant from "./turmoilVariant";
 
 const PLAYER_BOARD_TRACKS = [
   "MegaCredits",
@@ -24,15 +25,21 @@ const STARTING_TM = 20;
 const SOLO_STARTING_TM = 14;
 
 export default createDerivedGameStep({
-  id: "playerBoards",
-  dependencies: [playersMetaStep, corporateEraVariant, coloniesVariant],
+  id: "playerComponents",
+  dependencies: [
+    playersMetaStep,
+    corporateEraVariant,
+    coloniesVariant,
+    turmoilVariant,
+  ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, isCorporateEra, isColonies],
+  dependencies: [playerIds, isCorporateEra, isColonies, isTurmoil],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
+  boolean,
   boolean,
   boolean
 >): JSX.Element {
@@ -42,7 +49,7 @@ function InstanceDerivedComponent({
       synopsis={
         <>
           {isSolo ? "Prepare your" : "Each player prepares their"} personal{" "}
-          <ChosenElement>player board{!isSolo && "s"}</ChosenElement>:
+          <ChosenElement>player components{!isSolo && "s"}</ChosenElement>:
         </>
       }
     >
@@ -77,9 +84,18 @@ function InstanceDerivedComponent({
       </>
       {isColonies && (
         <>
-          Take <strong>1</strong> <ChosenElement>Trade Fleet</ChosenElement> and
-          place it on the <em>Trade Fleets tile</em>, with their player marker
-          inside it.
+          Colonies: Take <strong>1</strong>{" "}
+          <ChosenElement>Trade Fleet</ChosenElement> and place it on the{" "}
+          <em>Trade Fleets tile</em>, with their player marker inside it.
+        </>
+      )}
+      {isTurmoil && (
+        <>
+          Turmoil: Take <strong>7</strong>{" "}
+          <ChosenElement extraInfo="markers">delegate</ChosenElement> of their
+          color, placing <strong>1</strong> in the <em>lobby</em> of the{" "}
+          <em>Terraforming Committee</em> board, and the rest in the{" "}
+          <em>Delegates Reserve</em>.
         </>
       )}
     </HeaderAndSteps>

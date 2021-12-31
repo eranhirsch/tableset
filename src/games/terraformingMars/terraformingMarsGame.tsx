@@ -19,7 +19,7 @@ import mapStep from "./steps/mapStep";
 import mapTilesStep from "./steps/mapTilesStep";
 import markersStep from "./steps/markersStep";
 import milestonesAndAwardsStep from "./steps/milestonesAndAwardsStep";
-import playerBoardsStep from "./steps/playerBoardsStep";
+import playerComponentsStep from "./steps/playerComponentsStep";
 import playPreludesStep from "./steps/playPreludesStep";
 import preludeCorpsVariant from "./steps/preludeCorpsVariant";
 import preludeVariant from "./steps/preludeVariant";
@@ -33,6 +33,7 @@ import soloRules from "./steps/soloRules";
 import startingConditionsStep from "./steps/startingConditionsStep";
 import startTheGameStep from "./steps/startTheGameStep";
 import trSoloVariant from "./steps/trSoloVariant";
+import turmoilStep from "./steps/turmoilStep";
 import turmoilVariant from "./steps/turmoilVariant";
 import venusCorpsVariant from "./steps/venusCorpsVariant";
 import venusVariant from "./steps/venusVariant";
@@ -93,6 +94,7 @@ export default createGame({
     mapStep,
     additionalBoardsStep,
     coloniesStep,
+    turmoilStep,
     createGameStep({
       id: "oceans",
       InstanceManualComponent: () => (
@@ -123,7 +125,7 @@ export default createGame({
       productsMetaStep,
       availableColors: () => ["black", "blue", "green", "red", "yellow"],
     }),
-    playerBoardsStep,
+    playerComponentsStep,
 
     // "Step 5" (base game manual)
     corporationsStep,

@@ -11,6 +11,7 @@ import coloniesVariant from "./coloniesVariant";
 import preludeVariant from "./preludeVariant";
 import { NUM_GENS } from "./soloRules";
 import trSoloVariant from "./trSoloVariant";
+import turmoilVariant from "./turmoilVariant";
 import venusVariant from "./venusVariant";
 import worldGovernmentVariant from "./worldGovernmentVariant";
 
@@ -24,16 +25,35 @@ export default createDerivedGameStep({
     preludeVariant,
     trSoloVariant,
     coloniesVariant,
+    turmoilVariant,
   ],
-  skip: ([playerIds, isVenus, isWg, _isPrelude, _isSoloTr, isColonies]) =>
-    !(isColonies || (playerIds!.length === 1 ? isVenus : isWg)),
+  skip: ([
+    playerIds,
+    isVenus,
+    isWg,
+    _isPrelude,
+    _isSoloTr,
+    isColonies,
+    isTurmoil,
+  ]) =>
+    !(isWg || (isVenus && playerIds!.length === 1) || isColonies || isTurmoil),
+
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, _isVenus, isWg, isPrelude, isSoloTr, isColonies],
+  dependencies: [
+    playerIds,
+    _isVenus,
+    isWg,
+    isPrelude,
+    isSoloTr,
+    isColonies,
+    isTurmoil,
+  ],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
+  boolean,
   boolean,
   boolean,
   boolean,
@@ -84,6 +104,62 @@ function InstanceDerivedComponent({
             Colony Tiles to the Trade Fleets Tile. Move the white marker one
             step up the Colony track on each Colony Tile.
           </>
+        )}
+        {isTurmoil && (
+          // Copied verbatim from the manual
+          <HeaderAndSteps synopsis={<strong>TURMOIL:</strong>}>
+            <>
+              <strong>TR revision:</strong> All players lose 1 TR.
+            </>
+            <>
+              <strong>Global Event:</strong> Perform the{" "}
+              <em>
+                <strong>Current</strong> Global Event
+              </em>
+              , taking <em>influence</em> into account.
+            </>
+            <HeaderAndSteps synopsis={<strong>New Government:</strong>}>
+              <>
+                The Dominant party now becomes ruling.{" "}
+                <strong>Change Policy tile.</strong>
+              </>
+              <>
+                Resolve the <strong>Ruling Bonus</strong> (affects all players).
+              </>
+              <>
+                <strong>Return</strong> the former Chairman and all non-leader
+                delegates from Dominant party to reserve.
+              </>
+              <>
+                Party Leader from the Dominant party becomes{" "}
+                <strong>new Chairman</strong>, earning 1 TR.
+              </>
+              <>
+                <strong>Dominance marker</strong> goes to new Dominant party (or
+                clockwise in case of a tie).
+              </>
+              <>
+                <strong>Fill the lobby</strong> from the reserve so that each
+                player has 1 delegate there.
+              </>
+            </HeaderAndSteps>
+            <HeaderAndSteps synopsis={<strong>Changing Times:</strong>}>
+              <>
+                Place the Coming Global Event on top of the Current Global
+                Event. Add the <strong>neutral delegate</strong> indicated at
+                the mid-right on the card.
+              </>
+              <>
+                <strong>Move</strong> the Distance Global Event into the Coming
+                Global Event space.
+              </>
+              <>
+                Turn the top card of the Global Event deck face up, add the
+                top-left <strong>neutral delegate</strong>, and read the{" "}
+                <strong>flavor text</strong>.
+              </>
+            </HeaderAndSteps>
+          </HeaderAndSteps>
         )}
       </HeaderAndSteps>
       <RulesSection>

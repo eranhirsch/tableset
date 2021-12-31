@@ -16,6 +16,7 @@ interface Deck {
   corps: number;
   projects: number;
   preludes?: number;
+  events?: number;
   icon: string;
 }
 
@@ -50,6 +51,7 @@ export const Decks: Readonly<Required<Record<DeckId, Deck>>> = {
     name: "Turmoil",
     projects: 16,
     corps: 5,
+    events: 31,
     icon: "orange",
   },
 };
