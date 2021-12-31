@@ -205,7 +205,8 @@ function InstanceDerivedComponent({
       </>
       <>
         {isSolo ? "Draw" : "Deal"}{" "}
-        <strong>{forceExpansionCorps != null ? 1 : 2}</strong> corporations
+        <strong>{forceExpansionCorps != null ? 1 : 2}</strong> corporation
+        {(!isSolo || forceExpansionCorps == null) && "s"}
         {!isSolo && (
           <>
             {" "}

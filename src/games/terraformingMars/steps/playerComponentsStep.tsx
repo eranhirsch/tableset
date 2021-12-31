@@ -57,8 +57,10 @@ function InstanceDerivedComponent({
         Take <strong>1</strong> <ChosenElement>player board</ChosenElement>.
       </>
       <>
-        Take <strong>40</strong> transparent plastic{" "}
-        <ChosenElement>player marker</ChosenElement> cubes of their color.
+        Take {isSolo && "the "}
+        <strong>40</strong> transparent plastic{" "}
+        <ChosenElement>player marker</ChosenElement> cubes of{" "}
+        {isSolo ? "your" : "their"} color.
       </>
       <BlockWithFootnotes
         footnote={<GrammaticalList>{PLAYER_BOARD_TRACKS}</GrammaticalList>}
@@ -86,16 +88,18 @@ function InstanceDerivedComponent({
         <>
           Colonies: Take <strong>1</strong>{" "}
           <ChosenElement>Trade Fleet</ChosenElement> and place it on the{" "}
-          <em>Trade Fleets tile</em>, with their player marker inside it.
+          <em>Trade Fleets tile</em>, with {isSolo ? "a" : "their"} player
+          marker inside it.
         </>
       )}
       {isTurmoil && (
         <>
-          Turmoil: Take <strong>7</strong>{" "}
-          <ChosenElement extraInfo="markers">delegate</ChosenElement> of their
-          color, placing <strong>1</strong> in the <em>lobby</em> of the{" "}
-          <em>Terraforming Committee</em> board, and the rest in the{" "}
-          <em>Delegates Reserve</em>.
+          Turmoil: Take {isSolo && "the "}
+          <strong>7</strong>{" "}
+          <ChosenElement extraInfo="markers">delegate</ChosenElement> of{" "}
+          {isSolo ? "your" : "their"} color, placing <strong>1</strong> in the{" "}
+          <em>lobby</em> of the <em>Terraforming Committee</em> board, and the
+          rest in the <em>Delegates Reserve</em>.
         </>
       )}
     </HeaderAndSteps>
