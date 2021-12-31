@@ -5,7 +5,6 @@ import {
   DerivedStepInstanceComponentProps
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
-import { ChosenElement } from "games/core/ux/ChosenElement";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
@@ -16,6 +15,7 @@ import corporateEraVariant from "./corporateEraVariant";
 import productsMetaStep, {
   TerraformingMarsProductId,
 } from "./productsMetaStep";
+import turmoilVariant from "./turmoilVariant";
 import venusVariant from "./venusVariant";
 
 export default createDerivedGameStep({
@@ -26,15 +26,24 @@ export default createDerivedGameStep({
     corporateEraVariant,
     venusVariant,
     coloniesVariant,
+    turmoilVariant,
   ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, productIds, isCorporateEra, isVenus, isColonies],
+  dependencies: [
+    playerIds,
+    productIds,
+    isCorporateEra,
+    isVenus,
+    isColonies,
+    isTurmoil,
+  ],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly TerraformingMarsProductId[],
+  boolean,
   boolean,
   boolean,
   boolean
@@ -52,10 +61,11 @@ function InstanceDerivedComponent({
           playerIds!.length === 1,
           isCorporateEra!,
           isVenus!,
-          isColonies!
+          isColonies!,
+          isTurmoil!
         )
       ),
-    [available, isColonies, isCorporateEra, isVenus, playerIds]
+    [available, isColonies, isCorporateEra, isTurmoil, isVenus, playerIds]
   );
 
   const inactiveDecks = useMemo(
@@ -80,7 +90,9 @@ function InstanceDerivedComponent({
                   (_, { name, projects }, index) => (
                     <>
                       the <strong>{projects}</strong>{" "}
-                      <ChosenElement extraInfo="projects">{name}</ChosenElement>
+                      <em>
+                        <strong>{name}</strong> projects
+                      </em>
                       <Footnote index={index + 1} />
                     </>
                   )

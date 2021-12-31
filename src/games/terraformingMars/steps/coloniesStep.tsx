@@ -113,8 +113,15 @@ function InstanceVariableComponent({
           </>
         )}
         <>
-          <strong>for the rest:</strong> place a white cube on the highlighted{" "}
-          <em>second step</em> of each Colony Tile track.
+          {!Vec.is_empty(specialColonies) ? (
+            <>
+              <strong>for the rest:</strong> place
+            </>
+          ) : (
+            "Place"
+          )}{" "}
+          a white cube on the highlighted <em>second step</em> of each Colony
+          Tile track.
         </>
       </HeaderAndSteps>
     </>

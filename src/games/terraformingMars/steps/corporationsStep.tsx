@@ -23,6 +23,7 @@ import preludeCorpsVariant from "./preludeCorpsVariant";
 import productsMetaStep, {
   TerraformingMarsProductId,
 } from "./productsMetaStep";
+import turmoilVariant from "./turmoilVariant";
 import venusCorpsVariant from "./venusCorpsVariant";
 import venusVariant from "./venusVariant";
 
@@ -37,6 +38,7 @@ export default createDerivedGameStep({
     preludeCorpsVariant,
     coloniesVariant,
     coloniesCorpsVariant,
+    turmoilVariant,
   ],
   InstanceDerivedComponent,
 });
@@ -51,10 +53,12 @@ function InstanceDerivedComponent({
     isPreludeCorps,
     isColonies,
     isColoniesCorps,
+    isTurmoil,
   ],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
   readonly TerraformingMarsProductId[],
+  boolean,
   boolean,
   boolean,
   boolean,
@@ -77,10 +81,11 @@ function InstanceDerivedComponent({
           playerIds!.length === 1,
           isCorporateEra!,
           isVenus!,
-          isColonies!
+          isColonies!,
+          isTurmoil!
         )
       ),
-    [available, isColonies, isCorporateEra, isVenus, playerIds]
+    [available, isColonies, isCorporateEra, isTurmoil, isVenus, playerIds]
   );
 
   const inactiveDecks = useMemo(

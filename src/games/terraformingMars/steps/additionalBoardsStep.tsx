@@ -4,28 +4,40 @@ import {
 } from "games/core/steps/createDerivedGameStep";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import coloniesVariant from "./coloniesVariant";
+import turmoilVariant from "./turmoilVariant";
 import venusVariant from "./venusVariant";
 
 export default createDerivedGameStep({
   id: "additionalBoards",
-  dependencies: [venusVariant, coloniesVariant],
-  skip: ([isVenus, isColonies]) => !isVenus && !isColonies,
+  dependencies: [venusVariant, coloniesVariant, turmoilVariant],
+  skip: ([isVenus, isColonies, isTurmoil]) =>
+    !isVenus && !isColonies && !isTurmoil,
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [isVenus, isColonies],
-}: DerivedStepInstanceComponentProps<boolean, boolean>): JSX.Element {
+  dependencies: [isVenus, isColonies, isTurmoil],
+}: DerivedStepInstanceComponentProps<boolean, boolean, boolean>): JSX.Element {
   return (
     <HeaderAndSteps synopsis="Place the following boards next to the game board:">
       {isVenus && (
         <>
-          <strong>Venus</strong> board.
+          Venus Next: <strong>Venus</strong> board.
         </>
       )}
       {isColonies && (
         <>
-          <strong>Trade Fleets</strong> tile.
+          Colonies: <strong>Trade Fleets</strong> tile.
+        </>
+      )}
+      {isTurmoil && (
+        <>
+          Turmoil: <strong>Terraforming Committee</strong> board.
+        </>
+      )}
+      {isTurmoil && (
+        <>
+          Turmoil: <strong>Global Event</strong> board.
         </>
       )}
     </HeaderAndSteps>

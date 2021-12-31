@@ -18,6 +18,7 @@ import initialProjectsStep from "./steps/initialProjectsStep";
 import mapStep from "./steps/mapStep";
 import mapTilesStep from "./steps/mapTilesStep";
 import markersStep from "./steps/markersStep";
+import milestonesAndAwardsStep from "./steps/milestonesAndAwardsStep";
 import playerBoardsStep from "./steps/playerBoardsStep";
 import playPreludesStep from "./steps/playPreludesStep";
 import preludeCorpsVariant from "./steps/preludeCorpsVariant";
@@ -32,8 +33,8 @@ import soloRules from "./steps/soloRules";
 import startingConditionsStep from "./steps/startingConditionsStep";
 import startTheGameStep from "./steps/startTheGameStep";
 import trSoloVariant from "./steps/trSoloVariant";
+import turmoilVariant from "./steps/turmoilVariant";
 import venusCorpsVariant from "./steps/venusCorpsVariant";
-import venusMilestoneAndAwardStep from "./steps/venusMilestoneAndAwardStep";
 import venusVariant from "./steps/venusVariant";
 import worldGovernmentVariant from "./steps/worldGovernmentVariant";
 
@@ -67,13 +68,11 @@ export default createGame({
       name: "Colonies",
       bggId: 255681,
       year: 2018,
-      isNotImplemented: true,
     },
     turmoil: {
       name: "Turmoil",
       bggId: 273473,
       year: 2019,
-      isNotImplemented: true,
     },
   },
 
@@ -88,7 +87,9 @@ export default createGame({
     trSoloVariant, // Variant
     coloniesVariant, // Variant
     coloniesCorpsVariant, // Variant
+    turmoilVariant, // Variant
 
+    // "Step 1" (base game manual)
     mapStep,
     additionalBoardsStep,
     coloniesStep,
@@ -104,28 +105,35 @@ export default createGame({
       ),
     }),
     markersStep,
-    venusMilestoneAndAwardStep,
+    milestonesAndAwardsStep,
 
+    // "Step 2" (base game manual)
     resourceCubesStep,
     mapTilesStep, // Templatable
 
+    // "Step 3" (base game manual)
     projectDeckStep,
 
+    soloCitiesStep,
+
+    // "Step 4" (base game manual)
     createPlayOrderStep(), // Templatable
     firstPlayerStep, // Templatable
-
     createPlayerColorsStep({
       productsMetaStep,
       availableColors: () => ["black", "blue", "green", "red", "yellow"],
     }),
     playerBoardsStep,
 
-    soloCitiesStep,
-
+    // "Step 5" (base game manual)
     corporationsStep,
     initialPreludesStep,
     initialProjectsStep,
+
+    // "Step 6" (base game manual)
     researchPhaseStep,
+
+    // "Step 7" (base game manual)
     startingConditionsStep,
     playPreludesStep,
 
@@ -134,6 +142,7 @@ export default createGame({
     solarPhaseRules,
     coloniesRules,
 
+    // "Step 8" (base game manual)
     startTheGameStep,
   ],
 });

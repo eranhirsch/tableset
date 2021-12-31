@@ -63,13 +63,15 @@ export const availableDecksForProducts = (
     productIds.includes("venus") ? "venus" : null,
     productIds.includes("prelude") ? "prelude" : null,
     productIds.includes("colonies") ? "colonies" : null,
+    productIds.includes("turmoil") ? "turmoil" : null,
   ]);
 
 export const activeDecks = (
   isSolo: boolean,
   isCorporateEra: boolean,
   isVenus: boolean,
-  isColonies: boolean
+  isColonies: boolean,
+  isTurmoil: boolean
 ): readonly DeckId[] =>
   Vec.filter_nulls([
     "base",
@@ -79,4 +81,5 @@ export const activeDecks = (
     // or the 7 project cards, at least not officially
     "prelude",
     isColonies ? "colonies" : null,
+    isTurmoil ? "turmoil" : null,
   ]);

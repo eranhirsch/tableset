@@ -14,15 +14,16 @@ import { useState } from "react";
 import productsMetaStep, {
   TerraformingMarsProductId,
 } from "./productsMetaStep";
+import turmoilVariant from "./turmoilVariant";
 
 const ALL_MAP_IDS = ["tharsis", "hellas", "elysium"] as const;
-type MapId = typeof ALL_MAP_IDS[number];
+export type MapId = typeof ALL_MAP_IDS[number];
 
 interface Map {
   name: string;
   color: ColorId;
 }
-const MAPS: Readonly<Required<Record<MapId, Map>>> = {
+export const MAPS: Readonly<Required<Record<MapId, Map>>> = {
   elysium: { name: "Elysium", color: "green" },
   hellas: { name: "Hellas", color: "blue" },
   tharsis: { name: "Tharsis", color: "orange" },
@@ -159,6 +160,7 @@ function InstanceManualComponent(): JSX.Element {
 }
 
 function TharsisRules(): JSX.Element {
+  const isTurmoil = useRequiredInstanceValue(turmoilVariant);
   return (
     <>
       <Typography component="header" variant="h6">
@@ -166,8 +168,16 @@ function TharsisRules(): JSX.Element {
       </Typography>
       <ul>
         <li>
-          <strong>Terraformer</strong>: Having a terraform rating of at least
-          35.
+          <strong>Terraformer</strong>: Having a terraform rating of at least{" "}
+          {isTurmoil ? (
+            <>
+              26 (notice that the goal is lower when playing with{" "}
+              <em>Turmoil</em>)
+            </>
+          ) : (
+            35
+          )}
+          .
         </li>
         <li>
           <strong>Mayor</strong>: Owning at least 3 city tiles.
