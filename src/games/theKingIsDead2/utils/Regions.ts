@@ -1,12 +1,13 @@
-const ALL_REGION_IDS = [
+export const ALL_REGION_IDS = [
+  // Sorted by location on the map
+  "moray",
+  "strathclyde",
+  "lancaster",
+  "northumbria",
+  "gwynedd",
+  "warwick",
   "devon",
   "essex",
-  "gwynedd",
-  "lancaster",
-  "moray",
-  "northumbria",
-  "strathclyde",
-  "warwick",
 ] as const;
 
 export type RegionId = typeof ALL_REGION_IDS[number];

@@ -13,13 +13,15 @@ import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { fullPlayOrder, playersMetaStep } from "games/global";
 import React, { useMemo } from "react";
-import { ALL_FACTION_IDS, FactionId, Factions } from "../utils/Factions";
-import { NUM_FOLLOWERS_REMOVED_2P } from "./bagStep";
+import {
+  allFactionCubes,
+  ALL_FACTION_IDS,
+  FactionId,
+  Factions,
+} from "../utils/Factions";
 import firstPlayerStep from "./firstPlayerStep";
 import playOrderStep from "./playOrderStep";
 
-// 18 initial minus 2 per each home region
-const NUM_FOLLOWERS = 16;
 const NUM_FOLLOWERS_PER_PLAYER = 2;
 
 export default createRandomGameStep({
@@ -28,11 +30,18 @@ export default createRandomGameStep({
   isTemplatable: () => true,
   resolve: (_, playerIds) =>
     $(
-      NUM_FOLLOWERS - (playerIds!.length === 2 ? NUM_FOLLOWERS_REMOVED_2P : 0),
-      ($$) => Vec.map(ALL_FACTION_IDS, (factionId) => Vec.fill($$, factionId)),
-      Vec.flatten,
+      allFactionCubes(playerIds!.length),
+      // Take out a random sample of cubes
       ($$) => Random.sample($$, playerIds!.length * NUM_FOLLOWERS_PER_PLAYER),
-      Random.shuffle
+      // Shuffle them (so that all players can get each one)
+      Random.shuffle,
+      // Chunk them back per player so we can sort them (to normalize the
+      // result)
+      ($$) => Vec.chunk($$, NUM_FOLLOWERS_PER_PLAYER),
+      ($$) => Vec.map($$, (factions) => Vec.sort(factions)),
+      // Then flatten the results because we don't need the extra layer for
+      // serialization
+      Vec.flatten
     ),
   ...NoConfigPanel,
   InstanceVariableComponent,
@@ -71,18 +80,21 @@ function InstanceVariableComponent({
 
   return (
     <>
-      <Typography variant="body1">
-        Give each player the following{" "}
-        <strong>{NUM_FOLLOWERS_PER_PLAYER}</strong> follower to put in front of
-        them, this is their court:
+      <Typography variant="body1" textAlign="justify">
+        Give each player{" "}
+        {(playOrder == null || firstPlayerId == null) && "in play order "}the
+        following <strong>{NUM_FOLLOWERS_PER_PLAYER}</strong> follower to put in
+        front of them, this is their court:
       </Typography>
-      <Stack>
+      <Stack marginTop={2} marginX={2} spacing={1}>
         {Vec.map(court, ([playerId, factions], index) => (
           <span key={`court_${index}`}>
             {playerId != null ? (
               <PlayerAvatar playerId={playerId} inline />
             ) : (
-              <Avatar>{`${index + 1}${Str.number_suffix(index + 1)}`}</Avatar>
+              <Avatar component="span" sx={{ display: "inline-flex" }}>{`${
+                index + 1
+              }${Str.number_suffix(index + 1)}`}</Avatar>
             )}
             :{" "}
             <GrammaticalList>

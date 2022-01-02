@@ -5,17 +5,18 @@ import {
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { playersMetaStep } from "games/global";
-
-export const NUM_FOLLOWERS_REMOVED_2P = 2;
+import { NUM_FOLLOWERS_REMOVED_2P } from "../utils/Factions";
+import courtStep from "./courtStep";
 
 export default createDerivedGameStep({
   id: "bag",
-  dependencies: [playersMetaStep],
+  dependencies: [playersMetaStep, courtStep],
+  skip: ([_playerIds, courtFactionIds]) => courtFactionIds == null,
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds],
+  dependencies: [playerIds, _courtFactionIds],
 }: DerivedStepInstanceComponentProps<readonly PlayerId[]>): JSX.Element {
   return (
     <Typography variant="body1">
