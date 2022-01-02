@@ -5,6 +5,7 @@ import {
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -60,20 +61,9 @@ function InstanceVariableComponent({
 
   const court = useMemo(
     () =>
-      $(
-        firstPlayerId == null
-          ? Vec.fill(playerIds.length, null)
-          : playOrder == null
-          ? Vec.concat(
-              [firstPlayerId],
-              playerIds.length === 2
-                ? C.firstx(
-                    Vec.filter(playerIds, (pid) => pid !== firstPlayerId)
-                  )
-                : Vec.fill(playerIds.length - 1, null)
-            )
-          : fullPlayOrder(playerIds, playOrder, firstPlayerId),
-        ($$) => Vec.zip($$, Vec.chunk(factionIds, NUM_FOLLOWERS_PER_PLAYER))
+      Vec.zip(
+        partialPlayOrder(playerIds, firstPlayerId, playOrder),
+        Vec.chunk(factionIds, NUM_FOLLOWERS_PER_PLAYER)
       ),
     [factionIds, firstPlayerId, playOrder, playerIds]
   );
@@ -115,3 +105,19 @@ function InstanceVariableComponent({
     </>
   );
 }
+
+const partialPlayOrder = (
+  playerIds: readonly PlayerId[],
+  firstPlayerId: PlayerId | null,
+  playOrder: readonly PlayerId[] | null
+): readonly (PlayerId | null)[] =>
+  firstPlayerId == null
+    ? Vec.fill(playerIds.length, null)
+    : playOrder == null
+    ? Vec.concat(
+        [firstPlayerId],
+        playerIds.length === 2
+          ? C.firstx(Vec.filter(playerIds, (pid) => pid !== firstPlayerId))
+          : Vec.fill(playerIds.length - 1, null)
+      )
+    : fullPlayOrder(playerIds, playOrder, firstPlayerId);
