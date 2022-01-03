@@ -1,57 +1,63 @@
-import { MathUtils, Random, tuple, Vec } from "common";
+import { $, MathUtils, Random, tuple, Vec } from "common";
 import { PlayerId } from "features/players/playersSlice";
-import { allFactionCubes, FactionId } from "./Factions";
+import { allFactionCubes, ALL_FACTION_IDS, FactionId } from "./Factions";
 
 const NUM_PER_PLAYER = 2;
+
+const COMBOS_ARR = MathUtils.combinations_lazy_array_with_duplicates(
+  Vec.flatten(Vec.fill(2, ALL_FACTION_IDS)),
+  NUM_PER_PLAYER
+);
 
 export const Courts = {
   NUM_PER_PLAYER,
 
   randomIndex: (playerIds: readonly PlayerId[]): number =>
-    playerIds!
-      .reduce(
-        ([digits, remainingCubes], _playerId) => {
-          const court = Random.sample(remainingCubes, NUM_PER_PLAYER);
-          const courtCombos = MathUtils.combinations_lazy_array_with_duplicates(
-            remainingCubes,
-            NUM_PER_PLAYER
-          );
-          return tuple(
-            Vec.concat(digits, [
-              tuple(courtCombos.length, courtCombos.indexOf(court)),
-            ]),
-            Vec.diff(remainingCubes, court)
-          );
-        },
-        [[], allFactionCubes(playerIds!.length)] as readonly [
-          digits: readonly (readonly [radix: number, digit: number])[],
-          cubes: readonly FactionId[]
-        ]
-      )[0]
-      .reduceRight((index, [radix, digit]) => index * radix + digit, 0),
+    $(
+      allFactionCubes(playerIds!.length),
+      ($$) =>
+        playerIds!.reduce(
+          ([digits, remainingCubes], _playerId) =>
+            $(
+              remainingCubes,
+              ($$) => Random.sample($$, NUM_PER_PLAYER),
+              ($$) =>
+                tuple(
+                  Vec.concat(digits, COMBOS_ARR.indexOf($$)),
+                  Vec.diff(remainingCubes, $$)
+                )
+            ),
+          [[], $$] as readonly [
+            digits: readonly number[],
+            cubes: readonly FactionId[]
+          ]
+        ),
+      ($$) => $$[0],
+      ($$) =>
+        $$.reduceRight((index, digit) => index * COMBOS_ARR.length + digit, 0)
+    ),
 
   decode: (
     index: number,
     playerIds: readonly PlayerId[]
   ): readonly (readonly FactionId[])[] =>
-    playerIds.reduce(
-      ([courts, remainingIndx, cubes], _playerId) => {
-        const courtCombos = MathUtils.combinations_lazy_array_with_duplicates(
-          cubes,
-          NUM_PER_PLAYER
-        );
-        const digit = remainingIndx % courtCombos.length;
-        const court = courtCombos.at(digit)!;
-        return tuple(
-          Vec.concat(courts, [court]),
-          Math.floor(remainingIndx / courtCombos.length),
-          Vec.diff(cubes, court)
-        );
-      },
-      [[], index, allFactionCubes(playerIds.length)] as readonly [
-        courts: readonly (readonly FactionId[])[],
-        index: number,
-        cubes: readonly FactionId[]
-      ]
-    )[0],
+    $(
+      index,
+      ($$) =>
+        playerIds.reduce(
+          ([courts, remainingIndx], _playerId) =>
+            $(
+              remainingIndx % COMBOS_ARR.length,
+              ($$) => COMBOS_ARR.at($$),
+              $.nullthrows(`Index ${index} is out of range`),
+              ($$) => Vec.concat(courts, [$$]),
+              ($$) => tuple($$, Math.floor(remainingIndx / COMBOS_ARR.length))
+            ),
+          [[], $$] as readonly [
+            courts: readonly (readonly FactionId[])[],
+            index: number
+          ]
+        ),
+      ($$) => $$[0]
+    ),
 } as const;

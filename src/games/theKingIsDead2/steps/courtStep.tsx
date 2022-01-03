@@ -13,6 +13,7 @@ import {
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
+import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { fullPlayOrder, playersMetaStep } from "games/global";
 import React, { useMemo } from "react";
 import { Courts } from "../utils/Courts";
@@ -27,7 +28,8 @@ export default createRandomGameStep({
   resolve: (_, playerIds) => Courts.randomIndex(playerIds!),
   ...NoConfigPanel,
   InstanceVariableComponent,
-  instanceAvroType: "long",
+  InstanceCards: (props) => <IndexHashInstanceCard title="court" {...props} />,
+  instanceAvroType: "int",
 });
 
 function InstanceVariableComponent({
@@ -41,8 +43,6 @@ function InstanceVariableComponent({
     () => Courts.decode(courtsIndex, playerIds),
     [courtsIndex, playerIds]
   );
-
-  console.log(courts);
 
   const playerCourts = useMemo(
     () =>

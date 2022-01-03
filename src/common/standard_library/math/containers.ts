@@ -46,7 +46,7 @@ function min_by<T>(
 }
 
 const sum = (arr: readonly number[]): number =>
-  arr.reduce((sum, num) => sum + num);
+  arr.reduce((sum, num) => sum + num, 0);
 
 function product(arr: readonly number[]): number;
 function product(arr: readonly bigint[]): bigint;
