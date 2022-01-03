@@ -1,11 +1,11 @@
 import { $, Dict, MathUtils, nullthrows, Random, tuple, Vec } from "common";
 import { PlayerId } from "features/players/playersSlice";
-import { NUM_CUBES_PER_HOME_REGION } from "../steps/homeRegionStep";
 import { Courts } from "./Courts";
 import { allFactionCubes, FactionId } from "./Factions";
 import { ALL_REGION_IDS, RegionId } from "./Regions";
 
 const NUM_PER_REGION = 4;
+const NUM_PER_HOME_REGION = 2;
 
 const HOME_REGIONS: Readonly<Partial<Record<RegionId, FactionId>>> = {
   moray: "scottish",
@@ -15,10 +15,12 @@ const HOME_REGIONS: Readonly<Partial<Record<RegionId, FactionId>>> = {
 
 const NUM_FOLLOWER_CUBES =
   ALL_REGION_IDS.length * NUM_PER_REGION -
-  Dict.size(HOME_REGIONS) * NUM_CUBES_PER_HOME_REGION;
+  Dict.size(HOME_REGIONS) * NUM_PER_HOME_REGION;
 
 export const Followers = {
   NUM_PER_REGION,
+  NUM_PER_HOME_REGION,
+
   HOME_REGIONS,
 
   randomIndex(playerIds: readonly PlayerId[], courtIndex: number): number {
@@ -42,7 +44,7 @@ export const Followers = {
         ([followers, remainingCubes], regionId) =>
           $(
             NUM_PER_REGION -
-              (HOME_REGIONS[regionId] != null ? NUM_CUBES_PER_HOME_REGION : 0),
+              (HOME_REGIONS[regionId] != null ? NUM_PER_HOME_REGION : 0),
             ($$) => Random.sample(remainingCubes, $$),
             ($$) =>
               tuple(Vec.concat(followers, [$$]), Vec.diff(remainingCubes, $$))

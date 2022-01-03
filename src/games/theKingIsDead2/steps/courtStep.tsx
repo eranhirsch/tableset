@@ -1,4 +1,4 @@
-import { Avatar, Chip, Stack, Typography } from "@mui/material";
+import { Avatar, Stack, Typography, useTheme } from "@mui/material";
 import { C, Str, Vec } from "common";
 import {
   useOptionalInstanceValue,
@@ -11,7 +11,6 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
-import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { fullPlayOrder, playersMetaStep } from "games/global";
@@ -35,6 +34,8 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: courtsIndex,
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
+  const theme = useTheme();
+
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const playOrder = useOptionalInstanceValue(playOrderStep);
   const firstPlayerId = useOptionalInstanceValue(firstPlayerStep);
@@ -69,18 +70,18 @@ function InstanceVariableComponent({
               }${Str.number_suffix(index + 1)}`}</Avatar>
             )}
             :{" "}
-            <GrammaticalList>
-              {React.Children.toArray(
-                Vec.map(factions, (fid) => (
-                  <Chip
-                    size="small"
-                    color={Factions[fid].color}
-                    label={Factions[fid].name}
-                  />
-                ))
-              )}
-            </GrammaticalList>
-            .
+            {React.Children.toArray(
+              Vec.map(factions, (fid) => (
+                <Typography
+                  fontSize="xx-large"
+                  component="span"
+                  lineHeight={1.0}
+                  color={theme.palette[Factions[fid].color].main}
+                >
+                  {"\u25A0"}
+                </Typography>
+              ))
+            )}
           </span>
         ))}
       </Stack>

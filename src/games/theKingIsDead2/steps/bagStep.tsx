@@ -11,7 +11,7 @@ import courtStep from "./courtStep";
 export default createDerivedGameStep({
   id: "bag",
   dependencies: [playersMetaStep, courtStep],
-  skip: ([_playerIds, courtFactionIds]) => courtFactionIds == null,
+  skip: ([_playerIds, courtFactionIds]) => courtFactionIds != null,
   InstanceDerivedComponent,
 });
 

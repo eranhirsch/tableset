@@ -14,7 +14,6 @@ import { FactionId, Factions } from "../utils/Factions";
 import { Followers } from "../utils/Followers";
 import { ALL_REGION_IDS, REGION_NAME } from "../utils/Regions";
 import courtStep from "./courtStep";
-import { NUM_CUBES_PER_HOME_REGION } from "./homeRegionStep";
 
 export default createRandomGameStep({
   id: "followers",
@@ -54,7 +53,7 @@ function InstanceVariableComponent({
                     $$,
                     Followers.NUM_PER_REGION -
                       (Followers.HOME_REGIONS[regionId] != null
-                        ? NUM_CUBES_PER_HOME_REGION
+                        ? Followers.NUM_PER_HOME_REGION
                         : 0)
                   ),
                 ($$) => Vec.concat(followers, [$$])
@@ -74,14 +73,14 @@ function InstanceVariableComponent({
         {Vec.map(
           Vec.zip(ALL_REGION_IDS, followers),
           ([regionId, followers]) => (
-            <React.Fragment key={`followers_regionId`}>
+            <React.Fragment key={`followers_${regionId}`}>
               <Grid item xs={1} />
               <Grid item xs={6} alignSelf="center">
                 <strong>{REGION_NAME[regionId]}</strong>
               </Grid>
               {$(
                 Followers.HOME_REGIONS[regionId],
-                ($$) => Vec.fill(NUM_CUBES_PER_HOME_REGION, $$),
+                ($$) => Vec.fill(Followers.NUM_PER_HOME_REGION, $$),
                 Vec.filter_nulls,
                 ($$) => Vec.concat($$, followers),
                 Vec.sort,
@@ -97,7 +96,8 @@ function InstanceVariableComponent({
                         {"\u25A0"}
                       </Typography>
                     </Grid>
-                  ))
+                  )),
+                React.Children.toArray
               )}
               <Grid item xs={1} />
             </React.Fragment>
