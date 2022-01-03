@@ -1,6 +1,7 @@
 import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
 import { createProductsMetaStep } from "games/core/steps/createProductDependencyMetaStep";
+import advancedVariant from "./steps/advancedVariant";
 import cardsStep from "./steps/cardsStep";
 import courtStep from "./steps/courtStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
@@ -24,16 +25,18 @@ export default createGame({
     },
   },
   steps: [
+    advancedVariant, // Variant
+
     createGameStep({
       id: "board",
       InstanceManualComponent: "Place the board in the middle of the table.",
     }),
 
-    firstPlayerStep,
-    playOrderStep,
+    firstPlayerStep, // Templatable
+    playOrderStep, // Templatable
 
-    courtStep,
-    followersStep,
+    courtStep, // Templatable
+    followersStep, // Templatable
 
     supplyStep,
 
@@ -51,6 +54,12 @@ export default createGame({
     }),
 
     cardsStep,
-    regionCards,
+    regionCards, // Templatable
+
+    createGameStep({
+      id: "victoryCard",
+      InstanceManualComponent:
+        "Place the victory card near the board where it is easily accessible.",
+    }),
   ],
 });
