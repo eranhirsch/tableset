@@ -55,9 +55,10 @@ function InstanceVariableComponent({
     <>
       <Typography variant="body1" textAlign="justify">
         Give each player{" "}
-        {(playOrder == null || firstPlayerId == null) && "in play order "}the
-        following <strong>{Courts.NUM_PER_PLAYER}</strong> follower to put in
-        front of them, this is their court:
+        {playerCourts.some(([playerId]) => playerId == null) &&
+          "in play order "}
+        the following <strong>{Courts.NUM_PER_PLAYER}</strong> follower to put
+        in front of them, this is their court:
       </Typography>
       <Stack marginTop={2} marginX={2} spacing={1}>
         {Vec.map(playerCourts, ([playerId, factions], index) => (
