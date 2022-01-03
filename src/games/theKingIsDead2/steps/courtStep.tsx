@@ -11,12 +11,13 @@ import {
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { fullPlayOrder, playersMetaStep } from "games/global";
 import React, { useMemo } from "react";
 import { Courts } from "../utils/Courts";
-import { Factions } from "../utils/Factions";
+import { Factions, NUM_FOLLOWERS_REMOVED_2P } from "../utils/Factions";
 import firstPlayerStep from "./firstPlayerStep";
 import playOrderStep from "./playOrderStep";
 
@@ -27,6 +28,7 @@ export default createRandomGameStep({
   resolve: (_, playerIds) => Courts.randomIndex(playerIds!),
   ...NoConfigPanel,
   InstanceVariableComponent,
+  InstanceManualComponent,
   InstanceCards: (props) => <IndexHashInstanceCard title="court" {...props} />,
   instanceAvroType: "int",
 });
@@ -57,7 +59,7 @@ function InstanceVariableComponent({
         Give each player{" "}
         {playerCourts.some(([playerId]) => playerId == null) &&
           "in play order "}
-        the following <strong>{Courts.NUM_PER_PLAYER}</strong> follower to put
+        the following <strong>{Courts.NUM_PER_PLAYER}</strong> followers to put
         in front of them, this is their court:
       </Typography>
       <Stack marginTop={2} marginX={2} spacing={1}>
@@ -88,6 +90,29 @@ function InstanceVariableComponent({
       </Stack>
       <IndexHashCaption idx={courtsIndex} />
     </>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+
+  return (
+    <HeaderAndSteps>
+      {playerIds.length === 2 && (
+        <>
+          Return <strong>{NUM_FOLLOWERS_REMOVED_2P}</strong> followers of each
+          faction to the box.
+        </>
+      )}
+      <>
+        Place all {playerIds.length === 2 && "the remaining "}followers in the
+        cloth bag.
+      </>
+      <>
+        Randomly give each player <strong>{Courts.NUM_PER_PLAYER}</strong>{" "}
+        followers to place in front of them. This is their court.
+      </>
+    </HeaderAndSteps>
   );
 }
 

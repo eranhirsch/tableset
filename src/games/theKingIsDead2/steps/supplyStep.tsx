@@ -49,7 +49,8 @@ function InstanceDerivedComponent({
   return (
     <>
       <Typography variant="body1">
-        Place the remaining cubes in the supply{remaining != null ? ":" : "."}
+        Place {remaining == null && "all the remaining "}followers in the supply
+        {remaining != null ? ":" : "."}
       </Typography>
       {remaining != null && (
         <Stack marginTop={2} marginX={3}>

@@ -1,6 +1,5 @@
 import { ColorId } from "app/utils/Colors";
 import { $, Vec } from "common";
-import { RegionId } from "./Regions";
 
 // 18 initial minus 2 per each home region
 const NUM_FOLLOWERS = 16;
@@ -12,12 +11,11 @@ export type FactionId = typeof ALL_FACTION_IDS[number];
 interface Faction {
   name: string;
   color: ColorId;
-  homeRegion: RegionId;
 }
 export const Factions: Readonly<Required<Record<FactionId, Faction>>> = {
-  english: { name: "English", color: "yellow", homeRegion: "essex" },
-  scottish: { name: "Scottish", color: "blue", homeRegion: "moray" },
-  welsh: { name: "Welsh", color: "red", homeRegion: "gwynedd" },
+  english: { name: "English", color: "yellow" },
+  scottish: { name: "Scottish", color: "blue" },
+  welsh: { name: "Welsh", color: "red" },
 };
 
 export function allFactionCubes(playerCount: number): readonly FactionId[] {

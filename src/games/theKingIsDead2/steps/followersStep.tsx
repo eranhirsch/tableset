@@ -1,16 +1,25 @@
-import { Grid, Typography, useTheme } from "@mui/material";
+import { Chip, Grid, Typography, useTheme } from "@mui/material";
 import { $, MathUtils, Vec } from "common";
-import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
+import {
+  useOptionalInstanceValue,
+  useRequiredInstanceValue,
+} from "features/instance/useInstanceValue";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
 import React, { useMemo } from "react";
-import { FactionId, Factions } from "../utils/Factions";
+import {
+  FactionId,
+  Factions,
+  NUM_FOLLOWERS_REMOVED_2P,
+} from "../utils/Factions";
 import { Followers } from "../utils/Followers";
 import { ALL_REGION_IDS, REGION_NAME } from "../utils/Regions";
 import courtStep from "./courtStep";
@@ -26,6 +35,7 @@ export default createRandomGameStep({
   InstanceCards: (props) => (
     <IndexHashInstanceCard title="Followers" {...props} />
   ),
+  InstanceManualComponent,
   instanceAvroType: "long",
 });
 
@@ -106,5 +116,52 @@ function InstanceVariableComponent({
       </Grid>
       <IndexHashCaption idx={followersIndex} />
     </>
+  );
+}
+
+function InstanceManualComponent(): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
+  const courtsIndex = useOptionalInstanceValue(courtStep);
+
+  return (
+    <HeaderAndSteps>
+      {courtsIndex != null && playerIds.length === 2 && (
+        <>
+          Return <strong>{NUM_FOLLOWERS_REMOVED_2P}</strong> followers of each
+          faction to the box.
+        </>
+      )}
+      {courtsIndex != null && (
+        <>Place all the remaining followers in the cloth bag.</>
+      )}
+      <>
+        Place{" "}
+        <GrammaticalList>
+          {React.Children.toArray(
+            Vec.map_with_key(Followers.HOME_REGIONS, (regionId, factionId) => (
+              <>
+                <strong>{Followers.NUM_PER_HOME_REGION}</strong>{" "}
+                <Chip
+                  size="small"
+                  color={Factions[factionId].color}
+                  label={Factions[factionId].name}
+                />{" "}
+                followers in <em>{REGION_NAME[regionId]}</em>
+              </>
+            ))
+          )}
+        </GrammaticalList>
+        .
+      </>
+      <>
+        Randomly place followers in each region so that there are{" "}
+        <strong>{Followers.NUM_PER_REGION}</strong> followers per region.{" "}
+        <em>
+          For Moray, Gwynedd, and Essex, this means adding two more followers to
+          the ones you have already placed there
+        </em>
+        .
+      </>
+    </HeaderAndSteps>
   );
 }
