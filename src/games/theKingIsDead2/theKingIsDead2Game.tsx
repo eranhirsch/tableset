@@ -9,6 +9,8 @@ import followersStep from "./steps/followersStep";
 import playOrderStep from "./steps/playOrderStep";
 import regionCards from "./steps/regionCards";
 import supplyStep from "./steps/supplyStep";
+import teamsStep from "./steps/teamsStep";
+import teamVariant from "./steps/teamVariant";
 
 const productsMetaStep = createProductsMetaStep();
 
@@ -26,6 +28,7 @@ export default createGame({
   },
   steps: [
     advancedVariant, // Variant
+    teamVariant, // Variant
 
     createGameStep({
       id: "board",
@@ -33,6 +36,7 @@ export default createGame({
     }),
 
     firstPlayerStep, // Templatable
+    teamsStep, // Templatable
     playOrderStep, // Templatable
 
     courtStep, // Templatable
