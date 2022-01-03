@@ -1,27 +1,29 @@
 import { Stack, Typography } from "@mui/material";
 import { $, Vec } from "common";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { playersMetaStep } from "games/global";
 import React from "react";
 import advancedVariant from "./advancedVariant";
 
 const SIMPLE_MODE_CARDS = [
+  "English Support",
   "Scottish Support",
   "Welsh Support",
-  "English Support",
 ] as const;
 
 const BASE_CARDS = [
   /* Spell-checker: disable */
+  "Assemble",
+  "Assemble",
   "Negotiate",
   "Manoeuvre",
   "Outmanoeuvre",
-  "Assemble",
-  "Assemble",
   /* Spell-checker: enable */
 ] as const;
 
@@ -30,13 +32,16 @@ const ADVANCED_CARDS_PER_PLAYER = 3;
 
 export default createDerivedGameStep({
   id: "cards",
-  dependencies: [advancedVariant],
+  dependencies: [playersMetaStep, advancedVariant],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [isAdvanced],
-}: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
+  dependencies: [playerIds, isAdvanced],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
   if (!isAdvanced) {
     return (
       <>
@@ -47,8 +52,8 @@ function InstanceDerivedComponent({
         </Typography>
         <Stack marginTop={2} marginX={4} spacing={1}>
           {$(
-            BASE_CARDS,
-            ($$) => Vec.concat($$, SIMPLE_MODE_CARDS),
+            SIMPLE_MODE_CARDS,
+            ($$) => Vec.concat($$, BASE_CARDS),
             ($$) => Vec.map($$, (card) => <strong>{card}</strong>),
             React.Children.toArray
           )}
@@ -84,10 +89,12 @@ function InstanceDerivedComponent({
         Secretly deal each player <strong>{ADVANCED_CARDS_PER_PLAYER}</strong>{" "}
         cards.
       </>
-      <>
-        Return any unused cunning action cards to the box without looking at
-        them.
-      </>
+      {playerIds!.length < 4 && (
+        <>
+          Return any unused cunning action cards to the box without looking at
+          them.
+        </>
+      )}
     </HeaderAndSteps>
   );
 }
