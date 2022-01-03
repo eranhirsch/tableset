@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Grid, Typography, useTheme } from "@mui/material";
 import { $, MathUtils, Vec } from "common";
 import { useRequiredInstanceValue } from "features/instance/useInstanceValue";
 import {
@@ -9,8 +9,8 @@ import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
 import { playersMetaStep } from "games/global";
-import { useMemo } from "react";
-import { FactionId } from "../utils/Factions";
+import React, { useMemo } from "react";
+import { FactionId, Factions } from "../utils/Factions";
 import { Followers } from "../utils/Followers";
 import { ALL_REGION_IDS, REGION_NAME } from "../utils/Regions";
 import courtStep from "./courtStep";
@@ -33,6 +33,8 @@ export default createRandomGameStep({
 function InstanceVariableComponent({
   value: followersIndex,
 }: VariableStepInstanceComponentProps<number>): JSX.Element {
+  const theme = useTheme();
+
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const courtsIndex = useRequiredInstanceValue(courtStep);
   const followers = useMemo(
@@ -68,17 +70,40 @@ function InstanceVariableComponent({
       <Typography variant="body1">
         Put the following cubes in each region:
       </Typography>
-      <Stack spacing={1} marginTop={2} marginX={2}>
+      <Grid container marginY={2} paddingX={2}>
         {Vec.map(
           Vec.zip(ALL_REGION_IDS, followers),
           ([regionId, followers]) => (
-            <Typography key={`followers_regionId`} variant="body2">
-              <strong>{REGION_NAME[regionId]}</strong>:{" "}
-              {JSON.stringify(followers)}
-            </Typography>
+            <React.Fragment key={`followers_regionId`}>
+              <Grid item xs={1} />
+              <Grid item xs={6} alignSelf="center">
+                <strong>{REGION_NAME[regionId]}</strong>
+              </Grid>
+              {$(
+                Followers.HOME_REGIONS[regionId],
+                ($$) => Vec.fill(NUM_CUBES_PER_HOME_REGION, $$),
+                Vec.filter_nulls,
+                ($$) => Vec.concat($$, followers),
+                Vec.sort,
+                ($$) =>
+                  Vec.map($$, (factionId) => (
+                    <Grid item xs={1} textAlign="center" alignSelf="center">
+                      <Typography
+                        fontSize="xx-large"
+                        component="span"
+                        lineHeight={1.0}
+                        color={theme.palette[Factions[factionId].color].main}
+                      >
+                        {"\u25A0"}
+                      </Typography>
+                    </Grid>
+                  ))
+              )}
+              <Grid item xs={1} />
+            </React.Fragment>
           )
         )}
-      </Stack>
+      </Grid>
       <IndexHashCaption idx={followersIndex} />
     </>
   );
