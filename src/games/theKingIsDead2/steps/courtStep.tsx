@@ -1,5 +1,5 @@
 import { Avatar, Chip, Stack, Typography } from "@mui/material";
-import { $, C, Random, Str, Vec } from "common";
+import { C, Str, Vec } from "common";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
@@ -12,60 +12,42 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
+import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { fullPlayOrder, playersMetaStep } from "games/global";
 import React, { useMemo } from "react";
-import {
-  allFactionCubes,
-  ALL_FACTION_IDS,
-  FactionId,
-  Factions,
-} from "../utils/Factions";
+import { Courts } from "../utils/Courts";
+import { Factions } from "../utils/Factions";
 import firstPlayerStep from "./firstPlayerStep";
 import playOrderStep from "./playOrderStep";
-
-const NUM_FOLLOWERS_PER_PLAYER = 2;
 
 export default createRandomGameStep({
   id: "court",
   dependencies: [playersMetaStep, playOrderStep, firstPlayerStep],
   isTemplatable: () => true,
-  resolve: (_, playerIds) =>
-    $(
-      allFactionCubes(playerIds!.length),
-      // Take out a random sample of cubes
-      ($$) => Random.sample($$, playerIds!.length * NUM_FOLLOWERS_PER_PLAYER),
-      // Shuffle them (so that all players can get each one)
-      Random.shuffle,
-      // Chunk them back per player so we can sort them (to normalize the
-      // result)
-      ($$) => Vec.chunk($$, NUM_FOLLOWERS_PER_PLAYER),
-      ($$) => Vec.map($$, (factions) => Vec.sort(factions)),
-      // Then flatten the results because we don't need the extra layer for
-      // serialization
-      Vec.flatten
-    ),
+  resolve: (_, playerIds) => Courts.randomIndex(playerIds!),
   ...NoConfigPanel,
   InstanceVariableComponent,
-  instanceAvroType: {
-    type: "array",
-    items: { type: "enum", name: "FactionId", symbols: [...ALL_FACTION_IDS] },
-  },
+  instanceAvroType: "long",
 });
 
 function InstanceVariableComponent({
-  value: factionIds,
-}: VariableStepInstanceComponentProps<readonly FactionId[]>): JSX.Element {
+  value: courtsIndex,
+}: VariableStepInstanceComponentProps<number>): JSX.Element {
   const playerIds = useRequiredInstanceValue(playersMetaStep);
   const playOrder = useOptionalInstanceValue(playOrderStep);
   const firstPlayerId = useOptionalInstanceValue(firstPlayerStep);
 
-  const court = useMemo(
+  const courts = useMemo(
+    () => Courts.decode(courtsIndex, playerIds),
+    [courtsIndex, playerIds]
+  );
+
+  console.log(courts);
+
+  const playerCourts = useMemo(
     () =>
-      Vec.zip(
-        partialPlayOrder(playerIds, firstPlayerId, playOrder),
-        Vec.chunk(factionIds, NUM_FOLLOWERS_PER_PLAYER)
-      ),
-    [factionIds, firstPlayerId, playOrder, playerIds]
+      Vec.zip(partialPlayOrder(playerIds, firstPlayerId, playOrder), courts),
+    [courts, firstPlayerId, playOrder, playerIds]
   );
 
   return (
@@ -73,11 +55,11 @@ function InstanceVariableComponent({
       <Typography variant="body1" textAlign="justify">
         Give each player{" "}
         {(playOrder == null || firstPlayerId == null) && "in play order "}the
-        following <strong>{NUM_FOLLOWERS_PER_PLAYER}</strong> follower to put in
+        following <strong>{Courts.NUM_PER_PLAYER}</strong> follower to put in
         front of them, this is their court:
       </Typography>
       <Stack marginTop={2} marginX={2} spacing={1}>
-        {Vec.map(court, ([playerId, factions], index) => (
+        {Vec.map(playerCourts, ([playerId, factions], index) => (
           <span key={`court_${index}`}>
             {playerId != null ? (
               <PlayerAvatar playerId={playerId} inline />
@@ -102,6 +84,7 @@ function InstanceVariableComponent({
           </span>
         ))}
       </Stack>
+      <IndexHashCaption idx={courtsIndex} />
     </>
   );
 }
