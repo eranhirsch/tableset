@@ -35,9 +35,9 @@ export default createGame({
       InstanceManualComponent: "Place the board in the middle of the table.",
     }),
 
-    firstPlayerStep, // Templatable
     teamsStep, // Templatable
     playOrderStep, // Templatable
+    firstPlayerStep, // Templatable
 
     courtStep, // Templatable
     followersStep, // Templatable
