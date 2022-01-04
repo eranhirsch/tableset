@@ -1,4 +1,4 @@
-import { Chip, Grid, Typography, useTheme } from "@mui/material";
+import { Box, Chip, Stack, Typography, useTheme } from "@mui/material";
 import { $, MathUtils, Vec } from "common";
 import {
   useOptionalInstanceValue,
@@ -79,15 +79,23 @@ function InstanceVariableComponent({
       <Typography variant="body1">
         Put the following cubes in each region:
       </Typography>
-      <Grid container marginY={2} paddingX={2}>
+      <Stack marginY={2} paddingX={5}>
         {Vec.map(
           Vec.zip(ALL_REGION_IDS, followers),
           ([regionId, followers]) => (
-            <React.Fragment key={`followers_${regionId}`}>
-              <Grid item xs={1} />
-              <Grid item xs={6} alignSelf="center">
-                <strong>{REGION_NAME[regionId]}</strong>
-              </Grid>
+            <Box
+              key={`followers_${regionId}`}
+              display="flex"
+              alignItems="center"
+            >
+              <Typography
+                component="div"
+                variant="body2"
+                fontWeight={700}
+                sx={{ flexGrow: 1 }}
+              >
+                {REGION_NAME[regionId]}
+              </Typography>
               {$(
                 Followers.HOME_REGIONS[regionId],
                 ($$) => Vec.fill(Followers.NUM_PER_HOME_REGION, $$),
@@ -96,24 +104,21 @@ function InstanceVariableComponent({
                 Vec.sort,
                 ($$) =>
                   Vec.map($$, (factionId) => (
-                    <Grid item xs={1} textAlign="center" alignSelf="center">
-                      <Typography
-                        fontSize="xx-large"
-                        component="span"
-                        lineHeight={1.0}
-                        color={theme.palette[Factions[factionId].color].main}
-                      >
-                        {"\u25A0"}
-                      </Typography>
-                    </Grid>
+                    <Typography
+                      fontSize="xx-large"
+                      component="div"
+                      lineHeight={1.0}
+                      color={theme.palette[Factions[factionId].color].main}
+                    >
+                      {"\u25A0"}
+                    </Typography>
                   )),
                 React.Children.toArray
               )}
-              <Grid item xs={1} />
-            </React.Fragment>
+            </Box>
           )
         )}
-      </Grid>
+      </Stack>
       <IndexHashCaption idx={followersIndex} />
     </>
   );
