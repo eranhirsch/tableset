@@ -24,7 +24,7 @@ export default createRandomGameStep({
 
   InstanceVariableComponent,
   InstanceCards: (props) => (
-    <IndexHashInstanceCard title="regions" {...props} />
+    <IndexHashInstanceCard title="Regions" {...props} />
   ),
   InstanceManualComponent:
     "Shuffle the region cards and deal one face up next to each numbered space on the board.",

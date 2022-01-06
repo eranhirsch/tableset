@@ -29,7 +29,7 @@ export default createRandomGameStep({
   ...NoConfigPanel,
   InstanceVariableComponent,
   InstanceManualComponent,
-  InstanceCards: (props) => <IndexHashInstanceCard title="court" {...props} />,
+  InstanceCards: (props) => <IndexHashInstanceCard title="Court" {...props} />,
   instanceAvroType: "int",
 });
 
