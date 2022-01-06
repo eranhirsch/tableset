@@ -537,6 +537,7 @@ function InstanceManualComponent({
 }: {
   teamSelectionStep?: TeamSelectionStep;
 }): JSX.Element {
+  const playerIds = useRequiredInstanceValue(playersMetaStep);
   const teamPlay = useRequiredInstanceValue(
     teamSelectionStep?.enablerStep ?? createConstantValueMetaStep(false)
   );
@@ -545,41 +546,50 @@ function InstanceManualComponent({
   );
 
   return (
-    <BlockWithFootnotes
-      footnotes={[
-        <>
-          Players would play in <strong>clockwise</strong> order around the
-          table.
-        </>,
-        teamPlay || teams != null ? (
+    <Typography variant="body1" textAlign="justify">
+      <BlockWithFootnotes
+        footnotes={[
           <>
-            e.g. if there are 3 groups sit someone from the first group, then
-            someone from a different group to the left of them, and someone from
-            the last group left of them; only then sit the next members of each
-            group, continuing around the table, and maintaining the same order
-            of groups as the first round. Continue until everyone is seated.
-            <br />A - B - C - A - B - C - A - B...
-          </>
-        ) : (
-          <></>
-        ),
-      ]}
-    >
-      {(Footnote) => (
-        <>
-          Choose a seat around the table for each player
-          <Footnote index={1} />.{" "}
-          {(teamPlay || teams != null) && (
+            Players would play in <strong>clockwise</strong> order around the
+            table.
+          </>,
+          teamPlay || teams != null ? (
             <>
-              Players on the same team should sit across the table from one
-              another so that, going around the table, teams play in the same
-              order
-              <Footnote index={2} />.
+              e.g. if there are 3 groups sit someone from the first group, then
+              someone from a different group to the left of them, and someone
+              from the last group left of them; only then sit the next members
+              of each group, continuing around the table, and maintaining the
+              same order of groups as the first round. Continue until everyone
+              is seated.
+              <br />A - B - C - A - B - C - A - B...
             </>
-          )}
-        </>
-      )}
-    </BlockWithFootnotes>
+          ) : (
+            <></>
+          ),
+        ]}
+      >
+        {(Footnote) => (
+          <>
+            Choose a seat around the table for each player
+            <Footnote index={1} />.{" "}
+            {(teamPlay || teams != null) && (
+              <>
+                Players on the same team should sit across the table from one
+                another
+                {playerIds.length > 4 && (
+                  <>
+                    so that, going around the table, teams play in the same
+                    order
+                    <Footnote index={2} />
+                  </>
+                )}
+                .
+              </>
+            )}
+          </>
+        )}
+      </BlockWithFootnotes>
+    </Typography>
   );
 }
 
