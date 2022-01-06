@@ -36,7 +36,7 @@ export default createRandomGameStep({
     <IndexHashInstanceCard title="Followers" {...props} />
   ),
   InstanceManualComponent,
-  instanceAvroType: "long",
+  instanceAvroType: "int",
 });
 
 function InstanceVariableComponent({
