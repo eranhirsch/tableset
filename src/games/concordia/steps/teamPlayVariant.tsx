@@ -10,10 +10,10 @@ export default createTeamVariant({
   },
   optionalAt: [4],
   enabledAt: [6],
-  InstanceVariableComponent,
+  Description,
 });
 
-function InstanceVariableComponent(): JSX.Element {
+function Description(): JSX.Element {
   return (
     <>
       <Typography variant="body1">

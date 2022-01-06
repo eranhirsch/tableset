@@ -2,14 +2,17 @@ import CheckIcon from "@mui/icons-material/Check";
 import { Box, Chip, Collapse, Stack, Typography } from "@mui/material";
 import { Dict, Vec } from "common";
 import { isTemplatable } from "features/template/Templatable";
+import { useFeaturesContext } from "features/useFeaturesContext";
 import { useMemo, useRef, useState } from "react";
 import { StepId } from "./Game";
+import { instanceValue } from "./instanceValue";
 import { useGameFromParam } from "./useGameFromParam";
 import { useInstanceFromParam } from "./useInstanceFromParam";
 
 export function VariantSummary(): JSX.Element | null {
   const game = useGameFromParam();
   const instance = useInstanceFromParam();
+  const context = useFeaturesContext();
 
   const variants = useMemo(
     () =>
@@ -21,8 +24,15 @@ export function VariantSummary(): JSX.Element | null {
   );
 
   const instanceValues = useMemo(
-    () => Vec.keys(Dict.inner_join(variants, instance)),
-    [instance, variants]
+    () =>
+      Vec.keys(
+        Dict.filter(
+          variants,
+          (templatable) =>
+            instanceValue(templatable, instance, context) === true
+        )
+      ),
+    [context, instance, variants]
   );
 
   const [expandedStepId, setExpandedStepId] = useState<StepId>();

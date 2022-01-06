@@ -4,6 +4,8 @@ import { ProductsMetaStep } from "games/core/steps/createProductDependencyMetaSt
 import { createVariant, VariantGameStep } from "games/core/steps/createVariant";
 import { playersMetaStep } from "games/global";
 
+const DEFAULT_DESCRIPTION = "Play in Teams!";
+
 interface Options<Pid extends ProductId> {
   productDependencies?: {
     step: Readonly<ProductsMetaStep<Pid>>;
@@ -11,28 +13,30 @@ interface Options<Pid extends ProductId> {
   };
   optionalAt?: readonly number[];
   enabledAt?: readonly number[];
-  InstanceVariableComponent: () => JSX.Element;
+  Description?: (() => JSX.Element) | string;
 }
 
 export default function createTeamVariant<Pid extends ProductId>({
   productDependencies,
-  optionalAt,
+  optionalAt = [],
   enabledAt,
-  InstanceVariableComponent,
+  Description = DEFAULT_DESCRIPTION,
 }: Options<Pid>): Readonly<VariantGameStep> {
   const baseTeamPlayVariant = createVariant({
     id: "teams",
     name: "Teams",
+
     dependencies: [
       playersMetaStep,
       productDependencies?.step ?? createConstantValueMetaStep(null),
     ],
+
     isTemplatable: (players, products) =>
-      optionalAt != null &&
+      optionalAt.includes(players.onlyResolvableValue()!.length) &&
       (productDependencies == null ||
-        products.willContainAny(productDependencies.products)) &&
-      optionalAt.some((playCount) => players.willContainNumElements(playCount)),
-    Description: InstanceVariableComponent,
+        products.willContainAny(productDependencies.products)),
+
+    Description,
   });
 
   if (enabledAt == null) {
@@ -64,7 +68,11 @@ export default function createTeamVariant<Pid extends ProductId>({
       };
     },
 
-    InstanceManualComponent: InstanceVariableComponent,
+    computeInstanceValue: (instance, context) =>
+      enabledAt.includes(context.playerIds.length) ||
+      baseTeamPlayVariant.computeInstanceValue(instance, context),
+
+    InstanceManualComponent: Description,
   };
 
   return Object.freeze(teamPlayVariant);
