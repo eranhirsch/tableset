@@ -4,9 +4,16 @@ import { allFactionCubes, ALL_FACTION_IDS, FactionId } from "./Factions";
 
 const NUM_PER_PLAYER = 2;
 
-const COMBOS_ARR = MathUtils.combinations_lazy_array_with_duplicates(
-  Vec.flatten(Vec.fill(2, ALL_FACTION_IDS)),
-  NUM_PER_PLAYER
+const COURT_ENCODER = $(
+  ALL_FACTION_IDS,
+  ($$) => Vec.fill(NUM_PER_PLAYER, $$),
+  Vec.flatten,
+  ($$) => MathUtils.combinations_lazy_array_with_duplicates($$, NUM_PER_PLAYER),
+  ($$) =>
+    Vec.maybe_map(Vec.range(0, $$.length - 1), (index) =>
+      index === $$.asCanonicalIndex(index) ? $$.at(index) : undefined
+    ),
+  $.log()
 );
 
 export const Courts = {
@@ -23,7 +30,10 @@ export const Courts = {
               ($$) => Random.sample($$, NUM_PER_PLAYER),
               ($$) =>
                 tuple(
-                  Vec.concat(digits, COMBOS_ARR.indexOf($$)),
+                  Vec.concat(
+                    digits,
+                    COURT_ENCODER.findIndex((court) => Vec.equal(court, $$))
+                  ),
                   Vec.diff(remainingCubes, $$)
                 )
             ),
@@ -34,7 +44,10 @@ export const Courts = {
         ),
       ($$) => $$[0],
       ($$) =>
-        $$.reduceRight((index, digit) => index * COMBOS_ARR.length + digit, 0)
+        $$.reduceRight(
+          (index, digit) => index * COURT_ENCODER.length + digit,
+          0
+        )
     ),
 
   decode: (
@@ -47,11 +60,12 @@ export const Courts = {
         playerIds.reduce(
           ([courts, remainingIndx], _playerId) =>
             $(
-              remainingIndx % COMBOS_ARR.length,
-              ($$) => COMBOS_ARR.at($$),
+              remainingIndx % COURT_ENCODER.length,
+              ($$) => COURT_ENCODER[$$],
               $.nullthrows(`Index ${index} is out of range`),
               ($$) => Vec.concat(courts, [$$]),
-              ($$) => tuple($$, Math.floor(remainingIndx / COMBOS_ARR.length))
+              ($$) =>
+                tuple($$, Math.floor(remainingIndx / COURT_ENCODER.length))
             ),
           [[], $$] as readonly [
             courts: readonly (readonly FactionId[])[],
