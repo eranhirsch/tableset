@@ -1,4 +1,10 @@
 import { createGame } from "games/core/Game";
+import { createGameStep } from "games/core/steps/createGameStep";
+import { createFirstPlayerStep, createPlayOrderStep } from "games/global";
+import birdCardsStep from "./steps/birdCardsStep";
+import friendlyGoalsVariant from "./steps/friendlyGoalsVariant";
+import goalBoardStep from "./steps/goalBoardStep";
+import goalTilesStep from "./steps/goalTilesStep";
 import productsMetaStep from "./steps/productsMetaStep";
 
 export default createGame({
@@ -32,5 +38,29 @@ export default createGame({
       isNotImplemented: true,
     },
   },
-  steps: [],
+  steps: [
+    friendlyGoalsVariant, // Variant
+
+    birdCardsStep,
+    createGameStep({
+      id: "supply",
+      InstanceManualComponent:
+        "Place all food and egg tokens in the supply. These are tokens accessible to all players.",
+    }),
+    createGameStep({
+      id: "birdFeeder",
+      InstanceManualComponent:
+        // TODO: We should add the number of dice that are thrown
+        "Toss the food dice into the birdfeeder dice tower.",
+    }),
+    goalBoardStep,
+    goalTilesStep,
+    createGameStep({
+      id: "bonusCards",
+      InstanceManualComponent:
+        "Shuffle the bonus cards into a deck and place it on the table.",
+    }),
+    createPlayOrderStep(),
+    createFirstPlayerStep({ FirstPlayerToken: "first-player token" }),
+  ],
 });
