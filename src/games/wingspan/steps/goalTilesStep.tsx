@@ -77,6 +77,11 @@ export default createRandomGameStep({
     type: "array",
     items: { type: "enum", name: "GoalId", symbols: [...ALL_GOAL_IDS] },
   },
+
+  // TODO: We can use the item selector to at least give the ability to mark
+  // specific goals as required or banned, but because we don't have a widget
+  // for picking an order (I want goal X to be the 3rd) it might not be valuable
+  // enough on it's own
   ...NoConfigPanel,
 });
 
