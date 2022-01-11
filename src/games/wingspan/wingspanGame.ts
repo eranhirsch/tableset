@@ -1,6 +1,10 @@
 import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
-import { createFirstPlayerStep, createPlayOrderStep } from "games/global";
+import {
+  createFirstPlayerStep,
+  createPlayerColorsStep,
+  createPlayOrderStep,
+} from "games/global";
 import birdCardsStep from "./steps/birdCardsStep";
 import friendlyGoalsVariant from "./steps/friendlyGoalsVariant";
 import goalBoardStep from "./steps/goalBoardStep";
@@ -65,6 +69,10 @@ export default createGame({
         "Shuffle the bonus cards into a deck and place it on the table.",
     }),
     createPlayOrderStep(),
+    createPlayerColorsStep({
+      productsMetaStep,
+      availableColors: () => ["blue", "red", "yellow", "purple", "green"],
+    }),
     createFirstPlayerStep({ FirstPlayerToken: "first-player token" }),
   ],
 });
