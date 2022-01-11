@@ -61,6 +61,7 @@ export default createGame({
     createGameStep({
       id: "bonusCards",
       InstanceManualComponent:
+        // TODO: Add card numbers here
         "Shuffle the bonus cards into a deck and place it on the table.",
     }),
     createPlayOrderStep(),
