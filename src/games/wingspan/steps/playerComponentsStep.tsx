@@ -70,8 +70,8 @@ function InstanceManualComponent(): JSX.Element {
         </BlockWithFootnotes>
       </HeaderAndSteps>
       <Typography variant="body2" marginTop={2}>
-        {/* TODO: Should this be a formal variant? we can randomize and show the
-        cards in that case. */}
+        {/* TODO: Should this be a 2 formal variants? 1 for the bird cards and 1
+        for the goals. We can randomize and show the cards in that case. */}
         <em>
           You may keep your hand of cards private or public throughout the game.
         </em>
