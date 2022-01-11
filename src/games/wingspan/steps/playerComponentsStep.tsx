@@ -72,7 +72,9 @@ function InstanceManualComponent(): JSX.Element {
       <Typography variant="body2" marginTop={2}>
         {/* TODO: Should this be a formal variant? we can randomize and show the
         cards in that case. */}
-        You may keep your hand of cards private or public throughout the game.
+        <em>
+          You may keep your hand of cards private or public throughout the game.
+        </em>
       </Typography>
     </>
   );
