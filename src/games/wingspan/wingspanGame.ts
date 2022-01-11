@@ -9,6 +9,7 @@ import birdCardsStep from "./steps/birdCardsStep";
 import friendlyGoalsVariant from "./steps/friendlyGoalsVariant";
 import goalBoardStep from "./steps/goalBoardStep";
 import goalTilesStep from "./steps/goalTilesStep";
+import playerComponentsStep from "./steps/playerComponentsStep";
 import productsMetaStep from "./steps/productsMetaStep";
 
 export default createGame({
@@ -68,11 +69,15 @@ export default createGame({
         // TODO: Add card numbers here
         "Shuffle the bonus cards into a deck and place it on the table.",
     }),
-    createPlayOrderStep(),
+
+    createPlayOrderStep(), // Templatable
     createPlayerColorsStep({
       productsMetaStep,
       availableColors: () => ["blue", "red", "yellow", "purple", "green"],
-    }),
-    createFirstPlayerStep({ FirstPlayerToken: "first-player token" }),
+    }), // Templatable
+
+    playerComponentsStep,
+
+    createFirstPlayerStep({ FirstPlayerToken: "first-player token" }), // Templatable,
   ],
 });
