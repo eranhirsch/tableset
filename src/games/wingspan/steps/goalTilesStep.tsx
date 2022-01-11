@@ -86,8 +86,9 @@ function InstanceVariableComponent({
   return (
     <>
       <Typography variant="body1" textAlign="justify">
-        Put the following goal tiles on the blank space on the goal board in the
-        following order; <em>returning the rest of the tiles to the box</em>:
+        Put the following goal tiles on the blank spaces on the goal board in
+        the following order; <em>returning the rest of the tiles to the box</em>
+        :
       </Typography>
       <Stack spacing={1} marginTop={2} paddingX={2}>
         {Vec.map(goalIds, (goalId) => (
