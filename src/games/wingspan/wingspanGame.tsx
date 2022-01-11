@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
 import {
@@ -77,6 +78,25 @@ export default createGame({
     }), // Templatable
 
     playerComponentsStep,
+
+    createGameStep({
+      id: "keepCards",
+      InstanceManualComponent: () => (
+        <Typography variant="body1" textAlign="justify">
+          Keep up to <strong>5</strong> bird cards and discard the others.{" "}
+          <strong>
+            For each bird card you keep, you must discard 1 food token.
+          </strong>{" "}
+          {/* TODO: This should probably be a footnote */}
+          You will probably want to keep food tokens shown in the upper left of
+          the bird cards you selected.{" "}
+          <em>
+            For example, you might keep 2 bird cards and 3 food, or you might
+            keep 4 bird cards and 1 food.
+          </em>
+        </Typography>
+      ),
+    }),
 
     createFirstPlayerStep({ FirstPlayerToken: "first-player token" }), // Templatable,
   ],
