@@ -1,4 +1,3 @@
-import { Typography } from "@mui/material";
 import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
 import {
@@ -10,6 +9,7 @@ import birdCardsStep from "./steps/birdCardsStep";
 import friendlyGoalsVariant from "./steps/friendlyGoalsVariant";
 import goalBoardStep from "./steps/goalBoardStep";
 import goalTilesStep from "./steps/goalTilesStep";
+import keepCardsStep from "./steps/keepCardsStep";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import productsMetaStep from "./steps/productsMetaStep";
 
@@ -51,7 +51,8 @@ export default createGame({
     createGameStep({
       id: "supply",
       InstanceManualComponent:
-        "Place all food and egg tokens in the supply. These are tokens accessible to all players.",
+        "Place all food and egg tokens in the supply. These are tokens " +
+        "accessible to all players.",
     }),
     createGameStep({
       // TODO: This step could be randomized as the results are random, but it
@@ -78,24 +79,14 @@ export default createGame({
     }), // Templatable
 
     playerComponentsStep,
+    keepCardsStep,
 
     createGameStep({
-      id: "keepCards",
-      InstanceManualComponent: () => (
-        <Typography variant="body1" textAlign="justify">
-          Keep up to <strong>5</strong> bird cards and discard the others.{" "}
-          <strong>
-            For each bird card you keep, you must discard 1 food token.
-          </strong>{" "}
-          {/* TODO: This should probably be a footnote */}
-          You will probably want to keep food tokens shown in the upper left of
-          the bird cards you selected.{" "}
-          <em>
-            For example, you might keep 2 bird cards and 3 food, or you might
-            keep 4 bird cards and 1 food.
-          </em>
-        </Typography>
-      ),
+      id: "keepBonusCard",
+      InstanceManualComponent:
+        "Chose 1 bonus card to keep, and discard the other. You may look at " +
+        "your bonus cards while selecting which birds to keep (and vice " +
+        "versa).",
     }),
 
     createFirstPlayerStep({ FirstPlayerToken: "first-player token" }), // Templatable,
