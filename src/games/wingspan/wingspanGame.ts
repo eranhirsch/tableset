@@ -48,6 +48,9 @@ export default createGame({
         "Place all food and egg tokens in the supply. These are tokens accessible to all players.",
     }),
     createGameStep({
+      // TODO: This step could be randomized as the results are random, but it
+      // might be too pedantic as it has marginal impact on game and and the
+      // cost to build it properly would be too high.
       id: "birdFeeder",
       InstanceManualComponent:
         // TODO: We should add the number of dice that are thrown
