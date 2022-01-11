@@ -1,17 +1,17 @@
 import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
-import {
-  createFirstPlayerStep,
-  createPlayerColorsStep,
-  createPlayOrderStep,
-} from "games/global";
+import { createPlayerColorsStep } from "games/global";
 import birdCardsStep from "./steps/birdCardsStep";
+import firstPlayerStep from "./steps/firstPlayerStep";
 import friendlyGoalsVariant from "./steps/friendlyGoalsVariant";
 import goalBoardStep from "./steps/goalBoardStep";
 import goalTilesStep from "./steps/goalTilesStep";
 import keepCardsStep from "./steps/keepCardsStep";
 import playerComponentsStep from "./steps/playerComponentsStep";
+import playOrderStep from "./steps/playOrderStep";
 import productsMetaStep from "./steps/productsMetaStep";
+import swiftStartGuidesSteps from "./steps/swiftStartGuidesSteps";
+import swiftStartVariant from "./steps/swiftStartVariant";
 
 export default createGame({
   id: "wingspan",
@@ -45,6 +45,7 @@ export default createGame({
     },
   },
   steps: [
+    swiftStartVariant, // Variant
     friendlyGoalsVariant, // Variant
 
     birdCardsStep,
@@ -72,13 +73,16 @@ export default createGame({
         "Shuffle the bonus cards into a deck and place it on the table.",
     }),
 
-    createPlayOrderStep(), // Templatable
+    playOrderStep, // Templatable
+    firstPlayerStep, // Templatable
     createPlayerColorsStep({
       productsMetaStep,
       availableColors: () => ["blue", "red", "yellow", "purple", "green"],
     }), // Templatable
 
     playerComponentsStep,
+
+    swiftStartGuidesSteps,
     keepCardsStep,
 
     createGameStep({
@@ -88,7 +92,5 @@ export default createGame({
         "your bonus cards while selecting which birds to keep (and vice " +
         "versa).",
     }),
-
-    createFirstPlayerStep({ FirstPlayerToken: "first-player token" }), // Templatable,
   ],
 });

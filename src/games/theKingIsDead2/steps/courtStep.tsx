@@ -1,11 +1,10 @@
 import { Avatar, Stack, Typography, useTheme } from "@mui/material";
-import { C, Str, Vec } from "common";
+import { Str, Vec } from "common";
 import {
   useOptionalInstanceValue,
   useRequiredInstanceValue,
 } from "features/instance/useInstanceValue";
 import { PlayerAvatar } from "features/players/PlayerAvatar";
-import { PlayerId } from "features/players/playersSlice";
 import {
   createRandomGameStep,
   VariableStepInstanceComponentProps,
@@ -14,7 +13,7 @@ import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { IndexHashCaption } from "games/core/ux/IndexHashCaption";
 import { IndexHashInstanceCard } from "games/core/ux/IndexHashInstanceCards";
-import { fullPlayOrder, playersMetaStep } from "games/global";
+import { partialPlayOrder, playersMetaStep } from "games/global";
 import React, { useMemo } from "react";
 import { Courts } from "../utils/Courts";
 import { Factions, NUM_FOLLOWERS_REMOVED_2P } from "../utils/Factions";
@@ -116,18 +115,3 @@ function InstanceManualComponent(): JSX.Element {
   );
 }
 
-const partialPlayOrder = (
-  playerIds: readonly PlayerId[],
-  firstPlayerId: PlayerId | null,
-  playOrder: readonly PlayerId[] | null
-): readonly (PlayerId | null)[] =>
-  firstPlayerId == null
-    ? Vec.fill(playerIds.length, null)
-    : playOrder == null
-    ? Vec.concat(
-        [firstPlayerId],
-        playerIds.length === 2
-          ? C.firstx(Vec.filter(playerIds, (pid) => pid !== firstPlayerId))
-          : Vec.fill(playerIds.length - 1, null)
-      )
-    : fullPlayOrder(playerIds, playOrder, firstPlayerId);

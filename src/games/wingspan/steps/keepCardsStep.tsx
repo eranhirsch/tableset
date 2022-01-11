@@ -1,9 +1,44 @@
-import { createGameStep } from "games/core/steps/createGameStep";
+import { Str } from "common";
+import { PlayerAvatar } from "features/players/PlayerAvatar";
+import { PlayerId } from "features/players/playersSlice";
+import firstPlayerStep from "games/bloodRage/steps/firstPlayerStep";
+import playOrderStep from "games/bloodRage/steps/playOrderStep";
+import {
+  createDerivedGameStep,
+  DerivedStepInstanceComponentProps,
+} from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
+import { partialPlayOrder, playersMetaStep } from "games/global";
+import { useMemo } from "react";
+import { SWIFT_START } from "./swiftStartGuidesSteps";
+import swiftStartVariant from "./swiftStartVariant";
 
-export default createGameStep({
+export default createDerivedGameStep({
   id: "keepCards",
-  InstanceManualComponent: () => (
+  dependencies: [
+    playersMetaStep,
+    playOrderStep,
+    firstPlayerStep,
+    swiftStartVariant,
+  ],
+  skip: ([playerIds, _playOrder, _firstPlayerId, isSwiftStart]) =>
+    playerIds!.length <= SWIFT_START.length && isSwiftStart!,
+  InstanceDerivedComponent,
+});
+
+function InstanceDerivedComponent({
+  dependencies: [playerIds, playOrder, firstPlayerId, isSwiftStart],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  readonly PlayerId[],
+  PlayerId,
+  boolean
+>): JSX.Element {
+  const order = useMemo(
+    () => partialPlayOrder(playerIds!, firstPlayerId, playOrder),
+    [firstPlayerId, playOrder, playerIds]
+  );
+  return (
     <BlockWithFootnotes
       footnotes={[
         <>
@@ -18,6 +53,14 @@ export default createGameStep({
     >
       {(Footnote) => (
         <>
+          {isSwiftStart &&
+            (order[SWIFT_START.length] != null ? (
+              <PlayerAvatar playerId={order[SWIFT_START.length]!} inline />
+            ) : (
+              `the ${SWIFT_START.length + 1}${Str.number_suffix(
+                SWIFT_START.length + 1
+              )} player`
+            ))}{" "}
           Keep up to <strong>5</strong> bird cards and discard the others
           <Footnote index={1} />.{" "}
           <strong>
@@ -27,5 +70,5 @@ export default createGameStep({
         </>
       )}
     </BlockWithFootnotes>
-  ),
-});
+  );
+}

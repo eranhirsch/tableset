@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import { $, Random, Vec } from "common";
+import { $, Random, Str, Vec } from "common";
 import { InstanceCard } from "features/instance/InstanceCard";
 import {
   createRandomGameStep,
@@ -117,16 +117,7 @@ function InstanceCards({
           key={goalId}
           onClick={onClick}
           title="Goal"
-          subheader={
-            // TODO: This is ugly
-            index === 0
-              ? "1st"
-              : index === 1
-              ? "2nd"
-              : index === 2
-              ? "3rd"
-              : "4th"
-          }
+          subheader={`${index + 1}${Str.number_suffix(index + 1)}`}
         >
           <Typography variant="subtitle2" color="primary">
             <strong>{GOAL_NAMES[goalId]}</strong>
