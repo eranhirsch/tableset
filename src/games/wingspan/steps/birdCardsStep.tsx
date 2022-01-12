@@ -5,45 +5,75 @@ import {
 } from "games/core/steps/createDerivedGameStep";
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { ChosenElement } from "games/core/ux/ChosenElement";
+import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import React, { useMemo } from "react";
+import { DeckId, Decks } from "../utils/Decks";
+import europeanBirdsVariant from "./europeanBirdsVariant";
+import productsMetaStep, { WingspanProductId } from "./productsMetaStep";
 import swiftStartVariant from "./swiftStartVariant";
-
-const ALL_DECK_IDS = ["swiftStart", "base"] as const;
-type DeckId = typeof ALL_DECK_IDS[number];
-const DECK_CARD_COUNT: Readonly<Required<Record<DeckId, number>>> = {
-  base: 170,
-  swiftStart: 10,
-};
 
 export default createDerivedGameStep({
   id: "birdCards",
-  dependencies: [swiftStartVariant],
+  dependencies: [productsMetaStep, swiftStartVariant, europeanBirdsVariant],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [isSwiftStart],
-}: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
+  dependencies: [productIds, isSwiftStart, isEuropean],
+}: DerivedStepInstanceComponentProps<
+  readonly WingspanProductId[],
+  boolean,
+  boolean
+>): JSX.Element {
+  const available = useMemo(
+    () => Decks.availableForProducts(productIds!),
+    [productIds]
+  );
+
+  const used: readonly DeckId[] = useMemo(
+    () =>
+      Vec.filter_nulls([
+        "base",
+        isSwiftStart ? null : "swift",
+        isEuropean ? "europe" : null,
+      ]),
+    [isEuropean, isSwiftStart]
+  );
+
+  const unused = useMemo(() => Vec.diff(available, used), [available, used]);
+
   return (
     <HeaderAndSteps>
-      {isSwiftStart && (
-        <BlockWithFootnotes footnote={<>Marked with gray corners</>}>
+      {!Vec.is_empty(unused) && (
+        <BlockWithFootnotes
+          footnotes={Vec.map(unused, (deckId) => (
+            <>Identified by a {Decks[deckId].identifier!}.</>
+          ))}
+        >
           {(Footnote) => (
             <>
-              Find and remove the <strong>{DECK_CARD_COUNT.swiftStart}</strong>{" "}
-              <ChosenElement extraInfo="cards">Swift-Start</ChosenElement> from
-              the main deck
-              <Footnote /> and set them aside.
+              Find and remove{" "}
+              <GrammaticalList>
+                {React.Children.toArray(
+                  Vec.map(unused, (deckId, index) => (
+                    <>
+                      the <strong>{Decks[deckId].numCards}</strong>{" "}
+                      <em>{Decks[deckId].name}</em> cards
+                      <Footnote index={index + 1} />
+                    </>
+                  ))
+                )}
+              </GrammaticalList>{" "}
+              from the main deck and set them aside.
             </>
           )}
         </BlockWithFootnotes>
       )}
       <>
-        Shuffle the{" "}
+        Shuffle {Vec.is_empty(unused) ? "all" : "the remaining"}{" "}
         <strong>
-          {isSwiftStart
-            ? DECK_CARD_COUNT.base
-            : MathUtils.sum(Vec.values(DECK_CARD_COUNT))}
+          {MathUtils.sum(Vec.map(used, (deckId) => Decks[deckId].numCards))}
         </strong>{" "}
         <ChosenElement extraInfo="cards">Bird</ChosenElement> into a deck.
       </>

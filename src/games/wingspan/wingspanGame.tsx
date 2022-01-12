@@ -4,6 +4,7 @@ import { createPlayerColorsStep } from "games/global";
 import automaStep from "./steps/automaStep";
 import birdCardsStep from "./steps/birdCardsStep";
 import bonusCardsStep from "./steps/bonusCardsStep";
+import europeanBirdsVariant from "./steps/europeanBirdsVariant";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import friendlyGoalsVariant from "./steps/friendlyGoalsVariant";
 import goalBoardStep from "./steps/goalBoardStep";
@@ -28,12 +29,6 @@ export default createGame({
       isBase: true,
       year: 2019,
     },
-    swiftStart: {
-      name: "Swift-Start Promo Pack",
-      bggId: 290837,
-      year: 2019,
-      isNotImplemented: true,
-    },
     europe: {
       name: "European Expansion",
       bggId: 290448,
@@ -51,6 +46,7 @@ export default createGame({
   steps: [
     swiftStartVariant, // Variant
     friendlyGoalsVariant, // Variant
+    europeanBirdsVariant, // Variant
 
     birdCardsStep,
     supplyStep,
