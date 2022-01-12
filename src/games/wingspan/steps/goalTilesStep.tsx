@@ -8,65 +8,18 @@ import {
 } from "games/core/steps/createRandomGameStep";
 import { NoConfigPanel } from "games/core/steps/NoConfigPanel";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
-
-const ALL_GOAL_IDS = [
-  "birdsInForest",
-  "birdsInGrasslands",
-  "birdsInWetlands",
-  "birdsWithEggsBowl",
-  "birdsWithEggsCavity",
-  "birdsWithEggsGround",
-  "birdsWithEggsPlatform",
-  "eggsInBowl",
-  "eggsInCavity",
-  "eggsInForest",
-  "eggsInGrassLands",
-  "eggsInGround",
-  "eggsInPlatform",
-  "eggsInWetlands",
-  "setsOfEggs",
-  "totalBirds",
-] as const;
-type GoalId = typeof ALL_GOAL_IDS[number];
-const TILES: readonly (readonly [GoalId, GoalId])[] = [
-  ["birdsInForest", "eggsInForest"],
-  ["birdsInGrasslands", "eggsInGrassLands"],
-  ["birdsInWetlands", "eggsInWetlands"],
-  ["birdsWithEggsBowl", "eggsInBowl"],
-  ["birdsWithEggsCavity", "eggsInCavity"],
-  ["birdsWithEggsGround", "eggsInGround"],
-  ["birdsWithEggsPlatform", "eggsInPlatform"],
-  ["setsOfEggs", "totalBirds"],
-];
-
-const GOAL_NAMES: Readonly<Required<Record<GoalId, string>>> = {
-  birdsInForest: "Birds in The Forest Row",
-  birdsInGrasslands: "Birds in The Grassland Row",
-  birdsInWetlands: "Birds in The Wetland Row",
-  birdsWithEggsBowl: "Bowl Nesting Birds with Eggs",
-  birdsWithEggsCavity: "Cavity Nesting Birds with Eggs",
-  birdsWithEggsGround: "Ground Nesting Birds with Eggs",
-  birdsWithEggsPlatform: "Platform Nesting Birds with Eggs",
-  eggsInBowl: "Eggs in Bowl Nests",
-  eggsInCavity: "Eggs in Cavity Nests",
-  eggsInGround: "Eggs in Ground Nests",
-  eggsInPlatform: "Eggs in Platform Nests",
-  eggsInForest: "Eggs in The Forest Row",
-  eggsInGrassLands: "Eggs in The Grassland Row",
-  eggsInWetlands: "Eggs in The Wetland Row",
-  totalBirds: "Total number of Birds",
-  setsOfEggs: "Sets of Eggs in All Rows",
-};
-const NUM_GOALS_IN_GAME = 4;
+import { GoalId, Goals } from "../utils/Goals";
+import productsMetaStep from "./productsMetaStep";
 
 export default createRandomGameStep({
   id: "goalTiles",
-  dependencies: [],
+  dependencies: [productsMetaStep],
   isTemplatable: () => true,
-  resolve: () =>
+  resolve: (_, productIds) =>
     $(
-      TILES,
-      ($$) => Random.sample($$, NUM_GOALS_IN_GAME),
+      productIds!,
+      Goals.availableForProducts,
+      ($$) => Random.sample($$, Goals.NUM_PER_GAME),
       ($$) => Vec.map($$, Random.sample_1),
       Random.shuffle
     ),
@@ -75,7 +28,7 @@ export default createRandomGameStep({
   InstanceManualComponent,
   instanceAvroType: {
     type: "array",
-    items: { type: "enum", name: "GoalId", symbols: [...ALL_GOAL_IDS] },
+    items: { type: "enum", name: "GoalId", symbols: [...Goals.ALL_IDS] },
   },
 
   // TODO: We can use the item selector to at least give the ability to mark
@@ -98,7 +51,7 @@ function InstanceVariableComponent({
       <Stack spacing={1} marginTop={2} paddingX={2}>
         {Vec.map(goalIds, (goalId) => (
           <Typography key={goalId} variant="body2">
-            <strong>{GOAL_NAMES[goalId]}</strong>
+            <strong>{Goals.labelFor(goalId)}</strong>
           </Typography>
         ))}
       </Stack>
@@ -120,7 +73,7 @@ function InstanceCards({
           subheader={`${index + 1}${Str.number_suffix(index + 1)}`}
         >
           <Typography variant="subtitle2" color="primary">
-            <strong>{GOAL_NAMES[goalId]}</strong>
+            <strong>{Goals.labelFor(goalId)}</strong>
           </Typography>
         </InstanceCard>
       ))}
@@ -136,7 +89,7 @@ function InstanceManualComponent(): JSX.Element {
       </>
       <>
         Place <strong>1</strong> goal tile (random side up) on each of the{" "}
-        {NUM_GOALS_IN_GAME} blank spaces on the goal board.
+        {Goals.NUM_PER_GAME} blank spaces on the goal board.
       </>
       <>Return the extra goal tiles to the box.</>
     </HeaderAndSteps>
