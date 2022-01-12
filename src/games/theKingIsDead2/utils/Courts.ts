@@ -12,8 +12,7 @@ const COURT_ENCODER = $(
   ($$) =>
     Vec.maybe_map(Vec.range(0, $$.length - 1), (index) =>
       index === $$.asCanonicalIndex(index) ? $$.at(index) : undefined
-    ),
-  $.log()
+    )
 );
 
 export const Courts = {
