@@ -1,4 +1,3 @@
-import { Typography } from "@mui/material";
 import { Vec } from "common";
 import { PlayerId } from "features/players/playersSlice";
 import {
@@ -29,54 +28,58 @@ function InstanceDerivedComponent({
 >): JSX.Element {
   const isSolo = playerIds!.length === 1;
   return (
-    <>
-      <HeaderAndSteps synopsis={`${isSolo ? "Take" : "Each player receives"}:`}>
+    <HeaderAndSteps synopsis={`${isSolo ? "Take" : "Each player receives"}:`}>
+      <>
+        <strong>1</strong> player mat.
+      </>
+      <>
+        <strong>8</strong> action cubes of {isSolo ? "your" : "their"} color.
+      </>
+      {!isSwiftStart && (
         <>
-          <strong>1</strong> player mat.
-        </>
-        <>
-          <strong>8</strong> action cubes of {isSolo ? "your" : "their"} color.
-        </>
-        {!isSwiftStart && (
-          <>
-            <strong>{BIRD_CARDS_PER_PLAYER}</strong> random bird cards.
-          </>
-        )}
-        {!isSwiftStart && (
-          <BlockWithFootnotes
-            footnote={
+          <strong>{BIRD_CARDS_PER_PLAYER}</strong> random bird cards
+          {
+            // TODO: We can consider this a variant, but it probably would be
+            // overkill to also make this a random step and randomize the birds
+            // for each player (it would require us to have a list of all 170
+            // birds, and for the players to scan the deck to find them)
+            !isSolo && (
               <>
-                The types are:{" "}
-                <GrammaticalList>
-                  {React.Children.toArray(
-                    Vec.map(Food.ALL_IDS, (food) => <>{Food.LABELS[food]}</>)
-                  )}
-                </GrammaticalList>
-              </>
-            }
-          >
-            {(Footnote) => (
-              <>
-                <strong>5</strong> food tokens
+                ;{" "}
                 <em>
-                  ; <strong>1</strong> of each type
-                  <Footnote />.
+                  You may keep your hand of cards private or public throughout
+                  the game.
                 </em>
               </>
-            )}
-          </BlockWithFootnotes>
-        )}
-      </HeaderAndSteps>
-      {!isSolo && (
-        <Typography variant="body2" marginTop={2}>
-          {/* TODO: Should this be a 2 formal variants? 1 for the bird cards and 1
-        for the goals. We can randomize and show the cards in that case. */}
-          <em>
-            You may keep your hand of cards private or public throughout the
-            game.
-          </em>
-        </Typography>
+            )
+          }
+          .
+        </>
       )}
-    </>
+      {!isSwiftStart && (
+        <BlockWithFootnotes
+          footnote={
+            <>
+              The types are:{" "}
+              <GrammaticalList>
+                {React.Children.toArray(
+                  Vec.map(Food.ALL_IDS, (food) => <>{Food.LABELS[food]}</>)
+                )}
+              </GrammaticalList>
+            </>
+          }
+        >
+          {(Footnote) => (
+            <>
+              <strong>5</strong> food tokens
+              <em>
+                ; <strong>1</strong> of each type
+                <Footnote />.
+              </em>
+            </>
+          )}
+        </BlockWithFootnotes>
+      )}
+    </HeaderAndSteps>
   );
 }
