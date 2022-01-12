@@ -8,7 +8,8 @@ import firstPlayerStep from "./steps/firstPlayerStep";
 import friendlyGoalsVariant from "./steps/friendlyGoalsVariant";
 import goalBoardStep from "./steps/goalBoardStep";
 import goalTilesStep from "./steps/goalTilesStep";
-import keepCardsStep from "./steps/keepCardsStep";
+import keepBirdCardsStep from "./steps/keepBirdCardsStep";
+import keepBonusCardsStep from "./steps/keepBonusCardsStep";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import playOrderStep from "./steps/playOrderStep";
 import productsMetaStep from "./steps/productsMetaStep";
@@ -26,7 +27,6 @@ export default createGame({
       bggId: 266192,
       isBase: true,
       year: 2019,
-      isNotImplemented: true,
     },
     swiftStart: {
       name: "Swift-Start Promo Pack",
@@ -47,6 +47,7 @@ export default createGame({
       isNotImplemented: true,
     },
   },
+
   steps: [
     swiftStartVariant, // Variant
     friendlyGoalsVariant, // Variant
@@ -84,14 +85,7 @@ export default createGame({
 
     swiftStartGuidesSteps,
 
-    keepCardsStep,
-
-    createGameStep({
-      id: "keepBonusCard",
-      InstanceManualComponent:
-        "Chose 1 bonus card to keep, and discard the other. You may look at " +
-        "your bonus cards while selecting which birds to keep (and vice " +
-        "versa).",
-    }),
+    keepBirdCardsStep,
+    keepBonusCardsStep,
   ],
 });
