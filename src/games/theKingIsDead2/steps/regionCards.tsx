@@ -45,7 +45,6 @@ function InstanceVariableComponent({
   );
 
   const pivot = regions.length / 2;
-  console.log(regions, pivot);
 
   return (
     <>
