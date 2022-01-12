@@ -29,7 +29,9 @@ export const partialPlayOrder = (
   firstPlayerId: PlayerId | null | undefined,
   playOrder: readonly PlayerId[] | null | undefined
 ): readonly (PlayerId | null)[] =>
-  firstPlayerId == null
+  playerIds.length === 1
+    ? playerIds
+    : firstPlayerId == null
     ? Vec.fill(playerIds.length, null)
     : playOrder == null
     ? Vec.concat(

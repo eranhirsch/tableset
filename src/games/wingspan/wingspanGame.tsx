@@ -1,7 +1,9 @@
 import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
 import { createPlayerColorsStep } from "games/global";
+import automaStep from "./steps/automaStep";
 import birdCardsStep from "./steps/birdCardsStep";
+import bonusCardsStep from "./steps/bonusCardsStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import friendlyGoalsVariant from "./steps/friendlyGoalsVariant";
 import goalBoardStep from "./steps/goalBoardStep";
@@ -10,6 +12,7 @@ import keepCardsStep from "./steps/keepCardsStep";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import playOrderStep from "./steps/playOrderStep";
 import productsMetaStep from "./steps/productsMetaStep";
+import supplyStep from "./steps/supplyStep";
 import swiftStartGuidesSteps from "./steps/swiftStartGuidesSteps";
 import swiftStartVariant from "./steps/swiftStartVariant";
 
@@ -49,12 +52,7 @@ export default createGame({
     friendlyGoalsVariant, // Variant
 
     birdCardsStep,
-    createGameStep({
-      id: "supply",
-      InstanceManualComponent:
-        "Place all food and egg tokens in the supply. These are tokens " +
-        "accessible to all players.",
-    }),
+    supplyStep,
     createGameStep({
       // TODO: This step could be randomized as the results are random, but it
       // might be too pedantic as it has marginal impact on game and and the
@@ -81,8 +79,11 @@ export default createGame({
     }), // Templatable
 
     playerComponentsStep,
+    automaStep,
+    bonusCardsStep,
 
     swiftStartGuidesSteps,
+
     keepCardsStep,
 
     createGameStep({

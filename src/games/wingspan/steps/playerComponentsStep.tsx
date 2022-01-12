@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import { Vec } from "common";
+import { PlayerId } from "features/players/playersSlice";
 import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
@@ -7,6 +8,7 @@ import {
 import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
+import { playersMetaStep } from "games/global";
 import React from "react";
 import { Food } from "../utils/Food";
 import swiftStartVariant from "./swiftStartVariant";
@@ -15,24 +17,25 @@ export const BIRD_CARDS_PER_PLAYER = 5;
 
 export default createDerivedGameStep({
   id: "playerComponents",
-  dependencies: [swiftStartVariant],
+  dependencies: [playersMetaStep, swiftStartVariant],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [isSwiftStart],
-}: DerivedStepInstanceComponentProps<boolean>): JSX.Element {
+  dependencies: [playerIds, isSwiftStart],
+}: DerivedStepInstanceComponentProps<
+  readonly PlayerId[],
+  boolean
+>): JSX.Element {
+  const isSolo = playerIds!.length === 1;
   return (
     <>
-      <HeaderAndSteps synopsis="Each player receives:">
+      <HeaderAndSteps synopsis={`${isSolo ? "Take" : "Each player receives"}:`}>
         <>
           <strong>1</strong> player mat.
         </>
         <>
-          <strong>8</strong> action cubes of their color.
-        </>
-        <>
-          <strong>2</strong> random bonus cards.
+          <strong>8</strong> action cubes of {isSolo ? "your" : "their"} color.
         </>
         {!isSwiftStart && (
           <>
@@ -64,13 +67,16 @@ function InstanceDerivedComponent({
           </BlockWithFootnotes>
         )}
       </HeaderAndSteps>
-      <Typography variant="body2" marginTop={2}>
-        {/* TODO: Should this be a 2 formal variants? 1 for the bird cards and 1
+      {!isSolo && (
+        <Typography variant="body2" marginTop={2}>
+          {/* TODO: Should this be a 2 formal variants? 1 for the bird cards and 1
         for the goals. We can randomize and show the cards in that case. */}
-        <em>
-          You may keep your hand of cards private or public throughout the game.
-        </em>
-      </Typography>
+          <em>
+            You may keep your hand of cards private or public throughout the
+            game.
+          </em>
+        </Typography>
+      )}
     </>
   );
 }
