@@ -59,13 +59,17 @@ const BirdName = styled("strong")({
 export default createDerivedGameStep({
   id: "swiftStartGuides",
   labelOverride: "Swift-Start: Guides",
+
   dependencies: [
     playersMetaStep,
     playOrderStep,
     firstPlayerStep,
     swiftStartVariant,
   ],
-  skip: ([isSwiftStart]) => !isSwiftStart,
+
+  skip: ([_playerIds, _playOrder, _firstPlayerId, isSwiftStart]) =>
+    !isSwiftStart,
+
   InstanceDerivedComponent,
 });
 
