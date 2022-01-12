@@ -6,7 +6,6 @@ import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import React from "react";
-import BirdName from "../ux/BirdName";
 
 const AUTOMA_LEVELS: Readonly<Record<string, number>> = {
   Eaglet: 3,
@@ -73,15 +72,6 @@ function InstanceDerivedComponent(): JSX.Element {
         <ChosenElement extraInfo="card">Current Round Tracker</ChosenElement> to
         the left of it, oriented so that <em>Round 1</em> is readable, and it's
         arrow is facing to <em>the right</em>.
-      </>
-      <>
-        Draw and reveal a <ChosenElement extraInfo="card">Bonus</ChosenElement>{" "}
-        for the Automa. If the bonus card is{" "}
-        <BirdName>Breeding Manager</BirdName> or{" "}
-        <BirdName>Backyard Birder</BirdName>, or if it does not show{" "}
-        <strong>(X% of cards)</strong> at the bottom of the card, return it to
-        the deck and select another. Repeat if necessary and then reshuffle the
-        bonus deck before continuing with setup.
       </>
       <>
         Place the{" "}

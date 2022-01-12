@@ -102,6 +102,8 @@ interface Options<ItemId extends string | number, Pid extends ProductId> {
    */
   advancedMode?: AdvancedMode;
 
+  skipManualWhenDisabled?: boolean;
+
   // Required fields for createRandomGameStep
   id: StepId;
   InstanceCards?(
@@ -154,6 +156,7 @@ export default function createItemSelectorStep<
   labelForId,
   labelForIdTLDR,
   productsMetaStep,
+  skipManualWhenDisabled = true,
   variant = DEFAULT_VARIANT,
   ...randomGameStepOptions
 }: Options<ItemId, Pid>): Templatable<readonly ItemId[]> &
@@ -192,7 +195,7 @@ export default function createItemSelectorStep<
       ),
 
     skip: (_value, [playerIds, productIds, isOn]) =>
-      !isOn ||
+      (!isOn && skipManualWhenDisabled) ||
       count(playerIds!.length) === availableForProducts(productIds!).length,
 
     ConfigPanel: (

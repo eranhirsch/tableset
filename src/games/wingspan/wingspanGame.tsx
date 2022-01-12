@@ -1,6 +1,8 @@
 import { createGame } from "games/core/Game";
 import { createGameStep } from "games/core/steps/createGameStep";
 import { createPlayerColorsStep } from "games/global";
+import automaBonusCardStep from "./steps/automaBonusCardStep";
+import automaOnlyBonusCardsVariant from "./steps/automaOnlyBonusCardsVariant";
 import automaStep from "./steps/automaStep";
 import birdCardsStep from "./steps/birdCardsStep";
 import bonusCardsStep from "./steps/bonusCardsStep";
@@ -48,6 +50,7 @@ export default createGame({
     swiftStartVariant, // Variant
     friendlyGoalsVariant, // Variant
     europeanBirdsVariant, // Variant
+    automaOnlyBonusCardsVariant, // Variant
 
     birdCardsStep,
     supplyStep,
@@ -81,6 +84,7 @@ export default createGame({
 
     playerComponentsStep,
     automaStep,
+    automaBonusCardStep,
     bonusCardsStep,
 
     swiftStartGuidesSteps,
