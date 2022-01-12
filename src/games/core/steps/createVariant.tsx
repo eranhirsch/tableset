@@ -10,6 +10,7 @@ import { PercentSlider } from "../ux/PercentSlider";
 import createConstantValueMetaStep from "./createConstantValueMetaStep";
 import { createGameStep } from "./createGameStep";
 import { ConfigPanelProps, RandomGameStep } from "./createRandomGameStep";
+import { NoConfigPanel } from "./NoConfigPanel";
 import { OptionsWithDependencies } from "./OptionsWithDependencies";
 import { buildQuery, Query } from "./Query";
 
@@ -51,6 +52,7 @@ interface Options<
   conditional?: VariantGameStep;
   incompatibleWith?: VariantGameStep;
   Description: (() => JSX.Element) | string;
+  noConfig?: true;
 }
 
 interface OptionsInternal
@@ -82,13 +84,14 @@ export function createVariant<
   D10 = never
 >(options: Options<D1, D2, D3, D4, D5, D6, D7, D8, D9, D10>): VariantGameStep;
 export function createVariant({
-  id,
-  name,
-  dependencies,
   conditional,
-  incompatibleWith,
+  dependencies,
   Description,
+  id,
+  incompatibleWith,
   isTemplatable,
+  name,
+  noConfig,
 }: OptionsInternal): VariantGameStep {
   const baseStep = createGameStep({
     id: `variant_${id}`,
@@ -265,15 +268,16 @@ export function createVariant({
         },
       }),
 
-    ConfigPanel: (
-      props: ConfigPanelProps<TemplateConfig, boolean, boolean>
-    ) => (
-      <ConfigPanel
-        {...props}
-        conditionalLabel={conditional?.label}
-        incompatibleWithLabel={incompatibleWith?.label}
-      />
-    ),
+    ConfigPanel: (props: ConfigPanelProps<TemplateConfig, boolean, boolean>) =>
+      noConfig ? (
+        <NoConfigPanel.ConfigPanel />
+      ) : (
+        <ConfigPanel
+          {...props}
+          conditionalLabel={conditional?.label}
+          incompatibleWithLabel={incompatibleWith?.label}
+        />
+      ),
     ConfigPanelTLDR: (props) => (
       <ConfigPanelTLDR {...props} conditionalStep={conditional} />
     ),
