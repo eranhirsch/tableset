@@ -5,6 +5,7 @@ import automaStep from "./steps/automaStep";
 import birdCardsStep from "./steps/birdCardsStep";
 import bonusCardsStep from "./steps/bonusCardsStep";
 import europeanBirdsVariant from "./steps/europeanBirdsVariant";
+import europeReferenceTileStep from "./steps/europeReferenceTileStep";
 import firstPlayerStep from "./steps/firstPlayerStep";
 import friendlyGoalsVariant from "./steps/friendlyGoalsVariant";
 import goalBoardStep from "./steps/goalBoardStep";
@@ -61,6 +62,9 @@ export default createGame({
     }),
     goalBoardStep,
     goalTilesStep,
+
+    europeReferenceTileStep,
+
     createGameStep({
       id: "bonusCards",
       InstanceManualComponent:
