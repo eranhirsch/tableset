@@ -44,7 +44,6 @@ export default createGame({
       name: "Oceania Expansion",
       bggId: 300580,
       year: 2020,
-      isNotImplemented: true,
     },
   },
 
