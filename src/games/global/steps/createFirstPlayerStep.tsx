@@ -21,12 +21,10 @@ interface Options {
   FirstPlayerToken?: (() => JSX.Element) | string;
 }
 
-const DEFAULT_MANUAL_COMPONENT = "Choose which player goes first.";
-
 type TemplateConfig = { playerId?: PlayerId };
 
 function createFirstPlayerStep({
-  InstanceManualComponent = DEFAULT_MANUAL_COMPONENT,
+  InstanceManualComponent,
   FirstPlayerToken,
 }: Options = {}): Templatable<PlayerId> {
   return createRandomGameStep({
@@ -42,7 +40,14 @@ function createFirstPlayerStep({
         FirstPlayerToken={FirstPlayerToken}
       />
     ),
-    InstanceManualComponent,
+    InstanceManualComponent:
+      InstanceManualComponent != null
+        ? InstanceManualComponent
+        : () => (
+            <DefaultInstanceManualComponent
+              FirstPlayerToken={FirstPlayerToken}
+            />
+          ),
 
     isTemplatable: (players) =>
       players.willContainNumElements({
@@ -156,5 +161,28 @@ function InstanceCards({
         <PlayerAvatar playerId={playerId} inline />
       </Badge>
     </InstanceCard>
+  );
+}
+
+function DefaultInstanceManualComponent({
+  FirstPlayerToken,
+}: {
+  FirstPlayerToken?: (() => JSX.Element) | string;
+}): JSX.Element {
+  return (
+    <>
+      Choose which player goes first
+      {FirstPlayerToken != null && (
+        <>
+          . Give them the{" "}
+          {typeof FirstPlayerToken === "string" ? (
+            FirstPlayerToken
+          ) : (
+            <FirstPlayerToken />
+          )}
+        </>
+      )}
+      .
+    </>
   );
 }
