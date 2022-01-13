@@ -49,6 +49,7 @@ function InstanceDerivedComponent({
           For example, you might keep 2 bird cards and 3 food, or you might keep
           4 bird cards and 1 food.
         </>,
+        <>You can look at your bonus cards while making your selection.</>,
       ]}
     >
       {(Footnote) => (
@@ -66,7 +67,8 @@ function InstanceDerivedComponent({
           <strong>
             For each bird card you keep, you must discard 1 food token.
           </strong>
-          <Footnote index={2} />.
+          <Footnote index={2} />
+          <Footnote index={3} />.
         </>
       )}
     </BlockWithFootnotes>

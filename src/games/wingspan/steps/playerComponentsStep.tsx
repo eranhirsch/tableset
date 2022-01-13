@@ -4,33 +4,56 @@ import {
   createDerivedGameStep,
   DerivedStepInstanceComponentProps,
 } from "games/core/steps/createDerivedGameStep";
-import { BlockWithFootnotes } from "games/core/ux/BlockWithFootnotes";
 import { GrammaticalList } from "games/core/ux/GrammaticalList";
 import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import { playersMetaStep } from "games/global";
 import React from "react";
-import { Food } from "../utils/Food";
+import { Food, FoodTypeId } from "../utils/Food";
+import oceaniaBirdsVariant from "./oceaniaBirdsVariant";
+import productsMetaStep, { WingspanProductId } from "./productsMetaStep";
 import swiftStartVariant from "./swiftStartVariant";
 
 export const BIRD_CARDS_PER_PLAYER = 5;
 
+const STARTING_FOOD: readonly FoodTypeId[] = [
+  "fish",
+  "fruit",
+  "invertebrate",
+  "rodent",
+  "seed",
+] as const;
+
 export default createDerivedGameStep({
   id: "playerComponents",
-  dependencies: [playersMetaStep, swiftStartVariant],
+  dependencies: [
+    playersMetaStep,
+    productsMetaStep,
+    swiftStartVariant,
+    oceaniaBirdsVariant,
+  ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [playerIds, isSwiftStart],
+  dependencies: [playerIds, productIds, isSwiftStart, isOceania],
 }: DerivedStepInstanceComponentProps<
   readonly PlayerId[],
+  readonly WingspanProductId[],
+  boolean,
   boolean
 >): JSX.Element {
   const isSolo = playerIds!.length === 1;
   return (
     <HeaderAndSteps synopsis={`${isSolo ? "Take" : "Each player receives"}:`}>
       <>
-        <strong>1</strong> player mat.
+        <strong>1</strong> player mat{" "}
+        {productIds!.includes("oceania") && (
+          <>
+            <strong>with{!isOceania && "out"}</strong> {Food.LABELS.nectar}{" "}
+            icons on it
+          </>
+        )}
+        .
       </>
       <>
         <strong>8</strong> action cubes of {isSolo ? "your" : "their"} color.
@@ -57,28 +80,20 @@ function InstanceDerivedComponent({
         </>
       )}
       {!isSwiftStart && (
-        <BlockWithFootnotes
-          footnote={
-            <>
-              The types are:{" "}
-              <GrammaticalList>
-                {React.Children.toArray(
-                  Vec.map(Food.ALL_IDS, (food) => <>{Food.LABELS[food]}</>)
-                )}
-              </GrammaticalList>
-            </>
-          }
-        >
-          {(Footnote) => (
-            <>
-              <strong>5</strong> food tokens
-              <em>
-                ; <strong>1</strong> of each type
-                <Footnote />.
-              </em>
-            </>
+        <>
+          Food tokens:
+          <GrammaticalList>
+            {React.Children.toArray(
+              Vec.map(STARTING_FOOD, (foodId) => (
+                <strong>{Food.LABELS[foodId]}</strong>
+              ))
+            )}
+          </GrammaticalList>
+          {productIds!.includes("oceania") && (
+            <em>; but not {Food.LABELS.nectar}!</em>
           )}
-        </BlockWithFootnotes>
+          .
+        </>
       )}
     </HeaderAndSteps>
   );

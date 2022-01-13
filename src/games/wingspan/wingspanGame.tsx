@@ -5,6 +5,7 @@ import automaBonusCardStep from "./steps/automaBonusCardStep";
 import automaOnlyBonusCardsVariant from "./steps/automaOnlyBonusCardsVariant";
 import automaStep from "./steps/automaStep";
 import birdCardsStep from "./steps/birdCardsStep";
+import birdFeederStep from "./steps/birdFeederStep";
 import bonusCardsStep from "./steps/bonusCardsStep";
 import europeanBirdsVariant from "./steps/europeanBirdsVariant";
 import europeReferenceTileStep from "./steps/europeReferenceTileStep";
@@ -14,6 +15,8 @@ import goalBoardStep from "./steps/goalBoardStep";
 import goalTilesStep from "./steps/goalTilesStep";
 import keepBirdCardsStep from "./steps/keepBirdCardsStep";
 import keepBonusCardsStep from "./steps/keepBonusCardsStep";
+import nectarStep from "./steps/nectarStep";
+import oceaniaBirdsVariant from "./steps/oceaniaBirdsVariant";
 import playerComponentsStep from "./steps/playerComponentsStep";
 import playOrderStep from "./steps/playOrderStep";
 import productsMetaStep from "./steps/productsMetaStep";
@@ -49,19 +52,12 @@ export default createGame({
     swiftStartVariant, // Variant
     friendlyGoalsVariant, // Variant
     europeanBirdsVariant, // Variant
+    oceaniaBirdsVariant, // Variant
     automaOnlyBonusCardsVariant, // Variant
 
     birdCardsStep,
     supplyStep,
-    createGameStep({
-      // TODO: This step could be randomized as the results are random, but it
-      // might be too pedantic as it has marginal impact on game and and the
-      // cost to build it properly would be too high.
-      id: "birdFeeder",
-      InstanceManualComponent:
-        // TODO: We should add the number of dice that are thrown
-        "Toss the food dice into the birdfeeder dice tower.",
-    }),
+    birdFeederStep,
     goalBoardStep,
     goalTilesStep,
 
@@ -90,5 +86,6 @@ export default createGame({
 
     keepBirdCardsStep,
     keepBonusCardsStep,
+    nectarStep,
   ],
 });

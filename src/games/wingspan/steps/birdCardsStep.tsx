@@ -10,19 +10,26 @@ import { HeaderAndSteps } from "games/core/ux/HeaderAndSteps";
 import React, { useMemo } from "react";
 import { DeckId, Decks } from "../utils/Decks";
 import europeanBirdsVariant from "./europeanBirdsVariant";
+import oceaniaBirdsVariant from "./oceaniaBirdsVariant";
 import productsMetaStep, { WingspanProductId } from "./productsMetaStep";
 import swiftStartVariant from "./swiftStartVariant";
 
 export default createDerivedGameStep({
   id: "birdCards",
-  dependencies: [productsMetaStep, swiftStartVariant, europeanBirdsVariant],
+  dependencies: [
+    productsMetaStep,
+    swiftStartVariant,
+    europeanBirdsVariant,
+    oceaniaBirdsVariant,
+  ],
   InstanceDerivedComponent,
 });
 
 function InstanceDerivedComponent({
-  dependencies: [productIds, isSwiftStart, isEuropean],
+  dependencies: [productIds, isSwiftStart, isEuropean, isOceania],
 }: DerivedStepInstanceComponentProps<
   readonly WingspanProductId[],
+  boolean,
   boolean,
   boolean
 >): JSX.Element {
@@ -37,8 +44,9 @@ function InstanceDerivedComponent({
         "base",
         isSwiftStart ? null : "swift",
         isEuropean ? "europe" : null,
+        isOceania ? "oceania" : null,
       ]),
-    [isEuropean, isSwiftStart]
+    [isEuropean, isOceania, isSwiftStart]
   );
 
   const unused = useMemo(() => Vec.diff(available, used), [available, used]);
