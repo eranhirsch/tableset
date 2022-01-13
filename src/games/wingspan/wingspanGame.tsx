@@ -36,7 +36,6 @@ export default createGame({
       name: "European Expansion",
       bggId: 290448,
       year: 2019,
-      isNotImplemented: true,
     },
     oceania: {
       name: "Oceania Expansion",
